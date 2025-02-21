@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import Logo from '../../Images/Logo File.png';
+import Logo from '../../Images/logo.png';
+import LogoutIcon from '@mui/icons-material/Logout';
 import {
   AppBar,
   Toolbar,
@@ -29,7 +30,7 @@ export default function InvestorHeader() {
   // For the "Transactions" item, we add a submenu.
   const navItems = [
     { label: 'Dashboard', path: '/i-dashboard' },
-    { label: 'Assets', path: '/i-asset' },
+    { label: 'Properties', path: '/i-asset' },
     {
       label: 'Transactions',
       submenu: [
@@ -162,7 +163,7 @@ export default function InvestorHeader() {
         sx={{
           backgroundColor: 'white', // Adjust color as needed.
           color: '#000',
-          boxShadow:"-moz-initial"
+          boxShadow: "-moz-initial"
         }}
       >
         <Toolbar>
@@ -190,7 +191,7 @@ export default function InvestorHeader() {
                       height: '50px',
                       width: 'auto',
                       maxWidth: '150px',
-                      transform: 'scale(2.0)',
+                      // transform: 'scale(2.0)',
                     }}
                   />
                 </Link>
@@ -210,7 +211,7 @@ export default function InvestorHeader() {
                     fontSize: '16px',
                   }}
                 >
-                  Investor
+                  Client
                 </Typography>
                 <Avatar
                   onClick={handleAvatarClick}
@@ -225,7 +226,7 @@ export default function InvestorHeader() {
             <>
               {/* Left: Logo */}
               <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center' }}>
-                <Link to="/" style={{ textDecoration: 'none', color: '#333333' }}>
+                <Link to="/i-dashboard" style={{ textDecoration: 'none', color: '#333333' }}>
                   <img
                     src={Logo}
                     alt="logo"
@@ -233,7 +234,8 @@ export default function InvestorHeader() {
                       height: '75px',
                       width: 'auto',
                       maxWidth: '150px',
-                      transform: 'scale(2.0)',
+                      paddingTop: "8px"
+                      // transform: 'scale(2.0)',
                     }}
                   />
                 </Link>
@@ -289,7 +291,7 @@ export default function InvestorHeader() {
                   fontSize: '16px',
                 }}
               >
-                Investor
+                Client
               </Typography>
               <Avatar
                 onClick={handleAvatarClick}
@@ -343,9 +345,15 @@ export default function InvestorHeader() {
             handleProfileMenuClose();
             navigate('/');
           }}
-          sx={{ fontWeight: 'bold', fontSize: '16px' }}
+          sx={{
+            fontSize: '16px',
+            fontWeight: 'bold',
+            color: "red",
+            display: 'flex',
+            alignItems: 'center'
+          }}
         >
-          Logout
+          Logout <LogoutIcon sx={{ ml: 1 }} />
         </MenuItem>
       </Menu>
 

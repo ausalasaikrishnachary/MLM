@@ -2,7 +2,7 @@ import React,{useState} from 'react';
 import { Box, TextField, Button, Typography, Link, Paper, Grid } from '@mui/material';
 import GoogleIcon from '@mui/icons-material/Google';
 import { useNavigate } from 'react-router-dom';
-import image2 from "./../Images/Logo File.png"
+import image2 from "./../Images/logo.png"
 
 const Login = () => {
     const navigate = useNavigate();
@@ -12,9 +12,9 @@ const Login = () => {
     const handleLogin = () => {
         if (email === 'admin@gmail.com' && password === 'admin@123') {
             navigate('/a-dashboard');
-        } else if (email === 'partner@gmail.com' && password === 'partner@123') {
+        } else if (email === 'agent@gmail.com' && password === 'agent@123') {
             navigate('/p-dashboard');
-        } else if (email === 'investor@gmail.com' && password === 'investor@123') {
+        } else if (email === 'client@gmail.com' && password === 'client@123') {
             navigate('/i-dashboard');
         } else {
             alert('Invalid credentials');

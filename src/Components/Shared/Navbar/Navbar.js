@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import Logo from '../../Images/Logo File.png';
+import Logo from '../../Images/logo.png';
+import LogoutIcon from '@mui/icons-material/Logout';
 import {
   AppBar,
   Toolbar,
@@ -27,10 +28,10 @@ export default function Header() {
   // Updated nav items with no submenu for Transactions.
   const navItems = [
     { label: 'Dashboard', path: '/a-dashboard' },
-    { label: 'Assets', path: '/a-asset' },
+    { label: 'Properties', path: '/a-asset' },
     { label: 'Transactions', path: '/a-transactionmoniter' },
-    { label: 'Investors', path: '/a-investormanagement' },
-    { label: 'Partners', path: '/a-partners' },
+    { label: 'Leads', path: '/a-investormanagement' },
+    { label: 'Agents', path: '/a-partners' },
     { label: 'KYC', path: '/a-profiledetails' },
   ];
 
@@ -121,7 +122,8 @@ export default function Header() {
                       height: '50px',
                       width: 'auto',
                       maxWidth: '150px',
-                      transform: 'scale(2.0)',
+
+                      // transform: 'scale(2.0)',
                     }}
                   />
                 </Link>
@@ -154,7 +156,7 @@ export default function Header() {
             // Desktop Layout.
             <>
               <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center' }}>
-                <Link to="/" style={{ textDecoration: 'none', color: '#333333' }}>
+                <Link to="/a-dashboard" style={{ textDecoration: 'none', color: '#333333' }}>
                   <img
                     src={Logo}
                     alt="logo"
@@ -162,7 +164,8 @@ export default function Header() {
                       height: '75px',
                       width: 'auto',
                       maxWidth: '150px',
-                      transform: 'scale(2.0)',
+                      paddingTop: "8px"
+                      // transform: 'scale(2.0)',
                     }}
                   />
                 </Link>
@@ -261,9 +264,12 @@ export default function Header() {
           sx={{
             fontSize: '16px',
             fontWeight: 'bold',
+            color: "red",
+            display: 'flex',
+            alignItems: 'center'
           }}
         >
-          Logout
+          Logout <LogoutIcon sx={{ ml: 1 }} />
         </MenuItem>
       </Menu>
     </>

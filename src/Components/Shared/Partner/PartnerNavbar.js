@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import Logo from '../../Images/Logo File.png';
+import Logo from '../../Images/logo.png';
+import LogoutIcon from '@mui/icons-material/Logout';
 import {
   AppBar,
   Toolbar,
@@ -29,7 +30,7 @@ export default function PartnerHeader() {
   // For the "Transactions" item, we add a submenu.
   const navItems = [
     { label: 'Dashboard', path: '/p-dashboard' },
-    { label: 'My Assets', path: '/p-myassets' },
+    { label: 'Properties', path: '/p-myassets' },
     {
       label: 'Transactions', path:"/p-transactions",
       path: '/p-transactions',
@@ -143,7 +144,7 @@ export default function PartnerHeader() {
                       height: '50px',
                       width: 'auto',
                       maxWidth: '150px',
-                      transform: 'scale(2.0)',
+                      // transform: 'scale(2.0)',
                     }}
                   />
                 </Link>
@@ -155,7 +156,7 @@ export default function PartnerHeader() {
                   <NotificationsNoneIcon />
                 </IconButton>
                 <Typography sx={{ ml: 2, mr: 2, color: '#000', fontWeight: 'bold' }}>
-                  Partner
+                  Agent
                 </Typography>
                 <Avatar
                   onClick={handleAvatarClick}
@@ -170,7 +171,7 @@ export default function PartnerHeader() {
             <>
               {/* Left: Logo */}
               <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center' }}>
-                <Link to="/" style={{ textDecoration: 'none', color: '#333333' }}>
+                <Link to="/p-dashboard" style={{ textDecoration: 'none', color: '#333333' }}>
                   <img
                     src={Logo}
                     alt="logo"
@@ -178,7 +179,8 @@ export default function PartnerHeader() {
                       height: '75px',
                       width: 'auto',
                       maxWidth: '150px',
-                      transform: 'scale(2.0)',
+                      paddingTop:"8px"
+                      // transform: 'scale(2.0)',
                     }}
                   />
                 </Link>
@@ -208,7 +210,7 @@ export default function PartnerHeader() {
                 <NotificationsNoneIcon />
               </IconButton>
               <Typography sx={{ ml: 2, mr: 2, color: '#000', fontWeight: 'bold' }}>
-                Partner
+              Agent
               </Typography>
               <Avatar
                 onClick={handleAvatarClick}
@@ -262,9 +264,15 @@ export default function PartnerHeader() {
             handleProfileMenuClose();
             navigate('/');
           }}
-          sx={{ fontWeight: 'bold' }}
+          sx={{
+            fontSize: '16px',
+            fontWeight: 'bold',
+            color: "red",
+            display: 'flex',
+            alignItems: 'center'
+          }}
         >
-          Logout
+          Logout <LogoutIcon sx={{ ml: 1 }} />
         </MenuItem>
       </Menu>
 
