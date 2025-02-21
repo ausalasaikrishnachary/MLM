@@ -1,0 +1,103 @@
+.container {
+    margin-top: 20px;
+}
+
+/* Summary cards styling */
+.summary-card {
+    background: #f8f9fa;
+    text-align: center;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+/* Card number color */
+.card-number {
+    color: rgb(30, 10, 80);
+}
+
+/* Table styling */
+.table {
+    border: 1px solid #dee2e6;
+}
+
+/* Table Headers */
+th {
+    background: rgb(30, 10, 80) !important;
+    color: white !important;
+    text-align: center;
+    padding: 10px;
+}
+
+/* Status colors */
+.text-success {
+    color: green;
+}
+
+.text-warning {
+    color: orange;
+}
+
+.text-danger {
+    color: red;
+}
+
+/* Space between Cards and Search Bar */
+.search-filter-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+/* Styling for small dropdowns (Latest & Filters) */
+.small-dropdown,
+.small-filter-btn {
+    width: 120px;
+    font-size: 14px;
+    padding: 5px;
+}
+
+/* Filter button styling */
+.small-filter-btn {
+    background: white;
+    border: 1px solid #ced4da;
+    color: black;
+}
+
+.small-filter-btn:hover {
+    background: #f8f9fa;
+}
+
+/* Pagination styling */
+.pagination-container {
+    margin-top: 10px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.current-page {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.action-buttons button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+.action-buttons button:hover {
+    color: rgb(30, 10, 80);
+}

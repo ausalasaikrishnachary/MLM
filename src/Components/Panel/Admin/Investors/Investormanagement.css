@@ -1,0 +1,26 @@
+.container {
+    max-width: 900px;
+    margin: auto;
+  }
+  
+  .custom-table {
+    border: 1px solid #ddd;
+  }
+  
+  .custom-table th, .custom-table td {
+    text-align: center;
+    vertical-align: middle;
+  }
+  
+  .text-success {
+    color: green;
+  }
+  
+  .text-danger {
+    color: red;
+  }
+  
+  button {
+    cursor: pointer;
+  }
+  
