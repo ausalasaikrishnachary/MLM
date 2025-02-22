@@ -21,7 +21,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
-import Header from "../../../Shared/Navbar/Navbar";
+import Header from "../../../Shared/Partner/PartnerNavbar";
 
 // Define summaryCardsData for the summary cards section
 const summaryCardsData = [
@@ -72,26 +72,26 @@ const Tmanagement = () => {
     { field: "email", headerName: "Email", width: 250 },
     { field: "lastActive", headerName: "Last Active", width: 180 },
     { field: "source", headerName: "Source", width: 150 },
-    {
-      field: "assignedTo",
-      headerName: "Assign to Lead",
-      width: 180,
-      renderCell: (params) => (
-        <FormControl fullWidth>
-          <Select
-            value={params.value}
-            onChange={(e) => handleDropdownChange(params.id, "assignedTo", e.target.value)}
-            size="small"
-          >
-            {leadNames.map((name) => (
-              <MenuItem key={name} value={name}>
-                {name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      ),
-    },
+//     {
+//       field: "assignedTo",
+//       headerName: "Assign to Lead",
+//       width: 180,
+//       renderCell: (params) => (
+//         <FormControl fullWidth>
+//           <Select
+//             value={params.value}
+//             onChange={(e) => handleDropdownChange(params.id, "assignedTo", e.target.value)}
+//             size="small"
+//           >
+//             {leadNames.map((name) => (
+//               <MenuItem key={name} value={name}>
+//                 {name}
+//               </MenuItem>
+//             ))}
+//           </Select>
+//         </FormControl>
+//       ),
+//     },
     {
       field: "leadStatus",
       headerName: "Lead Status",
@@ -152,7 +152,7 @@ const Tmanagement = () => {
           <Typography variant="h4" component="h2" gutterBottom>
             Leads Management
           </Typography>
-          <Button variant="contained" color="primary" onClick={() => navigate("/a-add-lead")}>
+          <Button variant="contained" color="primary" onClick={() => navigate("/p-addleads")}>
             Add Lead
           </Button>
         </Box>

@@ -27,8 +27,9 @@ import PartnerProfile from "./Components/Panel/Partner/Profile/Profile";
 import PartnerKyc from "./Components/Panel/Partner/Profile/Kyc";
 import AdminProfile from "./Components/Panel/Admin/Profile/Profile";
 import AdminKyc from "./Components/Panel/Admin/Profile/Kyc";
-
-
+import AddLead from './Components/Panel/Admin/Investors/AddLead';
+import Leads from './Components/Panel/Partner/MyLeads/Leads'
+import PAddLead from './Components/Panel/Partner/MyLeads/AddLead'
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
               <Route path="/a-investormanagement" element={<Tmanagement />} />
               <Route path="/a-transactionmoniter" element={<Tmoniter />} />
               <Route path="/a-investment-page" element={<InvestmentPage />} />
+              <Route path="/a-add-lead" element={<AddLead />} />
               <Route path="/a-partners" element={<PartnersDashboard />} />
               <Route path="/a-profile" element={<AdminProfile />} />
               <Route path="/a-profiledetails" element={<AdminKyc />} />
@@ -66,6 +68,10 @@ function App() {
               <Route path="/p-myassets" element={<AssetDashboard />} />
               <Route path="/p-profile" element={<PartnerProfile />} />
               <Route path="/p-profiledetails" element={<PartnerKyc/>} />
+              <Route path="/p-leads" element={<Leads/>} />
+              <Route path="/p-addleads" element={<PAddLead/>} />
+
+
 
 
               <Route path="/" element={<Login />} />
