@@ -39,6 +39,7 @@ export default function PartnerHeader() {
         { label: 'Sell Shares', path: '/sell-shares' },
       ],
     },
+    { label: 'My Leads', path: '/p-myleads' },
     { label: 'Report', path: '/p-report' },
   ];
 
