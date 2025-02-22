@@ -35,7 +35,7 @@ export default function InvestorHeader() {
       label: 'Transactions',
       submenu: [
         { label: 'Buy Shares', path: '/i-buyshares' },
-        { label: 'Sell Shares', path: '/i-sellshares' },
+        // { label: 'Sell Shares', path: '/i-sellshares' },
       ],
     },
   ];

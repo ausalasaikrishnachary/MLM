@@ -21,8 +21,9 @@ import {
   MenuItem,
   Button,
 } from '@mui/material';
+import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
 
-function Referral() {
+function PartnerReferral() {
   const [agentName, setAgentName] = useState('');
   const [propertiesSold, setPropertiesSold] = useState('');
   const [commissionRate, setCommissionRate] = useState(2);
@@ -69,7 +70,7 @@ function Referral() {
 
   return (
     <>
-      <Header />
+      <PartnerHeader />
       <Box sx={{ backgroundColor: '#f4f7f9', minHeight: '100vh', py: 4 }}>
         <Container maxWidth="lg">
           {/* <Typography variant="h4" align="center" gutterBottom>
@@ -160,7 +161,7 @@ function Referral() {
           </Paper>
 
           {/* Commission Calculation Card */}
-          <Paper
+          {/* <Paper
             elevation={3}
             sx={{
               p: 3,
@@ -181,26 +182,6 @@ function Referral() {
                     variant="outlined"
                     value={agentName}
                     onChange={(e) => setAgentName(e.target.value)}
-                  />
-                </Grid>
-                <Grid item xs={12} md={4}>
-                  <TextField
-                    fullWidth
-                    type="number"
-                    label="Property Type"
-                    variant="outlined"
-                    value={propertiesSold}
-                    onChange={(e) => setPropertiesSold(e.target.value)}
-                  />
-                </Grid>
-                <Grid item xs={12} md={4}>
-                  <TextField
-                    fullWidth
-                    type="number"
-                    label="Property Price"
-                    variant="outlined"
-                    value={propertiesSold}
-                    onChange={(e) => setPropertiesSold(e.target.value)}
                   />
                 </Grid>
                 <Grid item xs={12} md={4}>
@@ -238,24 +219,16 @@ function Referral() {
               >
                 Calculate
               </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                sx={{ mt: 3, ml:2 }}
-                onClick={calculateCommission}
-              >
-                Add
-              </Button>
             </Box>
             <Typography variant="h6" sx={{ mt: 3 }}>
               Total Commission Earned:{' '}
               <span style={{ color: '#28a745' }}>₹{totalCommission}</span>
             </Typography>
-          </Paper>
+          </Paper> */}
         </Container>
       </Box>
     </>
   );
 }
 
-export default Referral;
+export default PartnerReferral;

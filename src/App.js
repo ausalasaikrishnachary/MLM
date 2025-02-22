@@ -31,6 +31,7 @@ import AddLead from './Components/Panel/Admin/Investors/AddLead';
 import Leads from './Components/Panel/Partner/MyLeads/Leads'
 import PAddLead from './Components/Panel/Partner/MyLeads/AddLead'
 import Referral from "./Components/Panel/Admin/Referral/Referral";
+import PartnerReferral from "./Components/Panel/Partner/Referral/Referral";
 
 function App() {
   return (
@@ -72,6 +73,7 @@ function App() {
               <Route path="/p-profiledetails" element={<PartnerKyc/>} />
               <Route path="/p-leads" element={<Leads/>} />
               <Route path="/p-addleads" element={<PAddLead/>} />
+              <Route path="/p-referal&commission" element={<PartnerReferral/>} />
 
 
 

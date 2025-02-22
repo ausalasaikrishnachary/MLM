@@ -41,6 +41,7 @@ export default function PartnerHeader() {
     },
     { label: 'My Leads', path: '/p-leads' },
     { label: 'Report', path: '/p-report' },
+    { label: 'Referal & Commission', path: '/p-referal&commission' },
   ];
 
   // Responsive helper.

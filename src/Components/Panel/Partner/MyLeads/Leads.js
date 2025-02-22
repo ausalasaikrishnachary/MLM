@@ -67,7 +67,7 @@ const Tmanagement = () => {
   const getStatusColor = (status) => (status === "Active" ? "green" : "red");
 
   const columns = [
-    { field: "id", headerName: "Asset ID", width: 150 },
+    { field: "id", headerName: "Lead ID", width: 150 },
     { field: "name", headerName: "Lead Name", width: 200 },
     { field: "email", headerName: "Email", width: 250 },
     { field: "lastActive", headerName: "Last Active", width: 180 },
