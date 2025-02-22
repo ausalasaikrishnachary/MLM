@@ -30,6 +30,7 @@ import AdminKyc from "./Components/Panel/Admin/Profile/Kyc";
 import AddLead from './Components/Panel/Admin/Investors/AddLead';
 import Leads from './Components/Panel/Partner/MyLeads/Leads'
 import PAddLead from './Components/Panel/Partner/MyLeads/AddLead'
+import Referral from "./Components/Panel/Admin/Referral/Referral";
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
               <Route path="/a-partners" element={<PartnersDashboard />} />
               <Route path="/a-profile" element={<AdminProfile />} />
               <Route path="/a-profiledetails" element={<AdminKyc />} />
+              <Route path="/a-referal&commission" element={<Referral />} />
 
 
               <Route path="/i-dashboard" element={<InvestorDashboard />} />

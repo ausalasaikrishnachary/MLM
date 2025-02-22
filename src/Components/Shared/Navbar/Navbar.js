@@ -32,7 +32,7 @@ export default function Header() {
     { label: 'Transactions', path: '/a-transactionmoniter' },
     { label: 'Leads', path: '/a-investormanagement' },
     { label: 'Agents', path: '/a-partners' },
-    { label: 'KYC', path: '/a-profiledetails' },
+    { label: 'Referal & Commission', path: '/a-referal&commission' },
   ];
 
   const theme = useTheme();
