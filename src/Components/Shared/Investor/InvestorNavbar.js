@@ -38,6 +38,7 @@ export default function InvestorHeader() {
         // { label: 'Sell Shares', path: '/i-sellshares' },
       ],
     },
+    { label: 'Services', path: '/i-servies' },
   ];
 
   // Responsive helper.

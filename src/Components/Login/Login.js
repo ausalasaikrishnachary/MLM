@@ -51,7 +51,7 @@ const Login = () => {
                             <Link href="#" color="error">Forgot Password?</Link>
                         </Box>
                         <Button fullWidth variant="contained" sx={{ mt: 2, bgcolor: '#00cc8f', '&:hover': { bgcolor: '#004080', color: '#fff' } }} onClick={handleLogin}>Login</Button>
-                        <Typography align="center" sx={{ mt: 2 }}>Or Continue With</Typography>
+                        <Typography align="center" sx={{ mt: 2 }}>Or</Typography>
                         <Button fullWidth variant="outlined" startIcon={<GoogleIcon />} sx={{ mt: 2 }}>Continue with Google</Button>
                         <Typography align="center" sx={{ mt: 2 }}>Don't have an account? <Link href="#">Register for free</Link></Typography>
                     </Grid>

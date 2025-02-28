@@ -30,7 +30,7 @@ export default function Header() {
     { label: 'Dashboard', path: '/a-dashboard' },
     { label: 'Properties', path: '/a-asset' },
     { label: 'Transactions', path: '/a-transactionmoniter' },
-    { label: 'Leads', path: '/a-investormanagement' },
+    { label: 'All Leads', path: '/a-investormanagement' },
     { label: 'Agents', path: '/a-partners' },
     { label: 'Referal & Commission', path: '/a-referal&commission' },
   ];
