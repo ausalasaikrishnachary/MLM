@@ -40,7 +40,7 @@ const PartnerKyc = () => {
       >
         {/* Header */}
         <CardHeader
-          title="Investor Registration"
+          title=" Registration"
           sx={{
             backgroundColor: "rgb(30, 10, 80)",
             color: "white",
@@ -110,6 +110,10 @@ const PartnerKyc = () => {
                 size="small"
               />
             </Grid>
+
+                <Grid item xs={12} sm={4}>
+                            <TextField fullWidth placeholder="Referral ID (Sponsor ID)" variant="outlined" size="small" />
+                          </Grid>
           </Grid>
           <Divider sx={{ my: "10px", borderWidth: "0.5px" }} />
 
@@ -149,7 +153,7 @@ const PartnerKyc = () => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} sm={3}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 placeholder="City"
@@ -157,7 +161,7 @@ const PartnerKyc = () => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} sm={3}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 placeholder="ZIP Code"
@@ -323,31 +327,51 @@ const PartnerKyc = () => {
             KYC Verification
           </Typography>
           <Grid container spacing={2} alignItems="center">
-            <Grid
-              item
-              xs={12}
-              sm={6}
-              sx={{ display: "flex", alignItems: "center" }}
-            >
-              <Button
-                variant="outlined"
-                component="label"
-                sx={{ flex: 1, marginRight: "10px" }}
-              >
-                Upload File
-                <input type="file" hidden />
-              </Button>
-              <Button
-                variant="contained"
-                sx={{
-                  backgroundColor: "red",
-                  "&:hover": { backgroundColor: "darkred" },
-                }}
-              >
-                KYC
-              </Button>
-            </Grid>
-          </Grid>
+             <Grid item xs={12} sm={4}>
+                            <TextField fullWidth placeholder="PAN Number" variant="outlined" size="small" />
+                          </Grid>
+                          <Grid item xs={12} sm={4}>
+                            <TextField fullWidth placeholder="Aadhar Number" variant="outlined" size="small" />
+                          </Grid>
+                          <Grid item xs={12} sm={4}>
+                            <TextField fullWidth placeholder="GST Number (if applicable)" variant="outlined" size="small" />
+                          </Grid>
+                <Grid
+                       item
+                       xs={12}
+                       sm={4}
+                       sx={{ display: "flex", alignItems: "center" }}
+                     >
+                 <Button
+                             variant="outlined"
+                             component="label"
+                             sx={{ flex: 1, marginRight: "10px" }}
+                           >
+                             Upload File
+                             <input type="file" hidden />
+                           </Button>
+                          
+                           
+                         </Grid>
+             
+                          {/* Profile Photo Upload */}
+                          <Grid item xs={12} sm={4} sx={{ display: "flex", alignItems: "center" }}>
+                             <Button variant="outlined" component="label" sx={{ flex: 1 }}>
+                               Upload Profile Photo
+                               <input type="file" hidden />
+                             </Button>
+                           </Grid>
+             
+                           <Button
+                             variant="contained"
+                             sx={{
+                               backgroundColor: "green", marginTop:'10px', marginLeft:'100px',
+                               "&:hover": { backgroundColor: "green" },
+                             }}
+                           >
+                             KYC
+                           </Button>
+                       </Grid>
           <Divider sx={{ my: "10px", borderWidth: "0.5px" }} />
 
           {/* Terms & Conditions */}
