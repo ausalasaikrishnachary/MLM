@@ -32,6 +32,8 @@ import Leads from './Components/Panel/Partner/MyLeads/Leads'
 import PAddLead from './Components/Panel/Partner/MyLeads/AddLead'
 import Referral from "./Components/Panel/Admin/Referral/Referral";
 import PartnerReferral from "./Components/Panel/Partner/Referral/Referral";
+import AdminAssetForm from "./Components/Panel/Admin/Asset/AssetForm";
+
 
 function App() {
   return (
@@ -52,6 +54,7 @@ function App() {
               <Route path="/a-profile" element={<AdminProfile />} />
               <Route path="/a-profiledetails" element={<AdminKyc />} />
               <Route path="/a-referal&commission" element={<Referral />} />
+              <Route path="/a-addasset" element={<AdminAssetForm />} />
 
 
               <Route path="/i-dashboard" element={<InvestorDashboard />} />
