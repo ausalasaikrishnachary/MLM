@@ -33,6 +33,7 @@ import {
   Chart,
   Title,
 } from 'chart.js';
+import Header from "../../../Shared/Navbar/Navbar";
 
 
 
@@ -242,6 +243,8 @@ const AdminDashboard = () => {
     ],
   };
   return (
+    <>
+        <Header/>
     <Box sx={{ p: 2 }}>
       {/* Header */}
       <Box sx={{ bgcolor: "#fff", borderRadius: 2, p: 2, boxShadow: 1, mb: 2 }}>
@@ -549,6 +552,7 @@ const AdminDashboard = () => {
 
  
     </Box>
+    </>
   );
 };
 

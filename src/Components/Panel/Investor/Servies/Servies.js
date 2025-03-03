@@ -12,6 +12,7 @@ import { CheckCircle, Home, Handyman, Person, Info } from '@mui/icons-material';
 import { Box, Container, Typography, Button, Link, Grid } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebookF, faTwitter, faInstagram, faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
+import InvestorHeader from '../../../Shared/Investor/InvestorNavbar';
 
 const HeroSection = () => {
 
@@ -116,6 +117,7 @@ const HeroSection = () => {
 
   return (
     <>
+     <InvestorHeader />
     <Box
       sx={{
         background: 'linear-gradient(135deg, #3a6ea5 0%, #6c63ff 100%)',

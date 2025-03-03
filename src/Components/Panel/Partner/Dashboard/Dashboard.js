@@ -44,6 +44,7 @@ import {
   CalendarToday 
 } from "@mui/icons-material";
 import { Call, Email } from "@mui/icons-material";
+import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
 
 
 ChartJS.register(
@@ -113,6 +114,8 @@ const AgentDashboard = () => {
   ];
   
   return (
+    <>
+      <PartnerHeader />
     <Container maxWidth="xl" sx={{ py: 4 }}>
       {/* Header */}
       <Box sx={{ mb: 4 }}>
@@ -357,6 +360,7 @@ const AgentDashboard = () => {
         <FontAwesomeIcon icon={faLinkedin} />
       </Box>
     </Container>
+    </>
   );
 };
 
