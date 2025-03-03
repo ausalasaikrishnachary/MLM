@@ -1,260 +1,363 @@
 import React from 'react';
-import { Container, Grid, Card, CardContent, Typography, Box, Stack } from '@mui/material';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import DescriptionIcon from '@mui/icons-material/Description';
-import BuildIcon from '@mui/icons-material/Build';
-import { Bar, Line } from 'react-chartjs-2';
+import './Dashboard.css'
+import {
+  Box,
+  Container,
+  Grid,
+  Card,
+  CardContent,
+  CardHeader,
+  Typography,
+  Button,
+  Chip,
+  LinearProgress,
+  Avatar,
+  Badge,
+  CardMedia,
+
+} from '@mui/material';
+import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
   BarElement,
-  Title as ChartTitle,
+  Title,
   Tooltip,
   Legend,
-  LineElement,
-  PointElement,
 } from 'chart.js';
-import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faArrowUp,
+  faBuilding,
+  faUsers,
+  faRupeeSign,
+  faHome,
+  faPhone,
+  faEnvelope
+} from '@fortawesome/free-solid-svg-icons';
+import { faInstagram, faFacebook, faTwitter, faLinkedin } from '@fortawesome/free-brands-svg-icons';
+import { 
+  CurrencyRupee, 
+  Group, 
+  Search, 
+  CalendarToday 
+} from "@mui/icons-material";
+import { Call, Email } from "@mui/icons-material";
 
-// Register ChartJS components
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
-  ChartTitle,
+  Title,
   Tooltip,
-  Legend,
-  LineElement,
-  PointElement,
+  Legend
 );
 
-function Dashboard() {
-  // Data and options for the Asset Performance bar chart
-  const assetData = {
-    labels: ['Property A', 'Property B', 'Property C'],
+const AgentDashboard = () => {
+  // Chart Data
+  const chartData = {
+    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
     datasets: [
       {
-        data: [7500, 12000, 5000],
-        backgroundColor: 'rgba(138, 113, 255, 0.8)',
-        borderRadius: 6,
-        barThickness: 40,
+        label: 'New Properties',
+        data: [4, 3, 5, 7, 6, 3, 2],
+        backgroundColor: 'rgba(0, 123, 255, 0.6)',
+      },
+      {
+        label: 'Existing Properties',
+        data: [124, 128, 132, 139, 145, 148, 150],
+        backgroundColor: 'rgba(40, 167, 69, 0.6)',
       },
     ],
   };
 
-  const assetOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        grid: { color: 'rgba(0, 0, 0, 0.05)' },
-        ticks: { font: { size: 12 } },
-      },
-      x: {
-        grid: { display: false },
-        ticks: { font: { size: 12 } },
-      },
-    },
-  };
+  const tools = [
+    { icon: <CurrencyRupee color="primary" fontSize="large" />, title: "Commission Calculator", description: "Calculate your earnings" },
+    { icon: <Group color="success" fontSize="large" />, title: "Referral System", description: "Refer clients and earn" },
+    { icon: <Search color="warning" fontSize="large" />, title: "Lead Generator", description: "Find new clients" },
+    { icon: <CalendarToday color="error" fontSize="large" />, title: "Schedule Viewings", description: "Book client appointments" }
+  ];
 
-  // Data and options for the Revenue History line chart
-  const revenueData = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-    datasets: [
-      {
-        data: [22000, 25000, 27000, 25500, 29000, 31000],
-        borderColor: 'rgba(138, 113, 255, 0.8)',
-        backgroundColor: 'rgba(138, 113, 255, 0.1)',
-        tension: 0.4,
-        fill: true,
-        pointRadius: 4,
-        pointBackgroundColor: '#fff',
-        pointBorderColor: 'rgba(138, 113, 255, 0.8)',
-        pointBorderWidth: 2,
-      },
-    ],
-  };
 
-  const revenueOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        grid: { color: 'rgba(0, 0, 0, 0.05)' },
-        ticks: { font: { size: 12 } },
-      },
-      x: {
-        grid: { display: false },
-        ticks: { font: { size: 12 } },
-      },
-    },
-  };
 
+  const propertyListings = [
+    {
+      title: "Modern Apartment",
+      price: "₹425,000",
+      img: "https://media.istockphoto.com/id/1393537665/photo/modern-townhouse-design.jpg?s=612x612&w=0&k=20&c=vgQesOXDRzz0UfOZxmUtE-rFe75YgA9GvkKS8eeeumE=",
+      badges: ["New", "3 Bed", "2 Bath"],
+    },
+    {
+      title: "Suburban House",
+      price: "₹685,000",
+      img: "https://images.squarespace-cdn.com/content/v1/53dd6676e4b0fedfbc26ea91/b050385e-d2f4-4152-96e5-00c364e5ef18/2490861534_d220818fa4_o.jpg",
+      badges: ["New", "4 Bed", "3 Bath"],
+    },
+  ];
+  
+  const inquiries = [
+    {
+      name: "Hrithik",
+      status: "New",
+      message: "Interested in Modern Apartment",
+      time: "2 hours ago",
+    },
+    {
+      name: "Varun",
+      status: "Follow Up",
+      message: "Scheduled viewing for Suburban House",
+      time: "Yesterday at 4:30 PM",
+    },
+  ];
+  
   return (
-    <>
-      <PartnerHeader />
-      <Box
-        sx={{
-          backgroundImage:
-            "url('https://img.freepik.com/free-photo/contemporary-building-blur_23-2147694747.jpg')",
-          minHeight: '100vh',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          p: 2,
-        }}
-      >
-        <Container>
-          <Typography variant="h4" sx={{ color: '#100f0f', fontWeight: 700, mb: 4, pl: 2,textAlign:"center" }}>
-            Partner Dashboard
-          </Typography>
-          <Grid container spacing={3}>
-            {/* Left Column */}
-
-            <Grid item xs={12} md={8}>
-              <Grid container spacing={3}>
-                <Grid item xs={12}>
-                  <Card sx={{ borderRadius: '15px', boxShadow: 3 }}>
-                    <CardContent>
-                      <Typography variant="h6" sx={{ color: '#333', fontWeight: 600, mb: 2 }}>
-                        Asset Performance
-                      </Typography>
-                      <Box sx={{ height: 280 }}>
-                        <Bar data={assetData} options={assetOptions} />
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </Grid>
-                <Grid item xs={12}>
-                  <Card sx={{ borderRadius: '15px', boxShadow: 3 }}>
-                    <CardContent>
-                      <Typography variant="h6" sx={{ color: '#333', fontWeight: 600, mb: 2 }}>
-                        Revenue History
-                      </Typography>
-                      <Box sx={{ height: 280 }}>
-                        <Line data={revenueData} options={revenueOptions} />
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              </Grid>
-            </Grid>
-
-
-            {/* Right Column */}
-            <Grid item xs={12} md={4}>
-              <Stack spacing={3}>
-                {/* Required Actions Card */}
-                <Card sx={{ borderRadius: '15px', boxShadow: 3 }}>
-                  <CardContent>
-                    <Typography variant="h6" sx={{ color: '#333', fontWeight: 600, mb: 2 }}>
-                      Required Actions
-                    </Typography>
-                    <Stack spacing={2}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <AccessTimeIcon sx={{ fontSize: 24, color: '#5c6bc0' }} />
-                        <Box>
-                          <Typography variant="body1">
-                            Property inspection required for 123 Main St
-                          </Typography>
-                          <Typography variant="caption" sx={{ color: '#888' }}>
-                            Due: Oct 15
-                          </Typography>
-                        </Box>
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <DescriptionIcon sx={{ fontSize: 24, color: '#5c6bc0' }} />
-                        <Box>
-                          <Typography variant="body1">
-                            Document verification pending for new investor
-                          </Typography>
-                          <Typography variant="caption" sx={{ color: '#888' }}>
-                            Due: Oct 16
-                          </Typography>
-                        </Box>
-                      </Box>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <BuildIcon sx={{ fontSize: 24, color: '#5c6bc0' }} />
-                        <Box>
-                          <Typography variant="body1">
-                            Maintenance request needs approval
-                          </Typography>
-                          <Typography variant="caption" sx={{ color: '#888' }}>
-                            Due: Oct 18
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </Stack>
-                  </CardContent>
-                </Card>
-
-                {/* Financial Performance Card */}
-                <Card sx={{ borderRadius: '15px', boxShadow: 3 }}>
-                  <CardContent>
-                    <Typography variant="h6" sx={{ color: '#333', fontWeight: 600, mb: 2 }}>
-                      Financial Performance
-                    </Typography>
-                    <Box
-                      sx={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        borderBottom: '1px solid #f0f0f0',
-                        pb: 1,
-                      }}
-                    >
-                      <Typography variant="body2" sx={{ color: '#888' }}>
-                        Monthly Revenue
-                      </Typography>
-                      <Typography variant="h6" sx={{ color: '#444', fontWeight: 700 }}>
-                        25,000/-
-                      </Typography>
-                    </Box>
-                  </CardContent>
-                </Card>
-
-                {/* Asset Overview Card */}
-                <Card sx={{ borderRadius: '15px', boxShadow: 3 }}>
-                  <CardContent>
-                    <Typography variant="h6" sx={{ color: '#333', fontWeight: 600, mb: 2 }}>
-                      Asset Overview
-                    </Typography>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                      <Typography variant="body2" sx={{ color: '#888' }}>
-                        Total Assets
-                      </Typography>
-                      <Typography variant="h6" sx={{ color: '#444', fontWeight: 700 }}>
-                        12
-                      </Typography>
-                    </Box>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <Typography variant="body2" sx={{ color: '#888' }}>
-                        Active Listings
-                      </Typography>
-                      <Typography variant="h6" sx={{ color: '#444', fontWeight: 700 }}>
-                        8
-                      </Typography>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Stack>
-            </Grid>
-          </Grid>
-        </Container>
+    <Container maxWidth="xl" sx={{ py: 4 }}>
+      {/* Header */}
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" gutterBottom>
+          Agent Dashboard
+        </Typography>
       </Box>
-    </>
-  );
-}
 
-export default Dashboard;
+      {/* Top Metrics Row */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        {[
+          { title: 'Total Properties', value: '142', icon: faBuilding, trend: '8%' },
+          { title: 'Total Agents (Team)', value: '24', icon: faUsers, trend: '2 new' },
+          { title: 'Total Commission', value: '₹3.2M', icon: faRupeeSign, trend: '12%' },
+          { title: 'New Properties', value: '18', icon: faHome, trend: '5 more' },
+        ].map((metric, index) => (
+          <Grid item xs={12} sm={6} md={3} key={index}>
+            <Card sx={{ 
+              boxShadow: 3,
+              transition: 'transform 0.3s',
+              '&:hover': { transform: 'translateY(-5px)' }
+            }}>
+              <CardContent sx={{ textAlign: 'center' }}>
+                <FontAwesomeIcon icon={metric.icon} size="2x" color="#666" />
+                <Typography variant="h6" sx={{ mt: 1 }}>{metric.title}</Typography>
+                <Typography variant="h4" sx={{ my: 1 }}>{metric.value}</Typography>
+                <Typography color="text.secondary">
+                  <FontAwesomeIcon icon={faArrowUp} /> {metric.trend}
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+
+      {/* Second Metrics Row */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        {[
+          { title: 'Leads Generated', value: '38', trend: '12%' },
+          { title: 'Sales Closed', value: '9', trend: '5%' },
+          { title: 'Commissions Earned', value: '₹42,850', trend: '8%' },
+          { 
+            title: 'Monthly Goal', 
+            value: '78%',
+            progress: 78,
+            color: 'error' 
+          },
+        ].map((metric, index) => (
+          <Grid item xs={12} sm={6} md={3} key={index}>
+            <Card sx={{ boxShadow: 3 }}>
+              <CardContent sx={{ textAlign: 'center' }}>
+                <Typography variant="h6">{metric.title}</Typography>
+                <Typography variant="h4" sx={{ my: 1 }}>{metric.value}</Typography>
+                {metric.progress ? (
+                  <LinearProgress 
+                    variant="determinate" 
+                    value={metric.progress}
+                    color={metric.color}
+                    sx={{ height: 10, borderRadius: 5 }}
+                  />
+                ) : (
+                  <Typography color="text.secondary">
+                    <FontAwesomeIcon icon={faArrowUp} /> {metric.trend}
+                  </Typography>
+                )}
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+
+      {/* Chart & Stats Section */}
+      <Grid container spacing={3} sx={{ mb: 3 }}>
+        <Grid item xs={12} lg={8}>
+          <Card sx={{ boxShadow: 3 }}>
+            <CardHeader 
+              title="Property Statistics"
+              action={
+                <>
+                  <Button variant="outlined" size="small" sx={{ mr: 1 }}>Daily</Button>
+                  <Button variant="contained" size="small">Weekly</Button>
+                </>
+              }
+            />
+            <CardContent sx={{ height: 300 }}>
+              <Bar 
+                data={chartData}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false
+                }}
+              />
+            </CardContent>
+          </Card>
+        </Grid>
+        
+        <Grid item xs={12} lg={4}>
+          <Card sx={{ boxShadow: 3 }}>
+            <CardHeader title="Property Statistics" />
+            <CardContent>
+              <Grid container spacing={2}>
+                {[
+                  { title: "Today's New", value: 5 },
+                  { title: "Weekly New", value: 28 },
+                  { title: "Today's Viewings", value: 12 },
+                  { title: "Weekly Viewings", value: 64 },
+                  { title: "Today's Inquiries", value: 8 },
+                  { title: "Weekly Inquiries", value: 47 },
+                ].map((stat, index) => (
+                  <Grid item xs={6} key={index}>
+                    <Card variant="outlined">
+                      <CardContent>
+                        <Typography variant="body2">{stat.title}</Typography>
+                        <Typography variant="h6">{stat.value}</Typography>
+                      </CardContent>
+                    </Card>
+                    </Grid>
+
+                ))}
+              </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+
+
+      <Grid container spacing={4} mt={4}>
+      {/* Latest Property Listings */}
+      <Grid item xs={12} md={6}>
+        <Card>
+          <CardContent sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Typography variant="h6">Latest Property Listings</Typography>
+            <Button variant="outlined" size="small">View All</Button>
+          </CardContent>
+          <CardContent sx={{ p: 0 }}>
+            <Grid container spacing={2} justifyContent="center">
+              {propertyListings.map((property, index) => (
+                <Grid item xs={12} sm={6} key={index}>
+                  <Card sx={{ m: 1 }}>
+                    <CardMedia
+                      component="img"
+                      height="160"
+                      image={property.img}
+                      alt={property.title}
+                    />
+                    <CardContent>
+                      <Typography variant="subtitle1">{property.title}</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {property.price}
+                      </Typography>
+                      <Box mt={1}>
+                        {property.badges.map((badge, i) => (
+                          <Chip
+                            key={i}
+                            label={badge}
+                            color={i === 0 ? "success" : "info"}
+                            size="small"
+                            sx={{ mr: 0.5 }}
+                          />
+                        ))}
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          </CardContent>
+        </Card>
+      </Grid>
+
+      {/* Active Inquiries */}
+      <Grid item xs={12} md={6}>
+        <Card>
+          <CardContent sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Typography variant="h6">Active Inquiries</Typography>
+            <Button variant="outlined" size="small">View All</Button>
+          </CardContent>
+          <CardContent>
+            {inquiries.map((inquiry, index) => (
+              <Box key={index} p={2} sx={{ bgcolor: "background.default", borderRadius: 2, mb: 2 }}>
+                <Box display="flex" justifyContent="space-between">
+                  <Typography variant="subtitle1">{inquiry.name}</Typography>
+                  <Badge
+                    badgeContent={inquiry.status}
+                    color={inquiry.status === "New" ? "warning" : "info"}
+                  />
+                </Box>
+                <Typography variant="body2">{inquiry.message}</Typography>
+                <Typography variant="caption" color="text.secondary">{inquiry.time}</Typography>
+                <Box mt={1}>
+                  <Button variant="contained" size="small" startIcon={<Call />} sx={{ mr: 1 }}>
+                    Call
+                  </Button>
+                  <Button variant="outlined" size="small" startIcon={<Email />}>
+                    Email
+                  </Button>
+                </Box>
+              </Box>
+            ))}
+          </CardContent>
+        </Card>
+      </Grid>
+    </Grid>
+
+
+      <Box mt={4}>
+      <Card>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>
+            Quick Access Tools
+          </Typography>
+          <Grid container spacing={3} textAlign="center">
+            {tools.map((tool, index) => (
+              <Grid item xs={12} sm={6} md={3} key={index}>
+                <Card variant="outlined">
+                  <CardContent>
+                    <Box mb={1}>{tool.icon}</Box>
+                    <Typography variant="subtitle1">{tool.title}</Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      {tool.description}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </CardContent>
+      </Card>
+    </Box>
+
+      {/* Social Links */}
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        gap: 3,
+        mt: 4,
+        '& svg': { fontSize: 28, color: 'primary.main' }
+      }}>
+        <FontAwesomeIcon icon={faInstagram} />
+        <FontAwesomeIcon icon={faFacebook} />
+        <FontAwesomeIcon icon={faTwitter} />
+        <FontAwesomeIcon icon={faLinkedin} />
+      </Box>
+    </Container>
+  );
+};
+
+export default AgentDashboard;

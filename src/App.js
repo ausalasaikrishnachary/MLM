@@ -33,6 +33,8 @@ import PAddLead from './Components/Panel/Partner/MyLeads/AddLead'
 import Referral from "./Components/Panel/Admin/Referral/Referral";
 import PartnerReferral from "./Components/Panel/Partner/Referral/Referral";
 import AdminAssetForm from "./Components/Panel/Admin/Asset/AssetForm";
+import Services from "./Components/Panel/Investor/Servies/Servies";
+
 
 
 function App() {
@@ -63,6 +65,7 @@ function App() {
               <Route path="/i-sellshares" element={<SellShares />} />
               {/* <Route path="/i-asset" element={<PartnerAsset />} /> */}
               <Route path="/i-profile" element={<InvestorProfile />} />
+              <Route path="/i-servies" element={<Services />} />
               <Route path="/i-profiledetails" element={<Kyc />} />
 
 
