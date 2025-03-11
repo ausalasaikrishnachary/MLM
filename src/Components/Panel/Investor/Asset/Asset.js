@@ -378,7 +378,7 @@ const AssetsUI = () => {
 
   return (
     <>
-//       <InvestorHeader />
+      <InvestorHeader />
       <Container sx={{ py: 4 }}>
         <Typography variant="h4" sx={{ marginLeft: '10px', textAlign: "center" }}>
           Properties

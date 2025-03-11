@@ -269,6 +269,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import Header from '../../../Shared/Navbar/Navbar';
+import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
 
 const PartnerReferral = () => {
   const [commissionData, setCommissionData] = useState({
@@ -296,7 +297,7 @@ const PartnerReferral = () => {
 
   return (
     <>
-      <Header />
+      <PartnerHeader />
       <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
         {/* Header */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4,pt: 4 }}>
