@@ -1,283 +1,434 @@
-import React, { useState } from 'react';
-import {
-  AppBar,
+import { useState } from 'react';
+import { 
+  Container,
+  Grid,
+  Typography,
+  Paper,
   Tabs,
   Tab,
   Card,
   CardContent,
   CardActions,
-  Icon,
+  Button,
+  Box,
+  styled,
+  useTheme
 } from '@mui/material';
-import { CheckCircle, Home, Handyman, Person, Info } from '@mui/icons-material';
-import { Box, Container, Typography, Button, Link, Grid } from '@mui/material';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFacebookF, faTwitter, faInstagram, faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
-import InvestorHeader from '../../../Shared/Investor/InvestorNavbar';
+import {
+  Home,
+  Search,
+  CameraAlt,
+  ShowChart,
+  Calculate,
+  Description,
+  Forum,
+  Handshake,
+  Person,
+  CheckCircle,
+  Cancel,
+  Info,
+  Facebook,
+  Twitter,
+  Instagram,
+  LinkedIn
+} from '@mui/icons-material';
 
-const HeroSection = () => {
+// Styled Components
+const ServiceTabWrapper = styled(Paper)(({ theme }) => ({
+  borderRadius: 15,
+  overflow: 'hidden',
+  marginBottom: theme.spacing(4),
+  boxShadow: theme.shadows[5],
+}));
 
+const FeatureBox = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3),
+  height: '100%',
+  transition: 'transform 0.3s, box-shadow 0.3s',
+  '&:hover': {
+    transform: 'translateY(-5px)',
+    boxShadow: theme.shadows[10]
+  }
+}));
 
-  const [value, setValue] = useState(0);
+const SubscriptionCard = styled(Paper)(({ theme }) => ({
+  position: 'relative',
+  height: '100%',
+  overflow: 'hidden',
+  transition: 'transform 0.3s',
+  '&:hover': {
+    transform: 'translateY(-10px)'
+  }
+}));
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
+const subscriptionPlans = [
+  {
+    title: 'Basic',
+    price: '₹49',
+    period: '/month',
+    description: 'Perfect for new agents',
+    features: [
+      { text: '5 Property Listings', included: true },
+      { text: 'Basic Analytics', included: true },
+      { text: 'Email Support', included: true },
+      { text: 'Featured Listings', included: false },
+      { text: 'Client Management', included: false }
+    ],
+    popular: false
+  },
+  {
+    title: 'Professional',
+    price: '₹99',
+    period: '/month',
+    description: 'For growing agents',
+    features: [
+      { text: '20 Property Listings', included: true },
+      { text: 'Advanced Analytics', included: true },
+      { text: 'Priority Email Support', included: true },
+      { text: '5 Featured Listings', included: true },
+      { text: 'Basic Client Management', included: true }
+    ],
+    popular: true
+  },
+  {
+    title: 'Premium',
+    price: '₹199',
+    period: '/month',
+    description: 'For established agencies',
+    features: [
+      { text: 'Unlimited Listings', included: true },
+      { text: 'Premium Analytics', included: true },
+      { text: '24/7 Phone Support', included: true },
+      { text: '10 Featured Listings', included: true },
+      { text: 'Advanced Client Management', included: true }
+    ],
+    popular: false
+  }
+];
 
-  const services = [
-    {
-      title: 'Property Search',
-      description: 'Advanced filtering options to find your ideal property based on your specific requirements.',
-      icon: <Icon component={Home} />,
-    },
-    {
-      title: 'Virtual Tours',
-      description: 'Explore properties remotely with our immersive 3D virtual tours and high-quality photos.',
-      icon: <Icon component={Handyman} />,
-    },
-    {
-      title: 'Market Analysis',
-      description: 'Get insights into property values and market trends to make informed decisions.',
-      icon: <Icon component={Handyman} />,
-    },
-    {
-      title: 'Investment Calculator',
-      description: 'Estimate potential returns on your real estate investments with our advanced tools.',
-      icon: <Icon component={Handyman} />,
-    },
-    {
-      title: 'Document Management',
-      description: 'Secure storage and management of all your property-related documents in one place.',
-      icon: <Icon component={Handyman} />,
-    },
-    {
-      title: 'Consultation',
-      description: 'One-on-one consultations with experienced real estate professionals to guide you.',
-      icon: <Icon component={Handyman} />,
-    },
-  ];
+const features = [
+  { icon: <Search fontSize="large" />, title: 'Property Search', text: 'Advanced filtering options to find your ideal property based on your specific requirements.' },
+  { icon: <CameraAlt fontSize="large" />, title: 'Virtual Tours', text: 'Explore properties remotely with our immersive 3D virtual tours and high-quality photos.' },
+  { icon: <ShowChart fontSize="large" />, title: 'Market Analysis', text: 'Get insights into property values and market trends to make informed decisions.' },
+  { icon: <Calculate fontSize="large" />, title: 'Investment Calculator', text: 'Estimate potential returns on your real estate investments with our advanced tools.' },
+  { icon: <Description fontSize="large" />, title: 'Document Management', text: 'Secure storage and management of all your property-related documents in one place.' },
+  { icon: <Forum fontSize="large" />, title: 'Consultation', text: 'One-on-one consultations with experienced real estate professionals to guide you.' }
+];
 
-  const loanProcess = [
-    {
-      step: 'Initial Consultation',
-      description: 'Discuss your financial goals and requirements with our loan experts.',
-    },
-    {
-      step: 'Pre-Approval',
-      description: 'Get pre-approved to understand your budget and strengthen your offer.',
-    },
-    {
-      step: 'Lender Matching',
-      description: 'We match you with the lenders offering the best terms for your situation.',
-    },
-    {
-      step: 'Closing Support',
-      description: 'Guidance through the closing process ensuring a smooth transaction.',
-    },
-  ];
+const loanFeatures = [
+  'Personalized Mortgage Plans',
+  'Multiple Lender Network',
+  'Streamlined Application'
+];
 
-  const subscriptionPlans = [
-    {
-      title: 'Basic',
-      price: '₹49/month',
-      description: 'Perfect for new agents',
-      features: [
-        '5 Property Listings',
-        'Basic Analytics',
-        'Email Support',
-        'Featured Listings (No)',
-        'Client Management (No)',
-      ],
-    },
-    {
-      title: 'Professional',
-      price: '₹99/month',
-      description: 'For growing agents',
-      features: [
-        '20 Property Listings',
-        'Advanced Analytics',
-        'Priority Email Support',
-        '5 Featured Listings',
-        'Basic Client Management',
-      ],
-      popular: true,
-    },
-    {
-      title: 'Premium',
-      price: '₹199/month',
-      description: 'For established agencies',
-      features: [
-        'Unlimited Listings',
-        'Premium Analytics',
-        '24/7 Phone Support',
-        '10 Featured Listings',
-        'Advanced Client Management',
-      ],
-    },
-  ];
+const processSteps = [
+  { number: 1, title: 'Initial Consultation', text: 'Discuss your financial goals and requirements with our loan experts.' },
+  { number: 2, title: 'Pre-Approval', text: 'Get pre-approved to understand your budget and strengthen your offer.' },
+  { number: 3, title: 'Lender Matching', text: 'We match you with the lenders offering the best terms for your situation.' },
+  { number: 4, title: 'Closing Support', text: 'Guidance through the closing process ensuring a smooth transaction.' }
+];
+
+export default function ServiceModule() {
+  const [tabValue, setTabValue] = useState(0);
+  const theme = useTheme();
 
   return (
-    <>
-     <InvestorHeader />
-    <Box
-      sx={{
+    <Box>
+      {/* Hero Section */}
+      <Box sx={{
         background: 'linear-gradient(135deg, #3a6ea5 0%, #6c63ff 100%)',
         color: 'white',
-        padding: '20px 0',
-        borderRadius: '0 0 50px 50px',
-        marginBottom: '60px',
-      }}
-    >
-      <Container>
-        <Box display="flex" justifyContent="center">
-          <Box textAlign="center">
-            <Typography variant="h4" component="h4" sx={{ fontWeight: 'bold', mb: 4 }}>
-              Properties Services
-            </Typography>
-            <Typography variant="body1" component="body1" sx={{ mb: 5 }}>
-              Discover our extensive range of services designed to make your real estate journey seamless and successful.
-            </Typography>
-          </Box>
-        </Box>
-      </Container>
-    </Box>
-
-
-
-    <Box sx={{ mt: -10 }}>
-      <AppBar position="static">
-        <Tabs value={value} onChange={handleChange} variant="fullWidth">
-        <Tab label="Property Services" icon={<Home />} sx={{ color: value === 0 ? 'white' : 'inherit' }} />
-          <Tab label="Loan Assistance" icon={<Handyman />} sx={{ color: value === 1 ? 'white' : 'inherit' }} />
-          <Tab label="Agent Subscription" icon={<Person />} sx={{ color: value === 2 ? 'white' : 'inherit' }} />
-        </Tabs>
-      </AppBar>
-      <Box sx={{ p: 3 }}>
-        {value === 0 && (
-          <Grid container spacing={2}>
-            {services.map((service, index) => (
-              <Grid item xs={12} sm={6} md={4} key={index}>
-                <Card>
-                  <CardContent>
-                    <Typography variant="h6">{service.icon} {service.title}</Typography>
-                    <Typography variant="body2">{service.description}</Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-        )}
-        {value === 1 && (
-          <Box>
-            <Typography variant="h4">Comprehensive Loan Solutions</Typography>
-            <Typography variant="body1">
-              Our loan assistance program simplifies the financing process, helping you secure the best rates and terms for your property purchase.
-            </Typography>
-            {loanProcess.map((step, index) => (
-              <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <CheckCircle color="success" />
-                <Box sx={{ ml: 2 }}>
-                  <Typography variant="h6">{step.step}</Typography>
-                  <Typography variant="body2">{step.description}</Typography>
-                </Box>
-              </Box>
-            ))}
-            <Button variant="contained" color="primary">Apply for Loan Assistance</Button>
-          </Box>
-        )}
-        {value === 2 && (
-          <Box>
-            <Typography variant="h4">Agent Subscription Plans</Typography>
-            <Grid container spacing={2}>
-              {subscriptionPlans.map((plan, index) => (
-                <Grid item xs={12} sm={4} key={index}>
-                  <Card>
-                    <CardContent>
-                      {plan.popular && <Box sx={{ position: 'absolute', top: 0, right: 0, bgcolor: 'secondary.main', color: 'white', p: 1 }}>POPULAR</Box>}
-                      <Typography variant="h5">{plan.title}</Typography>
-                      <Typography variant="h6">{plan.price}</Typography>
-                      <Typography variant="body2">{plan.description}</Typography>
-                      <Box>
-                        {plan.features.map((feature, idx) => (
-                          <Typography key={idx} variant="body2" sx={{ display: 'flex', alignItems: 'center' }}>
-                            <CheckCircle color="success" sx={{ mr: 1 }} />
-                            {feature}
-                          </Typography>
-                        ))}
-                      </Box>
-                    </CardContent>
-                    <CardActions>
-                      <Button variant="outlined" color="primary">Get Started</Button>
-                    </CardActions>
-                  </Card>
-                </Grid>
-              ))}
+        py: 8,
+        borderRadius: { xs: '0 0 30px 30px', md: '0 0 50px 50px' },
+        mb: 8
+      }}>
+        <Container>
+          <Grid container justifyContent="center">
+            <Grid item xs={12} md={8} textAlign="center">
+              <Typography variant="h2" component="h1" gutterBottom sx={{ fontWeight: 700 }}>
+                Properties Services
+              </Typography>
+              <Typography variant="h5" component="p" sx={{ fontWeight: 400 }}>
+                Discover our extensive range of services designed to make your real estate journey seamless and successful.
+              </Typography>
             </Grid>
-            <Box sx={{ mt: 2, p: 2, bgcolor: 'rgba(108, 99, 255, 0.1)', borderLeft: '4px solid', borderColor: 'accent.main', borderRadius: 1 }}>
-              <Info sx={{ mr: 1 }} />
-              Subscription pricing remains the same across all locations. No hidden fees or location-based surcharges.
-            </Box>
-          </Box>
-        )}
+          </Grid>
+        </Container>
       </Box>
-    </Box>
 
-    <Container>
-      <Box
-        sx={{
+      {/* Service Tabs */}
+      <Container sx={{ mt: { xs: -6, md: -12 } }}>
+        <ServiceTabWrapper>
+          <Tabs
+            value={tabValue}
+            onChange={(e, newValue) => setTabValue(newValue)}
+            variant="scrollable"
+            scrollButtons="auto"
+            sx={{
+              '& .MuiTabs-indicator': {
+                height: 3
+              }
+            }}
+          >
+            <Tab label="Property Services" icon={<Home />} iconPosition="start" />
+            <Tab label="Loan Assistance" icon={<Handshake />} iconPosition="start" />
+            <Tab label="Agent Subscription" icon={<Person />} iconPosition="start" />
+          </Tabs>
+
+          {/* Property Services Tab */}
+          {tabValue === 0 && (
+            <Box p={3}>
+              <Grid container spacing={3}>
+                {features.map((feature, index) => (
+                  <Grid item xs={12} md={6} lg={4} key={index}>
+                    <FeatureBox>
+                      <Box sx={{
+                        width: 70,
+                        height: 70,
+                        bgcolor: 'rgba(58, 110, 165, 0.1)',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        mb: 2,
+                        color: '#3a6ea5'
+                      }}>
+                        {feature.icon}
+                      </Box>
+                      <Typography variant="h5" gutterBottom>
+                        {feature.title}
+                      </Typography>
+                      <Typography variant="body1" color="text.secondary">
+                        {feature.text}
+                      </Typography>
+                    </FeatureBox>
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+          )}
+
+          {/* Loan Assistance Tab */}
+          {tabValue === 1 && (
+            <Box p={3}>
+              <Grid container spacing={5} alignItems="center">
+                <Grid item xs={12} md={6}>
+                  <Typography variant="h3" gutterBottom>
+                    Comprehensive Loan Solutions
+                  </Typography>
+                  <Typography variant="h6" color="text.secondary" gutterBottom>
+                    Our loan assistance program simplifies the financing process, helping you secure the best rates and terms for your property purchase.
+                  </Typography>
+                  
+                  {loanFeatures.map((feature, index) => (
+                    <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                      <CheckCircle color="success" sx={{ fontSize: 28, mr: 2 }} />
+                      <Box>
+                        <Typography variant="h6">{feature}</Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {index === 0 && 'Tailored financing solutions based on your financial profile.'}
+                          {index === 1 && 'Access to a wide range of lenders for competitive options.'}
+                          {index === 2 && 'Simplified paperwork and guided application process.'}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  ))}
+                </Grid>
+
+                <Grid item xs={12} md={6}>
+                  <Paper sx={{ p: 4, borderRadius: 3, boxShadow: 3 }}>
+                    <Typography variant="h4" gutterBottom>
+                      Our Loan Process
+                    </Typography>
+                    {processSteps.map((step, index) => (
+                      <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                        <Box sx={{
+                          width: 50,
+                          height: 50,
+                          bgcolor: 'primary.main',
+                          color: 'white',
+                          borderRadius: '50%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          mr: 2,
+                          flexShrink: 0
+                        }}>
+                          {step.number}
+                        </Box>
+                        <Box>
+                          <Typography variant="h6">{step.title}</Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {step.text}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    ))}
+                  </Paper>
+                </Grid>
+              </Grid>
+
+              <Box textAlign="center" mt={5}>
+                <Button variant="contained" size="large" sx={{ 
+                  px: 6,
+                  py: 1.5,
+                  borderRadius: 5,
+                  fontSize: '1.1rem'
+                }}>
+                  Apply for Loan Assistance
+                </Button>
+              </Box>
+            </Box>
+          )}
+
+          {/* Subscription Tab */}
+          {tabValue === 2 && (
+            <Box p={3}>
+              <Box textAlign="center" mb={5}>
+                <Typography variant="h3" gutterBottom>
+                  Agent Subscription Plans
+                </Typography>
+                <Typography variant="h6" color="text.secondary">
+                  Choose the right plan for your real estate business needs
+                </Typography>
+              </Box>
+
+              <Grid container spacing={3}>
+                {subscriptionPlans.map((plan, index) => (
+                  <Grid item xs={12} md={4} key={index}>
+                    <SubscriptionCard>
+                      {plan.popular && (
+                        <Box sx={{
+                          position: 'absolute',
+                          top: 0,
+                          right: 0,
+                          bgcolor: 'secondary.main',
+                          color: 'white',
+                          px: 2,
+                          py: 1,
+                          borderRadius: '0 0 0 15px',
+                          fontSize: '0.875rem',
+                          fontWeight: 700
+                        }}>
+                          POPULAR
+                        </Box>
+                      )}
+                      <CardContent>
+                        <Typography variant="h5" gutterBottom>
+                          {plan.title}
+                        </Typography>
+                        <Typography variant="h2" sx={{ color: 'primary.main' }}>
+                          {plan.price}
+                          <Typography component="span" variant="body1" color="text.secondary">
+                            {plan.period}
+                          </Typography>
+                        </Typography>
+                        <Typography variant="body1" color="text.secondary" gutterBottom>
+                          {plan.description}
+                        </Typography>
+                        <Box sx={{ mt: 3 }}>
+                          {plan.features.map((feature, idx) => (
+                            <Box key={idx} sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                              {feature.included ? (
+                                <CheckCircle color="success" sx={{ mr: 1.5 }} />
+                              ) : (
+                                <Cancel color="error" sx={{ mr: 1.5 }} />
+                              )}
+                              <Typography variant="body2">
+                                {feature.text}
+                              </Typography>
+                            </Box>
+                          ))}
+                        </Box>
+                      </CardContent>
+                      <CardActions sx={{ p: 2 }}>
+                        <Button 
+                          fullWidth 
+                          variant={plan.popular ? 'contained' : 'outlined'}
+                          color={plan.popular ? 'secondary' : 'primary'}
+                          sx={{ borderRadius: 5, py: 1.5 }}
+                        >
+                          Get Started
+                        </Button>
+                      </CardActions>
+                    </SubscriptionCard>
+                  </Grid>
+                ))}
+              </Grid>
+
+              <Box sx={{
+                bgcolor: 'rgba(108, 99, 255, 0.1)',
+                borderLeft: '4px solid #6c63ff',
+                p: 2,
+                borderRadius: 1,
+                mt: 3,
+                display: 'flex',
+                alignItems: 'center'
+              }}>
+                <Info color="primary" sx={{ mr: 2 }} />
+                <Typography variant="body2" fontStyle="italic">
+                  Subscription pricing remains the same across all locations. No hidden fees or location-based surcharges.
+                </Typography>
+              </Box>
+            </Box>
+          )}
+        </ServiceTabWrapper>
+      </Container>
+
+      {/* CTA Section */}
+      <Container sx={{ mb: 8 }}>
+        <Paper sx={{
           background: 'linear-gradient(135deg, #2d3748 0%, #1a202c 100%)',
           color: 'white',
-          borderRadius: '15px',
-          padding: '60px 40px',
-          marginBottom: '60px',
-        }}
-      >
-        <Box display="flex" alignItems="center">
-          <Box sx={{ flex: 1, mb: 4 }}>
-            <Typography variant="h4" component="h4" sx={{ mb: 3 }}>
-              Ready to Get Started?
-            </Typography>
-            <Typography variant="body1" component="body1" sx={{ mb: 0 }}>
-              Join thousands of satisfied clients who have transformed their real estate experience with our premium services.
-            </Typography>
-          </Box>
-          <Box textAlign="right">
-            <Button variant="contained" color="light" size="large" href="#" sx={{ px: 4, background:'white', color:'black' }}>
-              Contact Us Today
-            </Button>
-          </Box>
-        </Box>
-      </Box>
-    </Container>
-
-    <Box sx={{ backgroundColor: 'black', color: 'white', py: 4 }}>
-      <Container>
-        <Grid container spacing={2}>
-          <Grid item md={6}>
-            <Typography variant="body2" sx={{ mb: 0 }}>
-              © 2025 Premium Real Estate Services. All rights reserved.
-            </Typography>
+          p: 6,
+          borderRadius: 3,
+          boxShadow: 3
+        }}>
+          <Grid container alignItems="center" spacing={3}>
+            <Grid item xs={12} md={8}>
+              <Typography variant="h3" gutterBottom>
+                Ready to Get Started?
+              </Typography>
+              <Typography variant="h6">
+                Join thousands of satisfied clients who have transformed their real estate experience with our premium services.
+              </Typography>
+            </Grid>
+            <Grid item xs={12} md={4} sx={{ textAlign: { md: 'right' } }}>
+              <Button 
+                variant="contained" 
+                color="secondary" 
+                size="large"
+                sx={{ borderRadius: 5, px: 4, py: 1.5 }}
+              >
+                Contact Us Today
+              </Button>
+            </Grid>
           </Grid>
-          <Grid item md={6} textAlign="right">
-            <Link href="#" color="inherit" sx={{ mr: 3 }}>
-              <FontAwesomeIcon icon={faFacebookF} />
-            </Link>
-            <Link href="#" color="inherit" sx={{ mr: 3 }}>
-              <FontAwesomeIcon icon={faTwitter} />
-            </Link>
-            <Link href="#" color="inherit" sx={{ mr: 3 }}>
-              <FontAwesomeIcon icon={faInstagram} />
-            </Link>
-            <Link href="#" color="inherit">
-              <FontAwesomeIcon icon={faLinkedinIn} />
-            </Link>
-          </Grid>
-        </Grid>
+        </Paper>
       </Container>
+
+      {/* Footer */}
+      <Box sx={{ bgcolor: 'background.paper', py: 4 }}>
+        <Container>
+          <Grid container spacing={3} alignItems="center">
+            <Grid item xs={12} md={6}>
+              <Typography variant="body2">
+                © 2025 Premium Real Estate Services. All rights reserved.
+              </Typography>
+            </Grid>
+            <Grid item xs={12} md={6} sx={{ 
+              display: 'flex',
+              justifyContent: { xs: 'flex-start', md: 'flex-end' },
+              gap: 3
+            }}>
+              <Facebook fontSize="small" />
+              <Twitter fontSize="small" />
+              <Instagram fontSize="small" />
+              <LinkedIn fontSize="small" />
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
     </Box>
-
-    </>
-    
   );
-};
-
-export default HeroSection;
+}
