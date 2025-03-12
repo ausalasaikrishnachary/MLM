@@ -202,7 +202,7 @@ const AdminDashboard = () => {
       data: [45, 20, 15, 10, 10],
       backgroundColor: ['#3498db', '#2ecc71', '#f1c40f', '#e74c3c', '#9b59b6'],
       borderColor: '#ffffff',
-      borderWidth: 2,
+      borderWidth: 1,
     }],
   };
 
@@ -246,13 +246,7 @@ const AdminDashboard = () => {
     <>
         <Header/>
     <Box sx={{ p: 2 }}>
-      {/* Header */}
-      <Box sx={{ bgcolor: "#fff", borderRadius: 2, p: 2, boxShadow: 1, mb: 2 }}>
-        <Typography variant="h5" fontWeight={500}>
-          Admin Dashboard
-        </Typography>
-      </Box>
-
+     
       {/* Metrics Cards */}
       <Grid container spacing={3}>
         {metrics.map((metric, index) => (
@@ -361,7 +355,7 @@ const AdminDashboard = () => {
                   }}>
                     {stat.title}
                   </Typography>
-                  <Typography variant="h6" sx={{ 
+                  <Typography  sx={{ 
                     fontWeight: 700,
                     color: '#2c3e50',
                     fontSize: '1.125rem'
@@ -385,12 +379,12 @@ const AdminDashboard = () => {
           />
           <CardContent sx={{ p: 0 }}>
             {activityData.map((activity, index) => (
-              <Box key={index} display="flex" alignItems="center" p={2} sx={{ borderBottom: '1px solid #f0f4f8' }}>
+              <Box key={index} display="flex" alignItems="center" p={2} >
                 <Box sx={{ width: 36, height: 36, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: activity.color }}>
                   <FontAwesomeIcon icon={activity.icon} color="blue" />
                 </Box>
                 <Box sx={{ flex: 1, ml: 2 }}>
-                  <Typography variant="subtitle2" fontWeight="600">{activity.title}</Typography>
+                  <Typography  fontWeight="600">{activity.title}</Typography>
                   <Typography variant="body2" color="text.secondary">{activity.time}</Typography>
                 </Box>
               </Box>
@@ -456,7 +450,7 @@ const AdminDashboard = () => {
                   >
                     {action.icon}
                   </Box>
-                  <Typography variant="subtitle1" fontWeight={600} color="text.primary">
+                  <Typography  fontWeight={600} color="text.primary">
                     {action.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -483,9 +477,9 @@ const AdminDashboard = () => {
             <Table sx={{ minWidth: 600 }}>
               {/* Table Header */}
               <TableHead>
-                <TableRow sx={{ backgroundColor: "#ad4049" }}>
+                <TableRow sx={{ backgroundColor: "#white" }}>
                   {["Property", "Location", "Price", "Listed By", "Status", "Actions"].map((header) => (
-                    <TableCell key={header} sx={{ fontWeight: "bold", color: "#fff", fontSize: "13px", py: 1.5 }}>
+                    <TableCell key={header} sx={{ fontWeight: "bold", color: "#black", fontSize: "13px", py: 1.5 }}>
                       {header}
                     </TableCell>
                   ))}

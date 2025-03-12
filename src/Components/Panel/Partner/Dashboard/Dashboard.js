@@ -133,14 +133,15 @@ const AgentDashboard = () => {
           { title: 'New Properties', value: '18', icon: faHome, trend: '5 more' },
         ].map((metric, index) => (
           <Grid item xs={12} sm={6} md={3} key={index}>
-            <Card sx={{ 
+            <Card sx={{
+              borderRadius:"15px",
               boxShadow: 3,
               transition: 'transform 0.3s',
               '&:hover': { transform: 'translateY(-5px)' }
             }}>
               <CardContent sx={{ textAlign: 'center' }}>
                 <FontAwesomeIcon icon={metric.icon} size="2x" color="#666" />
-                <Typography variant="h6" sx={{ mt: 1 }}>{metric.title}</Typography>
+                <Typography sx={{ mt: 1 }}>{metric.title}</Typography>
                 <Typography variant="h4" sx={{ my: 1 }}>{metric.value}</Typography>
                 <Typography color="text.secondary">
                   <FontAwesomeIcon icon={faArrowUp} /> {metric.trend}
@@ -165,9 +166,9 @@ const AgentDashboard = () => {
           },
         ].map((metric, index) => (
           <Grid item xs={12} sm={6} md={3} key={index}>
-            <Card sx={{ boxShadow: 3 }}>
+            <Card sx={{ boxShadow: 3 ,borderRadius:"15px" ,height:"150px"}}>
               <CardContent sx={{ textAlign: 'center' }}>
-                <Typography variant="h6">{metric.title}</Typography>
+                <Typography >{metric.title}</Typography>
                 <Typography variant="h4" sx={{ my: 1 }}>{metric.value}</Typography>
                 {metric.progress ? (
                   <LinearProgress 
@@ -229,7 +230,7 @@ const AgentDashboard = () => {
                     <Card variant="outlined">
                       <CardContent>
                         <Typography variant="body2">{stat.title}</Typography>
-                        <Typography variant="h6">{stat.value}</Typography>
+                        <Typography >{stat.value}</Typography>
                       </CardContent>
                     </Card>
                     </Grid>
@@ -247,7 +248,7 @@ const AgentDashboard = () => {
       <Grid item xs={12} md={6}>
         <Card>
           <CardContent sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Typography variant="h6">Latest Property Listings</Typography>
+            <Typography >Latest Property Listings</Typography>
             <Button variant="outlined" size="small">View All</Button>
           </CardContent>
           <CardContent sx={{ p: 0 }}>
@@ -262,7 +263,7 @@ const AgentDashboard = () => {
                       alt={property.title}
                     />
                     <CardContent>
-                      <Typography variant="subtitle1">{property.title}</Typography>
+                      <Typography >{property.title}</Typography>
                       <Typography variant="body2" color="text.secondary">
                         {property.price}
                       </Typography>
@@ -290,14 +291,14 @@ const AgentDashboard = () => {
       <Grid item xs={12} md={6}>
         <Card>
           <CardContent sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Typography variant="h6">Active Inquiries</Typography>
+            <Typography >Active Inquiries</Typography>
             <Button variant="outlined" size="small">View All</Button>
           </CardContent>
           <CardContent>
             {inquiries.map((inquiry, index) => (
               <Box key={index} p={2} sx={{ bgcolor: "background.default", borderRadius: 2, mb: 2 }}>
                 <Box display="flex" justifyContent="space-between">
-                  <Typography variant="subtitle1">{inquiry.name}</Typography>
+                  <Typography >{inquiry.name}</Typography>
                   <Badge
                     badgeContent={inquiry.status}
                     color={inquiry.status === "New" ? "warning" : "info"}
@@ -324,7 +325,7 @@ const AgentDashboard = () => {
       <Box mt={4}>
       <Card>
         <CardContent>
-          <Typography variant="h6" gutterBottom>
+          <Typography  gutterBottom>
             Quick Access Tools
           </Typography>
           <Grid container spacing={3} textAlign="center">
@@ -333,7 +334,7 @@ const AgentDashboard = () => {
                 <Card variant="outlined">
                   <CardContent>
                     <Box mb={1}>{tool.icon}</Box>
-                    <Typography variant="subtitle1">{tool.title}</Typography>
+                    <Typography >{tool.title}</Typography>
                     <Typography variant="body2" color="textSecondary">
                       {tool.description}
                     </Typography>

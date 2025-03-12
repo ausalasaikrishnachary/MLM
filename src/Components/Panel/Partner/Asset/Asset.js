@@ -839,7 +839,7 @@ const AssetDashboard = () => {
             <Grid item xs={12} md={4} key={index}>
               <Card
                 sx={{
-                  backgroundColor: "#f8f9fa",
+                  backgroundColor: "#ffffff",
                   textAlign: "center",
                   p: 2,
                   borderRadius: 2,
@@ -847,7 +847,7 @@ const AssetDashboard = () => {
                 }}
               >
                 <CardContent>
-                  <Typography variant="h6" gutterBottom>
+                  <Typography  gutterBottom>
                     {card.title}
                   </Typography>
                   <Typography variant="h4" sx={{ color: "rgb(30,10,80)" }}>

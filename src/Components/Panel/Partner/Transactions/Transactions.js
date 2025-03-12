@@ -33,7 +33,7 @@ const Transaction = () => {
                         sx={{ width: 50, height: 50, mr: 2 }}
                     />
                     <Box>
-                        <Typography variant="h6">ABC</Typography>
+                        <Typography >ABC</Typography>
                         <Typography variant="body2" color="text.secondary">
                             Partner since 2024
                         </Typography>
@@ -68,7 +68,7 @@ const Transaction = () => {
                                 }}
                             >
                                 <CardContent>
-                                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                                    <Typography color="text.secondary" gutterBottom>
                                         {stat.title}
                                     </Typography>
                                     <Typography variant="h5" component="div" gutterBottom>
@@ -82,7 +82,7 @@ const Transaction = () => {
                 </Grid>
 
                 {/* Assets Section */}
-                <Typography variant="h6" sx={{ mb: 3 }}>
+                <Typography  sx={{ mb: 3 }}>
                     Your Assets
                 </Typography>
                 <Grid container spacing={4} sx={{ mb: 4 }}>
@@ -109,7 +109,7 @@ const Transaction = () => {
                                             mb: 2,
                                         }}
                                     >
-                                        <Typography variant="subtitle1">{asset.name}</Typography>
+                                        <Typography >{asset.name}</Typography>
                                         <InsertDriveFileIcon color="action" />
                                     </Box>
                                     <Typography variant="h5" component="div" gutterBottom>
@@ -125,7 +125,7 @@ const Transaction = () => {
                 </Grid>
 
                 {/* Recent Transactions */}
-                <Typography variant="h6" sx={{ mb: 3 }}>
+                <Typography  sx={{ mb: 3 }}>
                     Recent Transactions
                 </Typography>
                 <Card sx={{ borderRadius: '15px', boxShadow: 3 }}>
@@ -142,8 +142,8 @@ const Transaction = () => {
                                                 key={index}
                                                 align="center"
                                                 sx={{
-                                                    backgroundColor: '#3a575b',
-                                                    color: '#fff',
+                                                    backgroundColor: '#ffff',
+                                                    color: '#black',
                                                     fontWeight: '500',
                                                     position: 'sticky',
                                                     top: 0,

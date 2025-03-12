@@ -517,19 +517,24 @@ const PartnersDashboard = () => {
         </Box>
       )
     },
-    { 
-      field: 'actions', 
-      headerName: 'Actions', 
-      minWidth: 120, 
-      flex: 1,
+    {
+      field: "actions",
+      headerName: "Actions",
+      width: 150,
       sortable: false,
       renderCell: () => (
-        <>
-          <IconButton size="small"><VisibilityIcon /></IconButton>
-          <IconButton size="small"><EditIcon /></IconButton>
-          <IconButton size="small"><DeleteIcon /></IconButton>
-        </>
-      )
+        <Box sx={{ display: "flex", gap: "5px" }}>
+          <IconButton size="small" color="primary">
+            <VisibilityIcon />
+          </IconButton>
+          <IconButton size="small" color="primary">
+            <EditIcon />
+          </IconButton>
+          <IconButton size="small" color="error">
+            <DeleteIcon />
+          </IconButton>
+        </Box>
+      ),
     },
     
   ];
@@ -566,7 +571,7 @@ const PartnersDashboard = () => {
       <Box
         sx={{
           minHeight: '100vh',
-          background: 'linear-gradient(135deg, #f5f7fa 0%, #e4e7eb 100%)',
+          background: 'linear-gradient(135deg,rgb(255, 255, 255) 0%,rgb(255, 255, 255) 100%)',
           p: 2,
         }}
       >
@@ -601,7 +606,8 @@ const PartnersDashboard = () => {
             {tabValue === 0 && (
               <Grid container spacing={2}>
                 {/* Pending Reviews Card */}
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={6}>
+
                   <Card
                     sx={{
                       borderRadius: '15px',
@@ -612,7 +618,7 @@ const PartnersDashboard = () => {
                   >
                     <CardContent>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                        <Typography variant="h6">Pending Reviews</Typography>
+                        <Typography >Pending Reviews</Typography>
                         <Box
                           sx={{
                             backgroundColor: '#ffc107',
@@ -696,7 +702,8 @@ const PartnersDashboard = () => {
                   </Card>
                 </Grid>
                 {/* Active Partners Card */}
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={6}>
+
                   <Card
                     sx={{
                       borderRadius: '15px',
@@ -707,7 +714,7 @@ const PartnersDashboard = () => {
                   >
                     <CardContent>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                        <Typography variant="h6">Active Agents</Typography>
+                        <Typography >Active Agents</Typography>
                         <Box
                           sx={{
                             backgroundColor: '#28a745',
@@ -785,7 +792,7 @@ const PartnersDashboard = () => {
                   </Card>
                 </Grid>
                 {/* Performance Overview Card */}
-                <Grid item xs={12} md={4}>
+                {/* <Grid item xs={12} md={4}>
                   <Card
                     sx={{
                       borderRadius: '15px',
@@ -795,35 +802,15 @@ const PartnersDashboard = () => {
                     }}
                     style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }}
                   >
-                    <CardContent>
-                      <Typography variant="h6" sx={{ mb: 2 }}>Performance Overview</Typography>
-                      <Box sx={{ mb: 2 }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <Typography variant="body1">Average Rating</Typography>
-                          <Typography variant="h6">4.5</Typography>
-                        </Box>
-                        <Box sx={{ height: 8, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.3)' }}>
-                          <Box sx={{ width: '90%', height: '100%', backgroundColor: '#fff' }} />
-                        </Box>
-                      </Box>
-                      <Box>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <Typography variant="body1">Total Agents</Typography>
-                          <Typography variant="h6">3</Typography>
-                        </Box>
-                        <Box sx={{ height: 8, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.3)' }}>
-                          <Box sx={{ width: '60%', height: '100%', backgroundColor: '#fff' }} />
-                        </Box>
-                      </Box>
-                    </CardContent>
+                   
                   </Card>
-                </Grid>
+                </Grid> */}
               </Grid>
             )}
             {tabValue === 1 && (
               <Box>
                 {/* Search & Filter Section */}
-                <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'center' }}>
+                <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'center', justifyContent: "right"}}>
                   <TextField
                     variant="outlined"
                     placeholder="Search..."
@@ -841,7 +828,7 @@ const PartnersDashboard = () => {
                     <MenuItem value="rating">Rating</MenuItem>
                     <MenuItem value="name">Name</MenuItem>
                   </Select>
-                  <Button variant="outlined" color="success">
+                  <Button variant="outlined" color="primary">
                     Filters
                   </Button>
                 </Box>
@@ -850,7 +837,7 @@ const PartnersDashboard = () => {
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mt: 2, gap: 1 }}>
                   <Button
                     variant="contained"
-                    color="success"
+                    color="primary"
                     disabled={page === 1}
                     onClick={() => setPage(page - 1)}
                   >
@@ -858,7 +845,7 @@ const PartnersDashboard = () => {
                   </Button>
                   <Box
                     sx={{
-                      border: '1px solid #28a745',
+                     
                       px: 2,
                       py: 1,
                       borderRadius: 1,
@@ -870,7 +857,7 @@ const PartnersDashboard = () => {
                   </Box>
                   <Button
                     variant="contained"
-                    color="success"
+                    color="primary"
                     disabled={page === totalPages}
                     onClick={() => setPage(page + 1)}
                   >

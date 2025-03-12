@@ -399,7 +399,7 @@ const PartnerReferral = () => {
           <Grid item xs={12}>
             <Card sx={{ p: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography variant="h6">Agent Performance Tracker</Typography>
+                <Typography >Agent Performance Tracker</Typography>
                 <Button variant="contained" startIcon={<PersonAddIcon />}>
                   Add Agent
                 </Button>
@@ -407,14 +407,14 @@ const PartnerReferral = () => {
               <TableContainer component={Paper}>
                 <Table>
                   <TableHead>
-                    <TableRow sx={{ backgroundColor: 'primary.main' }}>
-                      <TableCell sx={{ color: '#fff' }}>Agent Name</TableCell>
-                      <TableCell sx={{ color: '#fff' }}>Properties Sold</TableCell>
-                      <TableCell sx={{ color: '#fff' }}>Commission Rate</TableCell>
-                      <TableCell sx={{ color: '#fff' }}>Total Earned</TableCell>
-                      <TableCell sx={{ color: '#fff' }}>Tier Status</TableCell>
-                      <TableCell sx={{ color: '#fff' }}>Progress to Next Tier</TableCell>
-                      <TableCell sx={{ color: '#fff' }}>Actions</TableCell>
+                    <TableRow sx={{ backgroundColor: 'white' }}>
+                      <TableCell sx={{ color: '#black' }}>Agent Name</TableCell>
+                      <TableCell sx={{ color: '#black' }}>Properties Sold</TableCell>
+                      <TableCell sx={{ color: '#black' }}>Commission Rate</TableCell>
+                      <TableCell sx={{ color: '#black' }}>Total Earned</TableCell>
+                      <TableCell sx={{ color: '#black' }}>Tier Status</TableCell>
+                      <TableCell sx={{ color: '#black' }}>Progress to Next Tier</TableCell>
+                      <TableCell sx={{ color: '#black' }}>Actions</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -433,7 +433,7 @@ const PartnerReferral = () => {
                       <TableCell>12</TableCell>
                       <TableCell>3%</TableCell>
                       <TableCell>
-                        <Typography variant="subtitle1" sx={{ color: 'success.main', fontWeight: 'bold' }}>
+                        <Typography  sx={{ color: 'success.main', fontWeight: 'bold' }}>
                           ₹12,000
                         </Typography>
                       </TableCell>
@@ -476,7 +476,7 @@ const PartnerReferral = () => {
                       <TableCell>8</TableCell>
                       <TableCell>2.5%</TableCell>
                       <TableCell>
-                        <Typography variant="subtitle1" sx={{ color: 'success.main', fontWeight: 'bold' }}>
+                        <Typography  sx={{ color: 'success.main', fontWeight: 'bold' }}>
                           ₹8,000
                         </Typography>
                       </TableCell>
@@ -519,7 +519,7 @@ const PartnerReferral = () => {
                       <TableCell>20</TableCell>
                       <TableCell>4%</TableCell>
                       <TableCell>
-                        <Typography variant="subtitle1" sx={{ color: 'success.main', fontWeight: 'bold' }}>
+                        <Typography  sx={{ color: 'success.main', fontWeight: 'bold' }}>
                           ₹20,000
                         </Typography>
                       </TableCell>
@@ -556,7 +556,7 @@ const PartnerReferral = () => {
           {/* Commission Calculator & Recent Updates */}
           <Grid item xs={12} md={8}>
             <Card sx={{ p: 2 }}>
-              <Typography variant="h6" gutterBottom>
+              <Typography  gutterBottom>
                 Commission Calculator
               </Typography>
               <Grid container spacing={2}>
@@ -612,7 +612,7 @@ const PartnerReferral = () => {
                 </Grid>
               </Grid>
               <Box sx={{ mt: 2 }}>
-                <Typography variant="h6">
+                <Typography >
                   Calculated Commission:{' '}
                   <span style={{ color: '#198754' }}>₹{calculatedCommission}</span>
                 </Typography>
@@ -622,7 +622,7 @@ const PartnerReferral = () => {
 
           <Grid item xs={12} md={4}>
             <Card sx={{ p: 2 }}>
-              <Typography variant="h6" gutterBottom>
+              <Typography  gutterBottom>
                 Recent Updates
               </Typography>
               {/* Notification Card 1 */}
@@ -638,7 +638,7 @@ const PartnerReferral = () => {
               >
                 <EmojiEventsIcon sx={{ color: 'warning.main', mr: 1 }} />
                 <Box>
-                  <Typography variant="subtitle2">
+                  <Typography >
                     <strong>Smita achieved Gold tier!</strong>
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
@@ -659,7 +659,7 @@ const PartnerReferral = () => {
               >
                 <HomeIcon sx={{ color: 'success.main', mr: 1 }} />
                 <Box>
-                  <Typography variant="subtitle2">
+                  <Typography >
                     <strong>New property sale recorded</strong>
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
@@ -680,7 +680,7 @@ const PartnerReferral = () => {
               >
                 <PersonAddIcon sx={{ color: 'primary.main', mr: 1 }} />
                 <Box>
-                  <Typography variant="subtitle2">
+                  <Typography >
                     <strong>New agent joined the team</strong>
                   </Typography>
                   <Typography variant="caption" color="text.secondary">

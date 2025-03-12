@@ -97,7 +97,7 @@ const Tmanagement = () => {
       headerName: "Lead Status",
       width: 180,
       renderCell: (params) => (
-        <FormControl fullWidth>
+        <FormControl fullWidth sx={{ mt: 0.6}}>
           <Select
             value={params.value}
             onChange={(e) => handleDropdownChange(params.id, "leadStatus", e.target.value)}
@@ -163,7 +163,7 @@ const Tmanagement = () => {
             <Grid item xs={12} md={4} key={index}>
               <Card
                 sx={{
-                  backgroundColor: "#f8f9fa",
+                  backgroundColor: "#ffff",
                   textAlign: "center",
                   p: 2,
                   borderRadius: 2,
@@ -171,7 +171,7 @@ const Tmanagement = () => {
                 }}
               >
                 <CardContent>
-                  <Typography variant="h6" gutterBottom>
+                  <Typography  gutterBottom>
                     {card.title}
                   </Typography>
                   <Typography variant="h4" sx={{ color: "rgb(30,10,80)" }}>
@@ -185,7 +185,7 @@ const Tmanagement = () => {
         </Grid>
 
         {/* Search, Sort & Filters Row */}
-        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mb: 2, gap: 2,mt: 3, }}>
+        <Box sx={{ display: "flex", justifyContent: "right", alignItems: "center", mb: 2, gap: 2,mt: 3, }}>
           <TextField
              placeholder="Search..."
              variant="outlined"

@@ -80,17 +80,7 @@ function Dashboard() {
     <>
       <InvestorHeader />
       <Box
-        sx={{
-          backgroundImage:
-            "url('https://img.freepik.com/free-photo/contemporary-building-blur_23-2147694747.jpg')",
-          minHeight: '100vh',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          p: 2,
-        }}
+        
       >
         <Container>
           {/* Page Title */}
@@ -117,7 +107,7 @@ function Dashboard() {
                   <Typography sx={{ fontSize: '14px', color: '#666' }}>
                     Total Portfolio Value
                   </Typography>
-                  <Typography sx={{ fontSize: '24px', fontWeight: 'bold', color: '#ff6b6b' }}>
+                  <Typography sx={{ fontSize: '24px', fontWeight: 'bold'}}>
                     4.5 Cr
                   </Typography>
                 </CardContent>
@@ -137,7 +127,7 @@ function Dashboard() {
                   <Typography sx={{ fontSize: '14px', color: '#666' }}>
                     Total Performance
                   </Typography>
-                  <Typography sx={{ fontSize: '24px', fontWeight: 'bold', color: '#ff6b6b' }}>
+                  <Typography sx={{ fontSize: '24px', fontWeight: 'bold'  }}>
                     22.30%
                   </Typography>
                 </CardContent>
@@ -155,7 +145,7 @@ function Dashboard() {
               >
                 <CardContent>
                   <Typography sx={{ fontSize: '14px', color: '#666' }}>No of Assets</Typography>
-                  <Typography sx={{ fontSize: '24px', fontWeight: 'bold', color: '#ff6b6b' }}>
+                  <Typography sx={{ fontSize: '24px', fontWeight: 'bold' }}>
                     2
                   </Typography>
                 </CardContent>
@@ -175,7 +165,7 @@ function Dashboard() {
                   <Typography sx={{ fontSize: '14px', color: '#666' }}>
                     Total amount Invested
                   </Typography>
-                  <Typography sx={{ fontSize: '24px', fontWeight: 'bold', color: '#ff6b6b' }}>
+                  <Typography sx={{ fontSize: '24px', fontWeight: 'bold' }}>
                     10.5L
                   </Typography>
                 </CardContent>
@@ -193,7 +183,7 @@ function Dashboard() {
               >
                 <CardContent>
                   <Typography sx={{ fontSize: '14px', color: '#666' }}>Total Interest</Typography>
-                  <Typography sx={{ fontSize: '24px', fontWeight: 'bold', color: '#ff6b6b' }}>
+                  <Typography sx={{ fontSize: '24px', fontWeight: 'bold' }}>
                     10%
                   </Typography>
                 </CardContent>

@@ -414,7 +414,6 @@ const AssetsUI = () => {
                   onChange={handleSortChange}
                   displayEmpty
                   sx={{
-                    padding: '12px 20px',
                     borderRadius: '8px',
                     fontSize: '15px'
                   }}
@@ -492,7 +491,7 @@ const AssetsUI = () => {
                 </Box>
               </Box>
               <CardContent>
-                <Typography variant="h6" fontWeight="bold" mb={1}>
+                <Typography  fontWeight="bold" mb={1}>
                   Pune Industrial - Opportunity
                 </Typography>
                 <Typography variant="body2" color="text.secondary" mb={2}>
@@ -502,7 +501,7 @@ const AssetsUI = () => {
                   container
                   spacing={2}
                   sx={{
-                    backgroundColor: '#F8F9FA',
+                    
                     p: 1.5,
                     borderRadius: 1,
                     mb: 2
@@ -512,7 +511,7 @@ const AssetsUI = () => {
                     <Typography variant="caption" color="text.secondary">
                       Target IRR
                     </Typography>
-                    <Typography variant="subtitle1" fontWeight="600" color="#4A90E2">
+                    <Typography   fontWeight="600" color="#4A90E2">
                       13%
                     </Typography>
                   </Grid>
@@ -520,7 +519,7 @@ const AssetsUI = () => {
                     <Typography variant="caption" color="text.secondary">
                       Entry Yield
                     </Typography>
-                    <Typography variant="subtitle1" fontWeight="600" color="#4A90E2">
+                    <Typography   fontWeight="600" color="#4A90E2">
                       8.1%
                     </Typography>
                   </Grid>
@@ -528,7 +527,7 @@ const AssetsUI = () => {
                     <Typography variant="caption" color="text.secondary">
                       Asset Value
                     </Typography>
-                    <Typography variant="subtitle1" fontWeight="600" color="#4A90E2">
+                    <Typography   fontWeight="600" color="#4A90E2">
                       ₹2.5cr
                     </Typography>
                   </Grid>
@@ -536,7 +535,7 @@ const AssetsUI = () => {
                     <Typography variant="caption" color="text.secondary">
                       Asset Type
                     </Typography>
-                    <Typography variant="subtitle1" fontWeight="600" color="#4A90E2">
+                    <Typography   fontWeight="600" color="#4A90E2">
                       Industrial
                     </Typography>
                   </Grid>
@@ -630,7 +629,7 @@ const AssetsUI = () => {
                 </Box>
               </Box>
               <CardContent>
-                <Typography variant="h6" fontWeight="bold" mb={1}>
+                <Typography  fontWeight="bold" mb={1}>
                   Goa Industrial - Opportunity
                 </Typography>
                 <Typography variant="body2" color="text.secondary" mb={2}>
@@ -640,7 +639,7 @@ const AssetsUI = () => {
                   container
                   spacing={2}
                   sx={{
-                    backgroundColor: '#F8F9FA',
+                  
                     p: 1.5,
                     borderRadius: 1,
                     mb: 2
@@ -650,7 +649,7 @@ const AssetsUI = () => {
                     <Typography variant="caption" color="text.secondary">
                       Target IRR
                     </Typography>
-                    <Typography variant="subtitle1" fontWeight="600" color="#4A90E2">
+                    <Typography   fontWeight="600" color="#4A90E2">
                       15%
                     </Typography>
                   </Grid>
@@ -658,7 +657,7 @@ const AssetsUI = () => {
                     <Typography variant="caption" color="text.secondary">
                       Entry Yield
                     </Typography>
-                    <Typography variant="subtitle1" fontWeight="600" color="#4A90E2">
+                    <Typography   fontWeight="600" color="#4A90E2">
                       9.2%
                     </Typography>
                   </Grid>
@@ -666,7 +665,7 @@ const AssetsUI = () => {
                     <Typography variant="caption" color="text.secondary">
                       Asset Value
                     </Typography>
-                    <Typography variant="subtitle1" fontWeight="600" color="#4A90E2">
+                    <Typography   fontWeight="600" color="#4A90E2">
                       ₹1.2cr
                     </Typography>
                   </Grid>
@@ -674,7 +673,7 @@ const AssetsUI = () => {
                     <Typography variant="caption" color="text.secondary">
                       Asset Type
                     </Typography>
-                    <Typography variant="subtitle1" fontWeight="600" color="#4A90E2">
+                    <Typography   fontWeight="600" color="#4A90E2">
                       Industrial
                     </Typography>
                   </Grid>
@@ -767,7 +766,7 @@ const AssetsUI = () => {
                 </Box>
               </Box>
               <CardContent>
-                <Typography variant="h6" fontWeight="bold" mb={1}>
+                <Typography  fontWeight="bold" mb={1}>
                   Hyd Industrial - Opportunity
                 </Typography>
                 <Typography variant="body2" color="text.secondary" mb={2}>
@@ -777,7 +776,7 @@ const AssetsUI = () => {
                   container
                   spacing={2}
                   sx={{
-                    backgroundColor: '#F8F9FA',
+                    
                     p: 1.5,
                     borderRadius: 1,
                     mb: 2
@@ -787,7 +786,7 @@ const AssetsUI = () => {
                     <Typography variant="caption" color="text.secondary">
                       Target IRR
                     </Typography>
-                    <Typography variant="subtitle1" fontWeight="600" color="#4A90E2">
+                    <Typography   fontWeight="600" color="#4A90E2">
                       14%
                     </Typography>
                   </Grid>
@@ -795,7 +794,7 @@ const AssetsUI = () => {
                     <Typography variant="caption" color="text.secondary">
                       Entry Yield
                     </Typography>
-                    <Typography variant="subtitle1" fontWeight="600" color="#4A90E2">
+                    <Typography   fontWeight="600" color="#4A90E2">
                       8.5%
                     </Typography>
                   </Grid>
@@ -803,7 +802,7 @@ const AssetsUI = () => {
                     <Typography variant="caption" color="text.secondary">
                       Asset Value
                     </Typography>
-                    <Typography variant="subtitle1" fontWeight="600" color="#4A90E2">
+                    <Typography   fontWeight="600" color="#4A90E2">
                       ₹1.2cr
                     </Typography>
                   </Grid>
@@ -811,7 +810,7 @@ const AssetsUI = () => {
                     <Typography variant="caption" color="text.secondary">
                       Asset Type
                     </Typography>
-                    <Typography variant="subtitle1" fontWeight="600" color="#4A90E2">
+                    <Typography   fontWeight="600" color="#4A90E2">
                       Industrial
                     </Typography>
                   </Grid>
@@ -885,43 +884,43 @@ const AssetsUI = () => {
               </Grid>
               <Grid item xs={12} md={6}>
                 <Box sx={{ mb: 1 }}>
-                  <Typography variant="subtitle2" fontWeight="bold">
+                  <Typography   fontWeight="bold">
                     Investment Type:
                   </Typography>
                   <Typography variant="body2">Residential</Typography>
                 </Box>
                 <Box sx={{ mb: 1 }}>
-                  <Typography variant="subtitle2" fontWeight="bold">
+                  <Typography  fontWeight="bold">
                     Expected Holding Period:
                   </Typography>
                   <Typography variant="body2">5 years</Typography>
                 </Box>
                 <Box sx={{ mb: 1 }}>
-                  <Typography variant="subtitle2" fontWeight="bold">
+                  <Typography  fontWeight="bold">
                     Projected Annual Return:
                   </Typography>
                   <Typography variant="body2">13%</Typography>
                 </Box>
                 <Box sx={{ mb: 1 }}>
-                  <Typography variant="subtitle2" fontWeight="bold">
+                  <Typography  fontWeight="bold">
                     Property Area:
                   </Typography>
                   <Typography variant="body2">5,000 sq.ft</Typography>
                 </Box>
                 <Box sx={{ mb: 1 }}>
-                  <Typography variant="subtitle2" fontWeight="bold">
+                  <Typography fontWeight="bold">
                     Property Age:
                   </Typography>
                   <Typography variant="body2">2 years</Typography>
                 </Box>
                 <Box sx={{ mb: 1 }}>
-                  <Typography variant="subtitle2" fontWeight="bold">
+                  <Typography  fontWeight="bold">
                     Exit Strategy:
                   </Typography>
                   <Typography variant="body2">Open market resale</Typography>
                 </Box>
                 <Box>
-                  <Typography variant="subtitle2" fontWeight="bold">
+                  <Typography  fontWeight="bold">
                     Management Fees:
                   </Typography>
                   <Typography variant="body2">1.5% annually</Typography>
@@ -954,55 +953,55 @@ const AssetsUI = () => {
               </Grid>
               <Grid item xs={12} md={6}>
                 <Box sx={{ mb: 1 }}>
-                  <Typography variant="subtitle2" fontWeight="bold">
+                  <Typography   fontWeight="bold">
                     Investment Type:
                   </Typography>
                   <Typography variant="body2">Commercial</Typography>
                 </Box>
                 <Box sx={{ mb: 1 }}>
-                  <Typography variant="subtitle2" fontWeight="bold">
+                  <Typography   fontWeight="bold">
                     Expected Holding Period:
                   </Typography>
                   <Typography variant="body2">7 years</Typography>
                 </Box>
                 <Box sx={{ mb: 1 }}>
-                  <Typography variant="subtitle2" fontWeight="bold">
+                  <Typography   fontWeight="bold">
                     Projected Annual Return:
                   </Typography>
                   <Typography variant="body2">15%</Typography>
                 </Box>
                 <Box sx={{ mb: 1 }}>
-                  <Typography variant="subtitle2" fontWeight="bold">
+                  <Typography   fontWeight="bold">
                     Property Area:
                   </Typography>
                   <Typography variant="body2">10,000 sq.ft</Typography>
                 </Box>
                 <Box sx={{ mb: 1 }}>
-                  <Typography variant="subtitle2" fontWeight="bold">
+                  <Typography   fontWeight="bold">
                     Rental Occupancy:
                   </Typography>
                   <Typography variant="body2">95%</Typography>
                 </Box>
                 <Box sx={{ mb: 1 }}>
-                  <Typography variant="subtitle2" fontWeight="bold">
+                  <Typography   fontWeight="bold">
                     Lease Tenure:
                   </Typography>
                   <Typography variant="body2">10 years (Fixed)</Typography>
                 </Box>
                 <Box sx={{ mb: 1 }}>
-                  <Typography variant="subtitle2" fontWeight="bold">
+                  <Typography   fontWeight="bold">
                     Property Age:
                   </Typography>
                   <Typography variant="body2">5 years</Typography>
                 </Box>
                 <Box sx={{ mb: 1 }}>
-                  <Typography variant="subtitle2" fontWeight="bold">
+                  <Typography   fontWeight="bold">
                     Exit Strategy:
                   </Typography>
                   <Typography variant="body2">REIT listing</Typography>
                 </Box>
                 <Box>
-                  <Typography variant="subtitle2" fontWeight="bold">
+                  <Typography   fontWeight="bold">
                     Management Fees:
                   </Typography>
                   <Typography variant="body2">2% annually</Typography>
@@ -1035,61 +1034,61 @@ const AssetsUI = () => {
               </Grid>
               <Grid item xs={12} md={6}>
                 <Box sx={{ mb: 1 }}>
-                  <Typography variant="subtitle2" fontWeight="bold">
+                  <Typography   fontWeight="bold">
                     Investment Type:
                   </Typography>
                   <Typography variant="body2">Residential</Typography>
                 </Box>
                 <Box sx={{ mb: 1 }}>
-                  <Typography variant="subtitle2" fontWeight="bold">
+                  <Typography   fontWeight="bold">
                     Expected Holding Period:
                   </Typography>
                   <Typography variant="body2">5 years</Typography>
                 </Box>
                 <Box sx={{ mb: 1 }}>
-                  <Typography variant="subtitle2" fontWeight="bold">
+                  <Typography   fontWeight="bold">
                     Projected Annual Return:
                   </Typography>
                   <Typography variant="body2">14%</Typography>
                 </Box>
                 <Box sx={{ mb: 1 }}>
-                  <Typography variant="subtitle2" fontWeight="bold">
+                  <Typography   fontWeight="bold">
                     Property Area:
                   </Typography>
                   <Typography variant="body2">4,000 sq.ft</Typography>
                 </Box>
                 <Box sx={{ mb: 1 }}>
-                  <Typography variant="subtitle2" fontWeight="bold">
+                  <Typography   fontWeight="bold">
                     Rental Occupancy:
                   </Typography>
                   <Typography variant="body2">100%</Typography>
                 </Box>
                 <Box sx={{ mb: 1 }}>
-                  <Typography variant="subtitle2" fontWeight="bold">
+                  <Typography   fontWeight="bold">
                     Lease Tenure:
                   </Typography>
                   <Typography variant="body2">Annual</Typography>
                 </Box>
                 <Box sx={{ mb: 1 }}>
-                  <Typography variant="subtitle2" fontWeight="bold">
+                  <Typography   fontWeight="bold">
                     Property Age:
                   </Typography>
                   <Typography variant="body2">3 years</Typography>
                 </Box>
                 <Box sx={{ mb: 1 }}>
-                  <Typography variant="subtitle2" fontWeight="bold">
+                  <Typography   fontWeight="bold">
                     Exit Strategy:
                   </Typography>
                   <Typography variant="body2">Open market resale</Typography>
                 </Box>
                 <Box sx={{ mb: 1 }}>
-                  <Typography variant="subtitle2" fontWeight="bold">
+                  <Typography   fontWeight="bold">
                     Tax Benefits:
                   </Typography>
                   <Typography variant="body2">Capital gains exemption</Typography>
                 </Box>
                 <Box>
-                  <Typography variant="subtitle2" fontWeight="bold">
+                  <Typography   fontWeight="bold">
                     Management Fees:
                   </Typography>
                   <Typography variant="body2">1.5% annually</Typography>

@@ -62,7 +62,7 @@ const Report = () => {
             <Grid item xs={12} md={6} mt={4}>
               <Card variant="outlined">
                 <CardContent>
-                  <Typography variant="h6" align="center" gutterBottom>
+                  <Typography  align="center" gutterBottom>
                     Financial Returns
                   </Typography>
                   <Line data={financialReturnsData} />
@@ -74,7 +74,7 @@ const Report = () => {
             <Grid item xs={12} md={6} mt={4}>
               <Card variant="outlined">
                 <CardContent>
-                  <Typography variant="h6" align="center" gutterBottom>
+                  <Typography  align="center" gutterBottom>
                     Trend Analysis & Predictions
                   </Typography>
                   <Line data={trendAnalysisData} />
@@ -103,7 +103,7 @@ const Report = () => {
             <Grid item xs={12} md={6}>
               <Card variant="outlined">
                 <CardContent>
-                  <Typography variant="h6" align="center" gutterBottom>
+                  <Typography  align="center" gutterBottom>
                     Performance Summary
                   </Typography>
 
@@ -129,7 +129,7 @@ const Report = () => {
             <Grid item xs={12} md={6}>
               <Card variant="outlined">
                 <CardContent>
-                  <Typography variant="h6" align="center" gutterBottom>
+                  <Typography  align="center" gutterBottom>
                     Key Insights
                   </Typography>
                   <List>

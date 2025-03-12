@@ -73,15 +73,16 @@ const Tmoniter = () => {
       field: "actions",
       headerName: "Actions",
       width: 150,
+      sortable: false,
       renderCell: () => (
-        <Box sx={{ display: "flex", gap: "8px" }}>
-          <IconButton size="small">
+        <Box sx={{ display: "flex", gap: "5px" }}>
+          <IconButton size="small" color="primary">
             <VisibilityIcon />
           </IconButton>
-          <IconButton size="small">
+          <IconButton size="small" color="primary">
             <EditIcon />
           </IconButton>
-          <IconButton size="small" sx={{ color: "red" }}>
+          <IconButton size="small" color="error">
             <DeleteIcon />
           </IconButton>
         </Box>
@@ -100,9 +101,9 @@ const Tmoniter = () => {
         <Grid container spacing={2}>
           {summaryCardsData.map((card, index) => (
             <Grid item xs={12} md={4} key={index}>
-              <Card sx={{ backgroundColor: "#f8f9fa", textAlign: "center", p: 2, borderRadius: 2 }}>
+              <Card sx={{textAlign: "center", p: 2, borderRadius: 2 }}>
                 <CardContent>
-                  <Typography variant="h6" gutterBottom>
+                  <Typography  gutterBottom>
                     {card.title}
                   </Typography>
                   <Typography variant="h4" sx={{ color: "rgb(30,10,80)" }}>
@@ -115,7 +116,7 @@ const Tmoniter = () => {
           ))}
         </Grid>
 
-        <Box sx={{ display: "flex", justifyContent: "center", gap: "10px", mt: 3, mb: 2 }}>
+        <Box sx={{ display: "flex", justifyContent: "right", gap: "10px", mt: 3, mb: 2 }}>
           <TextField
             placeholder="Search..."
             variant="outlined"
