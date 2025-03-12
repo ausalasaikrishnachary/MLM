@@ -32,6 +32,7 @@ import {
   Instagram,
   LinkedIn
 } from '@mui/icons-material';
+import InvestorHeader from '../../../Shared/Investor/InvestorNavbar';
 
 // Styled Components
 const ServiceTabWrapper = styled(Paper)(({ theme }) => ({
@@ -133,6 +134,8 @@ export default function ServiceModule() {
   const theme = useTheme();
 
   return (
+    <>
+    <InvestorHeader/>
     <Box>
       {/* Hero Section */}
       <Box sx={{
@@ -389,7 +392,7 @@ export default function ServiceModule() {
               <Typography variant="h3" gutterBottom>
                 Ready to Get Started?
               </Typography>
-              <Typography variant="h6">
+              <Typography>
                 Join thousands of satisfied clients who have transformed their real estate experience with our premium services.
               </Typography>
             </Grid>
@@ -430,5 +433,6 @@ export default function ServiceModule() {
         </Container>
       </Box>
     </Box>
+    </>
   );
 }
