@@ -541,7 +541,7 @@ const AssetsUI = () => {
                   </Grid>
                 </Grid>
                 <Grid container spacing={1}>
-                  <Grid item xs={12}>
+                  {/* <Grid item xs={12}>
                     <Button
                       fullWidth
                       variant="contained"
@@ -554,7 +554,7 @@ const AssetsUI = () => {
                     >
                       JOIN WAITLIST
                     </Button>
-                  </Grid>
+                  </Grid> */}
                   <Grid item xs={12}>
                     <Button
                       fullWidth
@@ -581,7 +581,7 @@ const AssetsUI = () => {
                       }}
                       onClick={() => navigate("/investment-page")}
                     >
-                      INVEST NOW
+                      BUY NOW
                     </Button>
                   </Grid>
                 </Grid>
@@ -679,7 +679,7 @@ const AssetsUI = () => {
                   </Grid>
                 </Grid>
                 <Grid container spacing={1}>
-                  <Grid item xs={12}>
+                  {/* <Grid item xs={12}>
                     <Button
                       fullWidth
                       variant="contained"
@@ -692,7 +692,7 @@ const AssetsUI = () => {
                     >
                       JOIN WAITLIST
                     </Button>
-                  </Grid>
+                  </Grid> */}
                   <Grid item xs={12}>
                     <Button
                       fullWidth
@@ -718,7 +718,7 @@ const AssetsUI = () => {
                         textTransform: 'none'
                       }}
                     >
-                      INVEST NOW
+                      BUY NOW
                     </Button>
                   </Grid>
                 </Grid>
@@ -816,7 +816,7 @@ const AssetsUI = () => {
                   </Grid>
                 </Grid>
                 <Grid container spacing={1}>
-                  <Grid item xs={12}>
+                  {/* <Grid item xs={12}>
                     <Button
                       fullWidth
                       variant="contained"
@@ -829,7 +829,7 @@ const AssetsUI = () => {
                     >
                       JOIN WAITLIST
                     </Button>
-                  </Grid>
+                  </Grid> */}
                   <Grid item xs={12}>
                     <Button
                       fullWidth
@@ -855,7 +855,7 @@ const AssetsUI = () => {
                         textTransform: 'none'
                       }}
                     >
-                      INVEST NOW
+                      BUY NOW
                     </Button>
                   </Grid>
                 </Grid>

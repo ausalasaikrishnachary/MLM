@@ -732,11 +732,7 @@ const AssetDashboard = () => {
       value: "8.5cr",
       // subtext: "+2.3% from last week",
     },
-    {
-      title: "Active Units",
-      value: "450",
-      // subtext: "+12% increase",
-    },
+   
   ];
 
   return (

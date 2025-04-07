@@ -27,7 +27,7 @@ const AdminProfile = () => {
         }}
       >
         {/* Header */}
-        <Box
+        {/* <Box
           sx={{
             backgroundColor: "rgb(30, 10, 80)",
             color: "white",
@@ -39,7 +39,7 @@ const AdminProfile = () => {
           <Typography variant="h6" sx={{ m: 0 }}>
             Profile Details
           </Typography>
-        </Box>
+        </Box> */}
 
         {/* Card Body */}
         <Box sx={{ p: "20px" }}>
