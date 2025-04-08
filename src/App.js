@@ -34,6 +34,8 @@ import Referral from "./Components/Panel/Admin/Referral/Referral";
 import PartnerReferral from "./Components/Panel/Partner/Referral/Referral";
 import AdminAssetForm from "./Components/Panel/Admin/Asset/AssetForm";
 import Services from "./Components/Panel/Investor/Servies/Servies";
+import Subscription from "./Components/Panel/Admin/Subscription/Subscription";
+import AddSubscription from "./Components/Panel/Admin/Subscription/AddSubscription";
 
 
 
@@ -57,6 +59,8 @@ function App() {
               <Route path="/a-profiledetails" element={<AdminKyc />} />
               <Route path="/a-referal&commission" element={<Referral />} />
               <Route path="/a-addasset" element={<AdminAssetForm />} />
+              <Route path="/a-subscriptions" element={<Subscription />} />
+              <Route path="/a-addsubscriptions" element={<AddSubscription />} />
 
 
               <Route path="/i-dashboard" element={<InvestorDashboard />} />

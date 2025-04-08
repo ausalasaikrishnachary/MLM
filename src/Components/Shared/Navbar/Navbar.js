@@ -33,6 +33,7 @@ export default function Header() {
     { label: 'All Leads', path: '/a-investormanagement' },
     { label: 'Agents', path: '/a-partners' },
     { label: 'Referal & Commission', path: '/a-referal&commission' },
+    { label: 'Subscriptions', path: '/a-subscriptions' },
   ];
 
   const theme = useTheme();
