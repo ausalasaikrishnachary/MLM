@@ -618,14 +618,14 @@ const AssetDashboard = () => {
                   display: 'flex',
                   flexDirection: 'column',
                   borderRadius: 2,
-                  boxShadow: '0 4px 15px rgba(0, 0, 0, 0.749)',
+                 
                   transition: 'all 0.3s ease',
                   position: 'relative',
                   backgroundColor: 'white',
                   overflow: 'visible',
                   '&:hover': {
                     transform: 'translateY(-5px)',
-                    boxShadow: '0 8px 25px rgba(0,0,0,0.1)'
+                    boxShadow: '0 4px 15px rgba(0, 0, 0, 0.749)',
                   }
                 }}
               >
@@ -747,7 +747,7 @@ const AssetDashboard = () => {
                 </CardContent>
 
                 {/* Funding Loading Status */}
-                {asset.fundingProgress !== undefined && (
+                {/* {asset.fundingProgress !== undefined && (
                   <Box sx={{ px: 2, pb: 2 }}>
                     <Typography variant="body2" color="text.secondary" mb={0.5}>
                       Funding Progress
@@ -761,11 +761,11 @@ const AssetDashboard = () => {
                       {asset.fundingProgress}% funded
                     </Typography>
                   </Box>
-                )}
+                )} */}
 
                 <Box sx={{ p: 2 }}>
                   <Grid container alignItems="center" justifyContent="space-between">
-                    <Grid item>
+                    {/* <Grid item>
                       <Box>
                         <Typography variant="body2" color="text.secondary">
                           Available Shares
@@ -778,7 +778,7 @@ const AssetDashboard = () => {
                           {asset.shares}
                         </Typography>
                       </Box>
-                    </Grid>
+                    </Grid> */}
                     <Grid item>
                       <Button
                         variant="contained"
@@ -829,9 +829,9 @@ const AssetDashboard = () => {
                     <Typography variant="body2" color="text.secondary" gutterBottom>
                       Location: <strong>{selectedAsset.location}</strong>
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                    {/* <Typography variant="body2" color="text.secondary" gutterBottom>
                       Available Shares: <strong>{selectedAsset.shares}</strong>
-                    </Typography>
+                    </Typography> */}
                     <Typography variant="body2" color="text.secondary" gutterBottom>
                       Status: <strong>{selectedAsset.status}</strong>
                     </Typography>

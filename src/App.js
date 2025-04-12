@@ -36,6 +36,7 @@ import AdminAssetForm from "./Components/Panel/Admin/Asset/AssetForm";
 import Services from "./Components/Panel/Investor/Servies/Servies";
 import Subscription from "./Components/Panel/Admin/Subscription/Subscription";
 import AddSubscription from "./Components/Panel/Admin/Subscription/AddSubscription";
+import Plans from "./Components/Panel/Investor/Plans/Plans";
 
 
 
@@ -71,6 +72,7 @@ function App() {
               <Route path="/i-profile" element={<InvestorProfile />} />
               <Route path="/i-servies" element={<Services />} />
               <Route path="/i-profiledetails" element={<Kyc />} />
+              <Route path="/i-plans" element={<Plans />} />
 
 
 

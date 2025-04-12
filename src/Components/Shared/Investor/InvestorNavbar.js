@@ -34,11 +34,12 @@ export default function InvestorHeader() {
     {
       label: 'Transactions',
       submenu: [
-        { label: 'Buy Shares', path: '/i-buyshares' },
+        { label: 'Buy Properties', path: '/i-buyshares' },
         // { label: 'Sell Shares', path: '/i-sellshares' },
       ],
     },
     { label: 'Services', path: '/i-servies' },
+    { label: 'Plans', path: '/i-plans' },
   ];
 
   // Responsive helper.

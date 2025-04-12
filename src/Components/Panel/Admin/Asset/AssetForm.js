@@ -9,12 +9,12 @@ import {
   Button,
   Box,
 } from '@mui/material';
-import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
+import Header from '../../../Shared/Navbar/Navbar';
 
 function AdminAssetForm() {
   return (
     <>
-    <PartnerHeader/>
+    <Header/>
     <Container sx={{ mt: 4 }}>
       <Card
         sx={{

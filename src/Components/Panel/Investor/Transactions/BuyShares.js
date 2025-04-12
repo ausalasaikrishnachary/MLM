@@ -60,9 +60,7 @@ const BuyShares = () => {
     <>
       <InvestorHeader />
       <Box p={5}>
-        <Typography variant="h4" gutterBottom style={{ textAlign: 'center' }}>
-          Buy Shares
-        </Typography>
+       
         <Box sx={{ padding: '10px' }}>
           <Grid container spacing={2} alignItems="center" sx={{ width: '100%' }}>
             <Grid item xs={12} sm={8} container spacing={2}>
@@ -111,7 +109,7 @@ const BuyShares = () => {
                 }}
                 onClick={handleClick}
               >
-                + Buy Shares
+                + Buy Properties
               </Button>
             </Grid>
           </Grid>

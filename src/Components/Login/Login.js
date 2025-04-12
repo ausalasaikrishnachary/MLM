@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Box, TextField, Button, Typography, Link, Paper, Grid } from "@mui/material";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-import image2 from "./../Images/Logo File.png";
+import image2 from "./../Images/logo.png";
 
 const Login = () => {
   const navigate = useNavigate();

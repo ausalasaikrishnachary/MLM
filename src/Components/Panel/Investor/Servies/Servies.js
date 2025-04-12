@@ -58,7 +58,8 @@ const SubscriptionCard = styled(Paper)(({ theme }) => ({
   overflow: 'hidden',
   transition: 'transform 0.3s',
   '&:hover': {
-    transform: 'translateY(-10px)'
+    transform: 'translateY(-10px)',
+    boxShadow: '0 4px 15px rgba(0,0,0,0.749)',
   }
 }));
 

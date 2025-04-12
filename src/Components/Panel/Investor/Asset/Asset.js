@@ -456,12 +456,12 @@ const AssetsUI = () => {
             <Card
               sx={{
                 borderRadius: 2,
-                boxShadow: '0 4px 15px rgba(0,0,0,0.749)',
+            
                 transition: 'all 0.3s ease',
                 position: 'relative',
                 '&:hover': {
                   transform: 'translateY(-5px)',
-                  boxShadow: '0 8px 25px rgba(0,0,0,0.1)'
+                  boxShadow: '0 4px 15px rgba(0,0,0,0.749)',
                 }
               }}
             >
@@ -594,12 +594,12 @@ const AssetsUI = () => {
             <Card
               sx={{
                 borderRadius: 2,
-                boxShadow: '0 4px 15px rgba(0,0,0,0.749)',
+               
                 transition: 'all 0.3s ease',
                 position: 'relative',
                 '&:hover': {
                   transform: 'translateY(-5px)',
-                  boxShadow: '0 8px 25px rgba(0,0,0,0.1)'
+                  boxShadow: '0 4px 15px rgba(0,0,0,0.749)',
                 }
               }}
             >
@@ -731,12 +731,12 @@ const AssetsUI = () => {
             <Card
               sx={{
                 borderRadius: 2,
-                boxShadow: '0 4px 15px rgba(0,0,0,0.749)',
+                
                 transition: 'all 0.3s ease',
                 position: 'relative',
                 '&:hover': {
                   transform: 'translateY(-5px)',
-                  boxShadow: '0 8px 25px rgba(0,0,0,0.1)'
+                  boxShadow: '0 4px 15px rgba(0,0,0,0.749)',
                 }
               }}
             >

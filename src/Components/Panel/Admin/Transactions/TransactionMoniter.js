@@ -66,8 +66,8 @@ const Tmoniter = () => {
     { field: "property_type", headerName: "Type", width: 150 },
     { field: "location", headerName: "Location", width: 200 },
     { field: "city", headerName: "City", width: 100 },
-    { field: "total_units", headerName: "Total Units", width: 120 },
-    { field: "available_units", headerName: "Available Units", width: 150 },
+    // { field: "total_units", headerName: "Total Units", width: 120 },
+    // { field: "available_units", headerName: "Available Units", width: 150 },
     { field: "total_price", headerName: "Total Price", width: 150 },
     {
       field: "actions",
