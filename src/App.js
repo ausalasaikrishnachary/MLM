@@ -37,6 +37,7 @@ import Services from "./Components/Panel/Investor/Servies/Servies";
 import Subscription from "./Components/Panel/Admin/Subscription/Subscription";
 import AddSubscription from "./Components/Panel/Admin/Subscription/AddSubscription";
 import Plans from "./Components/Panel/Investor/Plans/Plans";
+import Newkyc from "./Components/Panel/Investor/Profile/Newkyc";
 
 
 
@@ -58,6 +59,9 @@ function App() {
               <Route path="/a-partners" element={<PartnersDashboard />} />
               <Route path="/a-profile" element={<AdminProfile />} />
               <Route path="/a-profiledetails" element={<AdminKyc />} />
+
+              <Route path="/Newkyc" element={<Newkyc />} />
+
               <Route path="/a-referal&commission" element={<Referral />} />
               <Route path="/a-addasset" element={<AdminAssetForm />} />
               <Route path="/a-subscriptions" element={<Subscription />} />
