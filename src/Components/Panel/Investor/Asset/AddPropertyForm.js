@@ -17,15 +17,12 @@ import {
   FormControlLabel,
   FormGroup,
   Input,
-  Chip,
-  IconButton,
-  Dialog, DialogActions, DialogContent, DialogTitle,
+  Chip
 } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { styled } from '@mui/material/styles';
 import axios from 'axios';
-import Header from '../../../Shared/Navbar/Navbar';
-import AddIcon from '@mui/icons-material/Add';
+import InvestorHeader from "../../../Shared/Investor/InvestorNavbar"
 
 const steps = [
   'Basic Details',
@@ -82,7 +79,7 @@ const AddPropertyForm = () => {
     ownershipType: 'Freehold',
     price: '',
     maintenance: '',
-    amenities: [], // Default amenity
+    amenities: [1], // Default amenity
     propertyUniqueness: '',
     locationAdvantages: '',
     otherFeatures: '',
@@ -95,49 +92,22 @@ const AddPropertyForm = () => {
     userId: 1 // This should be dynamic in a real app
   });
 
+  // Fetch initial data
   useEffect(() => {
-    fetchInitialData();
+    const fetchData = async () => {
+      try {
+        const [categoriesRes, amenitiesRes] = await Promise.all([
+          axios.get('https://rahul30.pythonanywhere.com/property-categories/'),
+          axios.get('https://rahul30.pythonanywhere.com/amenities/')
+        ]);
+        setPropertyCategories(categoriesRes.data);
+        setAmenities(amenitiesRes.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchData();
   }, []);
-
-  const fetchInitialData = async () => {
-    try {
-      const [categoriesRes, amenitiesRes] = await Promise.all([
-        axios.get('https://rahul30.pythonanywhere.com/property-categories/'),
-        axios.get('https://rahul30.pythonanywhere.com/amenities/')
-      ]);
-      setPropertyCategories(categoriesRes.data);
-      setAmenities(amenitiesRes.data);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
-
-  const [newAmenity, setNewAmenity] = useState('');
-
-  const handleAddAmenity = async () => {
-    if (!newAmenity.trim()) return;
-
-    try {
-      const response = await axios.post("https://rahul30.pythonanywhere.com/amenities/", {
-        name: newAmenity.trim(),
-      });
-
-      setNewAmenity('');
-      await fetchAmenities(); // Refresh list after successful POST
-    } catch (error) {
-      console.error("Error adding amenity:", error);
-    }
-  };
-
-  const fetchAmenities = async () => {
-    try {
-      const amenitiesRes = await axios.get('https://rahul30.pythonanywhere.com/amenities/');
-      setAmenities(amenitiesRes.data);
-    } catch (error) {
-      console.error('Error fetching amenities:', error);
-    }
-  };
-
 
   useEffect(() => {
     if (formData.category) {
@@ -153,49 +123,6 @@ const AddPropertyForm = () => {
         });
     }
   }, [formData.category]);
-
-  const [openDialog, setOpenDialog] = useState(false);
-  const [newCategoryName, setNewCategoryName] = useState("");
-
-  // Fetch initial categories
-  const fetchCategories = async () => {
-    try {
-      const response = await axios.get("https://rahul30.pythonanywhere.com/property-categories/");
-      setPropertyCategories(response.data);
-    } catch (error) {
-      console.error("Error fetching property categories", error);
-    }
-  };
-
-  const handleAddCategory = () => {
-    setOpenDialog(true);
-  };
-
-  const handleDialogClose = () => {
-    setOpenDialog(false);
-    setNewCategoryName(""); // Clear input on close
-  };
-
-  const handleCategorySubmit = async () => {
-    try {
-      // Make the POST request to add the new category
-      const response = await axios.post("https://rahul30.pythonanywhere.com/property-categories/", {
-        name: newCategoryName,
-      });
-
-      // Assuming response returns the newly added category
-      setPropertyCategories((prevCategories) => [
-        ...prevCategories,
-        response.data,
-      ]);
-
-      // Close the dialog and reset form
-      handleDialogClose();
-    } catch (error) {
-      console.error("Error adding category", error);
-    }
-  };
-
 
 
   const handleChange = (e) => {
@@ -231,15 +158,13 @@ const AddPropertyForm = () => {
   };
 
   const handleAmenityChange = (amenityId) => {
-    const parsedId = parseInt(amenityId, 10); // Ensure it's an integer
     setFormData(prev => {
-      const newAmenities = prev.amenities.includes(parsedId)
-        ? prev.amenities.filter(id => id !== parsedId)
-        : [...prev.amenities, parsedId];
+      const newAmenities = prev.amenities.includes(amenityId)
+        ? prev.amenities.filter(id => id !== amenityId)
+        : [...prev.amenities, amenityId];
       return { ...prev, amenities: newAmenities };
     });
   };
-
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
@@ -256,6 +181,7 @@ const AddPropertyForm = () => {
 
       // Prepare form data for API
       const payload = new FormData();
+      const userId = localStorage.getItem("user_id");
 
       // Append all basic fields
       const formFields = {
@@ -288,10 +214,10 @@ const AddPropertyForm = () => {
         owner_contact: formData.ownerContact,
         owner_email: formData.ownerEmail,
         is_featured: formData.isFeatured,
-        amenities: formData.amenities.map(id => Number(id)),
+        // amenities: JSON.stringify(formData.amenities),
         category: formData.category,
         property_type: formData.propertyType,
-        user_id: formData.userId
+        user_id: userId
       };
 
       // Log the payload for debugging
@@ -357,42 +283,6 @@ const AddPropertyForm = () => {
     }
   };
 
-  // Define the state for the new category name and dialog open state
-
-  const [newPropertyType, setNewPropertyType] = useState('');
-
-  // Function to handle form submission
-  const handlePropertyTypeSubmit = async () => {
-    const payload = {
-      name: newPropertyType,
-      category: formData.category,
-    };
-
-    try {
-      const response = await fetch('https://rahul30.pythonanywhere.com/property-types/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (response.ok) {
-        const newType = await response.json();
-        // Update propertyTypes with the newly added type
-        setPropertyTypes((prev) => [...prev, newType]);
-        handleDialogClose(); // Close the dialog after submission
-      } else {
-        // Handle error response
-        console.error('Error adding property type');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
-
-
-
   const renderStepContent = () => {
     switch (activeStep) {
       case 0: return (
@@ -414,16 +304,6 @@ const AddPropertyForm = () => {
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Property Title"
-              name="propertyTitle"
-              value={formData.propertyTitle}
-              onChange={handleChange}
-            />
-          </Grid>
-
-          <Grid item xs={12} md={5} sm={6}>
             <FormControl fullWidth>
               <InputLabel>Property Category</InputLabel>
               <Select
@@ -446,38 +326,10 @@ const AddPropertyForm = () => {
                 ))}
               </Select>
             </FormControl>
+
           </Grid>
-          <MenuItem>
-            <IconButton md={1} onClick={handleAddCategory} color="primary">
-              <AddIcon />
-            </IconButton>
-          </MenuItem>
 
-          {/* Dialog for adding a new category */}
-          <Dialog open={openDialog} onClose={handleDialogClose}>
-            <DialogTitle>Add Property Category</DialogTitle>
-            <DialogContent>
-              <TextField
-                autoFocus
-                margin="dense"
-                label="Category Name"
-                fullWidth
-                variant="outlined"
-                value={newCategoryName}
-                onChange={(e) => setNewCategoryName(e.target.value)}
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleDialogClose} color="primary">
-                Cancel
-              </Button>
-              <Button onClick={handleCategorySubmit} color="primary">
-                Add
-              </Button>
-            </DialogActions>
-          </Dialog>
-
-          <Grid item xs={12} md={5} sm={6}>
+          <Grid item xs={12} sm={6}>
             <FormControl fullWidth>
               <InputLabel>Property Type</InputLabel>
               <Select
@@ -502,39 +354,36 @@ const AddPropertyForm = () => {
                 ))}
               </Select>
             </FormControl>
+
           </Grid>
-          {/* Add Icon Button for opening the dialog */}
-          <IconButton
-            onClick={() => setOpenDialog(true)}
-            color="primary"
-            sx={{ marginLeft: 2 }}
-          >
-            <AddIcon />
-          </IconButton>
 
-          <Dialog open={openDialog} onClose={handleDialogClose}>
-            <DialogTitle>Add Property Type</DialogTitle>
-            <DialogContent>
-              <TextField
-                autoFocus
-                margin="dense"
-                label="Property Type Name"
-                fullWidth
-                variant="outlined"
-                value={newPropertyType}
-                onChange={(e) => setNewPropertyType(e.target.value)}
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleDialogClose} color="primary">
-                Cancel
-              </Button>
-              <Button onClick={handlePropertyTypeSubmit} color="primary">
-                Add
-              </Button>
-            </DialogActions>
-          </Dialog>
+          {/* <Grid item xs={12} sm={6}>
+            <FormControl fullWidth size="small">
+              <InputLabel>Property Type</InputLabel>
+              <Select
+                value={propertyType}
+                onChange={(e) => setPropertyType(e.target.value)}
+                label="Property Type"
+                disabled={!propertyCategory} // optional: disable if no category is selected
+              >
+                {propertyTypes.map((type) => (
+                  <MenuItem key={type.property_type_id} value={type.name}>
+                    {type.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid> */}
 
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Property Title"
+              name="propertyTitle"
+              value={formData.propertyTitle}
+              onChange={handleChange}
+            />
+          </Grid>
 
           <Grid item xs={12}>
             <TextField
@@ -824,25 +673,6 @@ const AddPropertyForm = () => {
             />
           </Grid>
 
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Add New Amenity"
-              value={newAmenity}
-              onChange={(e) => setNewAmenity(e.target.value)}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <Button
-              variant="contained"
-              sx={{ mt: 1 }}
-              onClick={handleAddAmenity}
-            >
-              Add Amenity
-            </Button>
-          </Grid>
-
           <Grid item xs={12}>
             <Typography variant="h6" gutterBottom>Amenities</Typography>
             <FormGroup row>
@@ -1001,7 +831,7 @@ const AddPropertyForm = () => {
 
   return (
     <>
-      <Header />
+      <InvestorHeader />
       <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', p: 3, }}>
         <Typography variant="h4" gutterBottom>Add New Property</Typography>
 

@@ -63,34 +63,34 @@ const Login = () => {
   };
 
   const selectUserRole = async (roles) => {
-        const { value: selectedRole } = await Swal.fire({
-          title: "Select Your Role",
-          input: "select",
-          inputOptions: roles.reduce((acc, role) => ({ ...acc, [role]: role }), {}),
-          inputPlaceholder: "Choose your role",
-          showCancelButton: true,
-          confirmButtonText: "Proceed",
-          cancelButtonText: "Cancel",
-        });
-    
-        if (selectedRole) {
-          navigateToDashboard(selectedRole);
-        }
-      };
-  
-      const navigateToDashboard = (role) => {
-        if (role === "Admin") {
-          navigate("/a-dashboard");
-        } else if (role === "Agent") {
-          navigate("/p-dashboard");
-        } else if (role === "Client") {
-          navigate("/i-dashboard");
-        } else if (role === "Super Admin") {
-          navigate("/s-dashboard");
-        } else {
-          setError("Invalid role assigned. Please contact support.");
-        }
-      };
+    const { value: selectedRole } = await Swal.fire({
+      title: "Select Your Role",
+      input: "select",
+      inputOptions: roles.reduce((acc, role) => ({ ...acc, [role]: role }), {}),
+      inputPlaceholder: "Choose your role",
+      showCancelButton: true,
+      confirmButtonText: "Proceed",
+      cancelButtonText: "Cancel",
+    });
+
+    if (selectedRole) {
+      navigateToDashboard(selectedRole);
+    }
+  };
+
+  const navigateToDashboard = (role) => {
+    if (role === "Admin") {
+      navigate("/a-dashboard");
+    } else if (role === "Agent") {
+      navigate("/p-dashboard");
+    } else if (role === "Client") {
+      navigate("/i-dashboard");
+    } else if (role === "Super Admin") {
+      navigate("/s-dashboard");
+    } else {
+      setError("Invalid role assigned. Please contact support.");
+    }
+  };
 
   const handleSendOTP = async () => {
     if (!email || emailError) {
@@ -156,7 +156,7 @@ const Login = () => {
         backgroundImage: "url(https://cdn.pixabay.com/photo/2018/11/22/23/57/london-3833039_1280.jpg)",
         backgroundSize: "cover",
         backgroundPosition: "center",
-        marginTop:"-85px"
+        marginTop: "-85px"
       }}
     >
       <Paper elevation={4} sx={{ display: "flex", width: "90%", maxWidth: 900, borderRadius: 2, overflow: "hidden" }}>
@@ -252,7 +252,10 @@ const Login = () => {
                 </Typography>
                 <TextField fullWidth label="Email" variant="outlined" margin="normal" value={email} onChange={handleEmailChange} />
                 <TextField fullWidth label="Password" type="password" variant="outlined" margin="normal" value={password} onChange={(e) => setPassword(e.target.value)} />
-                <Box textAlign="right">
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 1 }}>
+                  <Link href="/signup" sx={{ cursor: "pointer", color: "primary.main" }}>
+                    Register
+                  </Link>
                   <Link href="#" onClick={() => setShowForgotPassword(true)} sx={{ cursor: "pointer", color: "error.main" }}>
                     Forgot Password?
                   </Link>

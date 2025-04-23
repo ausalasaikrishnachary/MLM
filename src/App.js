@@ -38,6 +38,10 @@ import Subscription from "./Components/Panel/Admin/Subscription/Subscription";
 import AddSubscription from "./Components/Panel/Admin/Subscription/AddSubscription";
 import Plans from "./Components/Panel/Investor/Plans/Plans";
 import Newkyc from "./Components/Panel/Investor/Profile/Newkyc";
+import SignUp from "./Components/Login/SignUp";
+import AddPropertyForm from "./Components/Panel/Investor/Asset/AddPropertyForm";
+import MyAssets from "./Components/Panel/Investor/Asset/MyAssets";
+import PartnerPlans from "./Components/Panel/Partner/Plans/Plans";
 
 
 
@@ -59,7 +63,7 @@ function App() {
               <Route path="/a-partners" element={<PartnersDashboard />} />
               <Route path="/a-profile" element={<AdminProfile />} />
               <Route path="/a-profiledetails" element={<AdminKyc />} />
-
+              <Route path="/signup" element={<SignUp />} />
               <Route path="/Newkyc" element={<Newkyc />} />
 
               <Route path="/a-referal&commission" element={<Referral />} />
@@ -77,7 +81,7 @@ function App() {
               <Route path="/i-servies" element={<Services />} />
               <Route path="/i-profiledetails" element={<Kyc />} />
               <Route path="/i-plans" element={<Plans />} />
-
+              <Route path="/i-myassets" element={<MyAssets />} />
 
 
               <Route path="/p-dashboard" element={<PartnerDashboard />} />
@@ -90,9 +94,8 @@ function App() {
               <Route path="/p-leads" element={<Leads/>} />
               <Route path="/p-addleads" element={<PAddLead/>} />
               <Route path="/p-referal&commission" element={<PartnerReferral/>} />
-
-
-
+              <Route path="/p-addproperty" element={<AddPropertyForm/>} />
+              <Route path="/p-plans" element={<PartnerPlans/>} />
 
               <Route path="/" element={<Login />} />
               

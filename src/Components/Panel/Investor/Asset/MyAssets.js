@@ -22,44 +22,21 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import InvestorHeader from '../../../Shared/Investor/InvestorNavbar';
 import { useNavigate } from "react-router-dom";
-import axios from 'axios';
 
-const AssetsUI = () => {
+const MyAssets = () => {
   const [sortBy, setSortBy] = useState('');
   const [properties, setProperties] = useState([]);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const navigate = useNavigate();
   const userId = localStorage.getItem("user_id");
-  const [subscriptionPaid, setSubscriptionPaid] = useState(false);
-
-  useEffect(() => {
-    if (userId) {
-      axios.get(`https://rahul30.pythonanywhere.com/user-subscriptions/${userId}/`)
-        .then(response => {
-          if (response.data.subscription_status === "paid") {
-            setSubscriptionPaid(true);
-          }
-        })
-        .catch(error => {
-          console.error("Subscription fetch error:", error);
-        });
-    }
-  }, [userId]);
 
   useEffect(() => {
     const fetchProperties = async () => {
-      const userId = localStorage.getItem("user_id"); // make sure this is a string
       try {
-        const response = await fetch('https://rahul30.pythonanywhere.com/property/');
+        const response = await fetch(`https://rahul30.pythonanywhere.com/properties/user-id/${userId}/`);
         const data = await response.json();
-
-        // Filter out properties where user_id matches the current user's id
-        const filteredProperties = data.filter(
-          (property) => property.user_id?.toString() !== userId
-        );
-
-        setProperties(filteredProperties);
+        setProperties(data);
       } catch (error) {
         console.error('Error fetching properties:', error);
       }
@@ -67,8 +44,6 @@ const AssetsUI = () => {
 
     fetchProperties();
   }, []);
-
-
 
   const handleSortChange = (event) => {
     setSortBy(event.target.value);
@@ -88,7 +63,7 @@ const AssetsUI = () => {
     <>
       <InvestorHeader />
       <Container sx={{ py: 4 }}>
-        {/* <Typography variant="h4" sx={{ marginLeft: '10px', textAlign: "center" }}>
+        <Typography variant="h4" sx={{ marginLeft: '10px', textAlign: "center" }}>
           Properties
         </Typography>
         <Box
@@ -156,7 +131,7 @@ const AssetsUI = () => {
               </Button>
             </Grid>
           </Grid>
-        </Box> */}
+        </Box>
 
         {/* Cards Section */}
         <Grid container spacing={3}>
@@ -258,8 +233,7 @@ const AssetsUI = () => {
                     <Grid container>
                       <Grid item xs={6}>
                         <Typography variant="body2" color="text.secondary">
-                          Email
-                        </Typography>
+                          Email                      </Typography>
                       </Grid>
                       <Grid item xs={6}>
                         <Typography
@@ -268,13 +242,12 @@ const AssetsUI = () => {
                           color="#4A90E2"
                           align="right"
                         >
-                          {subscriptionPaid ? property.owner_email : "********"}
+                          {property.owner_email}
                         </Typography>
                       </Grid>
                       <Grid item xs={6}>
                         <Typography variant="body2" color="text.secondary">
-                          Contact
-                        </Typography>
+                          Contact                         </Typography>
                       </Grid>
                       <Grid item xs={6}>
                         <Typography
@@ -283,7 +256,7 @@ const AssetsUI = () => {
                           color="text.secondary"
                           align="right"
                         >
-                          {subscriptionPaid ? property.owner_contact : "********"}
+                          {property.owner_contact}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -299,7 +272,6 @@ const AssetsUI = () => {
                           textTransform: 'none',
                           '&:hover': { backgroundColor: '#59ed7c', color: 'rgb(5,5,5)' }
                         }}
-                        disabled={!subscriptionPaid}
                         onClick={() => handleViewDetails(property)}
                       >
                         VIEW DETAILS
@@ -388,12 +360,12 @@ const AssetsUI = () => {
                     <Typography fontWeight="bold">Other Features:</Typography>
                     <Typography variant="body2">{selectedProperty.other_features}</Typography>
                   </Box>
-                  <Box>
+                  {/* <Box>
                     <Typography fontWeight="bold">Contact:</Typography>
                     <Typography variant="body2">
                       {selectedProperty.owner_name} - {selectedProperty.owner_contact} ({selectedProperty.owner_email})
                     </Typography>
-                  </Box>
+                  </Box> */}
                 </Grid>
               </Grid>
             </DialogContent>
@@ -412,4 +384,4 @@ const AssetsUI = () => {
   );
 };
 
-export default AssetsUI;
+export default MyAssets;

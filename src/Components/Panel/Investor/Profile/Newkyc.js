@@ -15,7 +15,7 @@ import {
   TextField,
 } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-
+import InvestorHeader from "../../../Shared/Investor/InvestorNavbar"
 
 const steps = [
   'Basic Details',
@@ -290,8 +290,10 @@ const Newkyc = () => {
   };
 
   return (
+    <>
+    <InvestorHeader/>
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', p: 3, backgroundColor: '#f5f5f5' }}>
-      <Typography variant="h5" gutterBottom>KYC Dashboard</Typography>
+      <Typography variant="h5" gutterBottom>Post Property</Typography>
 
       <Stepper activeStep={activeStep} alternativeLabel sx={{ width: '100%', maxWidth: '80vw', mt: 2 }}>
         {steps.map((label) => (
@@ -300,7 +302,7 @@ const Newkyc = () => {
           </Step>
         ))}
       </Stepper>
-
+      
       <Paper elevation={3} sx={{ p: 4, mt: 4, width: '80%' }}>
         <Typography variant="h6" gutterBottom>
           Step {activeStep + 1}: {steps[activeStep]}
@@ -316,6 +318,7 @@ const Newkyc = () => {
         </Box>
       </Paper>
     </Box>
+    </>
   );
 };
 

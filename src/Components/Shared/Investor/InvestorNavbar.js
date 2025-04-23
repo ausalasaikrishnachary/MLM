@@ -30,12 +30,12 @@ export default function InvestorHeader() {
   // For the "Transactions" item, we add a submenu.
   const navItems = [
     { label: 'Dashboard', path: '/i-dashboard' },
+    { label: 'My Properties', path: '/i-myassets' },
     { label: 'Properties', path: '/i-asset' },
     {
       label: 'Transactions',
       submenu: [
         { label: 'Buy Properties', path: '/i-buyshares' },
-        // { label: 'Sell Shares', path: '/i-sellshares' },
       ],
     },
     { label: 'Services', path: '/i-servies' },

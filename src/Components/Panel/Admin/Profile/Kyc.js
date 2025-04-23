@@ -336,7 +336,7 @@ const AdminKyc = () => {
                 <FormControl fullWidth>
                   <TextField
                     fullWidth
-                    label="Image"
+                    label="Profile Image"
                     type="file"
                     onChange={(e) => handleFileChange(e, setImage, setImageName)}
                     inputProps={{ accept: "image/*" }}
