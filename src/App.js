@@ -42,6 +42,12 @@ import SignUp from "./Components/Login/SignUp";
 import AddPropertyForm from "./Components/Panel/Investor/Asset/AddPropertyForm";
 import MyAssets from "./Components/Panel/Investor/Asset/MyAssets";
 import PartnerPlans from "./Components/Panel/Partner/Plans/Plans";
+import PropertyDetails from "./Components/Panel/Investor/Asset/AssetDetails";
+import AssetDetails from "./Components/Panel/Admin/Asset/AssetDetails";
+import AssetDetail from "./Components/Panel/Partner/Asset/AssetDetails";
+import PartnerMyAssets from "./Components/Panel/Partner/Asset/MyAssets";
+import ViewAssetDetails from "./Components/Panel/Partner/Asset/ViewAssetDetails";
+import MyTeam from "./Components/Panel/Partner/MyTeam/MyTeam";
 
 
 
@@ -70,25 +76,27 @@ function App() {
               <Route path="/a-addasset" element={<AdminAssetForm />} />
               <Route path="/a-subscriptions" element={<Subscription />} />
               <Route path="/a-addsubscriptions" element={<AddSubscription />} />
+              <Route path="/a-assets/:id" element={<AssetDetails />} />
 
 
               <Route path="/i-dashboard" element={<InvestorDashboard />} />
               <Route path="/i-asset" element={<InvestorAsset />} />
               <Route path="/i-buyshares" element={<BuyShares />} />
               <Route path="/i-sellshares" element={<SellShares />} />
-              {/* <Route path="/i-asset" element={<PartnerAsset />} /> */}
               <Route path="/i-profile" element={<InvestorProfile />} />
               <Route path="/i-servies" element={<Services />} />
               <Route path="/i-profiledetails" element={<Kyc />} />
               <Route path="/i-plans" element={<Plans />} />
               <Route path="/i-myassets" element={<MyAssets />} />
+              <Route path="/i-assets/:id" element={<PropertyDetails />} />
+              
 
 
               <Route path="/p-dashboard" element={<PartnerDashboard />} />
               <Route path="/p-report" element={<Report />} />
               <Route path="/p-addasset" element={<AssetForm />} />
               <Route path="/p-transactions" element={<Transaction />} />
-              <Route path="/p-myassets" element={<AssetDashboard />} />
+              <Route path="/p-assets" element={<AssetDashboard />} />
               <Route path="/p-profile" element={<PartnerProfile />} />
               <Route path="/p-profiledetails" element={<PartnerKyc/>} />
               <Route path="/p-leads" element={<Leads/>} />
@@ -96,6 +104,11 @@ function App() {
               <Route path="/p-referal&commission" element={<PartnerReferral/>} />
               <Route path="/p-addproperty" element={<AddPropertyForm/>} />
               <Route path="/p-plans" element={<PartnerPlans/>} />
+              <Route path="/p-assets/:id" element={<AssetDetail />} />
+              <Route path="/p-myassets" element={<PartnerMyAssets/>} />
+              <Route path="/p-assets/:id" element={<ViewAssetDetails />} />
+              <Route path="/p-myteam" element={<MyTeam />} />
+              
 
               <Route path="/" element={<Login />} />
               

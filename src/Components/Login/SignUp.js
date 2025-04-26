@@ -10,7 +10,7 @@ import { Link, Navigate } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
-      const navigate = useNavigate();
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         username: "",
         first_name: "",
@@ -38,13 +38,13 @@ const SignUp = () => {
         ifsc_code: "",
         nominee_reference_to: "",
         referral_id: "",
+        referred_by:"",
     });
 
     const hiddenFields = [
         "aadhaar_number",
         "pan_number",
         "referral_id",
-        "nominee_reference_to",
         "account_type",
         "image",
         "date_of_birth",
@@ -66,6 +66,7 @@ const SignUp = () => {
         "ifsc_code",
         "nominee_reference_to",
         "referral_id",
+        "referred_by",
     ];
 
 
@@ -287,6 +288,18 @@ const SignUp = () => {
                                             ))}
                                     </TextField>
                                 </Grid>
+
+                                {roles.find(role => role.role_id === formData.role_ids[0])?.role_name === "Agent" && (
+                                    <Grid item xs={12} sm={6}>
+                                        <TextField
+                                            fullWidth
+                                            label="Sponsor ID"
+                                            name="referred_by"
+                                            value={formData.referred_by}
+                                            onChange={handleChange}
+                                        />
+                                    </Grid>
+                                )}
 
                             </Grid>
                             {/* <Grid container justifyContent="center" style={{ marginTop: 20 }}>

@@ -174,7 +174,7 @@ function PartnerPlans() {
                                                     disabled={subscribedVariants.length > 0}
                                                     onClick={() => handleBuy(variant)}
                                                 >
-                                                    {subscribedVariants.length > 0 ? "Subscribed" : "Subscribe"}
+                                                    {subscribedVariants.includes(variant.variant_id) ? "Subscribed" : "Subscribe"}
                                                 </Button>
 
                                             </TableCell>

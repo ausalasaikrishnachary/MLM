@@ -23,6 +23,7 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { styled } from '@mui/material/styles';
 import axios from 'axios';
 import InvestorHeader from "../../../Shared/Investor/InvestorNavbar"
+import { useNavigate } from "react-router-dom";
 
 const steps = [
   'Basic Details',
@@ -50,6 +51,7 @@ const AddPropertyForm = () => {
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [amenities, setAmenities] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   // Form State
   const [formData, setFormData] = useState({
@@ -257,6 +259,8 @@ const AddPropertyForm = () => {
 
       console.log('Submission successful:', response.data);
       alert('Property submitted successfully!');
+      navigate("/i-myassets");
+
       // Optionally reset form or redirect here
     } catch (error) {
       console.error('Detailed submission error:', {
@@ -810,7 +814,7 @@ const AddPropertyForm = () => {
             />
           </Grid>
 
-          <Grid item xs={12}>
+          {/* <Grid item xs={12}>
             <FormControlLabel
               control={
                 <Checkbox
@@ -821,7 +825,7 @@ const AddPropertyForm = () => {
               }
               label="Feature this property"
             />
-          </Grid>
+          </Grid> */}
         </Grid>
       );
 

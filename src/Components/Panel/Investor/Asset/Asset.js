@@ -23,6 +23,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import InvestorHeader from '../../../Shared/Investor/InvestorNavbar';
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
+import { Carousel } from 'react-responsive-carousel';
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
 const AssetsUI = () => {
   const [sortBy, setSortBy] = useState('');
@@ -84,80 +86,23 @@ const AssetsUI = () => {
     setSelectedProperty(null);
   };
 
+  const [openCarousel, setOpenCarousel] = useState(false);
+
+  const handleImageClick = (property) => {
+    setSelectedProperty(property);
+    setOpenCarousel(true);
+  };
+
+  const handleCloseCarousel = () => {
+    setOpenCarousel(false);
+    setSelectedProperty(null);
+  };
+
+
   return (
     <>
       <InvestorHeader />
       <Container sx={{ py: 4 }}>
-        {/* <Typography variant="h4" sx={{ marginLeft: '10px', textAlign: "center" }}>
-          Properties
-        </Typography>
-        <Box
-          sx={{
-            backgroundColor: 'white',
-            p: 2,
-            borderRadius: 2,
-            boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
-            mb: 3
-          }}
-        >
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                placeholder="Search assets..."
-                variant="outlined"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon sx={{ color: '#757575' }} />
-                    </InputAdornment>
-                  )
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} md={3}>
-              <FormControl fullWidth>
-                <Select
-                  value={sortBy}
-                  onChange={handleSortChange}
-                  displayEmpty
-                  sx={{
-                    borderRadius: '8px',
-                    fontSize: '15px'
-                  }}
-                >
-                  <MenuItem value="">
-                    <em>Sort By</em>
-                  </MenuItem>
-                  <MenuItem value="latest">Latest</MenuItem>
-                  <MenuItem value="oldest">Oldest</MenuItem>
-                  <MenuItem value="price-high">Price: High to Low</MenuItem>
-                  <MenuItem value="price-low">Price: Low to High</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} md={3}>
-              <Button
-                variant="contained"
-                fullWidth
-                sx={{
-                  padding: '12px 24px',
-                  borderRadius: '8px',
-                  backgroundColor: '#2ECC71',
-                  textTransform: 'none',
-                  fontWeight: 500,
-                  '&:hover': {
-                    backgroundColor: '#27AE60'
-                  }
-                }}
-                onClick={() => navigate('/p-addproperty')}
-              >
-                Add Property
-              </Button>
-            </Grid>
-          </Grid>
-        </Box> */}
-
         {/* Cards Section */}
         <Grid container spacing={3}>
           {properties.map((property) => (
@@ -179,7 +124,8 @@ const AssetsUI = () => {
                     height="220"
                     image={property.images.length > 0 ? `https://rahul30.pythonanywhere.com${property.images[0].image}` : 'https://via.placeholder.com/300'}
                     alt={property.property_title}
-                    sx={{ objectFit: 'cover', borderRadius: '12px 12px 0 0' }}
+                    sx={{ objectFit: 'cover', borderRadius: '12px 12px 0 0', cursor: 'pointer' }}
+                    onClick={() => handleImageClick(property)}
                   />
                   <Box
                     sx={{
@@ -258,7 +204,7 @@ const AssetsUI = () => {
                     <Grid container>
                       <Grid item xs={6}>
                         <Typography variant="body2" color="text.secondary">
-                          Email
+                          {subscriptionPaid ? "Owner Email" : "Office Email"}
                         </Typography>
                       </Grid>
                       <Grid item xs={6}>
@@ -268,12 +214,13 @@ const AssetsUI = () => {
                           color="#4A90E2"
                           align="right"
                         >
-                          {subscriptionPaid ? property.owner_email : "********"}
+                          {subscriptionPaid ? property.owner_email : "sriraj@gmail.com"}
                         </Typography>
                       </Grid>
+
                       <Grid item xs={6}>
                         <Typography variant="body2" color="text.secondary">
-                          Contact
+                          {subscriptionPaid ? "Owner Contact" : "Office Contact"}
                         </Typography>
                       </Grid>
                       <Grid item xs={6}>
@@ -283,10 +230,12 @@ const AssetsUI = () => {
                           color="text.secondary"
                           align="right"
                         >
-                          {subscriptionPaid ? property.owner_contact : "********"}
+                          {subscriptionPaid ? property.owner_contact : "+1-123-456-7890"}
                         </Typography>
                       </Grid>
                     </Grid>
+
+
                   </Box>
                   <Grid container spacing={1}>
                     <Grid item xs={12}>
@@ -300,27 +249,40 @@ const AssetsUI = () => {
                           '&:hover': { backgroundColor: '#59ed7c', color: 'rgb(5,5,5)' }
                         }}
                         disabled={!subscriptionPaid}
-                        onClick={() => handleViewDetails(property)}
+                        onClick={() => navigate(`/i-assets/${property.property_id}`, { state: { property } })}
                       >
                         VIEW DETAILS
                       </Button>
                     </Grid>
-                    {/* <Grid item xs={12}>
-                      <Button
-                        fullWidth
-                        variant="outlined"
-                        sx={{
-                          borderColor: '#4A90E2',
-                          color: '#4A90E2',
-                          textTransform: 'none'
-                        }}
-                        onClick={() => navigate("/investment-page")}
-                      >
-                        {property.looking_to === 'sell' ? 'BUY NOW' : 'RENT NOW'}
-                      </Button>
-                    </Grid> */}
                   </Grid>
                 </CardContent>
+                {/* Image Carousel Dialog */}
+                <Dialog open={openCarousel} onClose={handleCloseCarousel} maxWidth="md" fullWidth>
+                  <Box sx={{ p: 2, background: '#000' }}>
+                    {selectedProperty && selectedProperty.images && selectedProperty.images.length > 0 ? (
+                      <Carousel
+                        showThumbs={false}
+                        infiniteLoop
+                        useKeyboardArrows
+                        dynamicHeight
+                        autoPlay
+                        emulateTouch
+                      >
+                        {selectedProperty.images.map((imgObj, idx) => (
+                          <div key={idx}>
+                            <img
+                              src={`https://rahul30.pythonanywhere.com${imgObj.image}`}
+                              alt={`property-img-${idx}`}
+                              style={{ borderRadius: 8, maxHeight: '550px', objectFit: 'cover' }}
+                            />
+                          </div>
+                        ))}
+                      </Carousel>
+                    ) : (
+                      <Typography color="white">No images available.</Typography>
+                    )}
+                  </Box>
+                </Dialog>
               </Card>
             </Grid>
           ))}
@@ -400,9 +362,6 @@ const AssetsUI = () => {
             <DialogActions>
               <Button onClick={handleCloseDialog} variant="contained" color="error">
                 CLOSE
-              </Button>
-              <Button variant="contained" color="success">
-                {selectedProperty.looking_to === 'sell' ? 'BUY NOW' : 'RENT NOW'}
               </Button>
             </DialogActions>
           </Dialog>

@@ -30,7 +30,8 @@ export default function PartnerHeader() {
   // For the "Transactions" item, we add a submenu.
   const navItems = [
     { label: 'Dashboard', path: '/p-dashboard' },
-    { label: 'Properties', path: '/p-myassets' },
+    { label: 'My Properties', path: '/p-myassets' },
+    { label: 'Properties', path: '/p-assets' },
     {
       label: 'Transactions', path:"/p-transactions",
       path: '/p-transactions',
@@ -39,7 +40,7 @@ export default function PartnerHeader() {
         { label: 'Sell Shares', path: '/sell-shares' },
       ],
     },
-    { label: 'My Leads', path: '/p-leads' },
+    { label: 'My Team', path: '/p-myteam' },
     { label: 'Report', path: '/p-report' },
     { label: 'Referal & Commission', path: '/p-referal&commission' },
     { label: 'Plans', path: '/p-plans' },

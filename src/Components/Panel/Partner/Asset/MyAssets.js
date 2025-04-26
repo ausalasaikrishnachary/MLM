@@ -20,23 +20,25 @@ import {
   Pagination
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import Header from '../../../Shared/Navbar/Navbar';
+import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
 import { useNavigate } from "react-router-dom";
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
-const AssetsUI = () => {
+const PartnerMyAssets = () => {
   const [sortBy, setSortBy] = useState('');
   const [properties, setProperties] = useState([]);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const navigate = useNavigate();
+  const userId = localStorage.getItem("user_id");
 
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const response = await fetch('https://rahul30.pythonanywhere.com/property/');
+        const response = await fetch(`https://rahul30.pythonanywhere.com/properties/user-id/${userId}/`);
         const data = await response.json();
+        console.log("userid",userId)
         setProperties(data);
       } catch (error) {
         console.error('Error fetching properties:', error);
@@ -60,21 +62,21 @@ const AssetsUI = () => {
     setSelectedProperty(null);
   };
 
-  const [openCarousel, setOpenCarousel] = useState(false);
-
-  const handleImageClick = (property) => {
-    setSelectedProperty(property);
-    setOpenCarousel(true);
-  };
-
-  const handleCloseCarousel = () => {
-    setOpenCarousel(false);
-    setSelectedProperty(null);
-  };
+    const [openCarousel, setOpenCarousel] = useState(false);
+  
+    const handleImageClick = (property) => {
+      setSelectedProperty(property);
+      setOpenCarousel(true);
+    };
+  
+    const handleCloseCarousel = () => {
+      setOpenCarousel(false);
+      setSelectedProperty(null);
+    };
 
   return (
     <>
-      <Header />
+      <PartnerHeader />
       <Container sx={{ py: 4 }}>
         <Typography variant="h4" sx={{ marginLeft: '10px', textAlign: "center" }}>
           Properties
@@ -138,7 +140,7 @@ const AssetsUI = () => {
                     backgroundColor: '#27AE60'
                   }
                 }}
-                onClick={() => navigate('/a-addasset')}
+                onClick={() => navigate('/p-addasset')}
               >
                 Add Property
               </Button>
@@ -194,9 +196,6 @@ const AssetsUI = () => {
                   <Typography variant="body2" color="text.secondary" mb={2}>
                     {property.city}, {property.state}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" mb={1}>
-                    Added By: <strong>{property.first_name }</strong>
-                  </Typography>
                   <Grid
                     container
                     spacing={2}
@@ -239,6 +238,47 @@ const AssetsUI = () => {
                       </Typography>
                     </Grid>
                   </Grid>
+                  <Box
+                    sx={{
+                      backgroundColor: '#F8F9FA',
+                      borderRadius: 1,
+                      p: 1.5,
+                      mb: 2
+                    }}
+                  >
+                    <Grid container>
+                      <Grid item xs={6}>
+                        <Typography variant="body2" color="text.secondary">
+                          Agent Referral Id                      
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography
+                          variant="body2"
+                          fontWeight="bold"
+                          color="#4A90E2"
+                          align="right"
+                        >
+                          {/* {property.referral_id} */}
+                          SP00001
+                        </Typography>
+                      </Grid>
+                      {/* <Grid item xs={6}>
+                        <Typography variant="body2" color="text.secondary">
+                          Contact                         </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography
+                          variant="body2"
+                          fontWeight="bold"
+                          color="text.secondary"
+                          align="right"
+                        >
+                          {property.owner_contact}
+                        </Typography>
+                      </Grid> */}
+                    </Grid>
+                  </Box>
                   <Grid container spacing={1}>
                     <Grid item xs={12}>
                       <Button
@@ -251,7 +291,7 @@ const AssetsUI = () => {
                           '&:hover': { backgroundColor: '#59ed7c', color: 'rgb(5,5,5)' }
                         }}
                         // onClick={() => handleViewDetails(property)}
-                        onClick={() => navigate(`/a-assets/${property.property_id}`, { state: { property } })}
+                        onClick={() => navigate(`/p-assets/${property.property_id}`, { state: { property } })}
                       >
                         VIEW DETAILS
                       </Button>
@@ -366,12 +406,12 @@ const AssetsUI = () => {
                     <Typography fontWeight="bold">Other Features:</Typography>
                     <Typography variant="body2">{selectedProperty.other_features}</Typography>
                   </Box>
-                  <Box>
+                  {/* <Box>
                     <Typography fontWeight="bold">Contact:</Typography>
                     <Typography variant="body2">
                       {selectedProperty.owner_name} - {selectedProperty.owner_contact} ({selectedProperty.owner_email})
                     </Typography>
-                  </Box>
+                  </Box> */}
                 </Grid>
               </Grid>
             </DialogContent>
@@ -379,9 +419,9 @@ const AssetsUI = () => {
               <Button onClick={handleCloseDialog} variant="contained" color="error">
                 CLOSE
               </Button>
-              {/* <Button variant="contained" color="success">
+              <Button variant="contained" color="success">
                 {selectedProperty.looking_to === 'sell' ? 'BUY NOW' : 'RENT NOW'}
-              </Button> */}
+              </Button>
             </DialogActions>
           </Dialog>
         )}
@@ -390,4 +430,4 @@ const AssetsUI = () => {
   );
 };
 
-export default AssetsUI;
+export default PartnerMyAssets;

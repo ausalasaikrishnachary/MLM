@@ -26,6 +26,7 @@ import { styled } from '@mui/material/styles';
 import axios from 'axios';
 import Header from '../../../Shared/Navbar/Navbar';
 import AddIcon from '@mui/icons-material/Add';
+import { useNavigate } from "react-router-dom";
 
 const steps = [
   'Basic Details',
@@ -53,6 +54,8 @@ const AddPropertyForm = () => {
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [amenities, setAmenities] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+    const navigate = useNavigate();
+    const userId = localStorage.getItem("user_id");
 
   // Form State
   const [formData, setFormData] = useState({
@@ -92,7 +95,7 @@ const AddPropertyForm = () => {
     isFeatured: false,
     images: [],
     videos: [],
-    userId: 1 // This should be dynamic in a real app
+    userId: userId
   });
 
   useEffect(() => {
@@ -155,6 +158,7 @@ const AddPropertyForm = () => {
   }, [formData.category]);
 
   const [openDialog, setOpenDialog] = useState(false);
+  const [openDialogs, setOpenDialogs] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
 
   // Fetch initial categories
@@ -168,11 +172,12 @@ const AddPropertyForm = () => {
   };
 
   const handleAddCategory = () => {
-    setOpenDialog(true);
+    setOpenDialogs(true);
   };
 
   const handleDialogClose = () => {
     setOpenDialog(false);
+    setOpenDialogs(false);
     setNewCategoryName(""); // Clear input on close
   };
 
@@ -331,6 +336,8 @@ const AddPropertyForm = () => {
 
       console.log('Submission successful:', response.data);
       alert('Property submitted successfully!');
+      navigate("/a-asset");
+
       // Optionally reset form or redirect here
     } catch (error) {
       console.error('Detailed submission error:', {
@@ -454,7 +461,7 @@ const AddPropertyForm = () => {
           </MenuItem>
 
           {/* Dialog for adding a new category */}
-          <Dialog open={openDialog} onClose={handleDialogClose}>
+          <Dialog open={openDialogs} onClose={handleDialogClose}>
             <DialogTitle>Add Property Category</DialogTitle>
             <DialogContent>
               <TextField
@@ -938,7 +945,7 @@ const AddPropertyForm = () => {
             />
           </Grid>
 
-          <Grid item xs={12} sm={6}>
+          {/* <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label="Maintenance Charges"
@@ -947,7 +954,7 @@ const AddPropertyForm = () => {
               value={formData.maintenance}
               onChange={handleChange}
             />
-          </Grid>
+          </Grid> */}
 
           <Grid item xs={12} sm={6}>
             <TextField
@@ -969,7 +976,7 @@ const AddPropertyForm = () => {
             />
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label="Owner Email"
@@ -980,7 +987,7 @@ const AddPropertyForm = () => {
             />
           </Grid>
 
-          <Grid item xs={12}>
+          {/* <Grid item xs={12}>
             <FormControlLabel
               control={
                 <Checkbox
@@ -991,7 +998,7 @@ const AddPropertyForm = () => {
               }
               label="Feature this property"
             />
-          </Grid>
+          </Grid> */}
         </Grid>
       );
 

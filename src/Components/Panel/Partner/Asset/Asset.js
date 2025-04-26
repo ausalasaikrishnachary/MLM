@@ -23,6 +23,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
+import { Carousel } from 'react-responsive-carousel';
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
 const AssetsUI = () => {
   const [sortBy, setSortBy] = useState('');
@@ -83,6 +85,19 @@ const AssetsUI = () => {
     setOpenDialog(false);
     setSelectedProperty(null);
   };
+
+  const [openCarousel, setOpenCarousel] = useState(false);
+
+  const handleImageClick = (property) => {
+    setSelectedProperty(property);
+    setOpenCarousel(true);
+  };
+
+  const handleCloseCarousel = () => {
+    setOpenCarousel(false);
+    setSelectedProperty(null);
+  };
+
 
   return (
     <>
@@ -179,7 +194,8 @@ const AssetsUI = () => {
                     height="220"
                     image={property.images.length > 0 ? `https://rahul30.pythonanywhere.com${property.images[0].image}` : 'https://via.placeholder.com/300'}
                     alt={property.property_title}
-                    sx={{ objectFit: 'cover', borderRadius: '12px 12px 0 0' }}
+                    sx={{ objectFit: 'cover', borderRadius: '12px 12px 0 0', cursor: 'pointer' }}
+                    onClick={() => handleImageClick(property)}
                   />
                   <Box
                     sx={{
@@ -258,7 +274,7 @@ const AssetsUI = () => {
                     <Grid container>
                       <Grid item xs={6}>
                         <Typography variant="body2" color="text.secondary">
-                          Email
+                          {subscriptionPaid ? "Owner Email" : "Office Email"}
                         </Typography>
                       </Grid>
                       <Grid item xs={6}>
@@ -268,12 +284,13 @@ const AssetsUI = () => {
                           color="#4A90E2"
                           align="right"
                         >
-                          {subscriptionPaid ? property.owner_email : "********"}
+                          {subscriptionPaid ? property.owner_email : "sriraj@gmail.com"}
                         </Typography>
                       </Grid>
+
                       <Grid item xs={6}>
                         <Typography variant="body2" color="text.secondary">
-                          Contact
+                          {subscriptionPaid ? "Owner Contact" : "Office Contact"}
                         </Typography>
                       </Grid>
                       <Grid item xs={6}>
@@ -283,7 +300,7 @@ const AssetsUI = () => {
                           color="text.secondary"
                           align="right"
                         >
-                          {subscriptionPaid ? property.owner_contact : "********"}
+                          {subscriptionPaid ? property.owner_contact : "+1-123-456-7890"}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -300,7 +317,8 @@ const AssetsUI = () => {
                           '&:hover': { backgroundColor: '#59ed7c', color: 'rgb(5,5,5)' }
                         }}
                         disabled={!subscriptionPaid}
-                        onClick={() => handleViewDetails(property)}
+                        // onClick={() => handleViewDetails(property)}
+                        onClick={() => navigate(`/p-assets/${property.property_id}`, { state: { property } })}
                       >
                         VIEW DETAILS
                       </Button>
@@ -321,6 +339,33 @@ const AssetsUI = () => {
                     </Grid> */}
                   </Grid>
                 </CardContent>
+                {/* Image Carousel Dialog */}
+                <Dialog open={openCarousel} onClose={handleCloseCarousel} maxWidth="md" fullWidth>
+                  <Box sx={{ p: 2, background: '#000' }}>
+                    {selectedProperty && selectedProperty.images && selectedProperty.images.length > 0 ? (
+                      <Carousel
+                        showThumbs={false}
+                        infiniteLoop
+                        useKeyboardArrows
+                        dynamicHeight
+                        autoPlay
+                        emulateTouch
+                      >
+                        {selectedProperty.images.map((imgObj, idx) => (
+                          <div key={idx}>
+                            <img
+                              src={`https://rahul30.pythonanywhere.com${imgObj.image}`}
+                              alt={`property-img-${idx}`}
+                              style={{ borderRadius: 8, maxHeight: '550px', objectFit: 'cover' }}
+                            />
+                          </div>
+                        ))}
+                      </Carousel>
+                    ) : (
+                      <Typography color="white">No images available.</Typography>
+                    )}
+                  </Box>
+                </Dialog>
               </Card>
             </Grid>
           ))}

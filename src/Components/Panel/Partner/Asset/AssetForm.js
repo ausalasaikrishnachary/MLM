@@ -23,6 +23,7 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { styled } from '@mui/material/styles';
 import axios from 'axios';
 import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
+import { useNavigate } from "react-router-dom";
 
 const steps = [
   'Basic Details',
@@ -44,12 +45,13 @@ const VisuallyHiddenInput = styled('input')({
   width: 1,
 });
 
-const AddPropertyForm = () => {
+const AssetForm = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [propertyCategories, setPropertyCategories] = useState([]);
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [amenities, setAmenities] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   // Form State
   const [formData, setFormData] = useState({
@@ -181,6 +183,7 @@ const AddPropertyForm = () => {
 
       // Prepare form data for API
       const payload = new FormData();
+      const userId = localStorage.getItem("user_id");
 
       // Append all basic fields
       const formFields = {
@@ -216,7 +219,7 @@ const AddPropertyForm = () => {
         // amenities: JSON.stringify(formData.amenities),
         category: formData.category,
         property_type: formData.propertyType,
-        user_id: formData.userId
+        user_id: userId
       };
 
       // Log the payload for debugging
@@ -256,6 +259,8 @@ const AddPropertyForm = () => {
 
       console.log('Submission successful:', response.data);
       alert('Property submitted successfully!');
+      navigate("/p-myassets");
+
       // Optionally reset form or redirect here
     } catch (error) {
       console.error('Detailed submission error:', {
@@ -355,6 +360,24 @@ const AddPropertyForm = () => {
             </FormControl>
 
           </Grid>
+
+          {/* <Grid item xs={12} sm={6}>
+            <FormControl fullWidth size="small">
+              <InputLabel>Property Type</InputLabel>
+              <Select
+                value={propertyType}
+                onChange={(e) => setPropertyType(e.target.value)}
+                label="Property Type"
+                disabled={!propertyCategory} // optional: disable if no category is selected
+              >
+                {propertyTypes.map((type) => (
+                  <MenuItem key={type.property_type_id} value={type.name}>
+                    {type.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid> */}
 
           <Grid item xs={12}>
             <TextField
@@ -749,7 +772,7 @@ const AddPropertyForm = () => {
             />
           </Grid>
 
-          <Grid item xs={12} sm={6}>
+          {/* <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label="Maintenance Charges"
@@ -758,7 +781,7 @@ const AddPropertyForm = () => {
               value={formData.maintenance}
               onChange={handleChange}
             />
-          </Grid>
+          </Grid> */}
 
           <Grid item xs={12} sm={6}>
             <TextField
@@ -770,7 +793,7 @@ const AddPropertyForm = () => {
             />
           </Grid>
 
-          <Grid item xs={12} sm={6}>
+          {/* <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label="Owner Contact"
@@ -778,20 +801,20 @@ const AddPropertyForm = () => {
               value={formData.ownerContact}
               onChange={handleChange}
             />
-          </Grid>
+          </Grid> */}
 
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label="Owner Email"
               name="ownerEmail"
               type="email"
-              value={formData.ownerEmail}
+              value={formData.referral_id}
               onChange={handleChange}
             />
           </Grid>
 
-          <Grid item xs={12}>
+          {/* <Grid item xs={12}>
             <FormControlLabel
               control={
                 <Checkbox
@@ -802,7 +825,7 @@ const AddPropertyForm = () => {
               }
               label="Feature this property"
             />
-          </Grid>
+          </Grid> */}
         </Grid>
       );
 
@@ -859,4 +882,4 @@ const AddPropertyForm = () => {
   );
 };
 
-export default AddPropertyForm;
+export default AssetForm;

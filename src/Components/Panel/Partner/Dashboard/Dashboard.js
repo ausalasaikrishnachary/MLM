@@ -127,10 +127,10 @@ const AgentDashboard = () => {
       {/* Top Metrics Row */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         {[
-          { title: 'Total Properties', value: '142', icon: faBuilding, trend: '8%' },
-          { title: 'Total Agents (Team)', value: '24', icon: faUsers, trend: '2 new' },
+          { title: 'Listing Properties', value: '142', icon: faBuilding, trend: '8%' },
+          { title: 'Our Team', value: '24', icon: faUsers, trend: '2 new' },
           { title: 'Total Commission', value: '₹3.2M', icon: faRupeeSign, trend: '12%' },
-          { title: 'New Properties', value: '18', icon: faHome, trend: '5 more' },
+          { title: 'Latest Properties', value: '18', icon: faHome, trend: '5 more' },
         ].map((metric, index) => (
           <Grid item xs={12} sm={6} md={3} key={index}>
             <Card sx={{
@@ -155,13 +155,13 @@ const AgentDashboard = () => {
       {/* Second Metrics Row */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         {[
-          { title: 'Leads Generated', value: '38', trend: '12%' },
-          { title: 'Sales Closed', value: '9', trend: '5%' },
-          { title: 'Commissions Earned', value: '₹42,850', trend: '8%' },
+          { title: 'Pending Commission ', value: '2850', trend: '12%' },
+          { title: 'Commission Recived', value: '40000', trend: '5%' },
+          { title: 'Our Leads', value: '134', trend: '8%' },
           { 
-            title: 'Monthly Goal', 
-            value: '78%',
-            progress: 78,
+            title: 'Offer', 
+            value: '20%',
+            progress: 20,
             color: 'error' 
           },
         ].map((metric, index) => (

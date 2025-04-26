@@ -16,11 +16,33 @@ import {
 import { useNavigate } from 'react-router-dom';
 import InvestorHeader from "../../../Shared/Investor/InvestorNavbar";
 
-function Plans() {
+function PartnerPlans() {
     const [variantData, setVariantData] = useState([]);
     const [planDataMap, setPlanDataMap] = useState({});
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+    const userId = localStorage.getItem("user_id");
+
+    useEffect(() => {
+        const fetchUserSubscription = async () => {
+            try {
+                const res = await fetch(`https://rahul30.pythonanywhere.com/user-subscriptions/${userId}/`);
+                if (res.ok) {
+                    const subscription = await res.json();
+                    if (subscription.subscription_status === "paid") {
+                        setSubscribedVariants([subscription.subscription_variant]); // store the subscribed variant ID
+                    }
+                }
+            } catch (err) {
+                console.error("Error fetching user subscription:", err);
+            }
+        };
+
+        if (userId) {
+            fetchUserSubscription();
+        }
+    }, [userId]);
+
 
     useEffect(() => {
         const fetchVariantsAndPlans = async () => {
@@ -61,13 +83,13 @@ function Plans() {
     const handleBuy = async (variant) => {
         const confirmSubscribe = window.confirm("Are you sure you want to subscribe to this plan?");
         if (!confirmSubscribe) return;
-    
+
         const userId = localStorage.getItem('user_id'); // Make sure it's already stored in localStorage
         if (!userId) {
             alert("User ID not found in localStorage!");
             return;
         }
-    
+
         try {
             const response = await fetch('https://rahul30.pythonanywhere.com/subscribe/', {
                 method: 'POST',
@@ -77,10 +99,10 @@ function Plans() {
                 body: JSON.stringify({
                     user_id: parseInt(userId),
                     subscription_variant: variant.variant_id,
-                    subscription_status:"paid"
+                    subscription_status: "paid"
                 }),
             });
-    
+
             if (response.ok) {
                 alert("Subscription successful!");
                 setSubscribedVariants((prev) => [...prev, variant.variant_id]);
@@ -92,10 +114,6 @@ function Plans() {
             alert("Something went wrong.");
         }
     };
-    
-
-
-
     return (
         <>
             <InvestorHeader />
@@ -137,14 +155,24 @@ function Plans() {
                                             <TableCell>{variant.duration_in_days}</TableCell>
                                             <TableCell>₹{variant.price}</TableCell>
                                             <TableCell>
-                                                <Button
+                                                {/* <Button
                                                     variant="contained"
                                                     color="primary"
                                                     disabled={subscribedVariants.includes(variant.variant_id)}
                                                     onClick={() => handleBuy(variant)}
                                                 >
                                                     {subscribedVariants.includes(variant.variant_id) ? "Subscribed" : "Subscribe"}
+                                                </Button> */}
+
+                                                <Button
+                                                    variant="contained"
+                                                    color="primary"
+                                                    disabled={subscribedVariants.length > 0}
+                                                    onClick={() => handleBuy(variant)}
+                                                >
+                                                    {subscribedVariants.includes(variant.variant_id) ? "Subscribed" : "Subscribe"}
                                                 </Button>
+
 
                                             </TableCell>
                                         </TableRow>
@@ -160,4 +188,4 @@ function Plans() {
     )
 }
 
-export default Plans
+export default PartnerPlans
