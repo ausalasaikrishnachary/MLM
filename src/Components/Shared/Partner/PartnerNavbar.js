@@ -32,16 +32,16 @@ export default function PartnerHeader() {
     { label: 'Dashboard', path: '/p-dashboard' },
     { label: 'My Properties', path: '/p-myassets' },
     { label: 'Properties', path: '/p-assets' },
-    {
-      label: 'Transactions', path:"/p-transactions",
-      path: '/p-transactions',
-      submenu: [
-        { label: 'Buy Shares', path: '/buy-shares' },
-        { label: 'Sell Shares', path: '/sell-shares' },
-      ],
-    },
+    // {
+    //   label: 'Transactions', path:"/p-transactions",
+    //   path: '/p-transactions',
+    //   submenu: [
+    //     { label: 'Buy Shares', path: '/buy-shares' },
+    //     { label: 'Sell Shares', path: '/sell-shares' },
+    //   ],
+    // },
     { label: 'My Team', path: '/p-myteam' },
-    { label: 'Report', path: '/p-report' },
+    // { label: 'Report', path: '/p-report' },
     { label: 'Referal & Commission', path: '/p-referal&commission' },
     { label: 'Plans', path: '/p-plans' },
   ];
@@ -281,7 +281,7 @@ export default function PartnerHeader() {
       </Menu>
 
       {/* Transactions Dropdown Menu for Desktop */}
-      <Menu
+      {/* <Menu
         anchorEl={transAnchorEl}
         open={transMenuOpen}
         onClose={handleTransClose}
@@ -306,7 +306,7 @@ export default function PartnerHeader() {
               {subitem.label}
             </MenuItem>
           ))}
-      </Menu>
+      </Menu> */}
     </>
   );
 }

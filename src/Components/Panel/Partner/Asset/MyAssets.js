@@ -32,6 +32,7 @@ const PartnerMyAssets = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const navigate = useNavigate();
   const userId = localStorage.getItem("user_id");
+  const referralId = localStorage.getItem('referral_id');
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -259,8 +260,8 @@ const PartnerMyAssets = () => {
                           color="#4A90E2"
                           align="right"
                         >
-                          {/* {property.referral_id} */}
-                          SP00001
+                          {referralId}
+                          
                         </Typography>
                       </Grid>
                       {/* <Grid item xs={6}>
