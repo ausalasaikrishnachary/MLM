@@ -17,7 +17,7 @@ function MyTeam() {
   const fetchTeamMembers = async (refId, setter) => {
     try {
       const response = await axios.get(`https://rahul30.pythonanywhere.com/agents/referral-id/${refId}/`);
-      const membersWithChildren = response.data.map(member => ({
+      const membersWithChildren = response.data.users.map(member => ({
         ...member,
         children: [],
         expanded: false
@@ -41,7 +41,7 @@ function MyTeam() {
       // Expand: fetch children
       try {
         const response = await axios.get(`https://rahul30.pythonanywhere.com/agents/referral-id/${member.referral_id}/`);
-        const children = response.data.map(child => ({
+        const children = response.data.users.map(child => ({
           ...child,
           children: [],
           expanded: false

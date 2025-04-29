@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios'; // ✨ import axios
 import './Dashboard.css'
 import {
   Box,
@@ -57,6 +58,10 @@ ChartJS.register(
 );
 
 const AgentDashboard = () => {
+
+  const referralId = localStorage.getItem('referral_id');
+  const [totalAgents, setTotalAgents] = useState(0); // ✨ new state
+
   // Chart Data
   const chartData = {
     labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
@@ -81,7 +86,18 @@ const AgentDashboard = () => {
     { icon: <CalendarToday color="error" fontSize="large" />, title: "Schedule Viewings", description: "Book client appointments" }
   ];
 
-
+  useEffect(() => {
+    if (referralId) {
+      axios.get(`https://rahul30.pythonanywhere.com/agents/referral-id/${referralId}/`)
+        .then(response => {
+          setTotalAgents(response.data.total_agents || 0); // ✨ set the real count
+        })
+        .catch(error => {
+          console.error('Error fetching total agents:', error);
+          setTotalAgents(0); // fallback
+        });
+    }
+  }, [referralId]);
 
   const propertyListings = [
     {
@@ -128,7 +144,7 @@ const AgentDashboard = () => {
       <Grid container spacing={3} sx={{ mb: 3 }}>
         {[
           { title: 'Listing Properties', value: '142', icon: faBuilding, trend: '8%' },
-          { title: 'Our Team', value: '24', icon: faUsers, trend: '2 new' },
+          { title: 'Our Team', value: totalAgents.toString(), icon: faUsers, trend: `${totalAgents} members` }, // ✨ dynamic
           { title: 'Total Commission', value: '₹3.2M', icon: faRupeeSign, trend: '12%' },
           { title: 'Latest Properties', value: '18', icon: faHome, trend: '5 more' },
         ].map((metric, index) => (
