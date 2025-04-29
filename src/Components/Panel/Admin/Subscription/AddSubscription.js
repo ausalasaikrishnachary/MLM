@@ -19,8 +19,11 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import Header from '../../../Shared/Navbar/Navbar';
+import { useNavigate } from 'react-router-dom';
+
 
 function AddSubscription() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     plan_name: '',
     price: '',
@@ -34,6 +37,7 @@ function AddSubscription() {
   const [newPlan, setNewPlan] = useState({
     plan_name: '',
     description: '',
+    user_type: ""
   });
   const [allPlans, setAllPlans] = useState([]);
 
@@ -61,11 +65,8 @@ function AddSubscription() {
         const response = await axios.get('https://rahul30.pythonanywhere.com/subscription/plans/');
         const plans = response.data;
 
-        // Extract unique plan names for the dropdown
-        const uniquePlanNames = [...new Set(plans.map(plan => plan.plan_name))];
-
-        setPlanOptions(uniquePlanNames);
-        setAllPlans(plans); // Store full plan data
+        setPlanOptions(plans);
+        setAllPlans(plans); // ← add this line
       } catch (error) {
         console.error('Error fetching plans:', error);
       }
@@ -75,32 +76,34 @@ function AddSubscription() {
   }, []);
 
 
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
       const selectedPlan = allPlans.find(plan => plan.plan_name === formData.plan_name);
-  
+
       if (!selectedPlan) {
         alert("Selected plan not found.");
         return;
       }
-  
+
       const payload = {
         plan_id: selectedPlan.plan_id, // Fetch plan ID from selected plan
         duration_in_days: Number(formData.duration_in_days),
         price: Number(formData.price),
       };
-  
+
       const response = await axios.post(
         'https://rahul30.pythonanywhere.com/subscription/plan-variants/',
         payload,
         { headers: { 'Content-Type': 'application/json' } }
       );
-  
+
       alert('Plan variant added successfully!');
       console.log(response.data);
-  
+
       // Reset form
       setFormData({
         plan_name: '',
@@ -108,12 +111,15 @@ function AddSubscription() {
         duration_in_days: '',
         description: '',
       });
+
+      // Navigate to /a-subscriptions
+      navigate('/a-subscriptions');
     } catch (error) {
       console.error('Error adding plan variant:', error);
       alert('Failed to add plan variant. Please try again.');
     }
   };
-  
+
 
   const handleNewPlanChange = (e) => {
     const { name, value } = e.target;
@@ -125,6 +131,7 @@ function AddSubscription() {
       const payload = {
         plan_name: newPlan.plan_name,
         description: newPlan.description,
+        user_type: newPlan.user_type,
       };
 
       const response = await axios.post(
@@ -158,22 +165,23 @@ function AddSubscription() {
           <Box component="form" onSubmit={handleSubmit} noValidate>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <FormControl fullWidth required>
-                <InputLabel id="plan-name-label">Plan Name</InputLabel>
+                <InputLabel id="plan-name-label">Plan</InputLabel>
                 <Select
                   labelId="plan-name-label"
                   id="plan-name"
                   name="plan_name"
                   value={formData.plan_name}
                   onChange={handleChange}
-                  label="Plan Name"
+                  label="Plan"
                 >
-                  {planOptions.map((option, index) => (
-                    <MenuItem key={index} value={option}>
-                      {option}
+                  {planOptions.map((plan) => (
+                    <MenuItem key={plan.id} value={plan.plan_name}>
+                      {`${plan.plan_name} (${plan.user_type})`}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
+
               <IconButton color="primary" onClick={() => setOpenModal(true)}>
                 <AddIcon />
               </IconButton>
@@ -223,6 +231,18 @@ function AddSubscription() {
       <Dialog open={openModal} onClose={() => setOpenModal(false)}>
         <DialogTitle>New Subscription Plan</DialogTitle>
         <DialogContent>
+          <FormControl fullWidth margin="normal" required>
+            <InputLabel>User Type</InputLabel>
+            <Select
+              name="Applicable For"
+              value={newPlan.user_type}
+              onChange={handleNewPlanChange}
+              label="User Type"
+            >
+              <MenuItem value="Agent">Agent</MenuItem>
+              <MenuItem value="Client">Client</MenuItem>
+            </Select>
+          </FormControl>
           <TextField
             label="Plan Name"
             name="plan_name"

@@ -47,7 +47,7 @@ function PartnerPlans() {
     useEffect(() => {
         const fetchVariantsAndPlans = async () => {
             try {
-                const variantRes = await fetch('https://rahul30.pythonanywhere.com/subscription/plan-variants/');
+                const variantRes = await fetch('https://rahul30.pythonanywhere.com/subscription/plan-variants/Client/');
                 const variants = await variantRes.json();
                 setVariantData(variants);
 
@@ -91,7 +91,7 @@ function PartnerPlans() {
         }
 
         try {
-            const response = await fetch('https://rahul30.pythonanywhere.com/subscribe/', {
+            const response = await fetch('https://rahul30.pythonanywhere.com/subscriptions/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -136,7 +136,7 @@ function PartnerPlans() {
                         <Table aria-label="plan variants table">
                             <TableHead>
                                 <TableRow>
-                                    <TableCell><strong>Variant ID</strong></TableCell>
+                                    {/* <TableCell><strong>Variant ID</strong></TableCell> */}
                                     <TableCell><strong>Plan Name</strong></TableCell>
                                     <TableCell><strong>Description</strong></TableCell>
                                     <TableCell><strong>Duration (Days)</strong></TableCell>
@@ -149,7 +149,7 @@ function PartnerPlans() {
                                     const plan = planDataMap[variant.plan_id] || {};
                                     return (
                                         <TableRow key={index}>
-                                            <TableCell>{variant.variant_id}</TableCell>
+                                            {/* <TableCell>{variant.variant_id}</TableCell> */}
                                             <TableCell>{plan.plan_name || '—'}</TableCell>
                                             <TableCell>{plan.description || '—'}</TableCell>
                                             <TableCell>{variant.duration_in_days}</TableCell>

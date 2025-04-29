@@ -48,6 +48,7 @@ import AssetDetail from "./Components/Panel/Partner/Asset/AssetDetails";
 import PartnerMyAssets from "./Components/Panel/Partner/Asset/MyAssets";
 import ViewAssetDetails from "./Components/Panel/Partner/Asset/ViewAssetDetails";
 import MyTeam from "./Components/Panel/Partner/MyTeam/MyTeam";
+import LatestAssets from "./Components/Panel/Partner/Asset/LatestAssets";
 
 
 
@@ -108,6 +109,7 @@ function App() {
               <Route path="/p-myassets" element={<PartnerMyAssets/>} />
               <Route path="/p-assets/:id" element={<ViewAssetDetails />} />
               <Route path="/p-myteam" element={<MyTeam />} />
+              <Route path="/p-latestassets" element={<LatestAssets />} />
               
 
               <Route path="/" element={<Login />} />
