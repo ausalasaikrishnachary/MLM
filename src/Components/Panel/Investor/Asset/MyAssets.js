@@ -25,6 +25,8 @@ import { useNavigate } from "react-router-dom";
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import PaginationComponent from '../../../Shared/Pagination'; 
+import CallIcon from '@mui/icons-material/Call';
+import EmailIcon from '@mui/icons-material/Email';
 
 const MyAssets = () => {
   const [sortBy, setSortBy] = useState('');
@@ -314,15 +316,21 @@ const MyAssets = () => {
                       <Grid container>
                         <Grid item xs={6}>
                           <Typography variant="body2" color="text.secondary">
-                            Email                      </Typography>
+                            Email                      
+                          </Typography>
                         </Grid>
                         <Grid item xs={6}>
                           <Typography
-                            variant="body2"
-                            fontWeight="bold"
-                            color="#4A90E2"
-                            align="right"
-                          >
+                             variant="body2"
+                             fontWeight="bold"
+                             color="#4A90E2"
+                             align="right"
+                             display="flex"
+                             justifyContent="flex-end"
+                             alignItems="center"
+                             gap={1}
+                           >
+                             <EmailIcon fontSize="small" />
                             {property.owner_email}
                           </Typography>
                         </Grid>
@@ -332,11 +340,17 @@ const MyAssets = () => {
                         </Grid>
                         <Grid item xs={6}>
                           <Typography
-                            variant="body2"
-                            fontWeight="bold"
-                            color="text.secondary"
-                            align="right"
+                           variant="body2"
+                           fontWeight="bold"
+                           color="text.secondary"
+                           align="right"
+                           display="flex"
+                           justifyContent="flex-end"
+                           alignItems="center"
+                           gap={1} // adds spacing between icon and text
+                            
                           >
+                            <CallIcon fontSize="small" />
                             {property.owner_contact}
                           </Typography>
                         </Grid>

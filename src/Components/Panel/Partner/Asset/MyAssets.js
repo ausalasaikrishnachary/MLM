@@ -328,7 +328,7 @@ const PartnerMyAssets = () => {
                           color="#4A90E2"
                           align="right"
                         >
-                          {referralId}
+                          {property.referral_id}
                           
                         </Typography>
                       </Grid>

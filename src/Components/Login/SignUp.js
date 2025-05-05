@@ -39,6 +39,7 @@ const SignUp = () => {
         nominee_reference_to: "",
         referral_id: "",
         referred_by:"",
+        status:"Inactive"
     });
 
     const hiddenFields = [

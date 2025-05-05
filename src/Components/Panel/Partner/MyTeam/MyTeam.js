@@ -1,60 +1,52 @@
 import React, { useEffect, useState } from 'react';
 import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
 import axios from 'axios';
-import { Box, Avatar, Typography, Stack } from '@mui/material';
+import { Box, Avatar, Typography, Stack, Button } from '@mui/material';
 
 function MyTeam() {
-  const [teamMembers, setTeamMembers] = useState([]);
+  const [currentAgent, setCurrentAgent] = useState(null);
+  const [childAgents, setChildAgents] = useState([]);
+  const [historyStack, setHistoryStack] = useState([]);
+
   const referralId = localStorage.getItem('referral_id');
+  const agentName = localStorage.getItem('agent_name'); // Optional: assuming you store it
 
   useEffect(() => {
     if (referralId) {
-      fetchTeamMembers(referralId, setTeamMembers);
+      fetchAgentWithChildren(referralId).then((data) => {
+        setCurrentAgent({ referral_id: referralId, first_name: agentName || 'You' });
+        setChildAgents(data);
+      });
     }
   }, [referralId]);
 
-  // Fetch team members by referral ID
-  const fetchTeamMembers = async (refId, setter) => {
+  const fetchAgentWithChildren = async (refId) => {
     try {
       const response = await axios.get(`https://rahul30.pythonanywhere.com/agents/referral-id/${refId}/`);
-      const membersWithChildren = response.data.users.map(member => ({
-        ...member,
+      return response.data.users.map(user => ({
+        ...user,
         children: [],
-        expanded: false
+        expanded: false,
       }));
-      setter(membersWithChildren);
     } catch (error) {
-      console.error('Error fetching team members:', error);
+      console.error('Error fetching agents:', error);
+      return [];
     }
   };
 
-  // Toggle expanding a member
-  const handleMemberClick = async (member) => {
-    // If already expanded, collapse it
-    if (member.expanded) {
-      setTeamMembers(prevMembers =>
-        prevMembers.map(m =>
-          m.user_id === member.user_id ? { ...m, expanded: false, children: [] } : m
-        )
-      );
-    } else {
-      // Expand: fetch children
-      try {
-        const response = await axios.get(`https://rahul30.pythonanywhere.com/agents/referral-id/${member.referral_id}/`);
-        const children = response.data.users.map(child => ({
-          ...child,
-          children: [],
-          expanded: false
-        }));
+  const handleAgentClick = async (agent) => {
+    const children = await fetchAgentWithChildren(agent.referral_id);
+    setHistoryStack(prev => [...prev, { agent: currentAgent, children: childAgents }]);
+    setCurrentAgent(agent);
+    setChildAgents(children);
+  };
 
-        setTeamMembers(prevMembers =>
-          prevMembers.map(m =>
-            m.user_id === member.user_id ? { ...m, expanded: true, children } : m
-          )
-        );
-      } catch (error) {
-        console.error('Error fetching child agents:', error);
-      }
+  const handleBack = () => {
+    const last = historyStack.pop();
+    if (last) {
+      setCurrentAgent(last.agent);
+      setChildAgents(last.children);
+      setHistoryStack([...historyStack]);
     }
   };
 
@@ -62,32 +54,18 @@ function MyTeam() {
     <Stack direction="row" justifyContent="center" alignItems="flex-start" spacing={8}>
       {members.map((member) => (
         <Box key={member.user_id} display="flex" flexDirection="column" alignItems="center" position="relative">
-          {/* Vertical line from parent to agent */}
+          {/* Vertical Line from parent */}
           <Box position="absolute" top={0} width="2px" height="24px" bgcolor="black" zIndex={2} />
 
-          {/* Green Circle for agent */}
+          {/* Avatar for member */}
           <Avatar
             sx={{ bgcolor: 'green', width: 50, height: 50, border: '2px solid black', mt: '24px', cursor: 'pointer' }}
-            onClick={() => handleMemberClick(member)}
+            onClick={() => handleAgentClick(member)}
           >
             <Typography variant="caption" color="white">
               {member.first_name}
             </Typography>
           </Avatar>
-
-          {/* Render child members if expanded */}
-          {member.expanded && member.children.length > 0 && (
-            <Box >
-              {/* Vertical Line */}
-              <Box width="2px" height="40px" bgcolor="black" margin="auto" />
-              {/* Horizontal Line */}
-              <Box position="relative" width="100%">
-                <Box height="2px" bgcolor="black" />
-                {/* Child Agents */}
-                {renderMembers(member.children)}
-              </Box>
-            </Box>
-          )}
         </Box>
       ))}
     </Stack>
@@ -96,33 +74,37 @@ function MyTeam() {
   return (
     <>
       <PartnerHeader />
-      <Box
-        bgcolor="white"
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
-        p={4}
-      >
-        {/* Top Node (You) */}
-        <Box display="flex" flexDirection="column" alignItems="center" position="relative">
+      <Box bgcolor="white" minHeight="100vh" p={4}>
+        {/* Back Button aligned to the left */}
+        {historyStack.length > 0 && (
+          <Box mb={2}>
+            <Button variant="outlined" color="primary" onClick={handleBack}>
+              Back
+            </Button>
+          </Box>
+        )}
+
+        {/* Centered Content */}
+        <Box display="flex" flexDirection="column" alignItems="center">
+          {/* Current Agent */}
           <Avatar sx={{ bgcolor: 'red', width: 64, height: 64, border: '2px solid black' }}>
             <Typography variant="subtitle1" color="black">
-              You
+              {currentAgent?.first_name || 'You'}
             </Typography>
           </Avatar>
 
-          {/* Vertical Line */}
+          {/* Vertical line */}
           <Box width="2px" height="40px" bgcolor="black" />
 
-          {/* Direct Team Members */}
-          <Box position="relative" width="100%">
+          {/* Children */}
+          <Box position="relative">
             <Box height="2px" bgcolor="black" />
-            {renderMembers(teamMembers)}
+            {renderMembers(childAgents)}
           </Box>
         </Box>
       </Box>
     </>
+
   );
 }
 

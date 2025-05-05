@@ -25,6 +25,8 @@ import { useNavigate } from "react-router-dom";
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import PaginationComponent from '../../../Shared/Pagination';
+import CallIcon from '@mui/icons-material/Call';
+import EmailIcon from '@mui/icons-material/Email';
 
 const AssetsUI = () => {
   const [sortBy, setSortBy] = useState('');

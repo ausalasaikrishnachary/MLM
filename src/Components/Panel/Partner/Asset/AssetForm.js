@@ -52,6 +52,7 @@ const AssetForm = () => {
   const [amenities, setAmenities] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  const referralId = localStorage.getItem('referral_id');
 
   // Form State
   const [formData, setFormData] = useState({
@@ -219,7 +220,8 @@ const AssetForm = () => {
         // amenities: JSON.stringify(formData.amenities),
         category: formData.category,
         property_type: formData.propertyType,
-        user_id: userId
+        user_id: userId,
+        referral_id:referralId,
       };
 
       // Log the payload for debugging

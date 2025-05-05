@@ -83,14 +83,15 @@ function PartnerPlans() {
     const handleBuy = async (variant) => {
         const confirmSubscribe = window.confirm("Are you sure you want to subscribe to this plan?");
         if (!confirmSubscribe) return;
-
-        const userId = localStorage.getItem('user_id'); // Make sure it's already stored in localStorage
+    
+        const userId = localStorage.getItem('user_id');
         if (!userId) {
             alert("User ID not found in localStorage!");
             return;
         }
-
+    
         try {
+            // Step 1: Subscribe
             const response = await fetch('https://rahul30.pythonanywhere.com/subscriptions/', {
                 method: 'POST',
                 headers: {
@@ -102,10 +103,25 @@ function PartnerPlans() {
                     subscription_status: "paid"
                 }),
             });
-
+    
             if (response.ok) {
                 alert("Subscription successful!");
                 setSubscribedVariants((prev) => [...prev, variant.variant_id]);
+    
+                // Step 2: Update User Status to 'Active'
+                const updateResponse = await fetch(`https://rahul30.pythonanywhere.com/users/${userId}/`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        status: "Active"
+                    }),
+                });
+    
+                if (!updateResponse.ok) {
+                    console.warn("Failed to update user status.");
+                }
             } else {
                 alert("Failed to subscribe. Please try again.");
             }
@@ -114,9 +130,7 @@ function PartnerPlans() {
             alert("Something went wrong.");
         }
     };
-
-
-
+    
 
     return (
         <>
