@@ -41,7 +41,7 @@ const AssetDetail = () => {
       </Grid>
 
       <Box mt={4}>
-        <Button variant="outlined" href="/p-myassets">Back</Button>
+        <Button variant="outlined" href="/p-assets">Back</Button>
       </Box>
     </Container>
     </>

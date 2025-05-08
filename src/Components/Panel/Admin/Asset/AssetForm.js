@@ -76,6 +76,9 @@ const AddPropertyForm = () => {
     length: '',
     breadth: '',
     numberOfFloors: 1,
+    numberOfBedrooms: '',
+    numberOfBalconies: '',
+    numberOfBathrooms: '',
     openSides: 0,
     builtupArea: '',
     numberOfRoads: 0,
@@ -101,6 +104,20 @@ const AddPropertyForm = () => {
   useEffect(() => {
     fetchInitialData();
   }, []);
+
+    const [showResidentialFields, setShowResidentialFields] = useState(false);
+  
+    useEffect(() => {
+      if (formData.propertyType) {
+        const selectedType = propertyTypes.find(type => type.property_type_id === formData.propertyType);
+        if (selectedType) {
+          const typeName = selectedType.name.toLowerCase();
+          const shouldShow = typeName.includes('flat') || typeName.includes('villa') || 
+                            typeName.includes('apartment') || typeName.includes('house');
+          setShowResidentialFields(shouldShow);
+        }
+      }
+    }, [formData.propertyType, propertyTypes]);
 
   const fetchInitialData = async () => {
     try {
@@ -296,7 +313,10 @@ const AddPropertyForm = () => {
         amenities: formData.amenities.map(id => Number(id)),
         category: formData.category,
         property_type: formData.propertyType,
-        user_id: formData.userId
+        user_id: formData.userId,
+        number_of_bedrooms: formData.numberOfBedrooms,
+        number_of_balconies: formData.numberOfBalconies,
+        number_of_bathrooms: formData.numberOfBathrooms,
       };
 
       // Log the payload for debugging
@@ -639,6 +659,53 @@ const AddPropertyForm = () => {
 
       case 2: return (
         <Grid container spacing={3} sx={{ mt: 2 }}>
+          {showResidentialFields && (
+                      <>
+                        <Grid item xs={12} sm={6}>
+                          <TextField
+                            fullWidth
+                            label="Number of Floors"
+                            name="numberOfFloors"
+                            type="number"
+                            value={formData.numberOfFloors}
+                            onChange={handleChange}
+                          />
+                        </Grid>
+          
+                        <Grid item xs={12} sm={6}>
+                          <TextField
+                            fullWidth
+                            label="Number of Bedrooms"
+                            name="numberOfBedrooms"
+                            type="number"
+                            value={formData.numberOfBedrooms}
+                            onChange={handleChange}
+                          />
+                        </Grid>
+          
+                        <Grid item xs={12} sm={6}>
+                          <TextField
+                            fullWidth
+                            label="Number of Balconies"
+                            name="numberOfBalconies"
+                            type="number"
+                            value={formData.numberOfBalconies}
+                            onChange={handleChange}
+                          />
+                        </Grid>
+          
+                        <Grid item xs={12} sm={6}>
+                          <TextField
+                            fullWidth
+                            label="Number of Bathrooms"
+                            name="numberOfBathrooms"
+                            type="number"
+                            value={formData.numberOfBathrooms}
+                            onChange={handleChange}
+                          />
+                        </Grid>
+                      </>
+                    )}
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
@@ -700,7 +767,7 @@ const AddPropertyForm = () => {
             />
           </Grid>
 
-          <Grid item xs={12} sm={6}>
+          {/* <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label="Number of Floors"
@@ -709,7 +776,7 @@ const AddPropertyForm = () => {
               value={formData.numberOfFloors}
               onChange={handleChange}
             />
-          </Grid>
+          </Grid> */}
 
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth>

@@ -32,6 +32,7 @@ export default function PartnerHeader() {
     { label: 'Dashboard', path: '/p-dashboard' },
     { label: 'My Properties', path: '/p-myassets' },
     { label: 'Properties', path: '/p-assets' },
+    { label: 'Transaction', path: '/p-transaction' },
     // {
     //   label: 'Transactions', path:"/p-transactions",
     //   path: '/p-transactions',

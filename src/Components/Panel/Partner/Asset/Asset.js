@@ -215,25 +215,6 @@ const AssetsUI = () => {
                 </Select>
               </FormControl>
             </Grid>
-            {/* <Grid item xs={12} md={3}>
-              <Button
-                variant="contained"
-                fullWidth
-                sx={{
-                  padding: '12px 24px',
-                  borderRadius: '8px',
-                  backgroundColor: '#2ECC71',
-                  textTransform: 'none',
-                  fontWeight: 500,
-                  '&:hover': {
-                    backgroundColor: '#27AE60'
-                  }
-                }}
-                onClick={() => navigate('/p-addproperty')}
-              >
-                Add Property
-              </Button>
-            </Grid> */}
           </Grid>
         </Box>
 
@@ -266,18 +247,46 @@ const AssetsUI = () => {
                       sx={{
                         position: 'absolute',
                         top: 15,
-                        right: 15,
-                        px: 2,
-                        py: 1,
-                        borderRadius: '20px',
-                        fontSize: '0.85rem',
-                        fontWeight: 500,
-                        backgroundColor: '#2ECC71',
-                        color: 'white'
+                        right: -30,
+                        width: '150px',
+                        transform: 'rotate(45deg)',
+                        backgroundColor: "red",
+                        color: 'white',
+                        textAlign: 'center',
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                        textTransform: 'uppercase',
+                        py: '4px',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
                       }}
                     >
-                      {property.looking_to === 'sell' ? 'For Sale' : 'For Rent'}
+                      {property.looking_to}
                     </Box>
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        top: 15,
+                        left: -30,
+                        width: '150px',
+                        transform: 'rotate(-45deg)',
+                        backgroundColor:
+                          property.status === 'Available'
+                            ? '#2ECC71'
+                            : property.status === 'Booked'
+                              ? '#E67E22'
+                              : '#E74C3C',
+                        color: 'white',
+                        textAlign: 'center',
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                        textTransform: 'uppercase',
+                        py: '4px',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+                      }}
+                    >
+                      {property.status}
+                    </Box>
+
                   </Box>
                   <CardContent>
                     <Typography fontWeight="bold" mb={1}>
@@ -386,10 +395,10 @@ const AssetsUI = () => {
                           fullWidth
                           variant="contained"
                           sx={{
-                            backgroundColor: '#149c33',
+                            // backgroundColor: '#149c33',
                             color: 'white',
                             textTransform: 'none',
-                            '&:hover': { backgroundColor: '#59ed7c', color: 'rgb(5,5,5)' }
+                            '&:hover': { color: 'rgb(5,5,5)' }
                           }}
                           disabled={!subscriptionPaid}
                           // onClick={() => handleViewDetails(property)}
@@ -398,20 +407,22 @@ const AssetsUI = () => {
                           VIEW DETAILS
                         </Button>
                       </Grid>
-                      {/* <Grid item xs={12}>
-                      <Button
-                        fullWidth
-                        variant="outlined"
-                        sx={{
-                          borderColor: '#4A90E2',
-                          color: '#4A90E2',
-                          textTransform: 'none'
-                        }}
-                        onClick={() => navigate("/investment-page")}
-                      >
-                        {property.looking_to === 'sell' ? 'BUY NOW' : 'RENT NOW'}
-                      </Button>
-                    </Grid> */}
+                      <Grid item xs={12}>
+                        <Button
+                          fullWidth
+                          variant="contained"
+                          sx={{
+                            backgroundColor: '#149c33',
+                            color: 'white',
+                            textTransform: 'none',
+                            '&:hover': { backgroundColor: '#59ed7c', color: 'rgb(5,5,5)' }
+                          }}
+                          disabled={!subscriptionPaid || property.status !== 'Available'}
+                          onClick={() => navigate(`/p-bookingassets?property_id=${property.property_id}`)}
+                        >
+                          Buy Now
+                        </Button>
+                      </Grid>
                     </Grid>
                   </CardContent>
                   {/* Image Carousel Dialog */}

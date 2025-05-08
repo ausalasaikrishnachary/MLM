@@ -1,0 +1,199 @@
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import {
+    Box,
+    Grid,
+    TextField,
+    Button,
+    CircularProgress,
+    Typography,
+} from '@mui/material';
+import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
+
+function PaymentForm() {
+    const navigate = useNavigate();
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const transactionId = queryParams.get('transaction_id');
+
+    const [formData, setFormData] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+
+    // Fetch transaction data
+    useEffect(() => {
+        if (transactionId) {
+            fetch(`https://rahul30.pythonanywhere.com/transactions/${transactionId}/`)
+                .then((res) => {
+                    if (!res.ok) throw new Error('Failed to fetch data');
+                    return res.json();
+                })
+                .then((data) => {
+                    setFormData(data);
+                    setLoading(false);
+                })
+                .catch((err) => {
+                    setError(err.message);
+                    setLoading(false);
+                });
+        }
+    }, [transactionId]);
+
+    // Handle form input change
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+    
+        const updatedData = {
+            ...formData,
+            paid_amount: parseFloat(formData.remaining_amount),
+            remaining_amount: 0,
+            payment_type: "Full-Amount",
+        };
+    
+        try {
+            // 1. Submit the transaction
+            const response = await fetch('https://rahul30.pythonanywhere.com/transactions/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updatedData),
+            });
+    
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`API Error: ${JSON.stringify(errorData)}`);
+            }
+    
+            const result = await response.json();
+            console.log('Transaction stored successfully:', result);
+    
+            // 2. Update the property status to "Sold"
+            const propertyId = formData.property_id; // Ensure this exists in formData
+            const statusUpdateResponse = await fetch(`https://rahul30.pythonanywhere.com/property/${propertyId}/`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ status: 'Sold' }),
+            });
+    
+            if (!statusUpdateResponse.ok) {
+                const errorData = await statusUpdateResponse.json();
+                throw new Error(`Status Update Error: ${JSON.stringify(errorData)}`);
+            }
+    
+            console.log(`Property ${propertyId} status updated to Sold`);
+            alert('Transaction submitted and property marked as Sold!');
+            navigate('/p-transaction');
+        } catch (error) {
+            console.error('Submit error:', error);
+            alert('Failed to complete operation: ' + error.message);
+        }
+    };
+    
+
+
+
+    const readOnlyFields = [
+        'property_name',
+        'property_value',
+        'paid_amount',
+        'remaining_amount',
+        'payment_type',
+        'payment_method',
+        'commission',
+        'company_commission',
+        'transaction_date',
+        'username',
+        'purchased_type',
+        'property_id',
+        'transaction_id',
+        'user_id',
+        'agent_id',
+        'purchased_from',
+    ];
+
+    const hiddenFields = [
+        'transaction_id',
+        'agent_id',
+        'user_id',
+        'purchased_from',
+        'payment_type',
+        'payment_method',
+        'commission',
+        'company_commission',
+        'transaction_date',
+        'username',
+        'purchased_type',
+        'property_id',
+        "total_paid_amount",
+    ];
+
+
+    if (loading) {
+        return (
+            <>
+                <PartnerHeader />
+                <Box sx={{ p: 3, textAlign: 'center' }}>
+                    <CircularProgress />
+                    <Typography>Loading transaction data...</Typography>
+                </Box>
+            </>
+        );
+    }
+
+    if (error) {
+        return (
+            <>
+                <PartnerHeader />
+                <Box sx={{ p: 3, textAlign: 'center' }}>
+                    <Typography color="error">Error: {error}</Typography>
+                </Box>
+            </>
+        );
+    }
+
+    return (
+        <>
+            <PartnerHeader />
+            <Box component="form" onSubmit={handleSubmit} maxWidth="xl" sx={{ padding: 3 }}>
+                <Grid container spacing={2}>
+                    {Object.keys(formData).map((key) =>
+                        hiddenFields.includes(key) ? null : (
+                            <Grid item xs={12} md={4} key={key}>
+                                <TextField
+                                    fullWidth
+                                    label={key.replace(/_/g, ' ')}
+                                    name={key}
+                                    value={formData[key] || ''}
+                                    onChange={handleChange}
+                                    variant="outlined"
+                                    InputProps={{
+                                        readOnly: readOnlyFields.includes(key),
+                                    }}
+                                />
+                            </Grid>
+                        )
+                    )}
+
+                </Grid>
+                <Box sx={{ mt: 3 }}>
+                    <Button type="submit" variant="contained" sx={{ width: '200px' }}>
+                        Submit
+                    </Button>
+                </Box>
+            </Box>
+        </>
+    );
+}
+
+export default PaymentForm;
