@@ -50,6 +50,8 @@ export default function PartnerHeader() {
   // Responsive helper.
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const referral_id = localStorage.getItem("referral_id");
+  const first_name = localStorage.getItem("first_name");
 
   // Navigation hooks.
   const navigate = useNavigate();
@@ -161,7 +163,7 @@ export default function PartnerHeader() {
                   <NotificationsNoneIcon />
                 </IconButton>
                 <Typography sx={{ ml: 2, mr: 2, color: '#000', fontWeight: 'bold' }}>
-                  Agent
+                  {first_name} ({referral_id})
                 </Typography>
                 <Avatar
                   onClick={handleAvatarClick}
@@ -215,7 +217,7 @@ export default function PartnerHeader() {
                 <NotificationsNoneIcon />
               </IconButton>
               <Typography sx={{ ml: 2, mr: 2, color: '#000', fontWeight: 'bold' }}>
-              Agent
+              Agent ({referral_id})
               </Typography>
               <Avatar
                 onClick={handleAvatarClick}

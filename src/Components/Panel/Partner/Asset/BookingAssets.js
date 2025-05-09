@@ -42,13 +42,8 @@ function BookingAssets() {
     const agentId = property?.referral_id || null;
     const propertyName = property?.property_title || null;
   
-    // if (!username || !userId || !propertyValue) {
-    //   alert('Missing user or property details');
-    //   return;
-    // }
-  
     const payload = {
-      property_name:propertyName,
+      property_name: propertyName,
       purchased_from: 'agent',
       purchased_type: 'direct',
       username: username,
@@ -66,16 +61,25 @@ function BookingAssets() {
     console.log("Payload being sent:", payload);
   
     axios.post('https://rahul30.pythonanywhere.com/transactions/', payload)
-    .then((res) => {
-      alert('Booking successful!');
-      console.log('Response:', res.data);
-      navigate('/p-transaction'); // 👈 Navigate to /p-transaction
-    })
+      .then((res) => {
+        console.log('Transaction response:', res.data);
+  
+        // 👇 Update property status to "booked"
+        return axios.put(`https://rahul30.pythonanywhere.com/property/${propertyId}/`, {
+          status: 'booked'
+        });
+      })
+      .then((putRes) => {
+        console.log('Status updated to booked:', putRes.data);
+        alert('Booking successful and status updated!');
+        navigate('/p-transaction');
+      })
       .catch((err) => {
-        alert('Booking failed!');
-        console.error('Error posting transaction:', err.response?.data || err);
+        alert('Booking or status update failed!');
+        console.error('Error:', err.response?.data || err);
       });
   };
+  
   
   
 

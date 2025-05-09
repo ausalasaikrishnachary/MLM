@@ -270,9 +270,9 @@ const AssetsUI = () => {
                         width: '150px',
                         transform: 'rotate(-45deg)',
                         backgroundColor:
-                          property.status === 'Available'
+                          property.status === 'available'
                             ? '#2ECC71'
-                            : property.status === 'Booked'
+                            : property.status === 'booked'
                               ? '#E67E22'
                               : '#E74C3C',
                         color: 'white',
@@ -417,7 +417,7 @@ const AssetsUI = () => {
                             textTransform: 'none',
                             '&:hover': { backgroundColor: '#59ed7c', color: 'rgb(5,5,5)' }
                           }}
-                          disabled={!subscriptionPaid || property.status !== 'Available'}
+                          disabled={!subscriptionPaid || property.status !== 'available'}
                           onClick={() => navigate(`/p-bookingassets?property_id=${property.property_id}`)}
                         >
                           Buy Now

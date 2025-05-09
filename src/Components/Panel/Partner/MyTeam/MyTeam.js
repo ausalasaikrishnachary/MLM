@@ -56,20 +56,32 @@ function MyTeam() {
         <Box key={member.user_id} display="flex" flexDirection="column" alignItems="center" position="relative">
           {/* Vertical Line from parent */}
           <Box position="absolute" top={0} width="2px" height="24px" bgcolor="black" zIndex={2} />
-
-          {/* Avatar for member */}
+  
+          {/* Avatar */}
           <Avatar
-            sx={{ bgcolor: 'green', width: 50, height: 50, border: '2px solid black', mt: '24px', cursor: 'pointer' }}
+            sx={{
+              bgcolor: 'green',
+              width: 50,
+              height: 50,
+              border: '2px solid black',
+              mt: '24px',
+              cursor: 'pointer'
+            }}
             onClick={() => handleAgentClick(member)}
-          >
-            <Typography variant="caption" color="white">
-              {member.first_name}
-            </Typography>
-          </Avatar>
+          />
+  
+          {/* Name and ID below Avatar */}
+          <Typography variant="body2" align="center" mt={1} fontWeight="bold">
+            {member.first_name}
+          </Typography>
+          <Typography variant="caption" align="center" color="textSecondary">
+            {member.referral_id}
+          </Typography>
         </Box>
       ))}
     </Stack>
   );
+  
 
   return (
     <>
@@ -87,11 +99,16 @@ function MyTeam() {
         {/* Centered Content */}
         <Box display="flex" flexDirection="column" alignItems="center">
           {/* Current Agent */}
-          <Avatar sx={{ bgcolor: 'red', width: 64, height: 64, border: '2px solid black' }}>
-            <Typography variant="subtitle1" color="black">
+          <Box display="flex" flexDirection="column" alignItems="center" mb={2}>
+            <Avatar sx={{ bgcolor: 'red', width: 64, height: 64, border: '2px solid black' }} />
+            <Typography variant="subtitle1" mt={1} fontWeight="bold">
               {currentAgent?.first_name || 'You'}
             </Typography>
-          </Avatar>
+            <Typography variant="caption" color="textSecondary">
+              {currentAgent?.referral_id || ''}
+            </Typography>
+          </Box>
+
 
           {/* Vertical line */}
           <Box width="2px" height="40px" bgcolor="black" />
