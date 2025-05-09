@@ -17,7 +17,7 @@ import AssetForm from "./Components/Panel/Partner/Asset/AssetForm";
 import Tmanagement from "./Components/Panel/Admin/Investors/Investormanagement";
 import Tmoniter from "./Components/Panel/Admin/Transactions/TransactionMoniter";
 import Login from "./Components/Login/Login";
-import Transaction from "./Components/Panel/Partner/Transactions/Transactions";
+import Transaction from "./Components/Panel/Partner/Transaction/Transaction";
 import InvestmentPage from "./Components/Panel/Investor/Asset/InvestmentPage";
 import PartnersDashboard from "./Components/Panel/Admin/Partners/Partners";
 import AssetDashboard from "./Components/Panel/Partner/Asset/Asset";
@@ -52,6 +52,9 @@ import LatestAssets from "./Components/Panel/Partner/Asset/LatestAssets";
 import MyAgents from "./Components/Panel/Partner/MyTeam/MyAgents/MyAgents";
 import ActiveUserView from "./Components/Panel/Partner/MyTeam/MyAgents/ViewAgents";
 import EditAsset from "./Components/Panel/Admin/Asset/EditAsset";
+import BookingAssets from "./Components/Panel/Partner/Asset/BookingAssets";
+import PaymentForm from "./Components/Panel/Partner/Transaction/PaymentForm";
+import TransactionList from "./Components/Panel/Partner/Transaction/TransactionDetails";
 
 
 
@@ -100,7 +103,6 @@ function App() {
               <Route path="/p-dashboard" element={<PartnerDashboard />} />
               <Route path="/p-report" element={<Report />} />
               <Route path="/p-addasset" element={<AssetForm />} />
-              <Route path="/p-transactions" element={<Transaction />} />
               <Route path="/p-assets" element={<AssetDashboard />} />
               <Route path="/p-profile" element={<PartnerProfile />} />
               <Route path="/p-profiledetails" element={<PartnerKyc/>} />
@@ -117,6 +119,10 @@ function App() {
               <Route path="/p-activeagents" element={<MyAgents />} />
               <Route path="/p-view-activeagents/:id" element={<ActiveUserView />} />
               
+              <Route path="/p-bookingassets" element={<BookingAssets />} />
+              <Route path="/p-transaction" element={<Transaction />} />
+              <Route path="/p-payment-form" element={<PaymentForm />} />
+              <Route path="/p-transaction-details" element={<TransactionList />} />
 
               <Route path="/" element={<Login />} />
               

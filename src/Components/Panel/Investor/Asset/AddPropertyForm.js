@@ -72,6 +72,9 @@ const AddPropertyForm = () => {
     length: '',
     breadth: '',
     numberOfFloors: 1,
+    numberOfBedrooms: '',
+    numberOfBalconies: '',
+    numberOfBathrooms: '',
     openSides: 0,
     builtupArea: '',
     numberOfRoads: 0,
@@ -93,6 +96,20 @@ const AddPropertyForm = () => {
     videos: [],
     userId: 1 // This should be dynamic in a real app
   });
+
+  const [showResidentialFields, setShowResidentialFields] = useState(false);
+
+  useEffect(() => {
+    if (formData.propertyType) {
+      const selectedType = propertyTypes.find(type => type.property_type_id === formData.propertyType);
+      if (selectedType) {
+        const typeName = selectedType.name.toLowerCase();
+        const shouldShow = typeName.includes('flat') || typeName.includes('villa') ||
+          typeName.includes('apartment') || typeName.includes('house');
+        setShowResidentialFields(shouldShow);
+      }
+    }
+  }, [formData.propertyType, propertyTypes]);
 
   // Fetch initial data
   useEffect(() => {
@@ -485,6 +502,53 @@ const AddPropertyForm = () => {
 
       case 2: return (
         <Grid container spacing={3} sx={{ mt: 2 }}>
+          {showResidentialFields && (
+            <>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Number of Floors"
+                  name="numberOfFloors"
+                  type="number"
+                  value={formData.numberOfFloors}
+                  onChange={handleChange}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Number of Bedrooms"
+                  name="numberOfBedrooms"
+                  type="number"
+                  value={formData.numberOfBedrooms}
+                  onChange={handleChange}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Number of Balconies"
+                  name="numberOfBalconies"
+                  type="number"
+                  value={formData.numberOfBalconies}
+                  onChange={handleChange}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Number of Bathrooms"
+                  name="numberOfBathrooms"
+                  type="number"
+                  value={formData.numberOfBathrooms}
+                  onChange={handleChange}
+                />
+              </Grid>
+            </>
+          )}
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
