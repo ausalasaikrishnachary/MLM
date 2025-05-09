@@ -14,6 +14,8 @@ const Login = () => {
   const [emailError, setEmailError] = useState("");
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [showResetPassword, setShowResetPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
 
   const handleEmailChange = (e) => {
     const value = e.target.value;
@@ -32,6 +34,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
+    setIsLoading(true); // Start loading
 
     try {
       const response = await fetch("https://rahul30.pythonanywhere.com/login/", {
@@ -52,7 +55,7 @@ const Login = () => {
         localStorage.setItem("user_name", data.first_name + data.last_name);
 
         console.log(data)
-        
+
         const userRoles = data.roles || [];
 
         if (userRoles.length > 1) {
@@ -67,6 +70,10 @@ const Login = () => {
       }
     } catch (err) {
       setError("Something went wrong. Please try again.");
+    }
+
+    finally {
+      setIsLoading(false); // Stop loading
     }
   };
 
@@ -268,9 +275,25 @@ const Login = () => {
                     Forgot Password?
                   </Link>
                 </Box>
-                <Button fullWidth variant="contained" sx={{ mt: 2, bgcolor: "#00cc8f", "&:hover": { bgcolor: "#004080", color: "#fff" } }} onClick={handleLogin}>
-                  Login
+                <Button
+                  fullWidth
+                  variant="contained"
+                  sx={{
+                    mt: 2,
+                    bgcolor: isLoading ? "#004080" : "#00cc8f",
+                    color: isLoading ? "#fff" : "inherit",
+                    "&:hover": {
+                      bgcolor: "#004080",
+                      color: "#fff"
+                    }
+                  }}
+                  onClick={handleLogin}
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Logging In..." : "Login"}
                 </Button>
+
+
               </>
             )}
           </Grid>
