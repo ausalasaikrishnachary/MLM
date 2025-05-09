@@ -162,7 +162,7 @@ const AgentDashboard = () => {
           {[
             { title: 'Listing Properties', value: counts?.total_properties ?? 0, icon: faBuilding, path: '/p-assets' },
             { title: 'Our Team', value: totalAgents.toString(), icon: faUsers, path: '/p-myteam' },
-            { title: 'Active Agents', value: counts?.total_active_users ?? 0, icon: faUserCheck, },
+            { title: 'Active Agents', value: counts?.total_active_users ?? 0, icon: faUserCheck, path: '/p-activeagents' },
             { title: 'Latest Properties', value: counts?.total_latest_properties ?? 0, icon: faHome, path: '/p-latestassets' },
           ].map((metric, index) => (
             <Grid item xs={12} sm={6} md={3} key={index}>

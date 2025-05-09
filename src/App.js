@@ -49,6 +49,9 @@ import PartnerMyAssets from "./Components/Panel/Partner/Asset/MyAssets";
 import ViewAssetDetails from "./Components/Panel/Partner/Asset/ViewAssetDetails";
 import MyTeam from "./Components/Panel/Partner/MyTeam/MyTeam";
 import LatestAssets from "./Components/Panel/Partner/Asset/LatestAssets";
+import MyAgents from "./Components/Panel/Partner/MyTeam/MyAgents/MyAgents";
+import ActiveUserView from "./Components/Panel/Partner/MyTeam/MyAgents/ViewAgents";
+import EditAsset from "./Components/Panel/Admin/Asset/EditAsset";
 
 
 
@@ -78,6 +81,7 @@ function App() {
               <Route path="/a-subscriptions" element={<Subscription />} />
               <Route path="/a-addsubscriptions" element={<AddSubscription />} />
               <Route path="/a-assets/:id" element={<AssetDetails />} />
+              <Route path="/a-assets/edit/:id" element={<EditAsset />} />
 
 
               <Route path="/i-dashboard" element={<InvestorDashboard />} />
@@ -110,6 +114,8 @@ function App() {
               <Route path="/p-assets/:id" element={<ViewAssetDetails />} />
               <Route path="/p-myteam" element={<MyTeam />} />
               <Route path="/p-latestassets" element={<LatestAssets />} />
+              <Route path="/p-activeagents" element={<MyAgents />} />
+              <Route path="/p-view-activeagents/:id" element={<ActiveUserView />} />
               
 
               <Route path="/" element={<Login />} />

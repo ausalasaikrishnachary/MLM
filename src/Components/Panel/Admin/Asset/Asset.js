@@ -25,6 +25,11 @@ import { useNavigate } from "react-router-dom";
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import PaginationComponent from '../../../Shared/Pagination';
+import { IconButton, Tooltip } from '@mui/material';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 
 const AssetsUI = () => {
   const [sortBy, setSortBy] = useState('');
@@ -34,8 +39,8 @@ const AssetsUI = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
-   const [page, setPage] = useState(1);
-      const totalPages = 5;
+  const [page, setPage] = useState(1);
+  const totalPages = 5;
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -132,6 +137,27 @@ const AssetsUI = () => {
     setOpenCarousel(false);
     setSelectedProperty(null);
   };
+  const handleDelete = async (propertyId) => {
+    const confirmed = window.confirm("Are you sure you want to delete this property?");
+    if (!confirmed) return;
+  
+    try {
+      const response = await fetch(`https://rahul30.pythonanywhere.com/property/${propertyId}/`, {
+        method: 'DELETE',
+      });
+  
+      if (response.ok) {
+        alert('Property deleted successfully.');
+        // Refresh list or redirect as needed
+      } else {
+        alert(`Failed to delete property. Status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Error deleting property:', error);
+      alert('An error occurred while deleting the property.');
+    }
+  };
+  
 
   return (
     <>
@@ -212,7 +238,7 @@ const AssetsUI = () => {
         {/* Cards Section */}
         {filteredProperties.length > 0 ? (
           <Grid container spacing={3}>
-          {filteredProperties.map((property) => (
+            {filteredProperties.map((property) => (
               <Grid item xs={12} md={6} lg={4} key={property.id}>
                 <Card
                   sx={{
@@ -225,102 +251,114 @@ const AssetsUI = () => {
                     }
                   }}
                 >
-                <Box sx={{ position: 'relative' }}>
-                  <CardMedia
-                    component="img"
-                    height="220"
-                    image={property.images.length > 0 ? `https://rahul30.pythonanywhere.com${property.images[0].image}` : 'https://via.placeholder.com/300'}
-                    alt={property.property_title}
-                    sx={{ objectFit: 'cover', borderRadius: '12px 12px 0 0', cursor: 'pointer' }}
-                    onClick={() => handleImageClick(property)}
-                  />
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      top: 15,
-                      right: 15,
-                      px: 2,
-                      py: 1,
-                      borderRadius: '20px',
-                      fontSize: '0.85rem',
-                      fontWeight: 500,
-                      backgroundColor: '#2ECC71',
-                      color: 'white'
-                    }}
-                  >
-                    {property.looking_to === 'sell' ? 'For Sale' : 'For Rent'}
+                  <Box sx={{ position: 'relative' }}>
+                    <CardMedia
+                      component="img"
+                      height="220"
+                      image={property.images.length > 0 ? `https://rahul30.pythonanywhere.com${property.images[0].image}` : 'https://via.placeholder.com/300'}
+                      alt={property.property_title}
+                      sx={{ objectFit: 'cover', borderRadius: '12px 12px 0 0', cursor: 'pointer' }}
+                      onClick={() => handleImageClick(property)}
+                    />
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        top: 15,
+                        right: 15,
+                        px: 2,
+                        py: 1,
+                        borderRadius: '20px',
+                        fontSize: '0.85rem',
+                        fontWeight: 500,
+                        backgroundColor: '#2ECC71',
+                        color: 'white'
+                      }}
+                    >
+                      {property.looking_to === 'sell' ? 'For Sale' : 'For Rent'}
+                    </Box>
                   </Box>
-                </Box>
-                <CardContent>
-                  <Typography fontWeight="bold" mb={1}>
-                    {property.property_title}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" mb={2}>
-                    {property.city}, {property.state}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" mb={1}>
-                    Added By: <strong>{property.first_name }</strong>
-                  </Typography>
-                  <Grid
-                    container
-                    spacing={2}
-                    sx={{
-                      p: 1.5,
-                      borderRadius: 1,
-                      mb: 2
-                    }}
-                  >
-                    <Grid item xs={6}>
-                      <Typography variant="caption" color="text.secondary">
-                        Plot Area
-                      </Typography>
-                      <Typography fontWeight="600" color="#4A90E2">
-                        {property.plot_area_sqft} sqft
-                      </Typography>
+                  <CardContent>
+                    <Typography fontWeight="bold" mb={1}>
+                      {property.property_title}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" mb={2}>
+                      {property.city}, {property.state}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" mb={1}>
+                      Added By: <strong>{property.first_name}</strong>
+                    </Typography>
+                    <Grid
+                      container
+                      spacing={2}
+                      sx={{
+                        p: 1.5,
+                        borderRadius: 1,
+                        mb: 2
+                      }}
+                    >
+                      <Grid item xs={6}>
+                        <Typography variant="caption" color="text.secondary">
+                          Plot Area
+                        </Typography>
+                        <Typography fontWeight="600" color="#4A90E2">
+                          {property.plot_area_sqft} sqft
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography variant="caption" color="text.secondary">
+                          Built-up Area
+                        </Typography>
+                        <Typography fontWeight="600" color="#4A90E2">
+                          {property.builtup_area_sqft} sqft
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography variant="caption" color="text.secondary">
+                          Property Value
+                        </Typography>
+                        <Typography fontWeight="600" color="#4A90E2">
+                          ₹{property.property_value}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography variant="caption" color="text.secondary">
+                          Floors
+                        </Typography>
+                        <Typography fontWeight="600" color="#4A90E2">
+                          {property.number_of_floors}
+                        </Typography>
+                      </Grid>
                     </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="caption" color="text.secondary">
-                        Built-up Area
-                      </Typography>
-                      <Typography fontWeight="600" color="#4A90E2">
-                        {property.builtup_area_sqft} sqft
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="caption" color="text.secondary">
-                        Property Value
-                      </Typography>
-                      <Typography fontWeight="600" color="#4A90E2">
-                        ₹{property.property_value}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography variant="caption" color="text.secondary">
-                        Floors
-                      </Typography>
-                      <Typography fontWeight="600" color="#4A90E2">
-                        {property.number_of_floors}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                  <Grid container spacing={1}>
-                    <Grid item xs={12}>
-                      <Button
-                        fullWidth
-                        variant="contained"
-                        sx={{
-                          backgroundColor: '#149c33',
-                          color: 'white',
-                          textTransform: 'none',
-                          '&:hover': { backgroundColor: '#59ed7c', color: 'rgb(5,5,5)' }
-                        }}
-                        // onClick={() => handleViewDetails(property)}
-                        onClick={() => navigate(`/a-assets/${property.property_id}`, { state: { property } })}
-                      >
-                        VIEW DETAILS
-                      </Button>
-                    </Grid>
-                    {/* <Grid item xs={12}>
+                    <Grid container spacing={1}>
+                      <Grid item xs={12} display="flex" justifyContent="center" gap={2}>
+                        <Tooltip title="View">
+                          <IconButton
+                            sx={{ color: '#149c33' }}
+                            onClick={() => navigate(`/a-assets/${property.property_id}`, { state: { property } })}
+                          >
+                            <VisibilityIcon />
+                          </IconButton>
+                        </Tooltip>
+
+                        <Tooltip title="Edit">
+                          <IconButton
+                            sx={{ color: '#1976d2' }}
+                            onClick={() => navigate(`/a-assets/edit/${property.property_id}`, { state: { property } })}
+                          >
+                            <EditIcon />
+                          </IconButton>
+                        </Tooltip>
+
+                        <Tooltip title="Delete">
+                          <IconButton
+                            sx={{ color: '#d32f2f' }}
+                          onClick={() => handleDelete(property.property_id)}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </Grid>
+                      {/* <Grid item xs={12}>
                       <Button
                         fullWidth
                         variant="outlined"
@@ -334,44 +372,44 @@ const AssetsUI = () => {
                         {property.looking_to === 'sell' ? 'BUY NOW' : 'RENT NOW'}
                       </Button>
                     </Grid> */}
-                  </Grid>
-                </CardContent>
-                {/* Image Carousel Dialog */}
-                <Dialog open={openCarousel} onClose={handleCloseCarousel} maxWidth="md" fullWidth>
-                  <Box sx={{ p: 2, background: '#000' }}>
-                    {selectedProperty && selectedProperty.images && selectedProperty.images.length > 0 ? (
-                      <Carousel
-                        showThumbs={false}
-                        infiniteLoop
-                        useKeyboardArrows
-                        dynamicHeight
-                        autoPlay
-                        emulateTouch
-                      >
-                        {selectedProperty.images.map((imgObj, idx) => (
-                          <div key={idx}>
-                            <img
-                              src={`https://rahul30.pythonanywhere.com${imgObj.image}`}
-                              alt={`property-img-${idx}`}
-                              style={{ borderRadius: 8, maxHeight: '550px', objectFit: 'cover' }}
-                            />
-                          </div>
-                        ))}
-                      </Carousel>
-                    ) : (
-                      <Typography color="white">No images available.</Typography>
-                    )}
-                  </Box>
-                </Dialog>
+                    </Grid>
+                  </CardContent>
+                  {/* Image Carousel Dialog */}
+                  <Dialog open={openCarousel} onClose={handleCloseCarousel} maxWidth="md" fullWidth>
+                    <Box sx={{ p: 2, background: '#000' }}>
+                      {selectedProperty && selectedProperty.images && selectedProperty.images.length > 0 ? (
+                        <Carousel
+                          showThumbs={false}
+                          infiniteLoop
+                          useKeyboardArrows
+                          dynamicHeight
+                          autoPlay
+                          emulateTouch
+                        >
+                          {selectedProperty.images.map((imgObj, idx) => (
+                            <div key={idx}>
+                              <img
+                                src={`https://rahul30.pythonanywhere.com${imgObj.image}`}
+                                alt={`property-img-${idx}`}
+                                style={{ borderRadius: 8, maxHeight: '550px', objectFit: 'cover' }}
+                              />
+                            </div>
+                          ))}
+                        </Carousel>
+                      ) : (
+                        <Typography color="white">No images available.</Typography>
+                      )}
+                    </Box>
+                  </Dialog>
                 </Card>
               </Grid>
             ))}
           </Grid>
         ) : (
-          <Box sx={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'center', 
+          <Box sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
             height: '200px',
             textAlign: 'center'
           }}>
@@ -381,11 +419,11 @@ const AssetsUI = () => {
           </Box>
         )}
 
-<PaginationComponent
-        count={totalPages}
-        page={page}
-        onChange={handlePageChange}
-      />
+        <PaginationComponent
+          count={totalPages}
+          page={page}
+          onChange={handlePageChange}
+        />
 
         {/* Pagination */}
         {/* <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
