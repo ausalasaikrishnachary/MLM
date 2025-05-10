@@ -332,16 +332,7 @@ const AssetsUI = () => {
                       </Grid>
                     </Grid>
                     <Grid container spacing={1}>
-                      <Grid item xs={12} display="flex" justifyContent="center" gap={2}>
-                        <Tooltip title="View">
-                          <IconButton
-                            sx={{ color: '#149c33' }}
-                            onClick={() => navigate(`/a-assets/${property.property_id}`, { state: { property } })}
-                          >
-                            <VisibilityIcon />
-                          </IconButton>
-                        </Tooltip>
-
+                        <Grid item xs={12} display="flex" justifyContent="right" gap={2}>
                         <Tooltip title="Edit">
                           <IconButton
                             sx={{ color: '#1976d2' }}
@@ -359,6 +350,24 @@ const AssetsUI = () => {
                             <DeleteIcon />
                           </IconButton>
                         </Tooltip>
+                        </Grid>
+                       <Grid item xs={12}>
+                      <Button
+                        fullWidth
+                        variant="contained"
+                        sx={{
+                          backgroundColor: '#149c33',
+                          color: 'white',
+                          textTransform: 'none',
+                          '&:hover': { backgroundColor: '#59ed7c', color: 'rgb(5,5,5)' }
+                        }}
+                        // onClick={() => handleViewDetails(property)}
+                        onClick={() => navigate(`/a-assets/${property.property_id}`, { state: { property } })}
+                      >
+                        VIEW DETAILS
+                      </Button>
+                      </Grid>
+                    
                       </Grid>
                       {/* <Grid item xs={12}>
                       <Button
@@ -374,7 +383,7 @@ const AssetsUI = () => {
                         {property.looking_to === 'sell' ? 'BUY NOW' : 'RENT NOW'}
                       </Button>
                     </Grid> */}
-                    </Grid>
+                   
                   </CardContent>
                   {/* Image Carousel Dialog */}
                   <Dialog open={openCarousel} onClose={handleCloseCarousel} maxWidth="md" fullWidth>
