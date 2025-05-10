@@ -59,19 +59,18 @@ function AddSubscription() {
   };
 
 
+  const fetchPlans = async () => {
+    try {
+      const response = await axios.get('https://rahul30.pythonanywhere.com/subscription/plans/');
+      const plans = response.data;
+      setPlanOptions(plans);
+      setAllPlans(plans);
+    } catch (error) {
+      console.error('Error fetching plans:', error);
+    }
+  };
+
   useEffect(() => {
-    const fetchPlans = async () => {
-      try {
-        const response = await axios.get('https://rahul30.pythonanywhere.com/subscription/plans/');
-        const plans = response.data;
-
-        setPlanOptions(plans);
-        setAllPlans(plans); // ← add this line
-      } catch (error) {
-        console.error('Error fetching plans:', error);
-      }
-    };
-
     fetchPlans();
   }, []);
 
@@ -141,9 +140,11 @@ function AddSubscription() {
       );
 
       alert('Plan added successfully!');
-      setPlanOptions((prev) => [...prev, newPlan.plan_name]);
-      setNewPlan({ plan_name: '', description: '' });
+      setNewPlan({ plan_name: '', description: '', user_type: '' });
       setOpenModal(false);
+
+      // Refresh the plans list
+      fetchPlans();
     } catch (error) {
       console.error('Error adding plan:', error);
       alert(
@@ -234,7 +235,7 @@ function AddSubscription() {
           <FormControl fullWidth margin="normal" required>
             <InputLabel>User Type</InputLabel>
             <Select
-              name="Applicable For"
+              name="user_type"
               value={newPlan.user_type}
               onChange={handleNewPlanChange}
               label="User Type"
