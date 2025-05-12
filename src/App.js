@@ -55,6 +55,7 @@ import EditAsset from "./Components/Panel/Admin/Asset/EditAsset";
 import BookingAssets from "./Components/Panel/Partner/Asset/BookingAssets";
 import PaymentForm from "./Components/Panel/Partner/Transaction/PaymentForm";
 import TransactionList from "./Components/Panel/Partner/Transaction/TransactionDetails";
+import View_Tmanagement from "./../src/Components/Panel/Admin/Investors/View_Tmanagement";
 
 
 
@@ -70,6 +71,8 @@ function App() {
               <Route path="/a-dashboard" element={<AdminDashboard />} />
               <Route path="/a-asset" element={<AdminAsset />} />
               <Route path="/a-investormanagement" element={<Tmanagement />} />
+              <Route path="/View_Tmanagement" element={<View_Tmanagement />} />
+
               <Route path="/a-transactionmoniter" element={<Tmoniter />} />
               <Route path="/a-investment-page" element={<InvestmentPage />} />
               <Route path="/a-add-lead" element={<AddLead />} />
