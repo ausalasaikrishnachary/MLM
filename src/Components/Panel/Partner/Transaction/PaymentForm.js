@@ -136,6 +136,12 @@ function PaymentForm() {
         'purchased_type',
         'property_id',
         "total_paid_amount",
+        "payment_mode",
+        "cheque_number",
+        "receiver_upi_id",
+        "receiver_account_number",
+        "ifsc",
+        "role",
     ];
 
 
