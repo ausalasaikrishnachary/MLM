@@ -19,6 +19,10 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../../Shared/Navbar/Navbar';
+import { Grid, Tooltip, IconButton } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 
 function Subscription() {
   const [userType, setUserType] = useState('Client');
@@ -59,6 +63,30 @@ function Subscription() {
   useEffect(() => {
     fetchVariantsAndPlans(userType);
   }, [userType]);
+
+  const handleDelete = async (variantId) => {
+    const confirmDelete = window.confirm(`Are you sure you want to delete variant ID ${variantId}?`);
+    if (!confirmDelete) return;
+
+    try {
+      const response = await fetch(`https://rahul30.pythonanywhere.com/subscription/plan-variants/${variantId}/`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        alert(`Variant ID ${variantId} deleted successfully.`);
+        // Refresh the data
+        fetchVariantsAndPlans(userType);
+      } else {
+        const errorData = await response.json();
+        alert(`Failed to delete variant ID ${variantId}. Reason: ${errorData.detail || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error deleting variant:', error);
+      alert('An error occurred while trying to delete the variant.');
+    }
+  };
+
 
   return (
     <>
@@ -101,6 +129,8 @@ function Subscription() {
                   <TableCell><strong>Description</strong></TableCell>
                   <TableCell><strong>Duration (Days)</strong></TableCell>
                   <TableCell><strong>Price</strong></TableCell>
+                  <TableCell align="center"><strong>Actions</strong></TableCell>
+
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -113,6 +143,28 @@ function Subscription() {
                       <TableCell>{plan.description || '—'}</TableCell>
                       <TableCell>{variant.duration_in_days}</TableCell>
                       <TableCell>₹{variant.price}</TableCell>
+                      <TableCell align="center">
+                        <Box display="flex" justifyContent="center" alignItems="center" gap={2}>
+                          <Tooltip title="Edit">
+                            <IconButton
+                              sx={{ color: '#1976d2' }}
+                              onClick={() => navigate(`/a-edit-subscription/${variant.variant_id}`, { state: { variant } })}
+                            >
+                              <EditIcon />
+                            </IconButton>
+                          </Tooltip>
+
+                          <Tooltip title="Delete">
+                            <IconButton
+                              sx={{ color: '#d32f2f' }}
+                              onClick={() => handleDelete(variant.variant_id)}
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </Tooltip>
+                        </Box>
+                      </TableCell>
+
                     </TableRow>
                   );
                 })}
