@@ -62,7 +62,7 @@ const AssetsUI = () => {
     const fetchProperties = async () => {
       const userId = localStorage.getItem("user_id"); // make sure this is a string
       try {
-        const response = await fetch('https://rahul30.pythonanywhere.com/property/');
+        const response = await fetch('https://rahul30.pythonanywhere.com/properties/approval-status/approved/');
         const data = await response.json();
 
         // Filter out properties where user_id matches the current user's id

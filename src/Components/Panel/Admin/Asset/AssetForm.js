@@ -54,8 +54,8 @@ const AddPropertyForm = () => {
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [amenities, setAmenities] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-    const navigate = useNavigate();
-    const userId = localStorage.getItem("user_id");
+  const navigate = useNavigate();
+  const userId = localStorage.getItem("user_id");
 
   // Form State
   const [formData, setFormData] = useState({
@@ -98,26 +98,31 @@ const AddPropertyForm = () => {
     isFeatured: false,
     images: [],
     videos: [],
-    userId: userId
+    userId: userId,
+    agent_commission: "",
+    company_commission: "",
+    agent_commission_paid: "",
+    agent_commission_balance: "",
+    Total_property_value: "",
   });
 
   useEffect(() => {
     fetchInitialData();
   }, []);
 
-    const [showResidentialFields, setShowResidentialFields] = useState(false);
-  
-    useEffect(() => {
-      if (formData.propertyType) {
-        const selectedType = propertyTypes.find(type => type.property_type_id === formData.propertyType);
-        if (selectedType) {
-          const typeName = selectedType.name.toLowerCase();
-          const shouldShow = typeName.includes('flat') || typeName.includes('villa') || 
-                            typeName.includes('apartment') || typeName.includes('house');
-          setShowResidentialFields(shouldShow);
-        }
+  const [showResidentialFields, setShowResidentialFields] = useState(false);
+
+  useEffect(() => {
+    if (formData.propertyType) {
+      const selectedType = propertyTypes.find(type => type.property_type_id === formData.propertyType);
+      if (selectedType) {
+        const typeName = selectedType.name.toLowerCase();
+        const shouldShow = typeName.includes('flat') || typeName.includes('villa') ||
+          typeName.includes('apartment') || typeName.includes('house');
+        setShowResidentialFields(shouldShow);
       }
-    }, [formData.propertyType, propertyTypes]);
+    }
+  }, [formData.propertyType, propertyTypes]);
 
   const fetchInitialData = async () => {
     try {
@@ -317,6 +322,11 @@ const AddPropertyForm = () => {
         number_of_bedrooms: formData.numberOfBedrooms,
         number_of_balconies: formData.numberOfBalconies,
         number_of_bathrooms: formData.numberOfBathrooms,
+        agent_commission: formData.agent_commission,
+        company_commission: formData.company_commission,
+        agent_commission_paid: formData.agent_commission_paid,
+        agent_commission_balance: formData.agent_commission_balance,
+        Total_property_value: formData.Total_property_value,
       };
 
       // Log the payload for debugging
@@ -660,52 +670,52 @@ const AddPropertyForm = () => {
       case 2: return (
         <Grid container spacing={3} sx={{ mt: 2 }}>
           {showResidentialFields && (
-                      <>
-                        <Grid item xs={12} sm={6}>
-                          <TextField
-                            fullWidth
-                            label="Number of Floors"
-                            name="numberOfFloors"
-                            type="number"
-                            value={formData.numberOfFloors}
-                            onChange={handleChange}
-                          />
-                        </Grid>
-          
-                        <Grid item xs={12} sm={6}>
-                          <TextField
-                            fullWidth
-                            label="Number of Bedrooms"
-                            name="numberOfBedrooms"
-                            type="number"
-                            value={formData.numberOfBedrooms}
-                            onChange={handleChange}
-                          />
-                        </Grid>
-          
-                        <Grid item xs={12} sm={6}>
-                          <TextField
-                            fullWidth
-                            label="Number of Balconies"
-                            name="numberOfBalconies"
-                            type="number"
-                            value={formData.numberOfBalconies}
-                            onChange={handleChange}
-                          />
-                        </Grid>
-          
-                        <Grid item xs={12} sm={6}>
-                          <TextField
-                            fullWidth
-                            label="Number of Bathrooms"
-                            name="numberOfBathrooms"
-                            type="number"
-                            value={formData.numberOfBathrooms}
-                            onChange={handleChange}
-                          />
-                        </Grid>
-                      </>
-                    )}
+            <>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Number of Floors"
+                  name="numberOfFloors"
+                  type="number"
+                  value={formData.numberOfFloors}
+                  onChange={handleChange}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Number of Bedrooms"
+                  name="numberOfBedrooms"
+                  type="number"
+                  value={formData.numberOfBedrooms}
+                  onChange={handleChange}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Number of Balconies"
+                  name="numberOfBalconies"
+                  type="number"
+                  value={formData.numberOfBalconies}
+                  onChange={handleChange}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Number of Bathrooms"
+                  name="numberOfBathrooms"
+                  type="number"
+                  value={formData.numberOfBathrooms}
+                  onChange={handleChange}
+                />
+              </Grid>
+            </>
+          )}
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
@@ -1004,7 +1014,7 @@ const AddPropertyForm = () => {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              label="Price"
+              label="Property Value"
               name="price"
               type="number"
               value={formData.price}
@@ -1012,16 +1022,60 @@ const AddPropertyForm = () => {
             />
           </Grid>
 
-          {/* <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              label="Maintenance Charges"
-              name="maintenance"
+              label="Total Property Value"
+              name="total_property_value"
               type="number"
-              value={formData.maintenance}
+              value={formData.total_property_value}
               onChange={handleChange}
             />
-          </Grid> */}
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Agent Commission"
+              name="agent_commission"
+              type="number"
+              value={formData.agent_commission}
+              onChange={handleChange}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Company Commission"
+              name="company_commission"
+              type="number"
+              value={formData.company_commission}
+              onChange={handleChange}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Agent Commission Paid"
+              name="agent_commission_paid"
+              type="number"
+              value={formData.agent_commission_paid}
+              onChange={handleChange}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Agent Commission Balance"
+              name="agent_commission_balance"
+              type="number"
+              value={formData.agent_commission_balance}
+              onChange={handleChange}
+            />
+          </Grid>
 
           <Grid item xs={12} sm={6}>
             <TextField
@@ -1053,21 +1107,9 @@ const AddPropertyForm = () => {
               onChange={handleChange}
             />
           </Grid>
-
-          {/* <Grid item xs={12}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="isFeatured"
-                  checked={formData.isFeatured}
-                  onChange={handleChange}
-                />
-              }
-              label="Feature this property"
-            />
-          </Grid> */}
         </Grid>
       );
+
 
       default: return null;
     }

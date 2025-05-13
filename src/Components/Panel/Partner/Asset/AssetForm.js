@@ -53,6 +53,8 @@ const AssetForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const referralId = localStorage.getItem('referral_id');
+  const userId = localStorage.getItem('user_id');
+  const username = localStorage.getItem('user_name');
 
   // Form State
   const [formData, setFormData] = useState({
@@ -95,7 +97,8 @@ const AssetForm = () => {
     isFeatured: false,
     images: [],
     videos: [],
-    userId: 1 // This should be dynamic in a real app
+    userId: userId,
+    agent_commission: "",
   });
 
   const [showResidentialFields, setShowResidentialFields] = useState(false);
@@ -105,8 +108,8 @@ const AssetForm = () => {
       const selectedType = propertyTypes.find(type => type.property_type_id === formData.propertyType);
       if (selectedType) {
         const typeName = selectedType.name.toLowerCase();
-        const shouldShow = typeName.includes('flat') || typeName.includes('villa') || 
-                          typeName.includes('apartment') || typeName.includes('house');
+        const shouldShow = typeName.includes('flat') || typeName.includes('villa') ||
+          typeName.includes('apartment') || typeName.includes('house');
         setShowResidentialFields(shouldShow);
       }
     }
@@ -238,10 +241,13 @@ const AssetForm = () => {
         category: formData.category,
         property_type: formData.propertyType,
         user_id: userId,
-        referral_id:referralId,
+        referral_id: referralId,
         number_of_bedrooms: formData.numberOfBedrooms,
         number_of_balconies: formData.numberOfBalconies,
         number_of_bathrooms: formData.numberOfBathrooms,
+        agent_commission: formData.agent_commission,
+        total_property_value : Number(formData.price) + Number(formData.agent_commission),
+        username:username,
       };
 
       // Log the payload for debugging
@@ -507,7 +513,7 @@ const AssetForm = () => {
 
       case 2: return (
         <Grid container spacing={3} sx={{ mt: 2 }}>
-           {showResidentialFields && (
+          {showResidentialFields && (
             <>
               <Grid item xs={12} sm={6}>
                 <TextField
@@ -822,7 +828,7 @@ const AssetForm = () => {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              label="Price"
+              label="Property Value"
               name="price"
               type="number"
               value={formData.price}
@@ -830,17 +836,16 @@ const AssetForm = () => {
             />
           </Grid>
 
-          {/* <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              label="Maintenance Charges"
-              name="maintenance"
+              label="Agent Commission"
+              name="agent_commission"
               type="number"
-              value={formData.maintenance}
+              value={formData.agent_commission}
               onChange={handleChange}
             />
-          </Grid> */}
-
+          </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
@@ -867,25 +872,13 @@ const AssetForm = () => {
               label="Owner Email"
               name="ownerEmail"
               type="email"
-              value={formData.referral_id}
+              value={formData.ownerEmail}
               onChange={handleChange}
             />
           </Grid>
-
-          {/* <Grid item xs={12}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="isFeatured"
-                  checked={formData.isFeatured}
-                  onChange={handleChange}
-                />
-              }
-              label="Feature this property"
-            />
-          </Grid> */}
         </Grid>
       );
+
 
       default: return null;
     }

@@ -48,47 +48,47 @@ const EditAsset = () => {
     }));
   };
 
-const handleFileChange = (e) => {
-  const files = Array.from(e.target.files);
-  setFormData(prev => ({
-    ...prev,
-    images: files
-  }));
-};
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    setFormData(prev => ({
+      ...prev,
+      images: files
+    }));
+  };
 
 
- const handleSubmit = async () => {
-  try {
-    const submitData = new FormData();
-    for (const key in formData) {
-      if (key === 'images') {
-        formData.images.forEach((img, index) => {
-          submitData.append('images', img); // field name should match your backend
-        });
-      } else if (formData[key] !== null && formData[key] !== undefined) {
-        submitData.append(key, formData[key]);
+  const handleSubmit = async () => {
+    try {
+      const submitData = new FormData();
+      for (const key in formData) {
+        if (key === 'images') {
+          formData.images.forEach((img, index) => {
+            submitData.append('images', img); // field name should match your backend
+          });
+        } else if (formData[key] !== null && formData[key] !== undefined) {
+          submitData.append(key, formData[key]);
+        }
       }
+
+      const response = await fetch(`https://rahul30.pythonanywhere.com/property/${id}/`, {
+        method: 'PUT',
+        body: submitData,
+      });
+
+      const data = await response.json();
+      console.log('API Response:', data);
+
+      if (response.ok) {
+        Swal.fire('Success', 'Property updated successfully!', 'success');
+        navigate('/a-asset');
+      } else {
+        Swal.fire('Error', 'Failed to update property.', 'error');
+      }
+    } catch (err) {
+      console.error('Error updating:', err);
+      Swal.fire('Error', 'An error occurred while updating.', 'error');
     }
-
-    const response = await fetch(`https://rahul30.pythonanywhere.com/property/${id}/`, {
-      method: 'PUT',
-      body: submitData,
-    });
-
-    const data = await response.json();
-    console.log('API Response:', data);
-
-    if (response.ok) {
-      Swal.fire('Success', 'Property updated successfully!', 'success');
-      navigate('/a-asset');
-    } else {
-      Swal.fire('Error', 'Failed to update property.', 'error');
-    }
-  } catch (err) {
-    console.error('Error updating:', err);
-    Swal.fire('Error', 'An error occurred while updating.', 'error');
-  }
-};
+  };
 
 
   return (
@@ -209,6 +209,14 @@ const handleFileChange = (e) => {
               rows={2}
             />
             <TextField
+              label="Amenities"
+              name="amenities"
+              value={formData.amenities}
+              onChange={handleChange}
+              fullWidth
+              sx={{ mb: 2 }}
+            />
+            <TextField
               label="Description"
               name="description"
               value={formData.description}
@@ -218,23 +226,47 @@ const handleFileChange = (e) => {
               multiline
               rows={4}
             />
-              <TextField
-              label="Amenities"
-              name="amenities"
-              value={formData.amenities}
+            <TextField
+              label="Property Value"
+              name="property_value"
+              value={formData.property_value}
+              onChange={handleChange}
+              fullWidth
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              label="Total Property Value"
+              name="total_property_value"
+              value={formData.total_property_value}
+              onChange={handleChange}
+              fullWidth
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              label="Agent Commission"
+              name="agent_commission"
+              value={formData.agent_commission}
+              onChange={handleChange}
+              fullWidth
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              label="Company Commission"
+              name="company_commission"
+              value={formData.company_commission}
               onChange={handleChange}
               fullWidth
               sx={{ mb: 2 }}
             />
             <Button variant="outlined" component="label" fullWidth sx={{ mb: 2 }}>
               Upload Property Image
-             <input
-  type="file"
-  accept="image/*"
-  hidden
-  multiple
-  onChange={handleFileChange}
-/>
+              <input
+                type="file"
+                accept="image/*"
+                hidden
+                multiple
+                onChange={handleFileChange}
+              />
             </Button>
             {formData.images && (
               <Typography variant="caption" sx={{ display: 'block', mb: 2 }}>

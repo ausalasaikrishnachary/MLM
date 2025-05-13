@@ -142,12 +142,12 @@ const AssetsUI = () => {
   const handleDelete = async (propertyId) => {
     const confirmed = window.confirm("Are you sure you want to delete this property?");
     if (!confirmed) return;
-  
+
     try {
       const response = await fetch(`https://rahul30.pythonanywhere.com/property/${propertyId}/`, {
         method: 'DELETE',
       });
-  
+
       if (response.ok) {
         alert('Property deleted successfully.');
         // Refresh list or redirect as needed
@@ -159,7 +159,33 @@ const AssetsUI = () => {
       alert('An error occurred while deleting the property.');
     }
   };
-  
+
+  const updateApprovalStatus = async (propertyId, newStatus) => {
+    try {
+      const response = await fetch(`https://rahul30.pythonanywhere.com/property/${propertyId}/`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ approval_status: newStatus }) // "approved" or "rejected" or other status
+      });
+
+      if (response.ok) {
+        alert('Approval status updated successfully.');
+        // Optionally refetch data
+        const updatedData = await response.json();
+        setProperties(prev =>
+          prev.map(p => (p.id === propertyId ? { ...p, approval_status: updatedData.approval_status } : p))
+        );
+      } else {
+        alert(`Failed to update approval status. Status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Error updating approval status:', error);
+      alert('An error occurred while updating the approval status.');
+    }
+  };
+
 
   return (
     <>
@@ -289,6 +315,60 @@ const AssetsUI = () => {
                     <Typography variant="body2" color="text.secondary" mb={1}>
                       Added By: <strong>{property.first_name}</strong>
                     </Typography>
+                    <FormControl fullWidth size="small" sx={{ mt: 2 }}>
+                      <Typography variant="subtitle2" sx={{ mb: 0.5, fontWeight: 500 }}>
+                        Approval Status
+                      </Typography>
+                      <Select
+                        value={property.approval_status || ''}
+                        onChange={async (e) => {
+                          const newStatus = e.target.value;
+                          try {
+                            const response = await fetch(`https://rahul30.pythonanywhere.com/property/${property.property_id}/`, {
+                              method: 'PUT',
+                              headers: {
+                                'Content-Type': 'application/json',
+                              },
+                              body: JSON.stringify({
+                                approval_status: newStatus
+                              }),
+                            });
+
+                            if (response.ok) {
+                              alert(`Approval status updated to "${newStatus}".`);
+                              setProperties(prev =>
+                                prev.map(p =>
+                                  p.property_id === property.property_id ? { ...p, approval_status: newStatus } : p
+                                )
+                              );
+                            } else {
+                              alert('Failed to update approval status');
+                            }
+                          } catch (error) {
+                            console.error('Error updating approval status:', error);
+                            alert('An error occurred.');
+                          }
+                        }}
+                        displayEmpty
+                        disabled={property.approval_status === 'approved' || property.approval_status === 'aejected'}
+                        sx={{
+                          borderRadius: '8px',
+                          backgroundColor: '#f9f9f9',
+                          '&:hover': {
+                            backgroundColor: '#f0f0f0'
+                          }
+                        }}
+                      >
+                        <MenuItem value={property.approval_status}>
+                          <em>{property.approval_status}</em>
+                        </MenuItem>
+
+                        <MenuItem value="approved">Approved</MenuItem>
+                        <MenuItem value="rejected">Rejected</MenuItem>
+                        {/* <MenuItem value="Pending">Pending</MenuItem> */}
+                      </Select>
+                    </FormControl>
+
                     <Grid
                       container
                       spacing={2}
@@ -319,7 +399,7 @@ const AssetsUI = () => {
                           Property Value
                         </Typography>
                         <Typography fontWeight="600" color="#4A90E2">
-                          ₹{property.property_value}
+                          ₹{property.total_property_value}
                         </Typography>
                       </Grid>
                       <Grid item xs={6}>
@@ -332,7 +412,7 @@ const AssetsUI = () => {
                       </Grid>
                     </Grid>
                     <Grid container spacing={1}>
-                        <Grid item xs={12} display="flex" justifyContent="right" gap={2}>
+                      <Grid item xs={12} display="flex" justifyContent="right" gap={2}>
                         <Tooltip title="Edit">
                           <IconButton
                             sx={{ color: '#1976d2' }}
@@ -345,31 +425,32 @@ const AssetsUI = () => {
                         <Tooltip title="Delete">
                           <IconButton
                             sx={{ color: '#d32f2f' }}
-                          onClick={() => handleDelete(property.property_id)}
+                            onClick={() => handleDelete(property.property_id)}
                           >
                             <DeleteIcon />
                           </IconButton>
                         </Tooltip>
-                        </Grid>
-                       <Grid item xs={12}>
-                      <Button
-                        fullWidth
-                        variant="contained"
-                        sx={{
-                          backgroundColor: '#149c33',
-                          color: 'white',
-                          textTransform: 'none',
-                          '&:hover': { backgroundColor: '#59ed7c', color: 'rgb(5,5,5)' }
-                        }}
-                        // onClick={() => handleViewDetails(property)}
-                        onClick={() => navigate(`/a-assets/${property.property_id}`, { state: { property } })}
-                      >
-                        VIEW DETAILS
-                      </Button>
                       </Grid>
-                    
+                      <Grid item xs={12}>
+                        <Button
+                          fullWidth
+                          variant="contained"
+                          sx={{
+                            backgroundColor: '#149c33',
+                            color: 'white',
+                            textTransform: 'none',
+                            '&:hover': { backgroundColor: '#59ed7c', color: 'rgb(5,5,5)' }
+                          }}
+                          // onClick={() => handleViewDetails(property)}
+                          onClick={() => navigate(`/a-assets/${property.property_id}`, { state: { property } })}
+                        >
+                          VIEW DETAILS
+                        </Button>
+
                       </Grid>
-                      {/* <Grid item xs={12}>
+
+                    </Grid>
+                    {/* <Grid item xs={12}>
                       <Button
                         fullWidth
                         variant="outlined"
@@ -383,7 +464,7 @@ const AssetsUI = () => {
                         {property.looking_to === 'sell' ? 'BUY NOW' : 'RENT NOW'}
                       </Button>
                     </Grid> */}
-                   
+
                   </CardContent>
                   {/* Image Carousel Dialog */}
                   <Dialog open={openCarousel} onClose={handleCloseCarousel} maxWidth="md" fullWidth>
