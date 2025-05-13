@@ -9,6 +9,7 @@ import {
   Divider,
 } from "@mui/material";
 import { useLocation } from "react-router-dom";
+import Header from "../../../Shared/Navbar/Navbar";
 
 const View_Tmanagement = () => {
   const location = useLocation();
@@ -38,16 +39,9 @@ const View_Tmanagement = () => {
   );
 
   return (
-    <Box sx={{ p: 4, backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
-      <Card
-        sx={{
-          maxWidth: 900,
-          mx: "auto",
-          borderRadius: 3,
-          boxShadow: 3,
-          p: 2,
-        }}
-      >
+    <>
+    <Header />
+    <Box sx={{ p: 4,  minHeight: "100vh" }}>
         <CardContent>
           <Box sx={{ textAlign: "center", mb: 3 }}>
             <Avatar
@@ -111,8 +105,8 @@ const View_Tmanagement = () => {
             {Field("Updated At", user.updated_at)}
           </Section>
         </CardContent>
-      </Card>
     </Box>
+    </>
   );
 };
 

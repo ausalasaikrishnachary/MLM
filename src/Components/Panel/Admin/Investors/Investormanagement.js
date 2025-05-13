@@ -29,7 +29,6 @@ const Tmanagement = () => {
     navigate("/View_Tmanagement", { state: { user } });
   };
 
-
   const handleCloseView = () => {
     setViewOpen(false);
     setSelectedUser(null);

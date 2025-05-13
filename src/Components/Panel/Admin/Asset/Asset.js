@@ -350,7 +350,7 @@ const AssetsUI = () => {
                           }
                         }}
                         displayEmpty
-                        disabled={property.approval_status === 'approved' || property.approval_status === 'aejected'}
+                        // disabled={property.approval_status === 'approved' || property.approval_status === 'rejected'}
                         sx={{
                           borderRadius: '8px',
                           backgroundColor: '#f9f9f9',
