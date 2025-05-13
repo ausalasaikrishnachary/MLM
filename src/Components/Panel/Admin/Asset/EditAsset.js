@@ -139,6 +139,21 @@ const handleFileChange = (e) => {
               fullWidth
               sx={{ mb: 2 }}
             />
+             <Button variant="outlined" component="label" fullWidth sx={{ mb: 2 }}>
+              Upload Property Image
+             <input
+  type="file"
+  accept="image/*"
+  hidden
+  multiple
+  onChange={handleFileChange}
+/>
+            </Button>
+            {formData.images && (
+              <Typography variant="caption" sx={{ display: 'block', mb: 2 }}>
+                {formData.images.name || 'Image attached'}
+              </Typography>
+            )}
           </Grid>
 
           {/* Column 2 */}
@@ -198,6 +213,14 @@ const handleFileChange = (e) => {
               fullWidth
               sx={{ mb: 2 }}
             />
+              <TextField
+              label="Amenities"
+              name="amenities"
+              value={formData.amenities}
+              onChange={handleChange}
+              fullWidth
+              sx={{ mb: 2 }}
+            />
             <TextField
               label="Address"
               name="address"
@@ -205,8 +228,7 @@ const handleFileChange = (e) => {
               onChange={handleChange}
               fullWidth
               sx={{ mb: 2 }}
-              multiline
-              rows={2}
+              
             />
             <TextField
               label="Description"
@@ -218,31 +240,8 @@ const handleFileChange = (e) => {
               multiline
               rows={4}
             />
-              <TextField
-              label="Amenities"
-              name="amenities"
-              value={formData.amenities}
-              onChange={handleChange}
-              fullWidth
-              sx={{ mb: 2 }}
-            />
-            <Button variant="outlined" component="label" fullWidth sx={{ mb: 2 }}>
-              Upload Property Image
-             <input
-  type="file"
-  accept="image/*"
-  hidden
-  multiple
-  onChange={handleFileChange}
-/>
-            </Button>
-            {formData.images && (
-              <Typography variant="caption" sx={{ display: 'block', mb: 2 }}>
-                {formData.images.name || 'Image attached'}
-              </Typography>
-            )}
           </Grid>
-
+          
           {/* Submit Button */}
           <Grid item xs={12}>
             <Button

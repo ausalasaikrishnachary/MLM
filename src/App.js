@@ -55,6 +55,7 @@ import EditAsset from "./Components/Panel/Admin/Asset/EditAsset";
 import BookingAssets from "./Components/Panel/Partner/Asset/BookingAssets";
 import PaymentForm from "./Components/Panel/Partner/Transaction/PaymentForm";
 import TransactionList from "./Components/Panel/Partner/Transaction/TransactionDetails";
+import EditSubscription from "./Components/Panel/Admin/Subscription/EditSubscription";
 
 
 
@@ -83,6 +84,7 @@ function App() {
               <Route path="/a-addasset" element={<AdminAssetForm />} />
               <Route path="/a-subscriptions" element={<Subscription />} />
               <Route path="/a-addsubscriptions" element={<AddSubscription />} />
+              <Route path="/a-edit-subscription/:id" element={<EditSubscription />} />
               <Route path="/a-assets/:id" element={<AssetDetails />} />
               <Route path="/a-assets/edit/:id" element={<EditAsset />} />
 
