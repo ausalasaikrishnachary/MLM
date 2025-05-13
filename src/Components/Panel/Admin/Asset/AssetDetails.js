@@ -183,7 +183,7 @@ const AssetDetails = () => {
                 <Typography><strong>Looking to:</strong> {property.looking_to}</Typography>
               </Grid>
               <Grid item xs={6}>
-                <Typography><strong>Property Value:</strong> {formatCurrency(property.property_value)}</Typography>
+                <Typography><strong>Property Value:</strong> {formatCurrency(property.total_property_value)}</Typography>
               </Grid>
               <Grid item xs={6}>
                 <Typography><strong>Category:</strong> {property.category}</Typography>

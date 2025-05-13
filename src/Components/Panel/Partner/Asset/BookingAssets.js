@@ -19,7 +19,7 @@ function BookingAssets() {
       .then((res) => {
         const prop = res.data;
         setProperty(prop);
-        setBookingAmount(calculateBookingAmount(Number(prop.property_value)));
+        setBookingAmount(calculateBookingAmount(Number(prop.total_property_value)));
         setLoading(false);
       })
       .catch((err) => {
@@ -108,7 +108,7 @@ function BookingAssets() {
                 <TextField
                   fullWidth
                   label="Property Value"
-                  value={property.property_value}
+                  value={property.total_property_value}
                   variant="outlined"
                   
                 />

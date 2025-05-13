@@ -298,7 +298,7 @@ const PartnerMyAssets = () => {
                           Property Value
                         </Typography>
                         <Typography fontWeight="600" color="#4A90E2">
-                          ₹{property.property_value}
+                          ₹{property.total_property_value}
                         </Typography>
                       </Grid>
                       <Grid item xs={6}>
