@@ -43,7 +43,7 @@ export default function PartnerHeader() {
     // },
     { label: 'My Team', path: '/p-myteam' },
     // { label: 'Report', path: '/p-report' },
-    { label: 'Commission', path: '/p-referal&commission' },
+    { label: 'Commission', path: '/p-commission' },
     { label: 'Plans', path: '/p-plans' },
   ];
 
