@@ -4,7 +4,7 @@ import axios from 'axios';
 import {
     Table, TableBody, TableCell, TableHead, TableRow, Button
 } from '@mui/material';
-import Header from "../../../Shared/Navbar/Navbar";
+import Header from "../../../Shared/Partner/PartnerNavbar";
 
 
 function PartnerCommission() {
@@ -50,7 +50,7 @@ useEffect(() => {
                         <TableCell sx={cellStyle}>Agent Commission</TableCell>
                         <TableCell sx={cellStyle}>Paid Commission</TableCell>
                         <TableCell sx={cellStyle}>Balance Commission</TableCell>
-                        <TableCell sx={cellStyle}>Commission Status</TableCell>
+                        {/* <TableCell sx={cellStyle}>Commission Status</TableCell> */}
                         {/* <TableCell sx={cellStyle}>Action</TableCell> */}
                     </TableRow>
                 </TableHead>
@@ -70,7 +70,7 @@ useEffect(() => {
                                 <TableCell sx={cellBodyStyle}>{property.agent_commission}</TableCell>
                                 <TableCell sx={cellBodyStyle}>{property.agent_commission_paid}</TableCell>
                                 <TableCell sx={cellBodyStyle}>{property.agent_commission_balance}</TableCell>
-                                <TableCell sx={cellBodyStyle}>{property.commission_status}</TableCell>
+                                {/* <TableCell sx={cellBodyStyle}>{property.commission_status}</TableCell> */}
                                 {/* <TableCell sx={cellBodyStyle}>
                                     {new Date(property.created_at).toLocaleDateString('en-IN')}
                                 </TableCell> */}
