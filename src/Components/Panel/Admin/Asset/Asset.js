@@ -75,6 +75,7 @@ const AssetsUI = () => {
           property.state,
           property.address,
           property.description,
+          property.referral_id,
           property.property_value?.toString(),
           property.plot_area_sqft?.toString(),
           property.builtup_area_sqft?.toString()

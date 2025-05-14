@@ -57,6 +57,10 @@ import PaymentForm from "./Components/Panel/Partner/Transaction/PaymentForm";
 import TransactionList from "./Components/Panel/Partner/Transaction/TransactionDetails";
 import EditSubscription from "./Components/Panel/Admin/Subscription/EditSubscription";
 import View_Tmanagement from "./../src/Components/Panel/Admin/Investors/View_Tmanagement";
+import Commission from "./Components/Panel/Admin/Commission/Commission";
+import CommissionByUser from "./Components/Panel/Admin/Commission/CommissionByUserid";
+import PayCommissionForm from "./Components/Panel/Admin/Commission/PayCommissionForm";
+import PartnerCommission from "./Components/Panel/Partner/PartnerCommission/PartnerCommission";
 
 
 
@@ -83,7 +87,9 @@ function App() {
               <Route path="/signup" element={<SignUp />} />
               <Route path="/Newkyc" element={<Newkyc />} />
 
-              <Route path="/a-referal&commission" element={<Referral />} />
+              {/* <Route path="/a-commission" element={<Referral />} /> */}
+              <Route path="/a-commission" element={<Commission />} />
+              <Route path="/a-commissions/:userId" element={<CommissionByUser />} />
               <Route path="/a-addasset" element={<AdminAssetForm />} />
               <Route path="/a-subscriptions" element={<Subscription />} />
               <Route path="/a-addsubscriptions" element={<AddSubscription />} />
@@ -113,7 +119,7 @@ function App() {
               <Route path="/p-profiledetails" element={<PartnerKyc/>} />
               <Route path="/p-leads" element={<Leads/>} />
               <Route path="/p-addleads" element={<PAddLead/>} />
-              <Route path="/p-referal&commission" element={<PartnerReferral/>} />
+              <Route path="/p-commission" element={<PartnerCommission/>} />
               <Route path="/p-addproperty" element={<AddPropertyForm/>} />
               <Route path="/p-plans" element={<PartnerPlans/>} />
               <Route path="/p-assets/:id" element={<AssetDetail />} />
@@ -128,6 +134,7 @@ function App() {
               <Route path="/p-transaction" element={<Transaction />} />
               <Route path="/p-payment-form" element={<PaymentForm />} />
               <Route path="/p-transaction-details" element={<TransactionList />} />
+               <Route path="/p-pay-commission/:propertyId" element={<PayCommissionForm />} />
 
               <Route path="/" element={<Login />} />
               

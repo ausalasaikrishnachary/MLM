@@ -32,7 +32,7 @@ export default function Header() {
     { label: 'Transactions', path: '/a-transactionmoniter' },
     { label: 'All Leads', path: '/a-investormanagement' },
     { label: 'Agents', path: '/a-partners' },
-    { label: 'Referal & Commission', path: '/a-referal&commission' },
+    { label: 'Commission', path: '/a-commission' },
     { label: 'Subscriptions', path: '/a-subscriptions' },
   ];
 
