@@ -51,7 +51,7 @@ export default function PartnerHeader() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const referral_id = localStorage.getItem("referral_id");
-  const first_name = localStorage.getItem("first_name");
+  const first_name = localStorage.getItem("user_name");
 
   // Navigation hooks.
   const navigate = useNavigate();
@@ -123,7 +123,7 @@ export default function PartnerHeader() {
         sx={{
           backgroundColor: 'white',
           color: '#000',
-          boxShadow:"-moz-initial"
+          boxShadow: "-moz-initial"
         }}
       >
         <Toolbar>
@@ -186,7 +186,7 @@ export default function PartnerHeader() {
                       height: '75px',
                       width: 'auto',
                       maxWidth: '150px',
-                      paddingTop:"8px"
+                      paddingTop: "8px"
                       // transform: 'scale(2.0)',
                     }}
                   />
@@ -203,8 +203,8 @@ export default function PartnerHeader() {
                       color: location.pathname === item.path ? 'blue' : '#000',
                       fontWeight: 'bold',
                       textTransform: 'none',
-                      fontSize:"16px"
-                      
+                      fontSize: "16px"
+
                     }}
                   >
                     {item.label}
@@ -217,7 +217,7 @@ export default function PartnerHeader() {
                 <NotificationsNoneIcon />
               </IconButton>
               <Typography sx={{ ml: 2, mr: 2, color: '#000', fontWeight: 'bold' }}>
-              Agent ({referral_id})
+                {first_name} ({referral_id})
               </Typography>
               <Avatar
                 onClick={handleAvatarClick}

@@ -38,8 +38,8 @@ function BookingAssets() {
   const handleBooking = () => {
     const username = localStorage.getItem('user_name');
     const userId = Number(localStorage.getItem('user_id'));
-    const propertyValue = Number(property.property_value);
-    const agentId = property?.referral_id || null;
+    const propertyValue = Number(property.total_property_value);
+    const agentId = property?.user_id || null;
     const propertyName = property?.property_title || null;
   
     const payload = {

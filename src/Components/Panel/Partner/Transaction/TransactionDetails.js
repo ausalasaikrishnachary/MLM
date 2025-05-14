@@ -101,8 +101,8 @@ const TransactionList = () => {
                                     {/* <TableCell sx={{ textAlign: 'center', border: '1px solid #000' }}>{transaction.total_amount}</TableCell> */}
                                     <TableCell sx={{ textAlign: 'center', border: '1px solid #000' }}>{transaction.paid_amount}</TableCell>
                                     <TableCell sx={{ textAlign: 'center', border: '1px solid #000' }}>{transaction.remaining_amount}</TableCell>
-                                    <TableCell sx={{ textAlign: 'center', border: '1px solid #000' }}>{transaction.payment_method}</TableCell>
-                                    <TableCell sx={{ textAlign: 'center', border: '1px solid #000' }}>{new Date(transaction.created_at).toLocaleDateString('en-IN')}</TableCell>
+                                    <TableCell sx={{ textAlign: 'center', border: '1px solid #000' }}>{transaction.payment_mode}</TableCell>
+                                    <TableCell sx={{ textAlign: 'center', border: '1px solid #000' }}> {new Date(transaction.transaction_date).toLocaleDateString('en-IN')}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>

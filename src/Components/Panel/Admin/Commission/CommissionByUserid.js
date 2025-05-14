@@ -29,7 +29,7 @@ function CommissionByUser() {
     axios.get(`https://rahul30.pythonanywhere.com/properties/user-id/${userId}/`)
         .then((response) => {
             // Filter properties where status is 'sold'
-            const soldProperties = response.data.filter(property => property.status === 'sold');
+            const soldProperties = response.data.filter(property => property.status === 'Sold');
             setPropertyData(soldProperties);
             setLoading(false);
         })
