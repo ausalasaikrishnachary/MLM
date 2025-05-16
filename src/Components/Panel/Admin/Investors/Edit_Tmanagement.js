@@ -152,9 +152,7 @@ const Edit_Tmanagement = () => {
               { name: 'first_name', label: 'First Name' },
               { name: 'last_name', label: 'Last Name' },
               { name: 'role_id', label: 'role_id' },
-              
               { name: 'role_name', label: 'role_name' },
-
               { name: 'email', label: 'Email' },
               { name: 'phone_number', label: 'Phone Number' },
               { name: 'date_of_birth', label: 'Date of Birth', type: 'date' },
@@ -163,9 +161,6 @@ const Edit_Tmanagement = () => {
               { name: 'state', label: 'State' },
               { name: 'country', label: 'Country' },
               { name: 'pin_code', label: 'PIN Code' },
-
-              
-
               { name: 'pan_number', label: 'PAN Number' },
               { name: 'aadhaar_number', label: 'Aadhaar Number' },
               { name: 'referral_id', label: 'Referral ID' },

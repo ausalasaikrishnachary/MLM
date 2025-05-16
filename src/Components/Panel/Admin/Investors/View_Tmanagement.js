@@ -18,7 +18,7 @@ const View_Tmanagement = () => {
   const location = useLocation();
   const user = location.state?.user;
   const contentRef = useRef();
-  
+
 
   if (!user) return <Typography sx={{ p: 3 }}>No user data available</Typography>;
 
@@ -119,9 +119,9 @@ const View_Tmanagement = () => {
 
           <Section title="Personal Information">
             {Field("User ID", user.user_id)}
-              {Field("Username", user.username)}
-              {Field("Role Name", user.role_name)}
-              {Field("Role id", user.role_id)}
+            {Field("Username", user.username)}
+            {Field("Role Name", user.role_name)}
+            {Field("Role id", user.role_id)}
             {Field("First Name", user.first_name)}
             {Field("Last Name", user.last_name)}
             {Field("Referral ID", user.referral_id)}
@@ -130,7 +130,7 @@ const View_Tmanagement = () => {
             {Field("Level No", user.level_no)}
             {Field("password", user.password)}
             {Field("Image", user.image)}
-            
+
           </Section>
 
           <Section title="Contact Information">
