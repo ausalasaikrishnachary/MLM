@@ -120,13 +120,15 @@ const View_Tmanagement = () => {
           <Section title="Personal Information">
             {Field("User ID", user.user_id)}
               {Field("Username", user.username)}
-
-            {Field("Referral ID", user.referral_id)}
+              {Field("Role Name", user.role_name)}
+              {Field("Role id", user.role_id)}
             {Field("First Name", user.first_name)}
             {Field("Last Name", user.last_name)}
+            {Field("Referral ID", user.referral_id)}
             {Field("Gender", user.gender)}
             {Field("Date of Birth", user.date_of_birth)}
             {Field("Level No", user.level_no)}
+            {Field("password", user.password)}
             {Field("Image", user.image)}
             
           </Section>
@@ -139,6 +141,7 @@ const View_Tmanagement = () => {
             {Field("State", user.state)}
             {Field("Country", user.country)}
             {Field("PIN Code", user.pin_code)}
+            {Field("Status", user.status)}
           </Section>
 
           <Section title="Bank Details">
@@ -155,6 +158,8 @@ const View_Tmanagement = () => {
             {Field("Aadhaar Number", user.aadhaar_number)}
             {Field("KYC Status", user.kyc_status)}
             {Field("Nominee Reference To", user.nominee_reference_to)}
+            {Field("aadhaar", user.aadhaar)}
+            {Field("pan", user.pan)}
           </Section>
 
           <Section title="Other Information">

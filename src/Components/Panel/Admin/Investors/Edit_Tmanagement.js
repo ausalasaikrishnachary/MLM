@@ -146,10 +146,15 @@ const Edit_Tmanagement = () => {
 
           <Grid container spacing={2}>
             {[
+              { name: 'user_id', label: 'user_id' },
               { name: 'username', label: 'Username' },
               { name: 'password', label: 'Password' },
               { name: 'first_name', label: 'First Name' },
               { name: 'last_name', label: 'Last Name' },
+              { name: 'role_id', label: 'role_id' },
+              { name: 'level_no', label: 'level_no' },
+              { name: 'role_name', label: 'role_name' },
+
               { name: 'email', label: 'Email' },
               { name: 'phone_number', label: 'Phone Number' },
               { name: 'date_of_birth', label: 'Date of Birth', type: 'date' },
@@ -158,6 +163,9 @@ const Edit_Tmanagement = () => {
               { name: 'state', label: 'State' },
               { name: 'country', label: 'Country' },
               { name: 'pin_code', label: 'PIN Code' },
+
+              
+
               { name: 'pan_number', label: 'PAN Number' },
               { name: 'aadhaar_number', label: 'Aadhaar Number' },
               { name: 'referral_id', label: 'Referral ID' },
@@ -186,8 +194,15 @@ const Edit_Tmanagement = () => {
 
             <Grid item xs={12} sm={4}>
               <FormControl fullWidth>
-                <InputLabel>Gender</InputLabel>
-                <Select name="gender" value={formData.gender || ''} onChange={handleChange}>
+                <InputLabel id="gender-label">Gender</InputLabel>
+                <Select
+                  labelId="gender-label"
+                  id="gender"
+                  name="gender"
+                  value={formData.gender || ''}
+                  onChange={handleChange}
+                  label="Gender"
+                >
                   <MenuItem value="male">Male</MenuItem>
                   <MenuItem value="female">Female</MenuItem>
                   <MenuItem value="other">Other</MenuItem>
@@ -195,10 +210,18 @@ const Edit_Tmanagement = () => {
               </FormControl>
             </Grid>
 
+
             <Grid item xs={12} sm={4}>
               <FormControl fullWidth>
-                <InputLabel>Account Type</InputLabel>
-                <Select name="account_type" value={formData.account_type || ''} onChange={handleChange}>
+                <InputLabel id="account-type-label">Account Type</InputLabel>
+                <Select
+                  labelId="account-type-label"
+                  id="account_type"
+                  name="account_type"
+                  value={formData.account_type || ''}
+                  onChange={handleChange}
+                  label="Account Type"
+                >
                   <MenuItem value="Savings">Savings</MenuItem>
                   <MenuItem value="Current">Current</MenuItem>
                 </Select>
@@ -207,14 +230,22 @@ const Edit_Tmanagement = () => {
 
             <Grid item xs={12} sm={4}>
               <FormControl fullWidth>
-                <InputLabel>KYC Status</InputLabel>
-                <Select name="kyc_status" value={formData.kyc_status || ''} onChange={handleChange}>
+                <InputLabel id="kyc-status-label">KYC Status</InputLabel>
+                <Select
+                  labelId="kyc-status-label"
+                  id="kyc_status"
+                  name="kyc_status"
+                  value={formData.kyc_status || ''}
+                  onChange={handleChange}
+                  label="KYC Status"
+                >
                   <MenuItem value="Verified">Verified</MenuItem>
                   <MenuItem value="Pending">Pending</MenuItem>
                   <MenuItem value="Rejected">Rejected</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
+
 
             {[{ name: 'image', label: 'User Image' },
             { name: 'pan', label: 'Upload PAN' },
