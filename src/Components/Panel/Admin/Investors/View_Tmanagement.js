@@ -119,6 +119,8 @@ const View_Tmanagement = () => {
 
           <Section title="Personal Information">
             {Field("User ID", user.user_id)}
+              {Field("Username", user.username)}
+
             {Field("Referral ID", user.referral_id)}
             {Field("First Name", user.first_name)}
             {Field("Last Name", user.last_name)}

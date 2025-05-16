@@ -1,240 +1,260 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
 import {
-  Box,
-  Typography,
-  Grid,
-  Avatar,
-  Divider,
-  TextField,
-  Button,
-} from "@mui/material";
-import { useNavigate, useLocation } from "react-router-dom";
-import Header from "../../../Shared/Navbar/Navbar";
-import axios from "axios";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+  Grid, TextField, Typography, Button, Box, MenuItem, InputLabel,
+  Select, FormControl
+} from '@mui/material';
+import axios from 'axios';
+import { useLocation } from 'react-router-dom';
+
 
 const Edit_Tmanagement = () => {
+  const [users, setUsers] = useState([]);
   const location = useLocation();
-  const user = location.state?.user;
-  const navigate = useNavigate();
+const passedUser = location.state?.user || null;
 
-  const [formData, setFormData] = useState(user || {});
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedUserId, setSelectedUserId] = useState('');
+  const [formData, setFormData] = useState({
+    user_id: '',
+    username: '',
+    password: '',
+    first_name: '',
+    last_name: '',
+    email: '',
+    phone_number: '',
+    date_of_birth: '',
+    gender: '',
+    address: '',
+    city: '',
+    state: '',
+    country: '',
+    pin_code: '',
+    pan_number: '',
+    aadhaar_number: '',
+    kyc_status: '',
+    referred_by: '',
+    referral_id: '',
+    level_no: '',
+    status: '',
+    account_holder_name: '',
+    bank_name: '',
+    branch_name: '',
+    account_number: '',
+    account_type: '',
+    ifsc_code: '',
+    nominee_reference_to: '',
+    roles: [],
+    image: '',
+    pan: '',
+    aadhaar: ''
+  });
 
-  if (!user)
-    return (
-      <Typography sx={{ p: 3 }}>
-        No user data available
-      </Typography>
-    );
+  const [files, setFiles] = useState({
+    image: null,
+    pan: null,
+    aadhaar: null,
+  });
+
+  // Fetch all users
+  useEffect(() => {
+    axios.get('https://rahul30.pythonanywhere.com/users/')
+      .then(res => setUsers(res.data))
+      .catch(err => console.error('User list fetch error:', err));
+  }, []);
+
+  // Fetch individual user data when selected
+ useEffect(() => {
+  if (passedUser) {
+    setSelectedUserId(passedUser.user_id);
+    setFormData({
+      ...passedUser,
+      date_of_birth: passedUser.date_of_birth || '',
+      roles: passedUser.roles || [],
+    });
+  }
+}, [passedUser]);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
-    if (name === "role_name") {
-      setFormData((prev) => ({
-        ...prev,
-        roles: [{ ...prev.roles?.[0], role_name: value }],
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    }
+  const handleFileChange = (e) => {
+    const { name, files } = e.target;
+    setFiles(prev => ({ ...prev, [name]: files[0] }));
   };
 
   const handleSubmit = async () => {
-    try {
-      const data = new FormData();
+    const data = new FormData();
 
-      // Append all form fields
-      for (const key in formData) {
-        if (key !== "roles" && formData[key] !== undefined && formData[key] !== null) {
-          data.append(key, formData[key]);
+    Object.entries(formData).forEach(([key, value]) => {
+      if (key === 'roles') {
+        const roleIds = value.map(role => role.role_id);
+        data.append('roles', JSON.stringify(roleIds));
+      } else if (key === 'password') {
+        if (value?.trim()) {
+          data.append('password', value);
         }
-      }
-
-      // Add roles if present
-      if (formData.roles?.[0]?.role_name) {
-        data.append("roles", JSON.stringify([{ role_name: formData.roles[0].role_name }]));
-      }
-
-      // Add image if selected
-      if (selectedImage) {
-        data.append("image", selectedImage);
-      }
-
-      // Debug: Log FormData content
-      console.log("FormData being submitted:");
-      for (let pair of data.entries()) {
-        console.log(`${pair[0]}:`, pair[1]);
-      }
-
-      await axios.patch(
-        `https://rahul30.pythonanywhere.com/users/${formData.user_id}/`,
-        data,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
-
-      alert("User updated successfully!");
-    } catch (error) {
-      console.error("Update failed", error);
-      if (error.response) {
-        console.error("Server response:", error.response.data);
-        alert(`Failed to update user: ${JSON.stringify(error.response.data)}`);
       } else {
-        alert("Failed to update user.");
+        data.append(key, value ?? '');
       }
+    });
+
+    Object.entries(files).forEach(([key, file]) => {
+      if (file) data.append(key, file);
+    });
+
+    try {
+      await axios.post(`https://rahul30.pythonanywhere.com/users/update/${selectedUserId}/`, data, {
+
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      alert('User updated successfully!');
+    } catch (error) {
+      console.error('Update error:', error);
+      alert('Failed to update user.');
     }
   };
 
-  const Section = ({ title, children }) => (
-    <Box sx={{ mb: 4, display: "flex", justifyContent: "center" }}>
-      <Box sx={{ width: "100%", maxWidth: 1200 }}>
-        <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ fontSize: "1.4rem" }}>
-          {title}
-        </Typography>
-        <Divider sx={{ mb: 2 }} />
-        <Grid container spacing={2}>
-          {children}
-        </Grid>
-      </Box>
-    </Box>
-  );
-
-  const InputField = (label, name, type = "text", valueOverride = null) => (
-    <Grid item xs={12} sm={3} key={name}>
-      <TextField
-        label={label}
-        name={name}
-        type={type}
-        value={valueOverride ?? formData[name] ?? ""}
-        onChange={handleChange}
-        fullWidth
-        variant="outlined"
-        // size="small"
-        InputLabelProps={type === "date" ? { shrink: true } : {}}
-      />
-    </Grid>
-  );
-
   return (
-    <>
-      <Header />
-      <Box sx={{ p: 4, backgroundColor: "#ffffff" }}>
-        <Box sx={{ maxWidth: 1200, mx: "auto" }}>
-          {/* Avatar */}
-          {/* <Box sx={{ textAlign: "center", mb: 3 }}>
-            {/* <Avatar
-              src={selectedImage ? URL.createObjectURL(selectedImage) : formData.image}
-              alt="User"
-              sx={{ width: 100, height: 100, mx: "auto", mb: 1 }}
-            /> */}
-            {/* <Typography variant="h5" fontWeight="bold">
-              {formData.username}
-            </Typography>
-            <Typography color="text.secondary">
-              {formData.email}
-            </Typography>
-          </Box> */} 
+    <Box sx={{ p: 4, maxWidth: 1300, mx: 'auto' }}>
+      <Typography variant="h4" align="center" gutterBottom>
+        Edit User
+      </Typography>
 
-          {/* Back Button */}
-          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
-            <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={() => navigate(-1)}>
-              Back
-            </Button>
-          </Box>
+      {/* User Selection
+      <FormControl fullWidth sx={{ mb: 4 }}>
+  <InputLabel>Select User</InputLabel>
+  <Select
+    value={selectedUserId}
+    label="Select User"
+    onChange={(e) => setSelectedUserId(e.target.value)}
+  >
+    {users.map(user => (
+      <MenuItem key={user.user_id} value={user.user_id}>
+        {user.username} ({user.user_id})
+      </MenuItem>
+    ))}
+  </Select>
+</FormControl> */}
 
-          {/* Form Sections */}
-          <Section title="Basic Details">
-            {InputField("Username", "username")}
-            {InputField("Email", "email")}
-            {InputField("Phone Number", "phone_number")}
-            {InputField("Role", "role_name", "text", formData.roles?.[0]?.role_name || "")}
-          </Section>
 
-          <Section title="Personal Information">
-            {InputField("User ID", "user_id")}
-            {InputField("Referral ID", "referral_id")}
-            {InputField("First Name", "first_name")}
-            {InputField("Last Name", "last_name")}
-            {InputField("Gender", "gender")}
-            {InputField("Level No", "level_no")}
-
-            {/* Image Upload */}
-            <Grid item xs={12} sm={3}>
-              <Button
-                variant="outlined"
-                component="label"
-                fullWidth
-                sx={{ height: 52, textTransform: "none" }}
-              >
-                Upload Image
-                <input
-                  type="file"
-                  hidden
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                      setSelectedImage(file);
-                      setFormData((prev) => ({
-                        ...prev,
-                        image: URL.createObjectURL(file),
-                      }));
-                    }
-                  }}
+      {selectedUserId && (
+        <>
+          <Grid container spacing={2}>
+            {/* Text Inputs */}
+            {[
+              { name: 'username', label: 'Username' },
+              { name: 'password', label: 'Password' },
+              { name: 'first_name', label: 'First Name' },
+              { name: 'last_name', label: 'Last Name' },
+              { name: 'email', label: 'Email' },
+              { name: 'phone_number', label: 'Phone Number' },
+              { name: 'date_of_birth', label: 'Date of Birth', type: 'date' },
+              { name: 'address', label: 'Address' },
+              { name: 'city', label: 'City' },
+              { name: 'state', label: 'State' },
+              { name: 'country', label: 'Country' },
+              { name: 'pin_code', label: 'PIN Code' },
+              { name: 'pan_number', label: 'PAN Number' },
+              { name: 'aadhaar_number', label: 'Aadhaar Number' },
+              { name: 'referral_id', label: 'Referral ID' },
+              { name: 'level_no', label: 'Level No' },
+              { name: 'referred_by', label: 'Referred By' },
+              { name: 'account_holder_name', label: 'Account Holder Name' },
+              { name: 'bank_name', label: 'Bank Name' },
+              { name: 'branch_name', label: 'Branch Name' },
+              { name: 'account_number', label: 'Account Number' },
+              { name: 'ifsc_code', label: 'IFSC Code' },
+              { name: 'nominee_reference_to', label: 'Nominee Reference To' },
+              { name: 'status', label: 'Status' },
+            ].map(field => (
+              <Grid item xs={12} sm={4} key={field.name}>
+                <TextField
+                  fullWidth
+                  label={field.label}
+                  name={field.name}
+                  type={field.type || 'text'}
+                  value={formData[field.name] || ''}
+                  onChange={handleChange}
+                  InputLabelProps={field.type === 'date' ? { shrink: true } : {}}
                 />
-              </Button>
-              {selectedImage && (
-                <Typography variant="body2" sx={{ mt: 1 }}>
-                  {selectedImage.name}
-                </Typography>
-              )}
+              </Grid>
+            ))}
+
+            {/* Dropdowns */}
+            <Grid item xs={12} sm={4}>
+              <FormControl fullWidth>
+                <InputLabel>Gender</InputLabel>
+                <Select name="gender" value={formData.gender || ''} onChange={handleChange}>
+                  <MenuItem value="male">Male</MenuItem>
+                  <MenuItem value="female">Female</MenuItem>
+                  <MenuItem value="other">Other</MenuItem>
+                </Select>
+              </FormControl>
             </Grid>
-          </Section>
 
-          <Section title="Contact Information">
-            {InputField("Address", "address")}
-            {InputField("City", "city")}
-            {InputField("State", "state")}
-            {InputField("Country", "country")}
-            {InputField("PIN Code", "pin_code")}
-          </Section>
+            <Grid item xs={12} sm={4}>
+              <FormControl fullWidth>
+                <InputLabel>Account Type</InputLabel>
+                <Select name="account_type" value={formData.account_type || ''} onChange={handleChange}>
+                  <MenuItem value="Savings">Savings</MenuItem>
+                  <MenuItem value="Current">Current</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
 
-          <Section title="Bank Details">
-            {InputField("Bank Name", "bank_name")}
-            {InputField("Account Holder Name", "account_holder_name")}
-            {InputField("Branch Name", "branch_name")}
-            {InputField("Account Type", "account_type")}
-            {InputField("Account Number", "account_number")}
-            {InputField("IFSC Code", "ifsc_code")}
-          </Section>
+            <Grid item xs={12} sm={4}>
+              <FormControl fullWidth>
+                <InputLabel>KYC Status</InputLabel>
+                <Select name="kyc_status" value={formData.kyc_status || ''} onChange={handleChange}>
+                  <MenuItem value="Verified">Verified</MenuItem>
+                  <MenuItem value="Pending">Pending</MenuItem>
+                  <MenuItem value="Rejected">Rejected</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
 
-          <Section title="KYC & Identification">
-            {InputField("PAN Number", "pan_number")}
-            {InputField("Aadhaar Number", "aadhaar_number")}
-            {InputField("KYC Status", "kyc_status")}
-            {InputField("Nominee Reference To", "nominee_reference_to")}
-          </Section>
+            {/* File Uploads */}
+            {[
+              { name: 'image', label: 'User Image' },
+              { name: 'pan', label: 'Upload PAN' },
+              { name: 'aadhaar', label: 'Upload Aadhaar' },
+            ].map(fileField => (
+              <Grid item xs={12} sm={4} key={fileField.name}>
+                <Button variant="outlined" component="label" fullWidth>
+                  {fileField.label}
+                  <input
+                    type="file"
+                    hidden
+                    name={fileField.name}
+                    accept="image/*,.pdf"
+                    onChange={handleFileChange}
+                  />
+                </Button>
+                {files[fileField.name]?.name && (
+                  <Typography variant="body2" mt={1}>{files[fileField.name].name}</Typography>
+                )}
+                {formData[fileField.name] && typeof formData[fileField.name] === 'string' && (
+                  <Box mt={1}>
+                    <Typography variant="body2">Current file:</Typography>
+                    <a href={`https://rahul30.pythonanywhere.com${formData[fileField.name]}`} target="_blank" rel="noopener noreferrer">
+                      View {fileField.label}
+                    </a>
+                  </Box>
+                )}
+              </Grid>
+            ))}
+          </Grid>
 
-          <Section title="Other Information">
-            {InputField("Referred By", "referred_by")}
-            {InputField("Created At", "created_at")}
-            {InputField("Updated At", "updated_at")}
-          </Section>
-
-          <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-            <Button variant="contained" color="primary" onClick={handleSubmit}>
-              Update Changes
+          <Box mt={4}>
+            <Button variant="contained" color="primary" size="large" fullWidth onClick={handleSubmit}>
+              Update User
             </Button>
           </Box>
-        </Box>
-      </Box>
-    </>
+        </>
+      )}
+    </Box>
   );
 };
 
