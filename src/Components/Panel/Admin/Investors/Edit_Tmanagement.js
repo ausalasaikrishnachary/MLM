@@ -4,13 +4,15 @@ import {
   Select, FormControl
 } from '@mui/material';
 import axios from 'axios';
-import { useLocation } from 'react-router-dom';
-
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import {useNavigate, useLocation } from 'react-router-dom';
+import Header from "../../../Shared/Navbar/Navbar";
 
 const Edit_Tmanagement = () => {
   const [users, setUsers] = useState([]);
   const location = useLocation();
-const passedUser = location.state?.user || null;
+   const navigate = useNavigate();
+  const passedUser = location.state?.user || null;
 
   const [selectedUserId, setSelectedUserId] = useState('');
   const [formData, setFormData] = useState({
@@ -54,25 +56,22 @@ const passedUser = location.state?.user || null;
     aadhaar: null,
   });
 
-  // Fetch all users
   useEffect(() => {
     axios.get('https://rahul30.pythonanywhere.com/users/')
       .then(res => setUsers(res.data))
       .catch(err => console.error('User list fetch error:', err));
   }, []);
 
-  // Fetch individual user data when selected
- useEffect(() => {
-  if (passedUser) {
-    setSelectedUserId(passedUser.user_id);
-    setFormData({
-      ...passedUser,
-      date_of_birth: passedUser.date_of_birth || '',
-      roles: passedUser.roles || [],
-    });
-  }
-}, [passedUser]);
-
+  useEffect(() => {
+    if (passedUser) {
+      setSelectedUserId(passedUser.user_id);
+      setFormData({
+        ...passedUser,
+        date_of_birth: passedUser.date_of_birth || '',
+        roles: passedUser.roles || [],
+      });
+    }
+  }, [passedUser]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -89,13 +88,11 @@ const passedUser = location.state?.user || null;
 
     Object.entries(formData).forEach(([key, value]) => {
       if (key === 'roles') {
-        const roleIds = value.map(role => role.role_id);
+        const roleIds = value.map(role => role.role_id || role);
         data.append('roles', JSON.stringify(roleIds));
       } else if (key === 'password') {
-        if (value?.trim()) {
-          data.append('password', value);
-        }
-      } else {
+        if (value?.trim()) data.append('password', value);
+      } else if (!['image', 'pan', 'aadhaar'].includes(key)) {
         data.append(key, value ?? '');
       }
     });
@@ -105,44 +102,49 @@ const passedUser = location.state?.user || null;
     });
 
     try {
-      await axios.post(`https://rahul30.pythonanywhere.com/users/update/${selectedUserId}/`, data, {
-
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      const response = await axios.put(
+        `https://rahul30.pythonanywhere.com/users/${selectedUserId}/`,
+        data,
+        {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        }
+      );
       alert('User updated successfully!');
     } catch (error) {
-      console.error('Update error:', error);
-      alert('Failed to update user.');
+      console.error('Update error:', error.response?.data || error.message);
+      alert('Failed to update user. Check the console for details.');
     }
   };
 
   return (
-    <Box sx={{ p: 4, maxWidth: 1300, mx: 'auto' }}>
+
+    
+    
+
+      <Box sx={{ p: 4, maxWidth: 1300, mx: 'auto' }}>
+  {/* Back Button */}
+  <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2 }}>
+    <Button
+      variant="outlined"
+      startIcon={<ArrowBackIcon />}
+      onClick={() => navigate(-1)}
+    >
+      Back
+    </Button>
+  </Box>
+      
       <Typography variant="h4" align="center" gutterBottom>
         Edit User
       </Typography>
 
-      {/* User Selection
-      <FormControl fullWidth sx={{ mb: 4 }}>
-  <InputLabel>Select User</InputLabel>
-  <Select
-    value={selectedUserId}
-    label="Select User"
-    onChange={(e) => setSelectedUserId(e.target.value)}
-  >
-    {users.map(user => (
-      <MenuItem key={user.user_id} value={user.user_id}>
-        {user.username} ({user.user_id})
-      </MenuItem>
-    ))}
-  </Select>
-</FormControl> */}
-
-
       {selectedUserId && (
         <>
+
+         <Header />
+
+         
+
           <Grid container spacing={2}>
-            {/* Text Inputs */}
             {[
               { name: 'username', label: 'Username' },
               { name: 'password', label: 'Password' },
@@ -182,7 +184,6 @@ const passedUser = location.state?.user || null;
               </Grid>
             ))}
 
-            {/* Dropdowns */}
             <Grid item xs={12} sm={4}>
               <FormControl fullWidth>
                 <InputLabel>Gender</InputLabel>
@@ -215,11 +216,9 @@ const passedUser = location.state?.user || null;
               </FormControl>
             </Grid>
 
-            {/* File Uploads */}
-            {[
-              { name: 'image', label: 'User Image' },
+            {[{ name: 'image', label: 'User Image' },
               { name: 'pan', label: 'Upload PAN' },
-              { name: 'aadhaar', label: 'Upload Aadhaar' },
+              { name: 'aadhaar', label: 'Upload Aadhaar' }
             ].map(fileField => (
               <Grid item xs={12} sm={4} key={fileField.name}>
                 <Button variant="outlined" component="label" fullWidth>
