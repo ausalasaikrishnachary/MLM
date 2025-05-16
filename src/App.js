@@ -57,14 +57,13 @@ import PaymentForm from "./Components/Panel/Partner/Transaction/PaymentForm";
 import TransactionList from "./Components/Panel/Partner/Transaction/TransactionDetails";
 import EditSubscription from "./Components/Panel/Admin/Subscription/EditSubscription";
 import View_Tmanagement from "./../src/Components/Panel/Admin/Investors/View_Tmanagement";
-<<<<<<< HEAD
+
 import Edit_Tmanagement from "./Components/Panel/Admin/Investors/Edit_Tmanagement";
-=======
 import Commission from "./Components/Panel/Admin/Commission/Commission";
 import CommissionByUser from "./Components/Panel/Admin/Commission/CommissionByUserid";
 import PayCommissionForm from "./Components/Panel/Admin/Commission/PayCommissionForm";
 import PartnerCommission from "./Components/Panel/Partner/PartnerCommission/PartnerCommission";
->>>>>>> ddf638d0c9c3185e9525d861da61f66672b38b98
+
 
 
 
