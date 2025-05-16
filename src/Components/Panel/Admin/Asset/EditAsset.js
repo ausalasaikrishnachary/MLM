@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Grid, TextField, Button, Typography, Container
+  Container, Grid, TextField, Button, Typography, Box,
+  IconButton, FormControl, InputLabel, Select, MenuItem
 } from '@mui/material';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import Header from '../../../Shared/Navbar/Navbar';
 import Swal from 'sweetalert2';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const EditAsset = () => {
   const { state } = useLocation();
-  const { property } = state || {};
+  const { property } = state || {}; 
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -33,23 +35,32 @@ const EditAsset = () => {
     amenities: [],
   });
 
+  const [existingImages, setExistingImages] = useState([]);
+  const [newImages, setNewImages] = useState([]);
+  const [updatedImages, setUpdatedImages] = useState([]);
+
   useEffect(() => {
     if (property) {
       setFormData({ ...property });
+      if (property.images && property.images.length > 0) {
+        const updatedImages = property.images.map(img => ({
+          ...img,
+          file: null
+        }));
+        setExistingImages(updatedImages);
+      }
     } else {
       fetch(`https://rahul30.pythonanywhere.com/property/${id}/`)
         .then(res => res.json())
-        .then(data => setFormData(data))
+        .then(data => {
+          setFormData(data);
+          if (data.images && data.images.length > 0) {
+            setExistingImages(data.images);
+          }
+        })
         .catch(err => console.error('Error fetching property:', err));
     }
   }, [property, id]);
-
-  // const handleChange = (e) => {
-  //   setFormData(prev => ({
-  //     ...prev,
-  //     [e.target.name]: e.target.value
-  //   }));
-  // };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -60,12 +71,10 @@ const EditAsset = () => {
         [name]: value,
       };
 
-      // Parse values as floats safely (default to 0 if not a number)
       const propertyValue = parseFloat(updated.property_value) || 0;
       const agentCommission = parseFloat(updated.agent_commission) || 0;
       const companyCommission = parseFloat(updated.company_commission) || 0;
 
-      // Update total_property_value
       return {
         ...updated,
         total_property_value: propertyValue + agentCommission + companyCommission,
@@ -73,28 +82,58 @@ const EditAsset = () => {
     });
   };
 
-
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
-    setFormData(prev => ({
-      ...prev,
-      images: files
-    }));
+    setNewImages(files);
   };
 
+  const handleReplaceExistingImage = (imageId, file) => {
+    setUpdatedImages(prev => {
+      const filtered = prev.filter(item => item.id !== imageId);
+      return [...filtered, { id: imageId, file }];
+    });
+
+    setExistingImages(prev => 
+      prev.map(img => img.id === imageId ? { ...img, preview: URL.createObjectURL(file) } : img)
+    );
+  };
+
+  const handleRemoveExistingImage = (imageId) => {
+    setExistingImages(prev => prev.filter(img => img.id !== imageId));
+  };
+
+  const handleRemoveNewImage = (index) => {
+    setNewImages(prev => prev.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = async () => {
     try {
       const submitData = new FormData();
+
+      // Append normal fields
       for (const key in formData) {
-        if (key === 'images') {
-          formData.images.forEach((img, index) => {
-            submitData.append('images', img); // field name should match your backend
-          });
-        } else if (formData[key] !== null && formData[key] !== undefined) {
+        if (key !== 'images' && formData[key] !== null && formData[key] !== undefined) {
           submitData.append(key, formData[key]);
         }
       }
+
+      // Append new image uploads
+      newImages.forEach(img => {
+        submitData.append('images', img);
+      });
+
+      // Append updated image files and IDs
+      updatedImages.forEach(({ id, file }) => {
+        submitData.append('image_ids', id);
+        submitData.append('images', file);
+      });
+
+      // Append retained existing image IDs
+      existingImages.forEach(img => {
+        if (!updatedImages.find(updated => updated.id === img.id)) {
+          submitData.append('images', img.id);
+        }
+      });
 
       const response = await fetch(`https://rahul30.pythonanywhere.com/property/${id}/`, {
         method: 'PUT',
@@ -116,201 +155,174 @@ const EditAsset = () => {
     }
   };
 
+  // Field configuration
+  const fieldConfig = [
+    { name: 'property_title', label: 'Property Title' },
+    { name: 'city', label: 'City' },
+    { name: 'state', label: 'State' },
+    { name: 'country', label: 'Country' },
+    { name: 'pin_code', label: 'PIN Code' },
+    { name: 'plot_area_sqft', label: 'Plot Area (sqft)', type: 'number' },
+    { name: 'builtup_area_sqft', label: 'Built-up Area (sqft)', type: 'number' },
+    { name: 'owner_name', label: 'Owner Name' },
+    { name: 'owner_contact', label: 'Owner Contact' },
+    { name: 'owner_email', label: 'Owner Email' },
+    { name: 'address', label: 'Address', multiline: true},
+    { name: 'amenities', label: 'Amenities', multiline: true},
+     { name: 'property_value', label: 'Property Value' },
+    { name: 'agent_commission', label: 'Agent Commission' },
+    { name: 'company_commission', label: 'Company Commission' },
+     { name: 'total_property_value', label: 'Total Property Value'},
+     { name: 'description', label: 'Description', multiline: true},
+  ];
 
-  return (
-    <>
-      <Header />
-      <Container sx={{ py: 4 }}>
-        <Typography variant="h6" gutterBottom sx={{ mb: 3 }}>Edit Property</Typography>
-        <Grid container spacing={3}>
-          {/* Column 1 */}
-          <Grid item xs={12} md={4}>
-            <TextField
-              label="Property Title"
-              name="property_title"
-              value={formData.property_title}
-              onChange={handleChange}
-              fullWidth
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              label="City"
-              name="city"
-              value={formData.city}
-              onChange={handleChange}
-              fullWidth
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              label="State"
-              name="state"
-              value={formData.state}
-              onChange={handleChange}
-              fullWidth
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              label="Country"
-              name="country"
-              value={formData.country}
-              onChange={handleChange}
-              fullWidth
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              label="PIN Code"
-              name="pin_code"
-              value={formData.pin_code}
-              onChange={handleChange}
-              fullWidth
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              label="Property Value"
-              name="property_value"
-              value={formData.property_value}
-              onChange={handleChange}
-              fullWidth
-              sx={{ mb: 2 }}
-            />
-            <Button variant="outlined" component="label" fullWidth sx={{ mb: 2 }}>
-              Upload Property Image
-              <input
-                type="file"
-                accept="image/*"
-                hidden
-                multiple
-                onChange={handleFileChange}
+return (
+  <>
+    <Header />
+    <Container maxWidth="xl" sx={{ padding: 3 }}>
+      <Typography variant="h4" gutterBottom textAlign="center">
+        Edit Property
+      </Typography>
+      
+      <Box component="form" onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} sx={{ width: "100%" }}>
+        <Grid container spacing={2}>
+          {/* Form Fields */}
+          {fieldConfig.map((field) => (
+            <Grid item xs={12} md={4} key={field.name}>
+              <TextField
+                fullWidth
+                label={field.label}
+                name={field.name}
+                value={formData[field.name] || ''}
+                onChange={handleChange}
+                variant="outlined"
+                type={field.type || 'text'}
               />
-            </Button>
-            {formData.images && (
-              <Typography variant="caption" sx={{ display: 'block', mb: 2 }}>
-                {formData.images.name || 'Image attached'}
-              </Typography>
+              {/* Add Update Button after Company Commission */}
+              {field.name === 'total_property_value' && (
+                <Button 
+                  type="submit" 
+                  variant="contained" 
+                  fullWidth
+                  sx={{ 
+                    mt: 2,
+                    height: '56px', // Match TextField height
+                    fontSize: '1rem'
+                  }}
+                >
+                  Update Property
+                </Button>
+              )}
+            </Grid>
+          ))}
+
+          {/* Image Upload Section */}
+          <Grid item xs={12} md={4}>
+            <Typography variant="subtitle1" gutterBottom sx={{ mb: 1 }}>
+              Property Images
+            </Typography>
+            
+            <Box sx={{ mb: 2 }}>
+              <Button 
+                variant="outlined" 
+                component="label" 
+                fullWidth
+                sx={{ mb: 2 }}
+              >
+                Upload New Images
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  multiple
+                  onChange={handleFileChange}
+                />
+              </Button>
+            </Box>
+
+            {/* Existing Images */}
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
+              {existingImages.map((img) => (
+                <Box key={img.id} sx={{ position: 'relative', width: 120, height: 120 }}>
+                  <img 
+                    src={img.preview || `https://rahul30.pythonanywhere.com${img.image}`} 
+                    alt="Property" 
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                  <IconButton
+                    size="small"
+                    sx={{ 
+                      position: 'absolute', 
+                      top: 0, 
+                      right: 0,
+                      backgroundColor: 'rgba(255,255,255,0.7)',
+                      '&:hover': { backgroundColor: 'rgba(255,255,255,0.9)' }
+                    }}
+                    onClick={() => handleRemoveExistingImage(img.id)}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                  <Button
+                    size="small"
+                    component="label"
+                    sx={{ 
+                      position: 'absolute', 
+                      bottom: 0, 
+                      left: 0,
+                      fontSize: '0.75rem',
+                      backgroundColor: 'rgba(255,255,255,0.7)'
+                    }}
+                  >
+                    Replace
+                    <input
+                      type="file"
+                      accept="image/*"
+                      hidden
+                      onChange={(e) => handleReplaceExistingImage(img.id, e.target.files[0])}
+                    />
+                  </Button>
+                </Box>
+              ))}
+            </Box>
+            
+            {/* New Images Preview */}
+            {newImages.length > 0 && (
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="subtitle2" gutterBottom sx={{ mb: 1 }}>
+                  New Images to Upload
+                </Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                  {newImages.map((img, index) => (
+                    <Box key={index} sx={{ position: 'relative', width: 120, height: 120 }}>
+                      <img 
+                        src={URL.createObjectURL(img)} 
+                        alt="New upload" 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                      <IconButton
+                        size="small"
+                        sx={{ 
+                          position: 'absolute', 
+                          top: 0, 
+                          right: 0,
+                          backgroundColor: 'rgba(255,255,255,0.7)',
+                          '&:hover': { backgroundColor: 'rgba(255,255,255,0.9)' }
+                        }}
+                        onClick={() => handleRemoveNewImage(index)}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Box>
+                  ))}
+                </Box>
+              </Box>
             )}
           </Grid>
-
-          {/* Column 2 */}
-          <Grid item xs={12} md={4}>
-            <TextField
-              label="Plot Area (sqft)"
-              name="plot_area_sqft"
-              value={formData.plot_area_sqft}
-              onChange={handleChange}
-              fullWidth
-              type="number"
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              label="Built-up Area (sqft)"
-              name="builtup_area_sqft"
-              value={formData.builtup_area_sqft}
-              onChange={handleChange}
-              fullWidth
-              type="number"
-              sx={{ mb: 2 }}
-            />
-
-            <TextField
-              label="Owner Name"
-              name="owner_name"
-              value={formData.owner_name}
-              onChange={handleChange}
-              fullWidth
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              label="Owner Contact"
-              name="owner_contact"
-              value={formData.owner_contact}
-              onChange={handleChange}
-              fullWidth
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              label="Owner Email"
-              name="owner_email"
-              value={formData.owner_email}
-              onChange={handleChange}
-              fullWidth
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              label="Agent Commission"
-              name="agent_commission"
-              value={formData.agent_commission}
-              onChange={handleChange}
-              fullWidth
-              sx={{ mb: 2 }}
-            />
-
-            <TextField
-              label="Total Property Value"
-              name="total_property_value"
-              value={formData.total_property_value}
-              fullWidth
-              sx={{ mb: 2 }}
-              InputProps={{ readOnly: true }}
-            />
-
-          </Grid>
-
-          {/* Column 3 */}
-          <Grid item xs={12} md={4}>
-            <TextField
-              label="Address"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              fullWidth
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              label="Amenities"
-              name="amenities"
-              value={formData.amenities}
-              onChange={handleChange}
-              fullWidth
-              sx={{ mb: 2 }}
-            />
-
-
-            <TextField
-              label="Description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              fullWidth
-              sx={{ mb: 2 }}
-              multiline
-              rows={6}
-            />
-            <TextField
-              label="Company Commission"
-              name="company_commission"
-              value={formData.company_commission}
-              onChange={handleChange}
-              fullWidth
-              sx={{ mb: 2 }}
-            />
-
-          </Grid>
-
-          {/* Submit Button */}
-          <Grid item xs={12}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSubmit}
-              size="large"
-            >
-              Update Property
-            </Button>
-          </Grid>
         </Grid>
-      </Container>
-    </>
-  );
+      </Box>
+    </Container>
+  </>
+);
 };
 
 export default EditAsset;
