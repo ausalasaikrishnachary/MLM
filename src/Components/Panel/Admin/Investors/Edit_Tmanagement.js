@@ -5,13 +5,13 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import {useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Header from "../../../Shared/Navbar/Navbar";
 
 const Edit_Tmanagement = () => {
   const [users, setUsers] = useState([]);
   const location = useLocation();
-   const navigate = useNavigate();
+  const navigate = useNavigate();
   const passedUser = location.state?.user || null;
 
   const [selectedUserId, setSelectedUserId] = useState('');
@@ -118,21 +118,21 @@ const Edit_Tmanagement = () => {
 
   return (
 
-    
-    
 
-      <Box sx={{ p: 4, maxWidth: 1300, mx: 'auto' ,mt:"10" }}>
-  {/* Back Button */}
-  <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2 }}>
-    <Button
-      variant="outlined"
-      startIcon={<ArrowBackIcon />}
-      onClick={() => navigate(-1)}
-    >
-      Back
-    </Button>
-  </Box>
-      
+
+
+    <Box sx={{ p: 4, maxWidth: 1300, mx: 'auto', mt: "10" }}>
+      {/* Back Button */}
+      <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2 }}>
+        <Button
+          variant="outlined"
+          startIcon={<ArrowBackIcon />}
+          onClick={() => navigate(-1)}
+        >
+          Back
+        </Button>
+      </Box>
+
       <Typography variant="h4" align="center" gutterBottom>
         Edit User
       </Typography>
@@ -140,9 +140,9 @@ const Edit_Tmanagement = () => {
       {selectedUserId && (
         <>
 
-         <Header />
+          <Header />
 
-         
+
 
           <Grid container spacing={2}>
             {[
@@ -217,8 +217,8 @@ const Edit_Tmanagement = () => {
             </Grid>
 
             {[{ name: 'image', label: 'User Image' },
-              { name: 'pan', label: 'Upload PAN' },
-              { name: 'aadhaar', label: 'Upload Aadhaar' }
+            { name: 'pan', label: 'Upload PAN' },
+            { name: 'aadhaar', label: 'Upload Aadhaar' }
             ].map(fileField => (
               <Grid item xs={12} sm={4} key={fileField.name}>
                 <Button variant="outlined" component="label" fullWidth>
@@ -246,11 +246,18 @@ const Edit_Tmanagement = () => {
             ))}
           </Grid>
 
-          <Box mt={4}>
-            <Button variant="contained" color="primary" size="large" fullWidth onClick={handleSubmit}>
+          <Box mt={4} display="flex" justifyContent="center">
+            <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              onClick={handleSubmit}
+            >
               Update User
             </Button>
           </Box>
+
+
         </>
       )}
     </Box>
