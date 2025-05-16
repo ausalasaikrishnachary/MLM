@@ -326,7 +326,7 @@ const AddPropertyForm = () => {
         company_commission: formData.company_commission,
         agent_commission_paid: formData.agent_commission_paid,
         agent_commission_balance: formData.agent_commission_balance,
-        Total_property_value: formData.Total_property_value,
+        Total_property_value: Number(formData.price) + Number(formData.company_commission),
       };
 
       // Log the payload for debugging

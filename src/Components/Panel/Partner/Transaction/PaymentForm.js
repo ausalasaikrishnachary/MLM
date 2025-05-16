@@ -15,6 +15,9 @@ function PaymentForm() {
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const transactionId = queryParams.get('transaction_id');
+    const propertyId = queryParams.get('property_id');
+    const [agentCommission, setAgentCommission] = useState('');
+
 
     const [formData, setFormData] = useState({});
     const [loading, setLoading] = useState(true);
@@ -47,6 +50,26 @@ function PaymentForm() {
             [name]: value,
         }));
     };
+
+    useEffect(() => {
+    if (propertyId) {
+        fetch(`https://rahul30.pythonanywhere.com/property/${propertyId}/`)
+            .then((res) => {
+                if (!res.ok) throw new Error('Failed to fetch property data');
+                return res.json();
+            })
+            .then((data) => {
+                if (data && data.agent_commission !== undefined) {
+                    setAgentCommission(data.agent_commission);
+                    console.log("agentcommission", data.agent_commission)
+                }
+            })
+            .catch((err) => {
+                console.error('Property fetch error:', err.message);
+            });
+    }
+}, [propertyId]);
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -83,7 +106,7 @@ function PaymentForm() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ status: 'Sold' }),
+                body: JSON.stringify({ status: 'Sold', agent_commission_balance: agentCommission }),
             });
     
             if (!statusUpdateResponse.ok) {

@@ -222,7 +222,7 @@ return (
               Property Images
             </Typography>
             
-            <Box sx={{ mb: 2 }}>
+            {/* <Box sx={{ mb: 2 }}>
               <Button 
                 variant="outlined" 
                 component="label" 
@@ -238,7 +238,7 @@ return (
                   onChange={handleFileChange}
                 />
               </Button>
-            </Box>
+            </Box> */}
 
             {/* Existing Images */}
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
