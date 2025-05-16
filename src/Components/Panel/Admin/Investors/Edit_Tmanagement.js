@@ -121,7 +121,7 @@ const Edit_Tmanagement = () => {
     
     
 
-      <Box sx={{ p: 4, maxWidth: 1300, mx: 'auto' }}>
+      <Box sx={{ p: 4, maxWidth: 1300, mx: 'auto' ,mt:"10" }}>
   {/* Back Button */}
   <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2 }}>
     <Button
