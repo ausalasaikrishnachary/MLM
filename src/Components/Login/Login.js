@@ -52,7 +52,7 @@ const Login = () => {
         localStorage.setItem("phone_number", data.phone_number);
         localStorage.setItem("referral_id", data.referral_id);
         localStorage.setItem("referred_by", data.referred_by);
-        localStorage.setItem("user_name", data.first_name + data.last_name);
+        localStorage.setItem("user_name", data.first_name);
 
         console.log(data)
 

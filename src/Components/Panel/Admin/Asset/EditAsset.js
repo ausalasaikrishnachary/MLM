@@ -23,7 +23,10 @@ const EditAsset = () => {
     plot_area_sqft: '',
     builtup_area_sqft: '',
     property_value: '',
+    total_property_value: '',
+    agent_commission: '',
     owner_name: '',
+    company_commission: '',
     owner_contact: '',
     owner_email: '',
     images: [],
@@ -41,12 +44,35 @@ const EditAsset = () => {
     }
   }, [property, id]);
 
+  // const handleChange = (e) => {
+  //   setFormData(prev => ({
+  //     ...prev,
+  //     [e.target.name]: e.target.value
+  //   }));
+  // };
+
   const handleChange = (e) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
+    const { name, value } = e.target;
+
+    setFormData((prev) => {
+      const updated = {
+        ...prev,
+        [name]: value,
+      };
+
+      // Parse values as floats safely (default to 0 if not a number)
+      const propertyValue = parseFloat(updated.property_value) || 0;
+      const agentCommission = parseFloat(updated.agent_commission) || 0;
+      const companyCommission = parseFloat(updated.company_commission) || 0;
+
+      // Update total_property_value
+      return {
+        ...updated,
+        total_property_value: propertyValue + agentCommission + companyCommission,
+      };
+    });
   };
+
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
@@ -139,15 +165,23 @@ const EditAsset = () => {
               fullWidth
               sx={{ mb: 2 }}
             />
-             <Button variant="outlined" component="label" fullWidth sx={{ mb: 2 }}>
+            <TextField
+              label="Property Value"
+              name="property_value"
+              value={formData.property_value}
+              onChange={handleChange}
+              fullWidth
+              sx={{ mb: 2 }}
+            />
+            <Button variant="outlined" component="label" fullWidth sx={{ mb: 2 }}>
               Upload Property Image
-             <input
-  type="file"
-  accept="image/*"
-  hidden
-  multiple
-  onChange={handleFileChange}
-/>
+              <input
+                type="file"
+                accept="image/*"
+                hidden
+                multiple
+                onChange={handleFileChange}
+              />
             </Button>
             {formData.images && (
               <Typography variant="caption" sx={{ display: 'block', mb: 2 }}>
@@ -176,15 +210,7 @@ const EditAsset = () => {
               type="number"
               sx={{ mb: 2 }}
             />
-            <TextField
-              label="Property Value"
-              name="property_value"
-              value={formData.property_value}
-              onChange={handleChange}
-              fullWidth
-              type="number"
-              sx={{ mb: 2 }}
-            />
+
             <TextField
               label="Owner Name"
               name="owner_name"
@@ -201,66 +227,10 @@ const EditAsset = () => {
               fullWidth
               sx={{ mb: 2 }}
             />
-          </Grid>
-
-          {/* Column 3 */}
-          <Grid item xs={12} md={4}>
             <TextField
               label="Owner Email"
               name="owner_email"
               value={formData.owner_email}
-              onChange={handleChange}
-              fullWidth
-              sx={{ mb: 2 }}
-            />
-              <TextField
-              label="Amenities"
-              name="amenities"
-              value={formData.amenities}
-              onChange={handleChange}
-              fullWidth
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              label="Address"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              fullWidth
-              sx={{ mb: 2 }}
-              
-            />
-            <TextField
-              label="Amenities"
-              name="amenities"
-              value={formData.amenities}
-              onChange={handleChange}
-              fullWidth
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              label="Description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              fullWidth
-              sx={{ mb: 2 }}
-              multiline
-              rows={4}
-            />
-
-            <TextField
-              label="Property Value"
-              name="property_value"
-              value={formData.property_value}
-              onChange={handleChange}
-              fullWidth
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              label="Total Property Value"
-              name="total_property_value"
-              value={formData.total_property_value}
               onChange={handleChange}
               fullWidth
               sx={{ mb: 2 }}
@@ -273,6 +243,48 @@ const EditAsset = () => {
               fullWidth
               sx={{ mb: 2 }}
             />
+
+            <TextField
+              label="Total Property Value"
+              name="total_property_value"
+              value={formData.total_property_value}
+              fullWidth
+              sx={{ mb: 2 }}
+              InputProps={{ readOnly: true }}
+            />
+
+          </Grid>
+
+          {/* Column 3 */}
+          <Grid item xs={12} md={4}>
+            <TextField
+              label="Address"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              fullWidth
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              label="Amenities"
+              name="amenities"
+              value={formData.amenities}
+              onChange={handleChange}
+              fullWidth
+              sx={{ mb: 2 }}
+            />
+
+
+            <TextField
+              label="Description"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              fullWidth
+              sx={{ mb: 2 }}
+              multiline
+              rows={6}
+            />
             <TextField
               label="Company Commission"
               name="company_commission"
@@ -281,23 +293,9 @@ const EditAsset = () => {
               fullWidth
               sx={{ mb: 2 }}
             />
-            <Button variant="outlined" component="label" fullWidth sx={{ mb: 2 }}>
-              Upload Property Image
-              <input
-                type="file"
-                accept="image/*"
-                hidden
-                multiple
-                onChange={handleFileChange}
-              />
-            </Button>
-            {formData.images && (
-              <Typography variant="caption" sx={{ display: 'block', mb: 2 }}>
-                {formData.images.name || 'Image attached'}
-              </Typography>
-            )}
+
           </Grid>
-          
+
           {/* Submit Button */}
           <Grid item xs={12}>
             <Button
