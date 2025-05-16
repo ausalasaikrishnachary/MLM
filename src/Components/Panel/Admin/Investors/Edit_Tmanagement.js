@@ -152,7 +152,7 @@ const Edit_Tmanagement = () => {
               { name: 'first_name', label: 'First Name' },
               { name: 'last_name', label: 'Last Name' },
               { name: 'role_id', label: 'role_id' },
-              { name: 'level_no', label: 'level_no' },
+              
               { name: 'role_name', label: 'role_name' },
 
               { name: 'email', label: 'Email' },
