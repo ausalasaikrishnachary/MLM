@@ -1,38 +1,72 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
   Box,
   Typography,
   Grid,
-  Card,
-  CardContent,
-  Avatar,
   Divider,
+  Button,
 } from "@mui/material";
-import { useLocation } from "react-router-dom";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import PrintIcon from "@mui/icons-material/Print";
+import DownloadIcon from "@mui/icons-material/Download";
+import { useNavigate, useLocation } from "react-router-dom";
 import Header from "../../../Shared/Navbar/Navbar";
+import jsPDF from "jspdf";
 
 const View_Tmanagement = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const user = location.state?.user;
+  const contentRef = useRef();
+  
 
-  if (!user)
-    return <Typography sx={{ p: 3 }}>No user data available</Typography>;
+  if (!user) return <Typography sx={{ p: 3 }}>No user data available</Typography>;
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleDownload = () => {
+    const doc = new jsPDF();
+    doc.html(contentRef.current, {
+      callback: function (pdf) {
+        pdf.save(`${user.first_name}_details.pdf`);
+      },
+      x: 10,
+      y: 10,
+      width: 180,
+      windowWidth: 800,
+    });
+  };
 
   const Section = ({ title, children }) => (
-    <Box sx={{ mb: 4, display: "flex", justifyContent: "center" }}>
-      <Box sx={{ width: "100%", maxWidth: 800 }}>
-        <Typography variant="h6" fontWeight="bold" gutterBottom>
-          {title}
-        </Typography>
-        <Divider sx={{ mb: 2 }} />
-        <Grid container spacing={2}>{children}</Grid>
-      </Box>
+    <Box sx={{ mb: 4 }}>
+      <Typography
+        variant="h6"
+        fontWeight="bold"
+        gutterBottom
+        sx={{ textDecoration: "none", color: "black" }}
+      >
+        {title}
+      </Typography>
+      <Divider sx={{ mb: 2 }} />
+      <Grid container spacing={2}>
+        {children}
+      </Grid>
     </Box>
   );
 
   const Field = (label, value) => (
-    <Grid item xs={12} sm={6}>
-      <Typography align="left">
+    <Grid item xs={12} sm={6} md={3}>
+      <Typography
+        align="left"
+        sx={{
+          wordBreak: "break-word",
+          fontSize: "0.95rem",
+          textDecoration: "none",
+          color: "inherit",
+        }}
+      >
         <strong>{label}:</strong> {value || "N/A"}
       </Typography>
     </Grid>
@@ -40,20 +74,48 @@ const View_Tmanagement = () => {
 
   return (
     <>
-    <Header />
-    <Box sx={{ p: 4,  minHeight: "100vh" }}>
-        <CardContent>
-          <Box sx={{ textAlign: "center", mb: 3 }}>
-            <Avatar
-              src={user.image}
-              alt="User"
-              sx={{ width: 100, height: 100, mx: "auto", mb: 1 }}
-            />
-            <Typography variant="h5" fontWeight="bold">
-              {user.first_name} {user.last_name}
-            </Typography>
-            <Typography color="text.secondary">{user.email}</Typography>
+      <Header />
+      <Box
+        sx={{
+          bgcolor: "white",
+          minHeight: "100vh",
+          px: { xs: 2, sm: 4 },
+          py: 3,
+        }}
+      >
+        {/* Action Buttons */}
+        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate(-1)}
+          >
+            Back
+          </Button>
+
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <Button
+              variant="outlined"
+              startIcon={<DownloadIcon />}
+              onClick={handleDownload}
+              color="success"
+            >
+              Download
+            </Button>
+            <Button
+              variant="outlined"
+              startIcon={<PrintIcon />}
+              onClick={handlePrint}
+              color="secondary"
+            >
+              Print
+            </Button>
           </Box>
+        </Box>
+
+        {/* Main Content */}
+        <Box ref={contentRef}>
+          {/* Top User Info (Removed) */}
 
           <Section title="Personal Information">
             {Field("User ID", user.user_id)}
@@ -63,18 +125,12 @@ const View_Tmanagement = () => {
             {Field("Gender", user.gender)}
             {Field("Date of Birth", user.date_of_birth)}
             {Field("Level No", user.level_no)}
+            {Field("Image", user.image)}
+            
           </Section>
 
           <Section title="Contact Information">
             {Field("Email", user.email)}
-            <Grid item xs={12} sm={6} md={4}>
-              {/* <Typography
-                sx={{ wordBreak: "break-word" }}
-                align="left"
-              >
-                <strong>Password (Hashed):</strong> {user.password}
-              </Typography> */}
-            </Grid>
             {Field("Phone Number", user.phone_number)}
             {Field("Address", user.address)}
             {Field("City", user.city)}
@@ -104,8 +160,8 @@ const View_Tmanagement = () => {
             {Field("Created At", user.created_at)}
             {Field("Updated At", user.updated_at)}
           </Section>
-        </CardContent>
-    </Box>
+        </Box>
+      </Box>
     </>
   );
 };

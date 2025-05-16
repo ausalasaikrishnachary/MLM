@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
 import {
   Container,
   Box,
@@ -25,47 +24,9 @@ const Tmanagement = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [viewOpen, setViewOpen] = useState(false);
 
-  const handleView = (user) => {
-    navigate("/View_Tmanagement", { state: { user } });
-  };
-
-  const handleCloseView = () => {
-    setViewOpen(false);
-    setSelectedUser(null);
-  };
-
-  const columns = [
-    { field: "id", headerName: "User ID", width: 100 },
-    { field: "name", headerName: "Name", width: 180 },
-    { field: "email", headerName: "Email", width: 220 },
-    { field: "phone", headerName: "Phone", width: 220 },
-    { field: "role", headerName: "Role", width: 120 },
-    { field: "referralId", headerName: "Referral ID", width: 140 },
-
-
-    {
-      field: "actions",
-      headerName: "Actions",
-      width: 150,
-      renderCell: (params) => (
-        <Box sx={{ display: "flex", gap: "5px" }}>
-          <IconButton color="primary" onClick={() => handleView(params.row.fullData)}>
-            <VisibilityIcon />
-          </IconButton>
-
-          <IconButton color="primary">
-            <EditIcon />
-          </IconButton>
-          <IconButton color="error">
-            <DeleteIcon />
-          </IconButton>
-        </Box>
-      ),
-    },
-  ];
-
   useEffect(() => {
-    axios.get("https://rahul30.pythonanywhere.com/users/")
+    axios
+      .get("https://rahul30.pythonanywhere.com/users/")
       .then((res) => {
         const transformed = res.data.map((user) => ({
           id: user.user_id,
@@ -82,6 +43,62 @@ const Tmanagement = () => {
       })
       .catch((err) => console.error("Error fetching data:", err));
   }, []);
+
+  const handleView = (user) => {
+    navigate("/View_Tmanagement", { state: { user } });
+  };
+
+  const handleDelete = (user_id) => {
+    axios
+      .delete(`https://rahul30.pythonanywhere.com/users/${user_id}`)
+      .then((res) => {
+        if (res.status === 200) {
+          setData((prevData) => prevData.filter((user) => user.id !== user_id));
+          console.log("User deleted successfully");
+        } else {
+          console.error("Failed to delete user");
+        }
+      })
+      .catch((err) => {
+        console.error("Error deleting user:", err.response ? err.response.data : err);
+        alert("Error deleting user, please try again.");
+      });
+  };
+
+  const columns = [
+    { field: "id", headerName: "User ID", width: 100 },
+    { field: "name", headerName: "Name", width: 180 },
+    { field: "email", headerName: "Email", width: 220 },
+    { field: "phone", headerName: "Phone", width: 220 },
+    { field: "role", headerName: "Role", width: 120 },
+    { field: "referralId", headerName: "Referral ID", width: 140 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      width: 150,
+      renderCell: (params) => (
+        <Box sx={{ display: "flex", gap: "5px" }}>
+          <IconButton color="primary" onClick={() => handleView(params.row.fullData)}>
+            <VisibilityIcon />
+          </IconButton>
+          <IconButton
+            color="primary"
+            onClick={() => navigate("/Edit_Tmanagement", { state: { user: params.row.fullData } })}
+          >
+            <EditIcon />
+          </IconButton>
+          <IconButton color="error" onClick={() => handleDelete(params.row.id)}>
+            <DeleteIcon />
+          </IconButton>
+        </Box>
+      ),
+    },
+  ];
+
+  const handleCloseView = () => {
+    setViewOpen(false);
+    setSelectedUser(null);
+  };
 
   return (
     <>
@@ -112,9 +129,7 @@ const Tmanagement = () => {
               <Typography><strong>Account Number:</strong> {selectedUser.account_number || "N/A"}</Typography>
               <Typography><strong>IFSC Code:</strong> {selectedUser.ifsc_code || "N/A"}</Typography>
               <Typography><strong>PAN Number:</strong> {selectedUser.pan || selectedUser.pan_number || "N/A"}</Typography>
-              <Typography><strong>pan:</strong> {selectedUser.pan || selectedUser.pan || "N/A"}</Typography>
-              <Typography><strong>kyc_status :</strong> {selectedUser.pan || selectedUser.kyc_status || "N/A"}</Typography>
-
+              <Typography><strong>KYC Status:</strong> {selectedUser.kyc_status || "N/A"}</Typography>
               <Typography><strong>Aadhaar Number:</strong> {selectedUser.aadhaar_number || "N/A"}</Typography>
               <Typography><strong>Nominee Reference To:</strong> {selectedUser.nominee_reference_to || "N/A"}</Typography>
               <Typography><strong>Image:</strong> {selectedUser.image ? <img src={selectedUser.image} alt="User" width="100" /> : "N/A"}</Typography>
