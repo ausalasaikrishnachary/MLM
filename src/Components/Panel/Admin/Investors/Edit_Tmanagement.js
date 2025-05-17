@@ -146,13 +146,13 @@ const Edit_Tmanagement = () => {
 
           <Grid container spacing={2}>
             {[
-              { name: 'user_id', label: 'user_id' },
+              // { name: 'user_id', label: 'user_id' },
               { name: 'username', label: 'Username' },
-              { name: 'password', label: 'Password' },
+              // { name: 'password', label: 'Password' },
               { name: 'first_name', label: 'First Name' },
               { name: 'last_name', label: 'Last Name' },
-              { name: 'role_id', label: 'role_id' },
-              { name: 'role_name', label: 'role_name' },
+              // { name: 'role_id', label: 'role_id' },
+              // { name: 'role_name', label: 'role_name' },
               { name: 'email', label: 'Email' },
               { name: 'phone_number', label: 'Phone Number' },
               { name: 'date_of_birth', label: 'Date of Birth', type: 'date' },
@@ -164,7 +164,7 @@ const Edit_Tmanagement = () => {
               { name: 'pan_number', label: 'PAN Number' },
               { name: 'aadhaar_number', label: 'Aadhaar Number' },
               { name: 'referral_id', label: 'Referral ID' },
-              { name: 'level_no', label: 'Level No' },
+              // { name: 'level_no', label: 'Level No' },
               { name: 'referred_by', label: 'Referred By' },
               { name: 'account_holder_name', label: 'Account Holder Name' },
               { name: 'bank_name', label: 'Bank Name' },
@@ -172,7 +172,7 @@ const Edit_Tmanagement = () => {
               { name: 'account_number', label: 'Account Number' },
               { name: 'ifsc_code', label: 'IFSC Code' },
               { name: 'nominee_reference_to', label: 'Nominee Reference To' },
-              { name: 'status', label: 'Status' },
+              // { name: 'status', label: 'Status' },
             ].map(field => (
               <Grid item xs={12} sm={4} key={field.name}>
                 <TextField
