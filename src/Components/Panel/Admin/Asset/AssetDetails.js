@@ -231,13 +231,13 @@ const AssetDetails = () => {
               <strong>Email:</strong> {property.owner_email}
             </Typography>
 
-            <Typography variant="h6" gutterBottom>System Information</Typography>
+            {/* <Typography variant="h6" gutterBottom>System Information</Typography>
             <Divider sx={{ mb: 2 }} />
             <Typography variant="body2">
               <strong>Created At:</strong> {new Date(property.created_at).toLocaleString()}<br />
               <strong>Updated At:</strong> {new Date(property.updated_at).toLocaleString()}<br />
               <strong>User ID:</strong> {property.user_id}
-            </Typography>
+            </Typography> */}
           </Grid>
         </Grid>
       </Container>

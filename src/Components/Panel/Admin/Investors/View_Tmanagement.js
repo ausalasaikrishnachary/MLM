@@ -127,9 +127,9 @@ const View_Tmanagement = () => {
             {Field("Referral ID", user.referral_id)}
             {Field("Gender", user.gender)}
             {Field("Date of Birth", user.date_of_birth)}
-            {Field("Level No", user.level_no)}
-            {Field("password", user.password)}
-            {Field("Image", user.image)}
+            {/* {Field("Level No", user.level_no)} */}
+            {/* {Field("password", user.password)} */}
+            {/* {Field("Image", user.image)} */}
 
           </Section>
 
@@ -158,14 +158,14 @@ const View_Tmanagement = () => {
             {Field("Aadhaar Number", user.aadhaar_number)}
             {Field("KYC Status", user.kyc_status)}
             {Field("Nominee Reference To", user.nominee_reference_to)}
-            {Field("aadhaar", user.aadhaar)}
-            {Field("pan", user.pan)}
+            {/* {Field("aadhaar", user.aadhaar)}
+            {Field("pan", user.pan)} */}
           </Section>
 
           <Section title="Other Information">
             {Field("Referred By", user.referred_by)}
-            {Field("Created At", user.created_at)}
-            {Field("Updated At", user.updated_at)}
+            {/* {Field("Created At", user.created_at)}
+            {Field("Updated At", user.updated_at)} */}
           </Section>
         </Box>
       </Box>

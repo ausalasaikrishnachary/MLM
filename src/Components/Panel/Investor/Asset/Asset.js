@@ -255,6 +255,54 @@ const AssetsUI = () => {
                   }}
                 >
                   <Box sx={{ position: 'relative' }}>
+
+                    {property.status && (
+    <Box
+      sx={{
+        position: 'absolute',
+        top: 15,
+                        left: -62,
+        transform: 'rotate(-45deg)',
+        backgroundColor:
+          property.status.toLowerCase() === 'sold'
+            ? '#e74c3c'
+            : property.status.toLowerCase() === 'available'
+            ? '#2ecc71'
+            : '#3498db',
+        color: 'white',
+        fontWeight: 'bold',
+        fontSize: '12px',
+        px: 4,
+        py: '4px',
+        zIndex: 5,
+        width: '150px',
+        textAlign: 'center',
+        boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+        pointerEvents: 'none',
+      }}
+
+
+      // sx={{
+      //                   position: 'absolute',
+      //                   top: 15,
+      //                   right: -30,
+      //                   width: '150px',
+      //                   transform: 'rotate(45deg)',
+      //                   backgroundColor: "red",
+      //                   color: 'white',
+      //                   textAlign: 'center',
+      //                   fontSize: '12px',
+      //                   fontWeight: 'bold',
+      //                   textTransform: 'uppercase',
+      //                   py: '4px',
+      //                   boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+      //                 }}
+    >
+      {property.status.toUpperCase()}
+    </Box>
+  )}
+
+                    
                     <CardMedia
                       component="img"
                       height="220"
@@ -267,17 +315,20 @@ const AssetsUI = () => {
                       sx={{
                         position: 'absolute',
                         top: 15,
-                        right: 15,
-                        px: 2,
-                        py: 1,
-                        borderRadius: '20px',
-                        fontSize: '0.85rem',
-                        fontWeight: 500,
-                        backgroundColor: '#2ECC71',
-                        color: 'white'
+                        right: -30,
+                        width: '150px',
+                        transform: 'rotate(45deg)',
+                        backgroundColor: "red",
+                        color: 'white',
+                        textAlign: 'center',
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                        textTransform: 'uppercase',
+                        py: '4px',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
                       }}
                     >
-                      {property.looking_to === 'sell' ? 'For Sale' : 'For Rent'}
+                      {property.looking_to === 'sell' ? 'Sell' : 'For Rent'}
                     </Box>
                   </Box>
                   <CardContent>
