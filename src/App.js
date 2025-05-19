@@ -63,6 +63,9 @@ import Commission from "./Components/Panel/Admin/Commission/Commission";
 import CommissionByUser from "./Components/Panel/Admin/Commission/CommissionByUserid";
 import PayCommissionForm from "./Components/Panel/Admin/Commission/PayCommissionForm";
 import PartnerCommission from "./Components/Panel/Partner/PartnerCommission/PartnerCommission";
+import EditMyAssets from "./Components/Panel/Partner/Asset/EditMyAssets";
+import I_EditMyAsset from "./Components/Panel/Investor/Asset/EditMyAsset";
+import I_MyAssests from "./Components/Panel/Investor/Asset/New-AssetsDetails";
 
 
 
@@ -112,6 +115,8 @@ function App() {
               <Route path="/i-plans" element={<Plans />} />
               <Route path="/i-myassets" element={<MyAssets />} />
               <Route path="/i-assets/:id" element={<PropertyDetails />} />
+               <Route path="/i-myassets/edit/:id" element={<I_EditMyAsset />} />
+                <Route path="/assets/:id" element={<I_MyAssests />} />
               
 
 
@@ -133,6 +138,7 @@ function App() {
               <Route path="/p-latestassets" element={<LatestAssets />} />
               <Route path="/p-activeagents" element={<MyAgents />} />
               <Route path="/p-view-activeagents/:id" element={<ActiveUserView />} />
+              <Route path="/p-myassets/edit/:id" element={<EditMyAssets />} />
               
               <Route path="/p-bookingassets" element={<BookingAssets />} />
               <Route path="/p-transaction" element={<Transaction />} />
