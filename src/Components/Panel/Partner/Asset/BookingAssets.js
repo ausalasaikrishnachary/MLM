@@ -1,20 +1,34 @@
 import React, { useEffect, useState } from 'react';
-import { TextField, Button, Grid, Container, Typography } from '@mui/material';
+import {
+  TextField,
+  Button,
+  Grid,
+  Container,
+  Typography,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl
+} from '@mui/material';
 import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
 import axios from 'axios';
-import { useParams,useLocation } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 function BookingAssets() {
-  const [property, setProperty] = useState({ property_title: '', property_value: '', property_title:"" });
+  const [property, setProperty] = useState({ property_title: '', total_property_value: '' });
   const [loading, setLoading] = useState(true);
   const [bookingAmount, setBookingAmount] = useState(0);
+  const [referralAgents, setReferralAgents] = useState([]);
+  const [selectedReferralId, setSelectedReferralId] = useState('');
+
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const propertyId = queryParams.get("property_id");
   const navigate = useNavigate();
+  const loggedInReferralId = localStorage.getItem('referral_id');
 
   useEffect(() => {
+    // Fetch Property
     axios.get(`https://rahul30.pythonanywhere.com/property/${propertyId}/`)
       .then((res) => {
         const prop = res.data;
@@ -25,6 +39,18 @@ function BookingAssets() {
       .catch((err) => {
         console.error('Error fetching property:', err);
         setLoading(false);
+      });
+
+    // Fetch Agent Referral IDs (excluding current user's referral_id)
+    axios.get('https://rahul30.pythonanywhere.com/users/role/Agent/')
+      .then((res) => {
+        const agentsWithReferral = res.data.filter(
+          agent => agent.referral_id && agent.referral_id !== loggedInReferralId
+        );
+        setReferralAgents(agentsWithReferral);
+      })
+      .catch((err) => {
+        console.error('Error fetching agents:', err);
       });
   }, []);
 
@@ -41,7 +67,7 @@ function BookingAssets() {
     const propertyValue = Number(property.total_property_value);
     const agentId = property?.user_id || null;
     const propertyName = property?.property_title || null;
-  
+
     const payload = {
       property_name: propertyName,
       purchased_from: 'agent',
@@ -55,22 +81,17 @@ function BookingAssets() {
       paid_amount: bookingAmount,
       remaining_amount: propertyValue - bookingAmount,
       payment_type: "Booking-Amount",
-      payment_method: "Cash"
+      payment_method: "Cash",
     };
-  
-    console.log("Payload being sent:", payload);
-  
+
     axios.post('https://rahul30.pythonanywhere.com/transactions/', payload)
-      .then((res) => {
-        console.log('Transaction response:', res.data);
-  
-        // 👇 Update property status to "booked"
+      .then(() => {
         return axios.put(`https://rahul30.pythonanywhere.com/property/${propertyId}/`, {
-          status: 'booked'
+          status: 'booked',
+          mediator_referral_id: selectedReferralId || " " // send blank if not selected
         });
       })
-      .then((putRes) => {
-        console.log('Status updated to booked:', putRes.data);
+      .then(() => {
         alert('Booking successful and status updated!');
         navigate('/p-transaction');
       })
@@ -79,9 +100,6 @@ function BookingAssets() {
         console.error('Error:', err.response?.data || err);
       });
   };
-  
-  
-  
 
   return (
     <>
@@ -119,11 +137,26 @@ function BookingAssets() {
                   label="Booking Amount"
                   value={bookingAmount}
                   variant="outlined"
-             
+                  
                 />
               </Grid>
+              <Grid item xs={12} lg={4}>
+                <FormControl fullWidth>
+                  <InputLabel>Mediator Referral ID</InputLabel>
+                  <Select
+                    value={selectedReferralId}
+                    onChange={(e) => setSelectedReferralId(e.target.value)}
+                    label="Mediator Referral ID"
+                  >
+                    {referralAgents.map(agent => (
+                      <MenuItem key={agent.id} value={agent.referral_id}>
+                        {agent.referral_id}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
             </Grid>
-
             <Button
               variant="contained"
               color="primary"

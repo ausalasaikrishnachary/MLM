@@ -18,7 +18,7 @@ function Commission() {
                 // Filter sold properties with non-null, positive commission balance
                 const filteredData = response.data.filter(
                     (item) =>
-                        item.status === 'Sold' &&
+                        item.status === 'sold' &&
                         item.agent_commission_balance !== null &&
                         parseFloat(item.agent_commission_balance) > 0
                 );
