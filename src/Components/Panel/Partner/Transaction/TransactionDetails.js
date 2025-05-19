@@ -17,6 +17,7 @@ import axios from 'axios';
 import { useLocation } from "react-router-dom";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PartnerHeader from '../../../Shared/Partner/PartnerNavbar'
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 const TransactionList = () => {
     const location = useLocation();
@@ -31,7 +32,7 @@ const TransactionList = () => {
         const fetchTransactions = async () => {
             const userId = localStorage.getItem("user_id");
             try {
-                const response = await axios.get(`https://rahul30.pythonanywhere.com//transactions/user-id/${userId}/property-id/${propertyId}/`);
+                const response = await axios.get(`${baseurl}//transactions/user-id/${userId}/property-id/${propertyId}/`);
 
                 if (!response.data || response.data.length === 0) {
                     throw new Error("No transactions found");

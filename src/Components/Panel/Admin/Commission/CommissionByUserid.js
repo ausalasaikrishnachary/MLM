@@ -5,6 +5,7 @@ import {
     Table, TableBody, TableCell, TableHead, TableRow, Button
 } from '@mui/material';
 import Header from "../../../Shared/Navbar/Navbar";
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 
 function CommissionByUser() {
@@ -14,7 +15,7 @@ function CommissionByUser() {
     const navigate = useNavigate();
 
     // useEffect(() => {
-    //     axios.get(`https://rahul30.pythonanywhere.com/properties/user-id/${userId}/`)
+    //     axios.get(`${baseurl}/properties/user-id/${userId}/`)
     //         .then((response) => {
     //             setPropertyData(response.data);
     //             setLoading(false);
@@ -26,7 +27,7 @@ function CommissionByUser() {
     // }, [userId]);
 
     useEffect(() => {
-    axios.get(`https://rahul30.pythonanywhere.com/properties/user-id/${userId}/`)
+    axios.get(`${baseurl}/properties/user-id/${userId}/`)
         .then((response) => {
             // Filter properties where status is 'sold'
             const soldProperties = response.data.filter(property => property.status === 'Sold');

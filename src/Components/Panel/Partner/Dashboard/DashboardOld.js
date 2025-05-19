@@ -17,6 +17,7 @@ import {
 } from 'chart.js';
 import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
 
+
 // Register ChartJS components
 ChartJS.register(
   CategoryScale,

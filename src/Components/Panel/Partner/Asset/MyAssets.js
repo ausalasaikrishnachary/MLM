@@ -28,6 +28,7 @@ import { useNavigate } from "react-router-dom";
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import PaginationComponent from '../../../Shared/Pagination';
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 const PartnerMyAssets = () => { 
   const [sortBy, setSortBy] = useState('');
@@ -45,7 +46,7 @@ const PartnerMyAssets = () => {
  
     const fetchProperties = async () => {
       try {
-        const response = await fetch(`https://rahul30.pythonanywhere.com/properties/user-id/${userId}/`);
+        const response = await fetch(`${baseurl}/properties/user-id/${userId}/`);
         const data = await response.json();
         console.log("userid", userId)
         setProperties(data);
@@ -149,7 +150,7 @@ const PartnerMyAssets = () => {
     if (!confirmed) return;
 
     try {
-      const response = await fetch(`https://rahul30.pythonanywhere.com/property/${propertyId}/`, {
+      const response = await fetch(`${baseurl}/property/${propertyId}/`, {
         method: 'DELETE',
       });
 
@@ -262,7 +263,7 @@ const PartnerMyAssets = () => {
                     <CardMedia
                       component="img"
                       height="220"
-                      image={property.images.length > 0 ? `https://rahul30.pythonanywhere.com${property.images[0].image}` : 'https://via.placeholder.com/300'}
+                      image={property.images.length > 0 ? `${baseurl}${property.images[0].image}` : 'https://via.placeholder.com/300'}
                       alt={property.property_title}
                       sx={{ objectFit: 'cover', borderRadius: '12px 12px 0 0', cursor: 'pointer' }}
                       onClick={() => handleImageClick(property)}
@@ -440,7 +441,7 @@ const PartnerMyAssets = () => {
                           {selectedProperty.images.map((imgObj, idx) => (
                             <div key={idx}>
                               <img
-                                src={`https://rahul30.pythonanywhere.com${imgObj.image}`}
+                                src={`${baseurl}${imgObj.image}`}
                                 alt={`property-img-${idx}`}
                                 style={{ borderRadius: 8, maxHeight: '550px', objectFit: 'cover' }}
                               />
@@ -489,7 +490,7 @@ const PartnerMyAssets = () => {
                 <Grid item xs={12} md={6}>
                   <Box
                     component="img"
-                    src={selectedProperty.images.length > 0 ? `https://rahul30.pythonanywhere.com/${selectedProperty.images[0].image}` : 'https://via.placeholder.com/300'}
+                    src={selectedProperty.images.length > 0 ? `${baseurl}/${selectedProperty.images[0].image}` : 'https://via.placeholder.com/300'}
                     alt={selectedProperty.property_title}
                     sx={{ width: '100%', borderRadius: 2 }}
                   />

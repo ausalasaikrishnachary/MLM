@@ -12,6 +12,7 @@ import {
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import PartnerHeader from '../../../../Shared/Partner/PartnerNavbar';
+import { baseurl } from '../../../../BaseURL/BaseURL';
 
 const ActiveUserView = () => {
   const { id } = useParams();
@@ -21,7 +22,7 @@ const ActiveUserView = () => {
   useEffect(() => {
     const fetchAgent = async () => {
       try {
-        const response = await axios.get(`https://rahul30.pythonanywhere.com/users/${id}/`);
+        const response = await axios.get(`${baseurl}/users/${id}/`);
         setAgent(response.data);
       } catch (error) {
         console.error('Error fetching agent details:', error);

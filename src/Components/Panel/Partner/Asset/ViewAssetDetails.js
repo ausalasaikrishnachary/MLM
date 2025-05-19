@@ -4,6 +4,7 @@ import {
   Container, Typography, Grid, Box, Button
 } from '@mui/material';
 import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 const ViewAssetDetails = () => {
   const location = useLocation();
@@ -26,7 +27,7 @@ const ViewAssetDetails = () => {
         <Grid item xs={12} md={6}>
           <Box
             component="img"
-            src={property.images.length > 0 ? `https://rahul30.pythonanywhere.com/${property.images[0].image}` : 'https://via.placeholder.com/300'}
+            src={property.images.length > 0 ? `${baseurl}/${property.images[0].image}` : 'https://via.placeholder.com/300'}
             alt={property.property_title}
             sx={{ width: '100%', borderRadius: 2 }}
           />

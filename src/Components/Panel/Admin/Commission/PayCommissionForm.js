@@ -5,6 +5,7 @@ import {
     Grid, TextField, Typography, CircularProgress, Box, Button
 } from '@mui/material';
 import Header from "../../../Shared/Navbar/Navbar";
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 function PayCommissionForm() {
     const { propertyId } = useParams();
@@ -17,7 +18,7 @@ function PayCommissionForm() {
     useEffect(() => {
         const fetchProperty = async () => {
             try {
-                const response = await axios.get(`https://rahul30.pythonanywhere.com/property/${propertyId}/`);
+                const response = await axios.get(`${baseurl}/property/${propertyId}/`);
                 setProperty(response.data);
             } catch (err) {
                 setError('Failed to fetch property data.');
@@ -55,7 +56,7 @@ function PayCommissionForm() {
         try {
             setUpdating(true);
             await axios.put(
-                `https://rahul30.pythonanywhere.com/property/${propertyId}/`,
+                `${baseurl}/property/${propertyId}/`,
                 updatedProperty
             );
             alert('Commission updated successfully!');

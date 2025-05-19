@@ -7,6 +7,7 @@ import axios from 'axios';
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate, useLocation } from 'react-router-dom';
 import Header from "../../../Shared/Navbar/Navbar";
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 const Edit_Tmanagement = () => {
   const [users, setUsers] = useState([]);
@@ -57,7 +58,7 @@ const Edit_Tmanagement = () => {
   });
 
   useEffect(() => {
-    axios.get('https://rahul30.pythonanywhere.com/users/')
+    axios.get(`${baseurl}/users/`)
       .then(res => setUsers(res.data))
       .catch(err => console.error('User list fetch error:', err));
   }, []);
@@ -103,7 +104,7 @@ const Edit_Tmanagement = () => {
 
     try {
       const response = await axios.put(
-        `https://rahul30.pythonanywhere.com/users/${selectedUserId}/`,
+        `${baseurl}/users/${selectedUserId}/`,
         data,
         {
           headers: { 'Content-Type': 'multipart/form-data' }
@@ -263,7 +264,7 @@ const Edit_Tmanagement = () => {
                 {formData[fileField.name] && typeof formData[fileField.name] === 'string' && (
                   <Box mt={1}>
                     <Typography variant="body2">Current file:</Typography>
-                    <a href={`https://rahul30.pythonanywhere.com${formData[fileField.name]}`} target="_blank" rel="noopener noreferrer">
+                    <a href={`${baseurl}${formData[fileField.name]}`} target="_blank" rel="noopener noreferrer">
                       View {fileField.label}
                     </a>
                   </Box>

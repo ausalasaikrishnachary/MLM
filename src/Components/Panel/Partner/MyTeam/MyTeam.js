@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
 import axios from 'axios';
 import { Box, Avatar, Typography, Stack, Button } from '@mui/material';
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 function MyTeam() {
   const [currentAgent, setCurrentAgent] = useState(null);
@@ -22,7 +23,7 @@ function MyTeam() {
 
   const fetchAgentWithChildren = async (refId) => {
     try {
-      const response = await axios.get(`https://rahul30.pythonanywhere.com/agents/referral-id/${refId}/`);
+      const response = await axios.get(`${baseurl}/agents/referral-id/${refId}/`);
       return response.data.users.map(user => ({
         ...user,
         children: [],

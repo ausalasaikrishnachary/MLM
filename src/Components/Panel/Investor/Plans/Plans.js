@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import InvestorHeader from "../../../Shared/Investor/InvestorNavbar";
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 function PartnerPlans() {
     const [variantData, setVariantData] = useState([]);
@@ -26,7 +27,7 @@ function PartnerPlans() {
     useEffect(() => {
         const fetchUserSubscription = async () => {
             try {
-                const res = await fetch(`https://rahul30.pythonanywhere.com/user-subscriptions/${userId}/`);
+                const res = await fetch(`${baseurl}/user-subscriptions/${userId}/`);
                 if (res.ok) {
                     const subscription = await res.json();
                     if (subscription.subscription_status === "paid") {
@@ -47,7 +48,7 @@ function PartnerPlans() {
     useEffect(() => {
         const fetchVariantsAndPlans = async () => {
             try {
-                const variantRes = await fetch('https://rahul30.pythonanywhere.com/subscription/plan-variants/Client/');
+                const variantRes = await fetch(`${baseurl}/subscription/plan-variants/Client/`);
                 const variants = await variantRes.json();
                 setVariantData(variants);
 
@@ -58,7 +59,7 @@ function PartnerPlans() {
                 await Promise.all(
                     planIds.map(async (id) => {
                         try {
-                            const res = await fetch(`https://rahul30.pythonanywhere.com/subscription/plans/${id}/`);
+                            const res = await fetch(`${baseurl}/subscription/plans/${id}/`);
                             const plan = await res.json();
                             plansMap[id] = plan;
                         } catch (err) {
@@ -91,7 +92,7 @@ function PartnerPlans() {
         }
 
         try {
-            const response = await fetch('https://rahul30.pythonanywhere.com/subscriptions/', {
+            const response = await fetch(`${baseurl}/subscriptions/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

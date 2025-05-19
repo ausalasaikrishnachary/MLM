@@ -15,6 +15,7 @@ import {
   Alert
 } from '@mui/material';
 import Header from '../../../Shared/Navbar/Navbar';
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 const EditSubscription = () => {
   const { id } = useParams();
@@ -41,7 +42,7 @@ const EditSubscription = () => {
     // Fetch all plans from API
     const fetchPlans = async () => {
       try {
-        const response = await fetch('https://rahul30.pythonanywhere.com/subscription/plans/');
+        const response = await fetch(`${baseurl}/subscription/plans/`);
         if (!response.ok) {
           throw new Error('Failed to fetch plans');
         }
@@ -107,7 +108,7 @@ const EditSubscription = () => {
       price: parseFloat(formData.price)
     };
 
-    const variantResponse = await fetch(`https://rahul30.pythonanywhere.com/subscription/plan-variants/${id}/`, {
+    const variantResponse = await fetch(`${baseurl}/subscription/plan-variants/${id}/`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -130,7 +131,7 @@ const EditSubscription = () => {
         user_type: currentPlan.user_type
       };
 
-      const planResponse = await fetch(`https://rahul30.pythonanywhere.com/subscription/plans/${formData.plan_id}/`, {
+      const planResponse = await fetch(`${baseurl}/subscription/plans/${formData.plan_id}/`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

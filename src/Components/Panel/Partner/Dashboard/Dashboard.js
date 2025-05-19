@@ -48,6 +48,7 @@ import {
 } from "@mui/icons-material";
 import { Call, Email } from "@mui/icons-material";
 import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 
 ChartJS.register(
@@ -92,7 +93,7 @@ const AgentDashboard = () => {
 
   useEffect(() => {
     if (referralId) {
-      axios.get(`https://rahul30.pythonanywhere.com/agents/referral-id/${referralId}/`)
+      axios.get(`${baseurl}/agents/referral-id/${referralId}/`)
         .then(response => {
           setTotalAgents(response.data.total_agents || 0); // ✨ set the real count
         })
@@ -105,7 +106,7 @@ const AgentDashboard = () => {
 
   useEffect(() => {
     axios
-      .get("https://rahul30.pythonanywhere.com/counts/")
+      .get(`${baseurl}/counts/`)
       .then((response) => {
         setCounts(response.data);
         setLoading(false);

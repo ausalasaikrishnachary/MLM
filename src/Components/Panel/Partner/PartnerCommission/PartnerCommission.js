@@ -5,6 +5,7 @@ import {
     Table, TableBody, TableCell, TableHead, TableRow, Button
 } from '@mui/material';
 import Header from "../../../Shared/Partner/PartnerNavbar";
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 
 function PartnerCommission() {
@@ -15,7 +16,7 @@ function PartnerCommission() {
     const userId = localStorage.getItem("user_id");
 
 useEffect(() => {
-    axios.get(`https://rahul30.pythonanywhere.com/properties/user-id/${userId}/`)
+    axios.get(`${baseurl}/properties/user-id/${userId}/`)
         .then((response) => {
             // Filter properties where status is 'sold'
             const soldProperties = response.data.filter(property => property.status === 'Sold');

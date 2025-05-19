@@ -7,6 +7,7 @@ import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import Header from '../../../Shared/Navbar/Navbar';
 import Swal from 'sweetalert2';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 const EditAsset = () => {
   const { state } = useLocation();
@@ -50,7 +51,7 @@ const EditAsset = () => {
         setExistingImages(updatedImages);
       }
     } else {
-      fetch(`https://rahul30.pythonanywhere.com/property/${id}/`)
+      fetch(`${baseurl}/property/${id}/`)
         .then(res => res.json())
         .then(data => {
           setFormData(data);
@@ -135,7 +136,7 @@ const EditAsset = () => {
         }
       });
 
-      const response = await fetch(`https://rahul30.pythonanywhere.com/property/${id}/`, {
+      const response = await fetch(`${baseurl}/property/${id}/`, {
         method: 'PUT',
         body: submitData,
       });
@@ -245,7 +246,7 @@ return (
               {existingImages.map((img) => (
                 <Box key={img.id} sx={{ position: 'relative', width: 120, height: 120 }}>
                   <img 
-                    src={img.preview || `https://rahul30.pythonanywhere.com${img.image}`} 
+                    src={img.preview || `${baseurl}${img.image}`} 
                     alt="Property" 
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />

@@ -9,6 +9,7 @@ import {
     Typography,
 } from '@mui/material';
 import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 function PaymentForm() {
     const navigate = useNavigate();
@@ -26,7 +27,7 @@ function PaymentForm() {
     // Fetch transaction data
     useEffect(() => {
         if (transactionId) {
-            fetch(`https://rahul30.pythonanywhere.com/transactions/${transactionId}/`)
+            fetch(`${baseurl}/transactions/${transactionId}/`)
                 .then((res) => {
                     if (!res.ok) throw new Error('Failed to fetch data');
                     return res.json();
@@ -53,7 +54,7 @@ function PaymentForm() {
 
     useEffect(() => {
     if (propertyId) {
-        fetch(`https://rahul30.pythonanywhere.com/property/${propertyId}/`)
+        fetch(`${baseurl}/property/${propertyId}/`)
             .then((res) => {
                 if (!res.ok) throw new Error('Failed to fetch property data');
                 return res.json();
@@ -83,7 +84,7 @@ function PaymentForm() {
     
         try {
             // 1. Submit the transaction
-            const response = await fetch('https://rahul30.pythonanywhere.com/transactions/', {
+            const response = await fetch(`${baseurl}/transactions/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -101,7 +102,7 @@ function PaymentForm() {
     
             // 2. Update the property status to "Sold"
             const propertyId = formData.property_id; // Ensure this exists in formData
-            const statusUpdateResponse = await fetch(`https://rahul30.pythonanywhere.com/property/${propertyId}/`, {
+            const statusUpdateResponse = await fetch(`${baseurl}/property/${propertyId}/`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

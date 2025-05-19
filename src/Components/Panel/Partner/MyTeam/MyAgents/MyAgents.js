@@ -19,6 +19,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from 'react-router-dom';
+import { baseurl } from '../../../../BaseURL/BaseURL';
 
 
 const MyAgents = () => {
@@ -30,7 +31,7 @@ const MyAgents = () => {
     useEffect(() => {
         const fetchAgents = async () => {
             try {
-                const response = await axios.get('https://rahul30.pythonanywhere.com/users/role/Agent/');
+                const response = await axios.get(`${baseurl}/users/role/Agent/`);
 
                 // Filter only agents with status "Active"
                 const activeAgents = response.data.filter(agent => agent.status === "Active");

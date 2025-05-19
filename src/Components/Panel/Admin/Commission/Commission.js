@@ -5,6 +5,7 @@ import {
 } from '@mui/material';
 import Header from "../../../Shared/Navbar/Navbar";
 import { useNavigate } from 'react-router-dom';
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 function Commission() {
     const [propertyData, setPropertyData] = useState([]);
@@ -13,7 +14,7 @@ function Commission() {
 
     useEffect(() => {
         axios
-            .get('https://rahul30.pythonanywhere.com/property/')
+            .get(`${baseurl}/property/`)
             .then((response) => {
                 // Filter sold properties with non-null, positive commission balance
                 const filteredData = response.data.filter(

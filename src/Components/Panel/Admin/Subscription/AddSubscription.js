@@ -20,7 +20,7 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import Header from '../../../Shared/Navbar/Navbar';
 import { useNavigate } from 'react-router-dom';
-
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 function AddSubscription() {
   const navigate = useNavigate();
@@ -61,7 +61,7 @@ function AddSubscription() {
 
   const fetchPlans = async () => {
     try {
-      const response = await axios.get('https://rahul30.pythonanywhere.com/subscription/plans/');
+      const response = await axios.get(`${baseurl}/subscription/plans/`);
       const plans = response.data;
       setPlanOptions(plans);
       setAllPlans(plans);
@@ -95,7 +95,7 @@ function AddSubscription() {
       };
 
       const response = await axios.post(
-        'https://rahul30.pythonanywhere.com/subscription/plan-variants/',
+        `${baseurl}/subscription/plan-variants/`,
         payload,
         { headers: { 'Content-Type': 'application/json' } }
       );
@@ -134,7 +134,7 @@ function AddSubscription() {
       };
 
       const response = await axios.post(
-        'https://rahul30.pythonanywhere.com/subscription/plans/',
+        `${baseurl}/subscription/plans/`,
         payload,
         { headers: { 'Content-Type': 'application/json' } }
       );

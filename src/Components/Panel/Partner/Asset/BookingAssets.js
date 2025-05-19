@@ -4,6 +4,7 @@ import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
 import axios from 'axios';
 import { useParams,useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 function BookingAssets() {
   const [property, setProperty] = useState({ property_title: '', property_value: '', property_title:"" });
@@ -15,7 +16,7 @@ function BookingAssets() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get(`https://rahul30.pythonanywhere.com/property/${propertyId}/`)
+    axios.get(`${baseurl}/property/${propertyId}/`)
       .then((res) => {
         const prop = res.data;
         setProperty(prop);
@@ -60,12 +61,12 @@ function BookingAssets() {
   
     console.log("Payload being sent:", payload);
   
-    axios.post('https://rahul30.pythonanywhere.com/transactions/', payload)
+    axios.post(`${baseurl}/transactions/`, payload)
       .then((res) => {
         console.log('Transaction response:', res.data);
   
         // 👇 Update property status to "booked"
-        return axios.put(`https://rahul30.pythonanywhere.com/property/${propertyId}/`, {
+        return axios.put(`${baseurl}/property/${propertyId}/`, {
           status: 'booked'
         });
       })

@@ -27,6 +27,7 @@ import axios from 'axios';
 import Header from '../../../Shared/Navbar/Navbar';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from "react-router-dom";
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 const steps = [
   'Basic Details',
@@ -127,8 +128,8 @@ const AddPropertyForm = () => {
   const fetchInitialData = async () => {
     try {
       const [categoriesRes, amenitiesRes] = await Promise.all([
-        axios.get('https://rahul30.pythonanywhere.com/property-categories/'),
-        axios.get('https://rahul30.pythonanywhere.com/amenities/')
+        axios.get(`${baseurl}/property-categories/`),
+        axios.get(`${baseurl}/amenities/`)
       ]);
       setPropertyCategories(categoriesRes.data);
       setAmenities(amenitiesRes.data);
@@ -143,7 +144,7 @@ const AddPropertyForm = () => {
     if (!newAmenity.trim()) return;
 
     try {
-      const response = await axios.post("https://rahul30.pythonanywhere.com/amenities/", {
+      const response = await axios.post(`${baseurl}/amenities/`, {
         name: newAmenity.trim(),
       });
 
@@ -156,7 +157,7 @@ const AddPropertyForm = () => {
 
   const fetchAmenities = async () => {
     try {
-      const amenitiesRes = await axios.get('https://rahul30.pythonanywhere.com/amenities/');
+      const amenitiesRes = await axios.get(`${baseurl}/amenities/`);
       setAmenities(amenitiesRes.data);
     } catch (error) {
       console.error('Error fetching amenities:', error);
@@ -168,7 +169,7 @@ const AddPropertyForm = () => {
     if (formData.category) {
       console.log('Fetching property types for category:', formData.category);
       axios
-        .get(`https://rahul30.pythonanywhere.com/property-types/category-id/${formData.category}/`)
+        .get(`${baseurl}/property-types/category-id/${formData.category}/`)
         .then((response) => {
           console.log('Fetched property types:', response.data);
           setPropertyTypes(response.data);
@@ -186,7 +187,7 @@ const AddPropertyForm = () => {
   // Fetch initial categories
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("https://rahul30.pythonanywhere.com/property-categories/");
+      const response = await axios.get(`${baseurl}/property-categories/`);
       setPropertyCategories(response.data);
     } catch (error) {
       console.error("Error fetching property categories", error);
@@ -206,7 +207,7 @@ const AddPropertyForm = () => {
   const handleCategorySubmit = async () => {
     try {
       // Make the POST request to add the new category
-      const response = await axios.post("https://rahul30.pythonanywhere.com/property-categories/", {
+      const response = await axios.post(`${baseurl}/property-categories/`, {
         name: newCategoryName,
       });
 
@@ -358,7 +359,7 @@ const AddPropertyForm = () => {
       }
 
       // Submit to API
-      const response = await axios.post('https://rahul30.pythonanywhere.com/property/', payload, {
+      const response = await axios.post(`${baseurl}/property/`, payload, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -406,7 +407,7 @@ const AddPropertyForm = () => {
     };
 
     try {
-      const response = await fetch('https://rahul30.pythonanywhere.com/property-types/', {
+      const response = await fetch(`${baseurl}/property-types/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

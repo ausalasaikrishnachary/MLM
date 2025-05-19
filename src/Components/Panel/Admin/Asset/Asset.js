@@ -29,6 +29,7 @@ import { IconButton, Tooltip } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 import CallIcon from '@mui/icons-material/Call';
 import EmailIcon from '@mui/icons-material/Email';
@@ -47,7 +48,7 @@ const AssetsUI = () => {
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const response = await fetch('https://rahul30.pythonanywhere.com/property/');
+        const response = await fetch(`${baseurl}/property/`);
         const data = await response.json();
         setProperties(data);
         setFilteredProperties(data);
@@ -145,7 +146,7 @@ const AssetsUI = () => {
     if (!confirmed) return;
 
     try {
-      const response = await fetch(`https://rahul30.pythonanywhere.com/property/${propertyId}/`, {
+      const response = await fetch(`${baseurl}/property/${propertyId}/`, {
         method: 'DELETE',
       });
 
@@ -163,7 +164,7 @@ const AssetsUI = () => {
 
   const updateApprovalStatus = async (propertyId, newStatus) => {
     try {
-      const response = await fetch(`https://rahul30.pythonanywhere.com/property/${propertyId}/`, {
+      const response = await fetch(`${baseurl}/property/${propertyId}/`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -284,7 +285,7 @@ const AssetsUI = () => {
                     <CardMedia
                       component="img"
                       height="220"
-                      image={property.images.length > 0 ? `https://rahul30.pythonanywhere.com${property.images[0].image}` : 'https://via.placeholder.com/300'}
+                      image={property.images.length > 0 ? `${baseurl}${property.images[0].image}` : 'https://via.placeholder.com/300'}
                       alt={property.property_title}
                       sx={{ objectFit: 'cover', borderRadius: '12px 12px 0 0', cursor: 'pointer' }}
                       onClick={() => handleImageClick(property)}
@@ -325,7 +326,7 @@ const AssetsUI = () => {
                         onChange={async (e) => {
                           const newStatus = e.target.value;
                           try {
-                            const response = await fetch(`https://rahul30.pythonanywhere.com/property/${property.property_id}/`, {
+                            const response = await fetch(`${baseurl}/property/${property.property_id}/`, {
                               method: 'PUT',
                               headers: {
                                 'Content-Type': 'application/json',
@@ -482,7 +483,7 @@ const AssetsUI = () => {
                           {selectedProperty.images.map((imgObj, idx) => (
                             <div key={idx}>
                               <img
-                                src={`https://rahul30.pythonanywhere.com${imgObj.image}`}
+                                src={`${baseurl}${imgObj.image}`}
                                 alt={`property-img-${idx}`}
                                 style={{ borderRadius: 8, maxHeight: '550px', objectFit: 'cover' }}
                               />
@@ -532,7 +533,7 @@ const AssetsUI = () => {
                 <Grid item xs={12} md={6}>
                   <Box
                     component="img"
-                    src={selectedProperty.images.length > 0 ? `https://rahul30.pythonanywhere.com/${selectedProperty.images[0].image}` : 'https://via.placeholder.com/300'}
+                    src={selectedProperty.images.length > 0 ? `${baseurl}/${selectedProperty.images[0].image}` : 'https://via.placeholder.com/300'}
                     alt={selectedProperty.property_title}
                     sx={{ width: '100%', borderRadius: 2 }}
                   />

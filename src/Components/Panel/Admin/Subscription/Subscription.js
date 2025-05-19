@@ -22,6 +22,7 @@ import Header from '../../../Shared/Navbar/Navbar';
 import { Grid, Tooltip, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 
 function Subscription() {
@@ -34,7 +35,7 @@ function Subscription() {
   const fetchVariantsAndPlans = async (type) => {
     setLoading(true);
     try {
-      const variantRes = await fetch(`https://rahul30.pythonanywhere.com/subscription/plan-variants/${type}/`);
+      const variantRes = await fetch(`${baseurl}/subscription/plan-variants/${type}/`);
       const variants = await variantRes.json();
       setVariantData(variants);
 
@@ -44,7 +45,7 @@ function Subscription() {
       await Promise.all(
         planIds.map(async (id) => {
           try {
-            const res = await fetch(`https://rahul30.pythonanywhere.com/subscription/plans/${id}/`);
+            const res = await fetch(`${baseurl}/subscription/plans/${id}/`);
             const plan = await res.json();
             plansMap[id] = plan;
           } catch (err) {
@@ -69,7 +70,7 @@ function Subscription() {
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`https://rahul30.pythonanywhere.com/subscription/plan-variants/${variantId}/`, {
+      const response = await fetch(`${baseurl}/subscription/plan-variants/${variantId}/`, {
         method: 'DELETE',
       });
 

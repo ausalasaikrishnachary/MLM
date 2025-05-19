@@ -24,6 +24,8 @@ import PartnerHeader from '../../../Shared/Partner/PartnerNavbar'
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import { baseurl } from '../../../BaseURL/BaseURL';
+
 
 const Transaction = () => {
   const [transactions, setTransactions] = useState([]);
@@ -54,7 +56,7 @@ const Transaction = () => {
           return;
         }
 
-        const response = await axios.get(`https://rahul30.pythonanywhere.com/transactions/user-id/${userId}/`);
+        const response = await axios.get(`${baseurl}/transactions/user-id/${userId}/`);
         let transactionsData = response.data;
 
         if (!Array.isArray(transactionsData)) {

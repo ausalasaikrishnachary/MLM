@@ -25,6 +25,7 @@ import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 const LatestAssets = () => {
   const [sortBy, setSortBy] = useState('');
@@ -37,7 +38,7 @@ const LatestAssets = () => {
 
   useEffect(() => {
     if (userId) {
-      axios.get(`https://rahul30.pythonanywhere.com/user-subscriptions/${userId}/`)
+      axios.get(`${baseurl}/user-subscriptions/${userId}/`)
         .then(response => {
           if (response.data.subscription_status === "paid") {
             setSubscriptionPaid(true);
@@ -53,7 +54,7 @@ const LatestAssets = () => {
     const fetchProperties = async () => {
       const userId = localStorage.getItem("user_id"); // make sure this is a string
       try {
-        const response = await fetch('https://rahul30.pythonanywhere.com/latest-properties/');
+        const response = await fetch(`${baseurl}/latest-properties/`);
         const data = await response.json();
 
         // Filter out properties where user_id matches the current user's id
@@ -192,7 +193,7 @@ const LatestAssets = () => {
                   <CardMedia
                     component="img"
                     height="220"
-                    image={property.images.length > 0 ? `https://rahul30.pythonanywhere.com${property.images[0].image}` : 'https://via.placeholder.com/300'}
+                    image={property.images.length > 0 ? `${baseurl}${property.images[0].image}` : 'https://via.placeholder.com/300'}
                     alt={property.property_title}
                     sx={{ objectFit: 'cover', borderRadius: '12px 12px 0 0', cursor: 'pointer' }}
                     onClick={() => handleImageClick(property)}
@@ -354,7 +355,7 @@ const LatestAssets = () => {
                         {selectedProperty.images.map((imgObj, idx) => (
                           <div key={idx}>
                             <img
-                              src={`https://rahul30.pythonanywhere.com${imgObj.image}`}
+                              src={`${baseurl}${imgObj.image}`}
                               alt={`property-img-${idx}`}
                               style={{ borderRadius: 8, maxHeight: '550px', objectFit: 'cover' }}
                             />
@@ -385,7 +386,7 @@ const LatestAssets = () => {
                 <Grid item xs={12} md={6}>
                   <Box
                     component="img"
-                    src={selectedProperty.images.length > 0 ? `https://rahul30.pythonanywhere.com/${selectedProperty.images[0].image}` : 'https://via.placeholder.com/300'}
+                    src={selectedProperty.images.length > 0 ? `${baseurl}/${selectedProperty.images[0].image}` : 'https://via.placeholder.com/300'}
                     alt={selectedProperty.property_title}
                     sx={{ width: '100%', borderRadius: 2 }}
                   />

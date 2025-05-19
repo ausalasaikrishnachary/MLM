@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Card, Typography, Divider, Button, CircularProgress } from "@mui/material";
 import PartnerHeader from "../../../Shared/Partner/PartnerNavbar";
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 const PartnerProfile = () => {
   const [userData, setUserData] = useState(null);
@@ -8,7 +9,7 @@ const PartnerProfile = () => {
   const userId = localStorage.getItem("user_id");
 
   useEffect(() => {
-    fetch(`https://rahul30.pythonanywhere.com/users/${userId}/`)
+    fetch(`${baseurl}/users/${userId}/`)
       .then((res) => res.json())
       .then((data) => {
         setUserData(data);

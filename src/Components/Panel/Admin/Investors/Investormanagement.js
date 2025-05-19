@@ -17,6 +17,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Header from "../../../Shared/Navbar/Navbar";
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 const Tmanagement = () => {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ const Tmanagement = () => {
 
   useEffect(() => {
     axios
-      .get("https://rahul30.pythonanywhere.com/users/")
+      .get(`${baseurl}/users/`)
       .then((res) => {
         const transformed = res.data.map((user) => ({
           id: user.user_id,
@@ -50,7 +51,7 @@ const Tmanagement = () => {
 
   const handleDelete = (user_id) => {
     axios
-      .delete(`https://rahul30.pythonanywhere.com/users/${user_id}`)
+      .delete(`${baseurl}/users/${user_id}`)
       .then((res) => {
         if (res.status === 200) {
           setData((prevData) => prevData.filter((user) => user.id !== user_id));
