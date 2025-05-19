@@ -123,6 +123,7 @@ const Tmoniter = () => {
                 <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Transaction ID</TableCell>
                 <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Property Name</TableCell>
                 <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Property Value</TableCell>
+                <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Property Id</TableCell>
                 <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Payment Type</TableCell>
                 {/* <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Paid Amount</TableCell> */}
                 <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Company Commission</TableCell>
@@ -147,6 +148,7 @@ const Tmoniter = () => {
                     <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>{transaction.transaction_id}</TableCell>
                     <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>{transaction.property_name}</TableCell>
                     <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>{transaction.property_value || "N/A"}</TableCell>
+                    <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>{transaction.property_id || "N/A"}</TableCell>
                     <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>{transaction.payment_type || "N/A"}</TableCell>
                     {/* <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>{transaction.paid_amount}</TableCell> */}
                     <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>{transaction.company_commission}</TableCell>
