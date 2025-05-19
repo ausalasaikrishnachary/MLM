@@ -57,6 +57,7 @@ import {
   Container, Typography, Grid, Box, Button, Divider, Chip
 } from '@mui/material';
 import InvestorHeader from '../../../Shared/Investor/InvestorNavbar';
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 const PropertyDetails = () => {
   const location = useLocation();
@@ -96,7 +97,7 @@ const PropertyDetails = () => {
           <Grid item xs={12} md={6}>
             <Box
               component="img"
-              src={property.images.length > 0 ? `https://rahul30.pythonanywhere.com${property.images[0].image}` : 'https://via.placeholder.com/300'}
+              src={property.images.length > 0 ? `${baseurl}${property.images[0].image}` : 'https://via.placeholder.com/300'}
               alt={property.property_title}
               sx={{ 
                 width: '100%', 

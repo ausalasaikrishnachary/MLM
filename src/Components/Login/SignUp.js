@@ -8,6 +8,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import image2 from "./../Images/logo.png";
 import { Link, Navigate } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { baseurl } from '../BaseURL/BaseURL';
 
 const SignUp = () => {
     const navigate = useNavigate();
@@ -88,18 +89,18 @@ const SignUp = () => {
 
 
     useEffect(() => {
-        fetch("https://rahul30.pythonanywhere.com/roles/")
+        fetch(`${baseurl}/roles/`)
             .then((res) => res.json())
             .then((data) => setRoles(data))
             .catch((err) => console.error("Error fetching roles:", err));
 
-        fetch("https://rahul30.pythonanywhere.com/users/")
+        fetch(`${baseurl}/users/`)
             .then((res) => res.json())
             .then((data) => setUsers(data))
             .catch((err) => console.error("Error fetching users:", err));
 
         // Fetch users with role "Partner"
-        fetch("https://rahul30.pythonanywhere.com/users/role/Partner/")
+        fetch(`${baseurl}/users/role/Partner/`)
             .then((res) => res.json())
             .then((data) => setPartnerUsers(data))
             .catch((err) => console.error("Error fetching partner users:", err));
@@ -138,7 +139,7 @@ const SignUp = () => {
         if (image) formDataToSend.append("image", image);
 
         try {
-            const response = await fetch("https://rahul30.pythonanywhere.com/users/", {
+            const response = await fetch(`${baseurl}/users/`, {
                 method: "POST",
                 body: formDataToSend,
             });
@@ -176,7 +177,7 @@ const SignUp = () => {
         }
 
         try {
-            const response = await fetch("https://rahul30.pythonanywhere.com/roles/", {
+            const response = await fetch(`${baseurl}/roles/`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ role_name: newRole }),

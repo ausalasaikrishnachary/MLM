@@ -28,6 +28,7 @@ import PaginationComponent from '../../../Shared/Pagination';
 import CallIcon from '@mui/icons-material/Call';
 import EmailIcon from '@mui/icons-material/Email';
 
+
 const MyAssets = () => {
   const [sortBy, setSortBy] = useState('');
   const [properties, setProperties] = useState([]);
