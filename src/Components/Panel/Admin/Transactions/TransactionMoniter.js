@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Container,
   Box,
@@ -24,6 +25,9 @@ const Tmoniter = () => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Inside Tmoniter component
+const navigate = useNavigate();
+
   const summaryCardsData = [
     {
       title: "Total Transactions",
@@ -48,7 +52,35 @@ const Tmoniter = () => {
         const res = await axios.get(
           "https://rahul30.pythonanywhere.com/transactions/payment-type/Full-Amount/"
         );
-        setTransactions(res.data);
+
+        const transactionsWithStatus = await Promise.all(
+          res.data.map(async (transaction) => {
+            try {
+              const propertyRes = await axios.get(
+                `https://rahul30.pythonanywhere.com/property/${transaction.property_id}/`
+              );
+              const status = propertyRes.data.company_commission_status || "N/A";
+
+              console.log(
+                `Transaction ID: ${transaction.transaction_id}, Property ID: ${transaction.property_id}, Commission Status: ${status}`
+              );
+
+              return {
+                ...transaction,
+                company_commission_status: status,
+              };
+            } catch (error) {
+              console.error("Error fetching property status:", error);
+
+              return {
+                ...transaction,
+                company_commission_status: "Error",
+              };
+            }
+          })
+        );
+
+        setTransactions(transactionsWithStatus);
       } catch (error) {
         console.error("Failed to fetch transactions:", error);
       } finally {
@@ -58,6 +90,7 @@ const Tmoniter = () => {
 
     fetchTransactions();
   }, []);
+
 
   const handlePayCommission = async (transaction) => {
     const url = `https://rahul30.pythonanywhere.com/commission/distribute/${transaction.transaction_id}/`;
@@ -123,7 +156,7 @@ const Tmoniter = () => {
                 <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Transaction ID</TableCell>
                 <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Property Name</TableCell>
                 <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Property Value</TableCell>
-                <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Property Id</TableCell>
+                {/* <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Property Id</TableCell> */}
                 <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Payment Type</TableCell>
                 {/* <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Paid Amount</TableCell> */}
                 <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Company Commission</TableCell>
@@ -148,7 +181,7 @@ const Tmoniter = () => {
                     <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>{transaction.transaction_id}</TableCell>
                     <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>{transaction.property_name}</TableCell>
                     <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>{transaction.property_value || "N/A"}</TableCell>
-                    <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>{transaction.property_id || "N/A"}</TableCell>
+                    {/* <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>{transaction.property_id || "N/A"}</TableCell> */}
                     <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>{transaction.payment_type || "N/A"}</TableCell>
                     {/* <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>{transaction.paid_amount}</TableCell> */}
                     <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>{transaction.company_commission}</TableCell>
@@ -157,20 +190,37 @@ const Tmoniter = () => {
                       {new Date(transaction.transaction_date).toLocaleDateString("en-IN")}
                     </TableCell>
                     <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>
-                      <button
-                        style={{
-                          backgroundColor: "#1976d2",
-                          color: "white",
-                          padding: "6px 12px",
-                          border: "none",
-                          borderRadius: "4px",
-                          cursor: "pointer",
-                        }}
-                        onClick={() => handlePayCommission(transaction)}
-                      >
-                        Distribute Commission
-                      </button>
+                      {transaction.company_commission_status === "paid" ? (
+                        <button
+                          style={{
+                            backgroundColor: "#4caf50",
+                            color: "white",
+                            padding: "6px 12px",
+                            border: "none",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                          }}
+                          onClick={() => navigate(`/a-commission/${transaction.transaction_id}`)}
+                        >
+                          View Commission
+                        </button>
+                      ) : (
+                        <button
+                          style={{
+                            backgroundColor: "#1976d2",
+                            color: "white",
+                            padding: "6px 12px",
+                            border: "none",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                          }}
+                          onClick={() => handlePayCommission(transaction)}
+                        >
+                          Distribute Commission
+                        </button>
+                      )}
                     </TableCell>
+
 
                   </TableRow>
                 ))
