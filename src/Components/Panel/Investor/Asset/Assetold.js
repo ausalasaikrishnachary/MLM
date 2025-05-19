@@ -26,6 +26,7 @@ import image3 from '../images/pic3.jpeg';
 import AssetDetailModal from './AssetDetailModal';
 import InvestorHeader from '../../../Shared/Investor/InvestorNavbar';
 
+
 const AssetsTablePage = () => {
   // --- States for filtering, sorting, and pagination ---
   const [sortBy, setSortBy] = useState('');

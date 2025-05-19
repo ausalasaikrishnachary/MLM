@@ -12,6 +12,7 @@ import {
 import image4k from '../images/pic1.jpeg';
 import InvestorHeader from "../../../Shared/Investor/InvestorNavbar";
 
+
 const InvestmentPage = () => {
   const [investmentData, setInvestmentData] = useState({
     asset: "",

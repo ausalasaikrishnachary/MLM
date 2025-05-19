@@ -2,6 +2,7 @@
 import React from 'react';
 import { Modal, Box, Typography, Button, CardMedia } from '@mui/material';
 
+
 const AssetDetailModal = ({ open, handleClose, assetDetails }) => {
   return (
     <Modal open={open} onClose={handleClose}>

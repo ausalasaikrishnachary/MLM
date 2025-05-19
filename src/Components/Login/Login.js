@@ -3,6 +3,7 @@ import { Box, TextField, Button, Typography, Link, Paper, Grid } from "@mui/mate
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import image2 from "./../Images/logo.png";
+import { baseurl } from '../BaseURL/BaseURL';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ const Login = () => {
     setIsLoading(true); // Start loading
 
     try {
-      const response = await fetch("https://rahul30.pythonanywhere.com/login/", {
+      const response = await fetch(`${baseurl}/login/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -114,7 +115,7 @@ const Login = () => {
     }
 
     try {
-      const response = await fetch("https://rahul30.pythonanywhere.com/send-otp/", {
+      const response = await fetch(`${baseurl}/send-otp/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -141,7 +142,7 @@ const Login = () => {
     }
 
     try {
-      const response = await fetch("https://rahul30.pythonanywhere.com/verify-otp-reset-password/", {
+      const response = await fetch(`${baseurl}/verify-otp-reset-password/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp, new_password: newPassword }),

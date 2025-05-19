@@ -24,6 +24,8 @@ import { styled } from '@mui/material/styles';
 import axios from 'axios';
 import InvestorHeader from "../../../Shared/Investor/InvestorNavbar"
 import { useNavigate } from "react-router-dom";
+import { baseurl } from '../../../BaseURL/BaseURL';
+
 
 const steps = [
   'Basic Details',
@@ -116,8 +118,8 @@ const AddPropertyForm = () => {
     const fetchData = async () => {
       try {
         const [categoriesRes, amenitiesRes] = await Promise.all([
-          axios.get('https://rahul30.pythonanywhere.com/property-categories/'),
-          axios.get('https://rahul30.pythonanywhere.com/amenities/')
+          axios.get(`${baseurl}/property-categories/`),
+          axios.get(`${baseurl}/amenities/`)
         ]);
         setPropertyCategories(categoriesRes.data);
         setAmenities(amenitiesRes.data);
@@ -132,7 +134,7 @@ const AddPropertyForm = () => {
     if (formData.category) {
       console.log('Fetching property types for category:', formData.category);
       axios
-        .get(`https://rahul30.pythonanywhere.com/property-types/category-id/${formData.category}/`)
+        .get(`${baseurl}/property-types/category-id/${formData.category}/`)
         .then((response) => {
           console.log('Fetched property types:', response.data);
           setPropertyTypes(response.data);
@@ -268,7 +270,7 @@ const AddPropertyForm = () => {
       }
 
       // Submit to API
-      const response = await axios.post('https://rahul30.pythonanywhere.com/property/', payload, {
+      const response = await axios.post(`${baseurl}/property/`, payload, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
