@@ -29,7 +29,7 @@ import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import PaginationComponent from '../../../Shared/Pagination';
 
-const PartnerMyAssets = () => {
+const PartnerMyAssets = () => { 
   const [sortBy, setSortBy] = useState('');
   const [properties, setProperties] = useState([]);
   const [filteredProperties, setFilteredProperties] = useState([]);
@@ -42,7 +42,7 @@ const PartnerMyAssets = () => {
   const [page, setPage] = useState(1);
   const totalPages = 5;
 
-  useEffect(() => {
+ 
     const fetchProperties = async () => {
       try {
         const response = await fetch(`https://rahul30.pythonanywhere.com/properties/user-id/${userId}/`);
@@ -55,6 +55,7 @@ const PartnerMyAssets = () => {
       }
     };
 
+     useEffect(() => {
     fetchProperties();
   }, []);
 
@@ -141,6 +142,28 @@ const PartnerMyAssets = () => {
   const handleCloseCarousel = () => {
     setOpenCarousel(false);
     setSelectedProperty(null);
+  };
+
+   const handleDelete = async (propertyId) => {
+    const confirmed = window.confirm("Are you sure you want to delete this property?");
+    if (!confirmed) return;
+
+    try {
+      const response = await fetch(`https://rahul30.pythonanywhere.com/property/${propertyId}/`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        alert('Property deleted successfully.');
+         fetchProperties();
+        // Refresh list or redirect as needed
+      } else {
+        alert(`Failed to delete property. Status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Error deleting property:', error);
+      alert('An error occurred while deleting the property.');
+    }
   };
 
   return (
@@ -346,13 +369,23 @@ const PartnerMyAssets = () => {
 
                         {/* Right side: Edit/Delete buttons */}
                         <Box display="flex" alignItems="center">
-                          <IconButton aria-label="edit" size="medium" sx={{ color: 'rgb(255, 193, 7)' }}>
-                            <EditIcon fontSize="medium" />
-                          </IconButton>
-                          <IconButton aria-label="delete" size="medium" sx={{ color: 'red', ml: '4px' }}>
-                            <DeleteIcon fontSize="medium" />
-                          </IconButton>
-                        </Box>
+      <IconButton
+        aria-label="edit"
+        size="medium"
+        sx={{ color: '#1976d2' }}
+        onClick={() => navigate(`/p-myassets/edit/${property.property_id}`, { state: { property } })}
+      >
+        <EditIcon fontSize="medium" />
+      </IconButton>
+      <IconButton
+        aria-label="delete"
+        size="medium"
+        sx={{ color: 'red', ml: '4px' }}
+        onClick={() => handleDelete(property.property_id)}
+      >
+        <DeleteIcon fontSize="medium" />
+      </IconButton>
+    </Box>
                       </Box>
 
                     </Box>
