@@ -6,14 +6,14 @@ import {
   Card,
   CardContent,
   Typography,
-  TextField,
-  FormControl,
-  Select,
-  MenuItem,
-  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   IconButton,
 } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -21,22 +21,8 @@ import Header from "../../../Shared/Navbar/Navbar";
 import axios from "axios";
 
 const Tmoniter = () => {
-  const [properties, setProperties] = useState([]);
+  const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
-
-  useEffect(() => {
-    axios
-      .get("http://175.29.21.7:83/transactions/")
-      .then((response) => {
-        setProperties(response.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-        setLoading(false);
-      });
-  }, []);
 
   const summaryCardsData = [
     {
@@ -56,56 +42,58 @@ const Tmoniter = () => {
     },
   ];
 
-  const filteredProperties = properties.filter((property) =>
-    property.property_name.toLowerCase().includes(search.toLowerCase())
-  );
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const res = await axios.get(
+          "https://rahul30.pythonanywhere.com/transactions/payment-type/Full-Amount/"
+        );
+        setTransactions(res.data);
+      } catch (error) {
+        console.error("Failed to fetch transactions:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const columns = [
-    { field: "property_id", headerName: "Property ID", width: 120 },
-    { field: "property_name", headerName: "Property Name", width: 200 },
-    { field: "property_type", headerName: "Type", width: 150 },
-    { field: "location", headerName: "Location", width: 200 },
-    { field: "city", headerName: "City", width: 100 },
-    // { field: "total_units", headerName: "Total Units", width: 120 },
-    // { field: "available_units", headerName: "Available Units", width: 150 },
-    { field: "total_price", headerName: "Total Price", width: 150 },
-    {
-      field: "actions",
-      headerName: "Actions",
-      width: 150,
-      sortable: false,
-      renderCell: () => (
-        <Box sx={{ display: "flex", gap: "5px" }}>
-          <IconButton size="small" color="primary">
-            <VisibilityIcon />
-          </IconButton>
-          <IconButton size="small" color="primary">
-            <EditIcon />
-          </IconButton>
-          <IconButton size="small" color="error">
-            <DeleteIcon />
-          </IconButton>
-        </Box>
-      ),
-    },
-  ];
+    fetchTransactions();
+  }, []);
+
+  const handlePayCommission = async (transaction) => {
+    const url = `https://rahul30.pythonanywhere.com/commission/distribute/${transaction.transaction_id}/`;
+
+    try {
+      console.log("Initiating commission payment for:", transaction.transaction_id);
+      const response = await axios.post(url);
+      console.log("Commission distributed:", response.data);
+
+      alert(`Commission distributed for Transaction ID ${transaction.transaction_id}`);
+    } catch (error) {
+      console.error("Failed to distribute commission:", error);
+      alert(`Error distributing commission for Transaction ID ${transaction.transaction_id}`);
+    }
+  };
+
+
 
   return (
     <>
       <Header />
       <Container sx={{ pt: 3 }}>
-        <Typography variant="h4" component="h2" sx={{ mb: 3, textAlign: "center" }}>
+        {/* <Typography
+          variant="h4"
+          component="h2"
+          sx={{ mb: 3, textAlign: "center" }}
+        >
           Transaction Monitor
         </Typography>
 
         <Grid container spacing={2}>
           {summaryCardsData.map((card, index) => (
             <Grid item xs={12} md={4} key={index}>
-              <Card sx={{textAlign: "center", p: 2, borderRadius: 2 }}>
+              <Card sx={{ textAlign: "center", p: 2, borderRadius: 2 }}>
                 <CardContent>
-                  <Typography  gutterBottom>
-                    {card.title}
-                  </Typography>
+                  <Typography gutterBottom>{card.title}</Typography>
                   <Typography variant="h4" sx={{ color: "rgb(30,10,80)" }}>
                     {card.value}
                   </Typography>
@@ -114,39 +102,86 @@ const Tmoniter = () => {
               </Card>
             </Grid>
           ))}
-        </Grid>
+        </Grid> */}
 
-        <Box sx={{ display: "flex", justifyContent: "right", gap: "10px", mt: 3, mb: 2 }}>
-          <TextField
-            placeholder="Search..."
-            variant="outlined"
-            size="small"
-            sx={{ width: "250px" }}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <FormControl size="small" sx={{ width: "120px" }}>
-            <Select defaultValue="Latest">
-              <MenuItem value="Latest">Latest</MenuItem>
-              <MenuItem value="Oldest">Oldest</MenuItem>
-            </Select>
-          </FormControl>
-          <Button variant="outlined" sx={{ width: "120px", fontSize: "14px", textTransform: "none" }}>
-            Filters
-          </Button>
-        </Box>
+        <Typography
+          variant="h5"
+          sx={{
+            marginTop: 4,
+            marginBottom: 2,
+            fontWeight: "bold",
+            textAlign: "center",
+          }}
+        >
+          Transaction List
+        </Typography>
 
-        <Box sx={{ height: 400, width: "100%", mt: 3 }}>
-          <DataGrid
-            rows={filteredProperties}
-            columns={columns}
-            pageSize={5}
-            rowsPerPageOptions={[5, 10, 20]}
-            autoHeight
-            disableSelectionOnClick
-            loading={loading}
-            getRowId={(row) => row.property_id}
-          />
-        </Box>
+        <TableContainer>
+          <Table sx={{ border: "1px solid black", width: "100%" }}>
+            <TableHead>
+              <TableRow>
+                <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Transaction ID</TableCell>
+                <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Property Name</TableCell>
+                <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Property Value</TableCell>
+                <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Payment Type</TableCell>
+                {/* <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Paid Amount</TableCell> */}
+                <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Company Commission</TableCell>
+                <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Payment Method</TableCell>
+                <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Transaction Date</TableCell>
+                <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>
+                  Action
+                </TableCell>
+              </TableRow>
+
+            </TableHead>
+            <TableBody>
+              {!loading && transactions.length > 0 ? (
+                transactions.map((transaction) => (
+                  <TableRow
+                    key={transaction.transaction_id}
+                    sx={{
+                      cursor: "pointer",
+                      "&:hover": { backgroundColor: "#f5f5f5" },
+                    }}
+                  >
+                    <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>{transaction.transaction_id}</TableCell>
+                    <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>{transaction.property_name}</TableCell>
+                    <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>{transaction.property_value || "N/A"}</TableCell>
+                    <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>{transaction.payment_type || "N/A"}</TableCell>
+                    {/* <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>{transaction.paid_amount}</TableCell> */}
+                    <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>{transaction.company_commission}</TableCell>
+                    <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>{transaction.payment_mode || "cash"}</TableCell>
+                    <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>
+                      {new Date(transaction.transaction_date).toLocaleDateString("en-IN")}
+                    </TableCell>
+                    <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>
+                      <button
+                        style={{
+                          backgroundColor: "#1976d2",
+                          color: "white",
+                          padding: "6px 12px",
+                          border: "none",
+                          borderRadius: "4px",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => handlePayCommission(transaction)}
+                      >
+                        Distribute Commission
+                      </button>
+                    </TableCell>
+
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={8} align="center">
+                    {loading ? "Loading..." : "No transactions found"}
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </Container>
     </>
   );

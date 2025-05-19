@@ -30,7 +30,7 @@ function CommissionByUser() {
     axios.get(`${baseurl}/properties/user-id/${userId}/`)
         .then((response) => {
             // Filter properties where status is 'sold'
-            const soldProperties = response.data.filter(property => property.status === 'Sold');
+            const soldProperties = response.data.filter(property => property.status === 'sold');
             setPropertyData(soldProperties);
             setLoading(false);
         })

@@ -18,7 +18,7 @@ function PaymentForm() {
     const transactionId = queryParams.get('transaction_id');
     const propertyId = queryParams.get('property_id');
     const [agentCommission, setAgentCommission] = useState('');
-
+    const [companyCommission, setCompanyCommission] = useState('');
 
     const [formData, setFormData] = useState({});
     const [loading, setLoading] = useState(true);
@@ -62,6 +62,7 @@ function PaymentForm() {
             .then((data) => {
                 if (data && data.agent_commission !== undefined) {
                     setAgentCommission(data.agent_commission);
+                    setCompanyCommission(data.company_commission);
                     console.log("agentcommission", data.agent_commission)
                 }
             })
@@ -80,6 +81,7 @@ function PaymentForm() {
             paid_amount: parseFloat(formData.remaining_amount),
             remaining_amount: 0,
             payment_type: "Full-Amount",
+            company_commission: companyCommission
         };
     
         try {
@@ -100,14 +102,14 @@ function PaymentForm() {
             const result = await response.json();
             console.log('Transaction stored successfully:', result);
     
-            // 2. Update the property status to "Sold"
+            // 2. Update the property status to "sold"
             const propertyId = formData.property_id; // Ensure this exists in formData
             const statusUpdateResponse = await fetch(`${baseurl}/property/${propertyId}/`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ status: 'Sold', agent_commission_balance: agentCommission }),
+                body: JSON.stringify({ status: 'sold', agent_commission_balance: agentCommission }),
             });
     
             if (!statusUpdateResponse.ok) {
@@ -115,8 +117,8 @@ function PaymentForm() {
                 throw new Error(`Status Update Error: ${JSON.stringify(errorData)}`);
             }
     
-            console.log(`Property ${propertyId} status updated to Sold`);
-            alert('Transaction submitted and property marked as Sold!');
+            console.log(`Property ${propertyId} status updated to sold`);
+            alert('Transaction submitted and property marked as sold!');
             navigate('/p-transaction');
         } catch (error) {
             console.error('Submit error:', error);
