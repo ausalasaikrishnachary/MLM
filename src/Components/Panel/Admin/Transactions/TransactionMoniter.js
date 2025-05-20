@@ -3,32 +3,22 @@ import { useNavigate } from "react-router-dom";
 import {
   Container,
   Box,
-  Grid,
-  Card,
-  CardContent,
   Typography,
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TableRow,
-  IconButton,
+  Button,
 } from "@mui/material";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import Header from "../../../Shared/Navbar/Navbar";
 import axios from "axios";
 
 const Tmoniter = () => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // Inside Tmoniter component
-const navigate = useNavigate();
-
-  const summaryCardsData = [
+  const navigate = useNavigate();
+   const summaryCardsData = [
     {
       title: "Total Transactions",
       value: "1274",
@@ -46,6 +36,7 @@ const navigate = useNavigate();
     },
   ];
 
+
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
@@ -60,18 +51,12 @@ const navigate = useNavigate();
                 `https://rahul30.pythonanywhere.com/property/${transaction.property_id}/`
               );
               const status = propertyRes.data.company_commission_status || "N/A";
-
-              console.log(
-                `Transaction ID: ${transaction.transaction_id}, Property ID: ${transaction.property_id}, Commission Status: ${status}`
-              );
-
               return {
                 ...transaction,
                 company_commission_status: status,
               };
             } catch (error) {
               console.error("Error fetching property status:", error);
-
               return {
                 ...transaction,
                 company_commission_status: "Error",
@@ -91,15 +76,12 @@ const navigate = useNavigate();
     fetchTransactions();
   }, []);
 
-
   const handlePayCommission = async (transaction) => {
     const url = `https://rahul30.pythonanywhere.com/commission/distribute/${transaction.transaction_id}/`;
-
     try {
       console.log("Initiating commission payment for:", transaction.transaction_id);
       const response = await axios.post(url);
       console.log("Commission distributed:", response.data);
-
       alert(`Commission distributed for Transaction ID ${transaction.transaction_id}`);
     } catch (error) {
       console.error("Failed to distribute commission:", error);
@@ -107,13 +89,29 @@ const navigate = useNavigate();
     }
   };
 
+  const cellStyle = {
+    fontWeight: 'bold',
+    textAlign: 'center',
+    border: '1px solid #000',
+    backgroundColor: '#f0f0f0',
+  };
 
+  const cellBodyStyle = {
+    textAlign: 'center',
+    border: '1px solid #000',
+  };
+
+  const noDataStyle = {
+    textAlign: 'center',
+    border: '1px solid #000',
+    padding: 2,
+  };
 
   return (
     <>
       <Header />
       <Container sx={{ pt: 3 }}>
-        {/* <Typography
+         {/* <Typography
           variant="h4"
           component="h2"
           sx={{ mb: 3, textAlign: "center" }}
@@ -149,91 +147,68 @@ const navigate = useNavigate();
           Transaction List
         </Typography>
 
-        <TableContainer>
-          <Table sx={{ border: "1px solid black", width: "100%" }}>
-            <TableHead>
+        <Table sx={{ border: '1px solid black', width: '100%' }}>
+          <TableHead>
+            <TableRow>
+              <TableCell sx={cellStyle}>Transaction ID</TableCell>
+              <TableCell sx={cellStyle}>Property Name</TableCell>
+              <TableCell sx={cellStyle}>Property Value</TableCell>
+              <TableCell sx={cellStyle}>Payment Type</TableCell>
+              <TableCell sx={cellStyle}>Company Commission</TableCell>
+              <TableCell sx={cellStyle}>Payment Method</TableCell>
+              <TableCell sx={cellStyle}>Transaction Date</TableCell>
+              <TableCell sx={cellStyle}>Action</TableCell>
+            </TableRow>
+          </TableHead>
+
+          <TableBody>
+            {loading ? (
               <TableRow>
-                <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Transaction ID</TableCell>
-                <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Property Name</TableCell>
-                <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Property Value</TableCell>
-                {/* <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Property Id</TableCell> */}
-                <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Payment Type</TableCell>
-                {/* <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Paid Amount</TableCell> */}
-                <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Company Commission</TableCell>
-                <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Payment Method</TableCell>
-                <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>Transaction Date</TableCell>
-                <TableCell sx={{ fontWeight: "bold", textAlign: "center", border: "1px solid #000" }}>
-                  Action
-                </TableCell>
+                <TableCell colSpan={8} sx={noDataStyle}>Loading...</TableCell>
               </TableRow>
-
-            </TableHead>
-            <TableBody>
-              {!loading && transactions.length > 0 ? (
-                transactions.map((transaction) => (
-                  <TableRow
-                    key={transaction.transaction_id}
-                    sx={{
-                      cursor: "pointer",
-                      "&:hover": { backgroundColor: "#f5f5f5" },
-                    }}
-                  >
-                    <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>{transaction.transaction_id}</TableCell>
-                    <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>{transaction.property_name}</TableCell>
-                    <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>{transaction.property_value || "N/A"}</TableCell>
-                    {/* <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>{transaction.property_id || "N/A"}</TableCell> */}
-                    <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>{transaction.payment_type || "N/A"}</TableCell>
-                    {/* <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>{transaction.paid_amount}</TableCell> */}
-                    <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>{transaction.company_commission}</TableCell>
-                    <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>{transaction.payment_mode || "cash"}</TableCell>
-                    <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>
-                      {new Date(transaction.transaction_date).toLocaleDateString("en-IN")}
-                    </TableCell>
-                    <TableCell sx={{ textAlign: "center", border: "1px solid #000" }}>
-                      {transaction.company_commission_status === "paid" ? (
-                        <button
-                          style={{
-                            backgroundColor: "#4caf50",
-                            color: "white",
-                            padding: "6px 12px",
-                            border: "none",
-                            borderRadius: "4px",
-                            cursor: "pointer",
-                          }}
-                          onClick={() => navigate(`/a-commission/${transaction.transaction_id}`)}
-                        >
-                          View Commission
-                        </button>
-                      ) : (
-                        <button
-                          style={{
-                            backgroundColor: "#1976d2",
-                            color: "white",
-                            padding: "6px 12px",
-                            border: "none",
-                            borderRadius: "4px",
-                            cursor: "pointer",
-                          }}
-                          onClick={() => handlePayCommission(transaction)}
-                        >
-                          Distribute Commission
-                        </button>
-                      )}
-                    </TableCell>
-
-
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={8} align="center">
-                    {loading ? "Loading..." : "No transactions found"}
+            ) : transactions.length > 0 ? (
+              transactions.map((transaction) => (
+                <TableRow key={transaction.transaction_id}>
+                  <TableCell sx={cellBodyStyle}>{transaction.transaction_id}</TableCell>
+                  <TableCell sx={cellBodyStyle}>{transaction.property_name}</TableCell>
+                  <TableCell sx={cellBodyStyle}>{transaction.property_value || "N/A"}</TableCell>
+                  <TableCell sx={cellBodyStyle}>{transaction.payment_type || "N/A"}</TableCell>
+                  <TableCell sx={cellBodyStyle}>{transaction.company_commission}</TableCell>
+                  <TableCell sx={cellBodyStyle}>{transaction.payment_mode || "cash"}</TableCell>
+                  <TableCell sx={cellBodyStyle}>
+                    {new Date(transaction.transaction_date).toLocaleDateString("en-IN")}
+                  </TableCell>
+                  <TableCell sx={cellBodyStyle}>
+                    {transaction.company_commission_status === "paid" ? (
+                      <Button
+                        variant="contained"
+                        size="small"
+                        color="success"
+                        onClick={() => navigate(`/a-commission/${transaction.transaction_id}`)}
+                        sx={{ textTransform: 'none' }}
+                      >
+                        View Commission
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="contained"
+                        size="small"
+                        onClick={() => handlePayCommission(transaction)}
+                        sx={{ textTransform: 'none' }}
+                      >
+                        Distribute Commission
+                      </Button>
+                    )}
                   </TableCell>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={8} sx={noDataStyle}>No transactions found</TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
       </Container>
     </>
   );

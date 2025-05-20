@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate  } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   Container,
   Typography,
@@ -8,11 +8,8 @@ import {
   TableRow,
   TableCell,
   TableBody,
-  TableContainer,
-  Paper,
   Box,
   Button,
-  
 } from "@mui/material";
 import axios from "axios";
 import Header from "../../../Shared/Navbar/Navbar";
@@ -41,52 +38,78 @@ const CommissionView = () => {
     fetchCommissionData();
   }, [transactionId]);
 
+  const cellStyle = {
+    fontWeight: 'bold',
+    textAlign: 'center',
+    border: '1px solid #000',
+    backgroundColor: '#f0f0f0',
+  };
+
+  const cellBodyStyle = {
+    textAlign: 'center',
+    border: '1px solid #000',
+  };
+
+  const noDataStyle = {
+    textAlign: 'center',
+    border: '1px solid #000',
+    padding: 2,
+  };
+
   return (
     <>
-    <Header/>
-    <Container sx={{ pt: 3 }}>
-        <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+      <Header />
+      <Container>
+        <div style={{ textAlign: 'center', marginTop: "12%" }}>
+          <h2 style={{ fontWeight: 'bold' }}>Commission Breakdown</h2>
+          <Typography variant="subtitle1" gutterBottom>
+            Transaction ID: {transactionId}
+          </Typography>
+        </div>
+
+        <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 2 }}>
           <Button
             variant="outlined"
             startIcon={<ArrowBackIcon />}
-            onClick={() => navigate(-1)} // Goes back to previous page
+            onClick={() => navigate(-1)}
           >
             Back
           </Button>
         </Box>
-      <Typography variant="h5" gutterBottom sx={{ textAlign: "center", mb: 3 }}>
-        Commission Breakdown - Transaction ID: {transactionId}
-      </Typography>
 
-      {loading ? (
-        <Typography align="center">Loading...</Typography>
-      ) : (
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
+        <Table sx={{ border: '1px solid black', width: '100%', mt: 2 }}>
+          <TableHead>
+            <TableRow>
+              <TableCell sx={cellStyle}>Level</TableCell>
+              <TableCell sx={cellStyle}>Agent Name</TableCell>
+              <TableCell sx={cellStyle}>Referral ID</TableCell>
+              <TableCell sx={cellStyle}>Amount</TableCell>
+              <TableCell sx={cellStyle}>Percentage</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {loading ? (
               <TableRow>
-                <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>Level</TableCell>
-                <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>Agent Name</TableCell>
-                <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>Referral ID</TableCell>
-                <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>Amount</TableCell>
-                <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>Percentage</TableCell>
+                <TableCell colSpan={5} sx={noDataStyle}>Loading...</TableCell>
               </TableRow>
-            </TableHead>
-            <TableBody>
-              {commissions.map((item, index) => (
+            ) : commissions.length > 0 ? (
+              commissions.map((item, index) => (
                 <TableRow key={index}>
-                  <TableCell sx={{ textAlign: "center" }}>{item.level}</TableCell>
-                  <TableCell sx={{ textAlign: "center" }}>{item.agent_name}</TableCell>
-                  <TableCell sx={{ textAlign: "center" }}>{item.referral_id}</TableCell>
-                  <TableCell sx={{ textAlign: "center" }}>{item.amount}</TableCell>
-                  <TableCell sx={{ textAlign: "center" }}>{item.percentage}</TableCell>
+                  <TableCell sx={cellBodyStyle}>{item.level}</TableCell>
+                  <TableCell sx={cellBodyStyle}>{item.agent_name}</TableCell>
+                  <TableCell sx={cellBodyStyle}>{item.referral_id}</TableCell>
+                  <TableCell sx={cellBodyStyle}>{item.amount}</TableCell>
+                  <TableCell sx={cellBodyStyle}>{item.percentage}</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
-    </Container>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={5} sx={noDataStyle}>No commission data found</TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </Container>
     </>
   );
 };
