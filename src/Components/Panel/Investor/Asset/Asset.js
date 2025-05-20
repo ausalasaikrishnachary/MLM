@@ -22,6 +22,7 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import InvestorHeader from '../../../Shared/Investor/InvestorNavbar';
 import { useNavigate } from "react-router-dom";
+import IconButton from '@mui/material/IconButton';
 import axios from 'axios';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
@@ -30,6 +31,8 @@ import CallIcon from '@mui/icons-material/Call';
 import EmailIcon from '@mui/icons-material/Email';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import { baseurl } from '../../../BaseURL/BaseURL';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 
 const AssetsUI = () => {
@@ -42,8 +45,12 @@ const AssetsUI = () => {
   const [subscriptionPaid, setSubscriptionPaid] = useState(false);
   const [filteredProperties, setFilteredProperties] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentImageIndices, setCurrentImageIndices] = useState({});
   const [page, setPage] = useState(1);
-  const totalPages = 5;
+  const itemsPerPage = 6;
+  const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
+  const startIndex = (page - 1) * itemsPerPage;
+  const paginatedProperties = filteredProperties.slice(startIndex, startIndex + itemsPerPage);
 
   useEffect(() => {
     if (userId) {
@@ -163,6 +170,21 @@ const AssetsUI = () => {
     setSelectedProperty(null);
   };
 
+  const handleNextImage = (propertyId, totalImages) => (e) => {
+    e.stopPropagation();
+    setCurrentImageIndices(prev => ({
+      ...prev,
+      [propertyId]: (prev[propertyId] || 0) < totalImages - 1 ? (prev[propertyId] || 0) + 1 : 0
+    }));
+  };
+
+  const handlePrevImage = (propertyId, totalImages) => (e) => {
+    e.stopPropagation();
+    setCurrentImageIndices(prev => ({
+      ...prev,
+      [propertyId]: (prev[propertyId] || 0) > 0 ? (prev[propertyId] || 0) - 1 : totalImages - 1
+    }));
+  };
 
   return (
     <>
@@ -242,7 +264,8 @@ const AssetsUI = () => {
         {/* Cards Section */}
         {filteredProperties.length > 0 ? (
           <Grid container spacing={3}>
-            {filteredProperties.map((property) => (
+            {/* {filteredProperties.map((property) => ( */}
+            {paginatedProperties.map((property) => (
               <Grid item xs={12} md={6} lg={4} key={property.id}>
                 <Card
                   sx={{
@@ -258,60 +281,114 @@ const AssetsUI = () => {
                   <Box sx={{ position: 'relative' }}>
 
                     {property.status && (
-    <Box
-      sx={{
-        position: 'absolute',
-        top: 15,
-                        left: -62,
-        transform: 'rotate(-45deg)',
-        backgroundColor:
-          property.status.toLowerCase() === 'sold'
-            ? '#e74c3c'
-            : property.status.toLowerCase() === 'available'
-            ? '#2ecc71'
-            : '#3498db',
-        color: 'white',
-        fontWeight: 'bold',
-        fontSize: '12px',
-        px: 4,
-        py: '4px',
-        zIndex: 5,
-        width: '150px',
-        textAlign: 'center',
-        boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
-        pointerEvents: 'none',
-      }}
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          top: 15,
+                          left: -62,
+                          transform: 'rotate(-45deg)',
+                          backgroundColor:
+                            property.status.toLowerCase() === 'sold'
+                              ? '#e74c3c'
+                              : property.status.toLowerCase() === 'available'
+                                ? '#2ecc71'
+                                : '#3498db',
+                          color: 'white',
+                          fontWeight: 'bold',
+                          fontSize: '12px',
+                          px: 4,
+                          py: '4px',
+                          zIndex: 5,
+                          width: '150px',
+                          textAlign: 'center',
+                          boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+                          pointerEvents: 'none',
+                        }}
 
 
-      // sx={{
-      //                   position: 'absolute',
-      //                   top: 15,
-      //                   right: -30,
-      //                   width: '150px',
-      //                   transform: 'rotate(45deg)',
-      //                   backgroundColor: "red",
-      //                   color: 'white',
-      //                   textAlign: 'center',
-      //                   fontSize: '12px',
-      //                   fontWeight: 'bold',
-      //                   textTransform: 'uppercase',
-      //                   py: '4px',
-      //                   boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-      //                 }}
-    >
-      {property.status.toUpperCase()}
-    </Box>
-  )}
+                      // sx={{
+                      //                   position: 'absolute',
+                      //                   top: 15,
+                      //                   right: -30,
+                      //                   width: '150px',
+                      //                   transform: 'rotate(45deg)',
+                      //                   backgroundColor: "red",
+                      //                   color: 'white',
+                      //                   textAlign: 'center',
+                      //                   fontSize: '12px',
+                      //                   fontWeight: 'bold',
+                      //                   textTransform: 'uppercase',
+                      //                   py: '4px',
+                      //                   boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+                      //                 }}
+                      >
+                        {property.status.toUpperCase()}
+                      </Box>
+                    )}
 
-                    
+
                     <CardMedia
                       component="img"
                       height="220"
-                      image={property.images.length > 0 ? `${baseurl}${property.images[0].image}` : 'https://via.placeholder.com/300'}
+                      image={property.images.length > 0 ?
+                        `${baseurl}${property.images[currentImageIndices[property.property_id] || 0]?.image}` :
+                        'https://via.placeholder.com/300'}
                       alt={property.property_title}
                       sx={{ objectFit: 'cover', borderRadius: '12px 12px 0 0', cursor: 'pointer' }}
                       onClick={() => handleImageClick(property)}
                     />
+
+                    {property.images.length > 1 && (
+                      <>
+                        <IconButton
+                          sx={{
+                            position: 'absolute',
+                            left: 10,
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            backgroundColor: 'rgba(36, 36, 36, 0.5)',
+                            color: 'white',
+                            '&:hover': {
+                              backgroundColor: 'rgba(0,0,0,0.7)'
+                            }
+                          }}
+                          onClick={handlePrevImage(property.property_id, property.images.length)}
+                        >
+                          <ChevronLeftIcon />
+                        </IconButton>
+                        <IconButton
+                          sx={{
+                            position: 'absolute',
+                            right: 10,
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            backgroundColor: 'rgba(90, 81, 81, 0.5)',
+                            color: 'white',
+                            '&:hover': {
+                              backgroundColor: 'rgba(0,0,0,0.7)'
+                            }
+                          }}
+                          onClick={handleNextImage(property.property_id, property.images.length)}
+                        >
+                          <ChevronRightIcon />
+                        </IconButton>
+                        {/* Image counter */}
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            bottom: 10,
+                            right: 10,
+                            backgroundColor: 'rgba(0,0,0,0.5)',
+                            color: 'white',
+                            px: 1,
+                            borderRadius: '4px',
+                            fontSize: '0.75rem'
+                          }}
+                        >
+                          {`${(currentImageIndices[property.property_id] || 0) + 1}/${property.images.length}`}
+                        </Box>
+                      </>
+                    )}
                     <Box
                       sx={{
                         position: 'absolute',

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import {
   Container,
@@ -17,17 +16,14 @@ import {
   TableCell,
   TableBody,
   CircularProgress,
-  IconButton,
-  ButtonGroup,
+   ButtonGroup,
 } from '@mui/material';
-import PartnerHeader from '../../../Shared/Partner/PartnerNavbar'
+import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import { baseurl } from '../../../BaseURL/BaseURL';
 
-
-const Transaction = () => {
+const Transaction = () => { 
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -35,21 +31,34 @@ const Transaction = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(0);
   const rowsPerPage = 5;
-  const [expandedRows, setExpandedRows] = useState({});
-
   const navigate = useNavigate();
-  const [remainingAmount, setRemainingAmount] = useState([]);
 
   const [filterDate, setFilterDate] = useState('');
   const [filterAmount, setFilterAmount] = useState('');
   const [filterPaymentType, setFilterPaymentType] = useState('');
 
+  const cellStyle = {
+    fontWeight: 'bold',
+    textAlign: 'center',
+    border: '1px solid #000',
+    backgroundColor: '#f0f0f0',
+  };
+
+  const cellBodyStyle = {
+    textAlign: 'center',
+    border: '1px solid #000',
+  };
+
+  const noDataStyle = {
+    textAlign: 'center',
+    border: '1px solid #000',
+    padding: 2,
+  };
 
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
         const userId = localStorage.getItem("user_id");
-
         if (!userId) {
           setError("User ID not found");
           setLoading(false);
@@ -63,7 +72,6 @@ const Transaction = () => {
           throw new Error("Invalid response format");
         }
 
-        // Group transactions by property_id
         const groupedTransactions = transactionsData.reduce((acc, transaction) => {
           if (!acc[transaction.property_id]) {
             acc[transaction.property_id] = [];
@@ -72,7 +80,6 @@ const Transaction = () => {
           return acc;
         }, {});
 
-        // Filter transactions based on the given logic
         const filteredTransactions = Object.values(groupedTransactions).map((transactions) => {
           const fullPayment = transactions.find((t) => t.payment_type === "Full-Amount");
           if (fullPayment) {
@@ -92,60 +99,6 @@ const Transaction = () => {
     fetchTransactions();
   }, []);
 
-
-
-//   useEffect(() => {
-//     const fetchRemainingAmount = async () => {
-//       const userId = localStorage.getItem("user_id");
-
-//       if (!transactions || transactions.length === 0) return; // Ensure transactions exist
-
-//       try {
-//         let allRemainingAmounts = [];
-
-//         for (const transaction of transactions) {
-//           const response = await fetch(
-//             `http://175.29.21.7:83/transactions/user-id/${userId}/property-id/${transaction.property_id}/`
-//           );
-
-//           if (!response.ok) {
-//             throw new Error("Failed to fetch data");
-//           }
-
-//           const data = await response.json();
-
-//           if (Array.isArray(data) && data.length > 0) {
-//             const amounts = data.map((item) => parseFloat(item.remaining_amount));
-//             allRemainingAmounts = [...allRemainingAmounts, ...amounts];
-//           }
-//         }
-
-//         setRemainingAmount(allRemainingAmounts); // Store all remaining amounts in state
-//         console.log("remainingAmounts", allRemainingAmounts);
-//       } catch (error) {
-//         console.error("Error fetching remaining amount:", error);
-//       }
-//     };
-
-//     fetchRemainingAmount();
-//   }, [transactions]);
-
-  // Get the last element of the remainingAmount array
-  const highestIndexValue = remainingAmount.length > 0 ? remainingAmount[remainingAmount.length - 1] : null;
-
-
-  const handleToggleExpand = (transactionId) => {
-    setExpandedRows((prev) => ({
-      ...prev,
-      [transactionId]: !prev[transactionId],
-    }));
-  };
-
-
-  const handleClick = () => {
-    navigate('/i-asset');
-  };
-
   const handleSortChange = (event) => {
     setSortBy(event.target.value);
     setCurrentPage(0);
@@ -162,10 +115,6 @@ const Transaction = () => {
 
   const handleNextPage = () => {
     setCurrentPage((prev) => prev + 1);
-  };
-
-  const handleRemainingPaymentClick = (transactionId) => {
-    navigate(`/i-payment-form/${transactionId}`);
   };
 
   const filteredTransactions = transactions.filter((transaction) => {
@@ -188,8 +137,6 @@ const Transaction = () => {
     return matchSearch && matchDate && matchAmount && matchPaymentType;
   });
 
-
-  // Sort the transactions
   const sortedTransactions = [...filteredTransactions].sort((a, b) => {
     if (sortBy === 'name') {
       return a.property_name.localeCompare(b.property_name);
@@ -208,7 +155,11 @@ const Transaction = () => {
   return (
     <>
       <PartnerHeader />
-      <Box sx={{ marginTop: 4, padding: '50px' }}>
+      <Container>
+        <div style={{ textAlign: 'center', marginTop: "12%" }}>
+          <h2 style={{ fontWeight: 'bold' }}>Transaction History</h2>
+        </div>
+
         <Grid container spacing={2} mb={3}>
           <Grid item xs={12} sm={4}>
             <TextField
@@ -243,7 +194,7 @@ const Transaction = () => {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={12} sm={12}>
+          <Grid item xs={12}>
             <Box display="flex" justifyContent="flex-end">
               <Button
                 variant="outlined"
@@ -258,47 +209,24 @@ const Transaction = () => {
               </Button>
             </Box>
           </Grid>
-
         </Grid>
 
         {loading ? (
-          <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-        
-        >
-          <CircularProgress />
-        </Box>
+          <Box display="flex" justifyContent="center" mt={5}>
+            <CircularProgress />
+          </Box>
         ) : (
           <>
             <Table sx={{ border: '1px solid black', width: '100%' }}>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', border: '1px solid #000' }}>
-                    Property Name
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', border: '1px solid #000' }}>
-                    Property Value
-                  </TableCell>
-                  {/* <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', border: '1px solid #000' }}>
-                    Purchased Units
-                  </TableCell> */}
-                  <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', border: '1px solid #000' }}>
-                    Payment Type
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', border: '1px solid #000' }}>
-                    Paid Amount
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', border: '1px solid #000' }}>
-                    Remaining Amount
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', border: '1px solid #000' }}>
-                    Transaction Date
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', border: '1px solid #000' }}>
-                    Action
-                  </TableCell>
+                  <TableCell sx={cellStyle}>Property Name</TableCell>
+                  <TableCell sx={cellStyle}>Property Value</TableCell>
+                  <TableCell sx={cellStyle}>Payment Type</TableCell>
+                  <TableCell sx={cellStyle}>Paid Amount</TableCell>
+                  <TableCell sx={cellStyle}>Remaining Amount</TableCell>
+                  <TableCell sx={cellStyle}>Transaction Date</TableCell>
+                  <TableCell sx={cellStyle}>Action</TableCell>
                 </TableRow>
               </TableHead>
 
@@ -307,37 +235,21 @@ const Transaction = () => {
                   paginatedTransactions.map((transaction) => (
                     <TableRow
                       key={transaction.property_id}
-                      onClick={() => navigate(`/p-transaction-details?property_id=${transaction.property_id}`)}
                       sx={{ cursor: 'pointer', '&:hover': { backgroundColor: '#f5f5f5' } }}
+                      onClick={() => navigate(`/p-transaction-details?property_id=${transaction.property_id}`)}
                     >
-                      <TableCell sx={{ textAlign: 'center', border: '1px solid #000' }}>
-                        {transaction.property_name}
-                      </TableCell>
-                      <TableCell sx={{ textAlign: 'center', border: '1px solid #000' }}>
-                        {transaction.property_value}
-                      </TableCell>
-                      {/* <TableCell sx={{ textAlign: 'center', border: '1px solid #000' }}>
-                        {transaction.purchased_units}
-                      </TableCell> */}
-                      <TableCell sx={{ textAlign: 'center', border: '1px solid #000' }}>
-                        {transaction.payment_type}
-                      </TableCell>
-                      <TableCell sx={{ textAlign: 'center', border: '1px solid #000' }}>
-                        {transaction.paid_amount}
-                      </TableCell>
-                      <TableCell sx={{ textAlign: 'center', border: '1px solid #000' }}>
-                        {transaction.remaining_amount}
-                      </TableCell>
-                      <TableCell sx={{ textAlign: 'center', border: '1px solid #000' }}>
+                      <TableCell sx={cellBodyStyle}>{transaction.property_name}</TableCell>
+                      <TableCell sx={cellBodyStyle}>{transaction.property_value}</TableCell>
+                      <TableCell sx={cellBodyStyle}>{transaction.payment_type}</TableCell>
+                      <TableCell sx={cellBodyStyle}>{transaction.paid_amount}</TableCell>
+                      <TableCell sx={cellBodyStyle}>{transaction.remaining_amount}</TableCell>
+                      <TableCell sx={cellBodyStyle}>
                         {new Date(transaction.transaction_date).toLocaleDateString('en-IN')}
                       </TableCell>
-                      <TableCell
-                        sx={{ textAlign: 'center', border: '1px solid #000' }}
-                        onClick={(e) => e.stopPropagation()}
-                      >
+                      <TableCell sx={cellBodyStyle}>
                         <Button
                           variant="contained"
-                          color="primary"
+                          size="small"
                           onClick={(e) => {
                             e.stopPropagation();
                             navigate(
@@ -345,6 +257,7 @@ const Transaction = () => {
                             );
                           }}
                           disabled={transaction.remaining_amount <= 0}
+                          sx={{ textTransform: 'none' }}
                         >
                           Pay Remaining
                         </Button>
@@ -353,21 +266,35 @@ const Transaction = () => {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={8} sx={{ textAlign: 'center', border: '1px solid #000', padding: 2 }}>
-                      No Data Found
+                    <TableCell colSpan={7} sx={noDataStyle}>
+                      No transactions found
                     </TableCell>
                   </TableRow>
                 )}
               </TableBody>
             </Table>
+
+            <Box display="flex" justifyContent="center" mt={2}>
+              <ButtonGroup>
+                <Button 
+                  onClick={handlePrevPage} 
+                  disabled={currentPage === 0}
+                >
+                  Previous
+                </Button>
+                <Button 
+                  onClick={handleNextPage} 
+                  disabled={currentPage >= totalPages - 1 || sortedTransactions.length <= rowsPerPage}
+                >
+                  Next
+                </Button>
+              </ButtonGroup>
+            </Box>
           </>
         )}
-      </Box>
+      </Container>
     </>
-
-
   );
 };
 
 export default Transaction;
-

@@ -24,13 +24,15 @@ import InvestorHeader from '../../../Shared/Investor/InvestorNavbar';
 import { useNavigate } from "react-router-dom";
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
-import PaginationComponent from '../../../Shared/Pagination'; 
+import PaginationComponent from '../../../Shared/Pagination';
 import CallIcon from '@mui/icons-material/Call';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import EmailIcon from '@mui/icons-material/Email';
 import { baseurl } from '../../../BaseURL/BaseURL';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 
 const MyAssets = () => {
@@ -42,27 +44,31 @@ const MyAssets = () => {
   const [filteredProperties, setFilteredProperties] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const userId = localStorage.getItem("user_id");
-  const [page, setPage] = useState(1); 
-  const totalPages = 5;
-
-  
-    const fetchProperties = async () => {
-      try {
-        const response = await fetch(`${baseurl}/properties/user-id/${userId}/`);
-        const data = await response.json();
-        setProperties(data);
-        setFilteredProperties(data);
-      } catch (error) {
-        console.error('Error fetching properties:', error);
-      }
-    };
+  const [currentImageIndices, setCurrentImageIndices] = useState({});
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 6;
+  const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
+  const startIndex = (page - 1) * itemsPerPage;
+  const paginatedProperties = filteredProperties.slice(startIndex, startIndex + itemsPerPage);
 
 
-useEffect(() => {
+  const fetchProperties = async () => {
+    try {
+      const response = await fetch(`${baseurl}/properties/user-id/${userId}/`);
+      const data = await response.json();
+      setProperties(data);
+      setFilteredProperties(data);
+    } catch (error) {
+      console.error('Error fetching properties:', error);
+    }
+  };
+
+
+  useEffect(() => {
     fetchProperties();
   }, []);
 
-    const handleDelete = async (propertyId) => {
+  const handleDelete = async (propertyId) => {
     const confirmed = window.confirm("Are you sure you want to delete this property?");
     if (!confirmed) return;
 
@@ -73,7 +79,7 @@ useEffect(() => {
 
       if (response.ok) {
         alert('Property deleted successfully.');
-         fetchProperties();
+        fetchProperties();
         // Refresh list or redirect as needed
       } else {
         alert(`Failed to delete property. Status: ${response.status}`);
@@ -167,6 +173,22 @@ useEffect(() => {
     setSelectedProperty(null);
   };
 
+  const handleNextImage = (propertyId, totalImages) => (e) => {
+    e.stopPropagation();
+    setCurrentImageIndices(prev => ({
+      ...prev,
+      [propertyId]: (prev[propertyId] || 0) < totalImages - 1 ? (prev[propertyId] || 0) + 1 : 0
+    }));
+  };
+
+  const handlePrevImage = (propertyId, totalImages) => (e) => {
+    e.stopPropagation();
+    setCurrentImageIndices(prev => ({
+      ...prev,
+      [propertyId]: (prev[propertyId] || 0) > 0 ? (prev[propertyId] || 0) - 1 : totalImages - 1
+    }));
+  };
+
   return (
     <>
       <InvestorHeader />
@@ -246,7 +268,8 @@ useEffect(() => {
         {/* Cards Section */}
         {filteredProperties.length > 0 ? (
           <Grid container spacing={3}>
-            {filteredProperties.map((property) => (
+            {/* {filteredProperties.map((property) => ( */}
+            {paginatedProperties.map((property) => (
               <Grid item xs={12} md={6} lg={4} key={property.id}>
                 <Card
                   sx={{
@@ -263,11 +286,65 @@ useEffect(() => {
                     <CardMedia
                       component="img"
                       height="220"
-                      image={property.images.length > 0 ? `${baseurl}${property.images[0].image}` : 'https://via.placeholder.com/300'}
+                      image={property.images.length > 0 ?
+                        `${baseurl}${property.images[currentImageIndices[property.property_id] || 0]?.image}` :
+                        'https://via.placeholder.com/300'}
                       alt={property.property_title}
                       sx={{ objectFit: 'cover', borderRadius: '12px 12px 0 0', cursor: 'pointer' }}
                       onClick={() => handleImageClick(property)}
                     />
+                    {/* Navigation arrows when there are multiple images */}
+                    {property.images.length > 1 && (
+                      <>
+                        <IconButton
+                          sx={{
+                            position: 'absolute',
+                            left: 10,
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            backgroundColor: 'rgba(36, 36, 36, 0.5)',
+                            color: 'white',
+                            '&:hover': {
+                              backgroundColor: 'rgba(0,0,0,0.7)'
+                            }
+                          }}
+                          onClick={handlePrevImage(property.property_id, property.images.length)}
+                        >
+                          <ChevronLeftIcon />
+                        </IconButton>
+                        <IconButton
+                          sx={{
+                            position: 'absolute',
+                            right: 10,
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            backgroundColor: 'rgba(90, 81, 81, 0.5)',
+                            color: 'white',
+                            '&:hover': {
+                              backgroundColor: 'rgba(0,0,0,0.7)'
+                            }
+                          }}
+                          onClick={handleNextImage(property.property_id, property.images.length)}
+                        >
+                          <ChevronRightIcon />
+                        </IconButton>
+                        {/* Image counter */}
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            bottom: 10,
+                            right: 10,
+                            backgroundColor: 'rgba(0,0,0,0.5)',
+                            color: 'white',
+                            px: 1,
+                            borderRadius: '4px',
+                            fontSize: '0.75rem'
+                          }}
+                        >
+                          {`${(currentImageIndices[property.property_id] || 0) + 1}/${property.images.length}`}
+                        </Box>
+                      </>
+                    )}
                     <Box
                       sx={{
                         position: 'absolute',
@@ -345,21 +422,21 @@ useEffect(() => {
                       <Grid container>
                         <Grid item xs={6}>
                           <Typography variant="body2" color="text.secondary">
-                            Email                      
+                            Email
                           </Typography>
                         </Grid>
                         <Grid item xs={6}>
                           <Typography
-                             variant="body2"
-                             fontWeight="bold"
-                             color="#4A90E2"
-                             align="right"
-                             display="flex"
-                             justifyContent="flex-end"
-                             alignItems="center"
-                             gap={1}
-                           >
-                             <EmailIcon fontSize="small" />
+                            variant="body2"
+                            fontWeight="bold"
+                            color="#4A90E2"
+                            align="right"
+                            display="flex"
+                            justifyContent="flex-end"
+                            alignItems="center"
+                            gap={1}
+                          >
+                            <EmailIcon fontSize="small" />
                             {property.owner_email}
                           </Typography>
                         </Grid>
@@ -369,15 +446,15 @@ useEffect(() => {
                         </Grid>
                         <Grid item xs={6}>
                           <Typography
-                           variant="body2"
-                           fontWeight="bold"
-                           color="text.secondary"
-                           align="right"
-                           display="flex"
-                           justifyContent="flex-end"
-                           alignItems="center"
-                           gap={1} // adds spacing between icon and text
-                            
+                            variant="body2"
+                            fontWeight="bold"
+                            color="text.secondary"
+                            align="right"
+                            display="flex"
+                            justifyContent="flex-end"
+                            alignItems="center"
+                            gap={1} // adds spacing between icon and text
+
                           >
                             <CallIcon fontSize="small" />
                             {property.owner_contact}
@@ -385,24 +462,24 @@ useEffect(() => {
                         </Grid>
                       </Grid>
                     </Box>
-                      <Box display="flex" alignItems="center">
-                          <IconButton
-                            aria-label="edit"
-                            size="medium"
-                            sx={{ color: '#1976d2' }}
-                            onClick={() => navigate(`/i-myassets/edit/${property.property_id}`, { state: { property } })}
-                          >
-                            <EditIcon fontSize="medium" />
-                          </IconButton>
-                          <IconButton
-                            aria-label="delete"
-                            size="medium"
-                            sx={{ color: 'red', ml: '4px' }}
-                            onClick={() => handleDelete(property.property_id)}
-                          >
-                            <DeleteIcon fontSize="medium" />
-                          </IconButton>
-                        </Box>
+                    <Box display="flex" alignItems="center">
+                      <IconButton
+                        aria-label="edit"
+                        size="medium"
+                        sx={{ color: '#1976d2' }}
+                        onClick={() => navigate(`/i-myassets/edit/${property.property_id}`, { state: { property } })}
+                      >
+                        <EditIcon fontSize="medium" />
+                      </IconButton>
+                      <IconButton
+                        aria-label="delete"
+                        size="medium"
+                        sx={{ color: 'red', ml: '4px' }}
+                        onClick={() => handleDelete(property.property_id)}
+                      >
+                        <DeleteIcon fontSize="medium" />
+                      </IconButton>
+                    </Box>
                     <Grid container spacing={1}>
                       <Grid item xs={12}>
                         <Button
