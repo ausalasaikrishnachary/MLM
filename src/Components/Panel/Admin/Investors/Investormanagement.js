@@ -98,7 +98,7 @@ const Tmanagement = () => {
     <>
       <Header />
       <Container>
-        <div style={{ textAlign: 'center', marginTop: "8%" }}>
+        <div style={{ textAlign: 'center', marginTop: "12%" }}>
           <h2 style={{ fontWeight: 'bold' }}>Leads Management</h2>
         </div>
         
