@@ -44,24 +44,6 @@ const MyAssets = () => {
   const [filteredProperties, setFilteredProperties] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const userId = localStorage.getItem("user_id");
-<<<<<<< HEAD
-  const [page, setPage] = useState(1);
-  const totalPages = 5;
-
-
-  const fetchProperties = async () => {
-    try {
-      const response = await fetch(`${baseurl}/properties/user-id/${userId}/`);
-      const data = await response.json();
-      setProperties(data);
-      setFilteredProperties(data);
-    } catch (error) {
-      console.error('Error fetching properties:', error);
-    }
-  };
-
-
-=======
   const [currentImageIndices, setCurrentImageIndices] = useState({});
   const [page, setPage] = useState(1);
   const itemsPerPage = 6;
@@ -82,7 +64,6 @@ const MyAssets = () => {
   };
 
 
->>>>>>> 8154989636b864c1e571a75c5dc7f389a431d2c9
   useEffect(() => {
     fetchProperties();
   }, []);

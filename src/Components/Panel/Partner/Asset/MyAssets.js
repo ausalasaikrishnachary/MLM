@@ -32,11 +32,7 @@ import { baseurl } from '../../../BaseURL/BaseURL';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
-<<<<<<< HEAD
-const PartnerMyAssets = () => {
-=======
 const PartnerMyAssets = () => {  
->>>>>>> 8154989636b864c1e571a75c5dc7f389a431d2c9
   const [sortBy, setSortBy] = useState('');
   const [properties, setProperties] = useState([]);
   const [filteredProperties, setFilteredProperties] = useState([]);
