@@ -30,7 +30,7 @@ import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import PaginationComponent from '../../../Shared/Pagination';
 import { baseurl } from '../../../BaseURL/BaseURL';
 
-const PartnerMyAssets = () => { 
+const PartnerMyAssets = () => {
   const [sortBy, setSortBy] = useState('');
   const [properties, setProperties] = useState([]);
   const [filteredProperties, setFilteredProperties] = useState([]);
@@ -43,20 +43,20 @@ const PartnerMyAssets = () => {
   const [page, setPage] = useState(1);
   const totalPages = 5;
 
- 
-    const fetchProperties = async () => {
-      try {
-        const response = await fetch(`${baseurl}/properties/user-id/${userId}/`);
-        const data = await response.json();
-        console.log("userid", userId)
-        setProperties(data);
-        setFilteredProperties(data);
-      } catch (error) {
-        console.error('Error fetching properties:', error);
-      }
-    };
 
-     useEffect(() => {
+  const fetchProperties = async () => {
+    try {
+      const response = await fetch(`${baseurl}/properties/user-id/${userId}/`);
+      const data = await response.json();
+      console.log("userid", userId)
+      setProperties(data);
+      setFilteredProperties(data);
+    } catch (error) {
+      console.error('Error fetching properties:', error);
+    }
+  };
+
+  useEffect(() => {
     fetchProperties();
   }, []);
 
@@ -145,7 +145,7 @@ const PartnerMyAssets = () => {
     setSelectedProperty(null);
   };
 
-   const handleDelete = async (propertyId) => {
+  const handleDelete = async (propertyId) => {
     const confirmed = window.confirm("Are you sure you want to delete this property?");
     if (!confirmed) return;
 
@@ -156,7 +156,7 @@ const PartnerMyAssets = () => {
 
       if (response.ok) {
         alert('Property deleted successfully.');
-         fetchProperties();
+        fetchProperties();
         // Refresh list or redirect as needed
       } else {
         alert(`Failed to delete property. Status: ${response.status}`);
@@ -272,17 +272,44 @@ const PartnerMyAssets = () => {
                       sx={{
                         position: 'absolute',
                         top: 15,
-                        right: 15,
-                        px: 2,
-                        py: 1,
-                        borderRadius: '20px',
-                        fontSize: '0.85rem',
-                        fontWeight: 500,
-                        backgroundColor: '#2ECC71',
-                        color: 'white'
+                        right: -30,
+                        width: '150px',
+                        transform: 'rotate(45deg)',
+                        backgroundColor: "red",
+                        color: 'white',
+                        textAlign: 'center',
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                        textTransform: 'uppercase',
+                        py: '4px',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
                       }}
                     >
-                      {property.looking_to === 'sell' ? 'For Sale' : 'For Rent'}
+                      {property.looking_to === 'sell' ? 'Sell' : 'Rent'}
+                    </Box>
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        top: 15,
+                        left: -30,
+                        width: '150px',
+                        transform: 'rotate(-45deg)',
+                        backgroundColor:
+                          property.status === 'available'
+                            ? '#2ECC71'
+                            : property.status === 'booked'
+                              ? '#E67E22'
+                              : '#E74C3C',
+                        color: 'white',
+                        textAlign: 'center',
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                        textTransform: 'uppercase',
+                        py: '4px',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+                      }}
+                    >
+                      {property.status}
                     </Box>
                   </Box>
                   <CardContent>
@@ -370,23 +397,23 @@ const PartnerMyAssets = () => {
 
                         {/* Right side: Edit/Delete buttons */}
                         <Box display="flex" alignItems="center">
-      <IconButton
-        aria-label="edit"
-        size="medium"
-        sx={{ color: '#1976d2' }}
-        onClick={() => navigate(`/p-myassets/edit/${property.property_id}`, { state: { property } })}
-      >
-        <EditIcon fontSize="medium" />
-      </IconButton>
-      <IconButton
-        aria-label="delete"
-        size="medium"
-        sx={{ color: 'red', ml: '4px' }}
-        onClick={() => handleDelete(property.property_id)}
-      >
-        <DeleteIcon fontSize="medium" />
-      </IconButton>
-    </Box>
+                          <IconButton
+                            aria-label="edit"
+                            size="medium"
+                            sx={{ color: '#1976d2' }}
+                            onClick={() => navigate(`/p-myassets/edit/${property.property_id}`, { state: { property } })}
+                          >
+                            <EditIcon fontSize="medium" />
+                          </IconButton>
+                          <IconButton
+                            aria-label="delete"
+                            size="medium"
+                            sx={{ color: 'red', ml: '4px' }}
+                            onClick={() => handleDelete(property.property_id)}
+                          >
+                            <DeleteIcon fontSize="medium" />
+                          </IconButton>
+                        </Box>
                       </Box>
 
                     </Box>

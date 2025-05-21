@@ -294,17 +294,44 @@ const AssetsUI = () => {
                       sx={{
                         position: 'absolute',
                         top: 15,
-                        right: 15,
-                        px: 2,
-                        py: 1,
-                        borderRadius: '20px',
-                        fontSize: '0.85rem',
-                        fontWeight: 500,
-                        backgroundColor: '#2ECC71',
-                        color: 'white'
+                        right: -30,
+                        width: '150px',
+                        transform: 'rotate(45deg)',
+                        backgroundColor: "red",
+                        color: 'white',
+                        textAlign: 'center',
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                        textTransform: 'uppercase',
+                        py: '4px',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
                       }}
                     >
-                      {property.looking_to === 'sell' ? 'For Sale' : 'For Rent'}
+                      {property.looking_to === 'sell' ? 'Sell' : 'Rent'}
+                    </Box>
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        top: 15,
+                        left: -30,
+                        width: '150px',
+                        transform: 'rotate(-45deg)',
+                        backgroundColor:
+                          property.status === 'available'
+                            ? '#2ECC71'
+                            : property.status === 'booked'
+                              ? '#E67E22'
+                              : '#E74C3C',
+                        color: 'white',
+                        textAlign: 'center',
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                        textTransform: 'uppercase',
+                        py: '4px',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+                      }}
+                    >
+                      {property.status}
                     </Box>
                   </Box>
                   <CardContent>
