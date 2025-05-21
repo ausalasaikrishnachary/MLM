@@ -17,7 +17,9 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Pagination
+  Pagination,
+  IconButton,
+  Tooltip
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import Header from '../../../Shared/Navbar/Navbar';
@@ -25,14 +27,11 @@ import { useNavigate } from "react-router-dom";
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import PaginationComponent from '../../../Shared/Pagination';
-import { IconButton, Tooltip } from '@mui/material';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { baseurl } from '../../../BaseURL/BaseURL';
-
-import CallIcon from '@mui/icons-material/Call';
-import EmailIcon from '@mui/icons-material/Email';
 
 const AssetsUI = () => {
   const [sortBy, setSortBy] = useState('');
@@ -41,9 +40,14 @@ const AssetsUI = () => {
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentImageIndices, setCurrentImageIndices] = useState({});
   const navigate = useNavigate();
+  const itemsPerPage = 6;
   const [page, setPage] = useState(1);
-  const totalPages = 5;
+  const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
+  const startIndex = (page - 1) * itemsPerPage;
+  const paginatedProperties = filteredProperties.slice(startIndex, startIndex + itemsPerPage);
+  const [openCarousel, setOpenCarousel] = useState(false);
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -114,8 +118,8 @@ const AssetsUI = () => {
 
   const handlePageChange = (event, value) => {
     setPage(value);
-    // Fetch data based on `value` or update UI accordingly
   };
+
   const handleSortChange = (event) => {
     setSortBy(event.target.value);
   };
@@ -130,8 +134,6 @@ const AssetsUI = () => {
     setSelectedProperty(null);
   };
 
-  const [openCarousel, setOpenCarousel] = useState(false);
-
   const handleImageClick = (property) => {
     setSelectedProperty(property);
     setOpenCarousel(true);
@@ -141,6 +143,7 @@ const AssetsUI = () => {
     setOpenCarousel(false);
     setSelectedProperty(null);
   };
+
   const handleDelete = async (propertyId) => {
     const confirmed = window.confirm("Are you sure you want to delete this property?");
     if (!confirmed) return;
@@ -152,7 +155,8 @@ const AssetsUI = () => {
 
       if (response.ok) {
         alert('Property deleted successfully.');
-        // Refresh list or redirect as needed
+        setProperties(prev => prev.filter(p => p.property_id !== propertyId));
+        setFilteredProperties(prev => prev.filter(p => p.property_id !== propertyId));
       } else {
         alert(`Failed to delete property. Status: ${response.status}`);
       }
@@ -162,6 +166,22 @@ const AssetsUI = () => {
     }
   };
 
+  const handleNextImage = (propertyId, totalImages) => (e) => {
+    e.stopPropagation();
+    setCurrentImageIndices(prev => ({
+      ...prev,
+      [propertyId]: (prev[propertyId] || 0) < totalImages - 1 ? (prev[propertyId] || 0) + 1 : 0
+    }));
+  };
+
+  const handlePrevImage = (propertyId, totalImages) => (e) => {
+    e.stopPropagation();
+    setCurrentImageIndices(prev => ({
+      ...prev,
+      [propertyId]: (prev[propertyId] || 0) > 0 ? (prev[propertyId] || 0) - 1 : totalImages - 1
+    }));
+  };
+
   const updateApprovalStatus = async (propertyId, newStatus) => {
     try {
       const response = await fetch(`${baseurl}/property/${propertyId}/`, {
@@ -169,15 +189,17 @@ const AssetsUI = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ approval_status: newStatus }) // "approved" or "rejected" or other status
+        body: JSON.stringify({ approval_status: newStatus })
       });
 
       if (response.ok) {
         alert('Approval status updated successfully.');
-        // Optionally refetch data
         const updatedData = await response.json();
         setProperties(prev =>
-          prev.map(p => (p.id === propertyId ? { ...p, approval_status: updatedData.approval_status } : p))
+          prev.map(p => (p.property_id === propertyId ? { ...p, approval_status: updatedData.approval_status } : p))
+        );
+        setFilteredProperties(prev =>
+          prev.map(p => (p.property_id === propertyId ? { ...p, approval_status: updatedData.approval_status } : p))
         );
       } else {
         alert(`Failed to update approval status. Status: ${response.status}`);
@@ -187,7 +209,6 @@ const AssetsUI = () => {
       alert('An error occurred while updating the approval status.');
     }
   };
-
 
   return (
     <>
@@ -268,7 +289,7 @@ const AssetsUI = () => {
         {/* Cards Section */}
         {filteredProperties.length > 0 ? (
           <Grid container spacing={3}>
-            {filteredProperties.map((property) => (
+            {paginatedProperties.map((property) => (
               <Grid item xs={12} md={6} lg={4} key={property.id}>
                 <Card
                   sx={{
@@ -285,11 +306,65 @@ const AssetsUI = () => {
                     <CardMedia
                       component="img"
                       height="220"
-                      image={property.images.length > 0 ? `${baseurl}${property.images[0].image}` : 'https://via.placeholder.com/300'}
+                      image={property.images.length > 0 ? 
+                        `${baseurl}${property.images[currentImageIndices[property.property_id] || 0]?.image}` : 
+                        'https://via.placeholder.com/300'}
                       alt={property.property_title}
                       sx={{ objectFit: 'cover', borderRadius: '12px 12px 0 0', cursor: 'pointer' }}
                       onClick={() => handleImageClick(property)}
                     />
+                    {/* Navigation arrows when there are multiple images */}
+                    {property.images.length > 1 && (
+                      <>
+                        <IconButton
+                          sx={{
+                            position: 'absolute',
+                            left: 10,
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            backgroundColor: 'rgba(36, 36, 36, 0.5)',
+                            color: 'white',
+                            '&:hover': {
+                              backgroundColor: 'rgba(0,0,0,0.7)'
+                            }
+                          }}
+                          onClick={handlePrevImage(property.property_id, property.images.length)}
+                        >
+                          <ChevronLeftIcon />
+                        </IconButton>
+                        <IconButton
+                          sx={{
+                            position: 'absolute',
+                            right: 10,
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            backgroundColor: 'rgba(90, 81, 81, 0.5)',
+                            color: 'white',
+                            '&:hover': {
+                              backgroundColor: 'rgba(0,0,0,0.7)'
+                            }
+                          }}
+                          onClick={handleNextImage(property.property_id, property.images.length)}
+                        >
+                          <ChevronRightIcon />
+                        </IconButton>
+                        {/* Image counter */}
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            bottom: 10,
+                            right: 10,
+                            backgroundColor: 'rgba(0,0,0,0.5)',
+                            color: 'white',
+                            px: 1,
+                            borderRadius: '4px',
+                            fontSize: '0.75rem'
+                          }}
+                        >
+                          {`${(currentImageIndices[property.property_id] || 0) + 1}/${property.images.length}`}
+                        </Box>
+                      </>
+                    )}
                     <Box
                       sx={{
                         position: 'absolute',
@@ -350,36 +425,8 @@ const AssetsUI = () => {
                       </Typography>
                       <Select
                         value={property.approval_status || ''}
-                        onChange={async (e) => {
-                          const newStatus = e.target.value;
-                          try {
-                            const response = await fetch(`${baseurl}/property/${property.property_id}/`, {
-                              method: 'PUT',
-                              headers: {
-                                'Content-Type': 'application/json',
-                              },
-                              body: JSON.stringify({
-                                approval_status: newStatus
-                              }),
-                            });
-
-                            if (response.ok) {
-                              alert(`Approval status updated to "${newStatus}".`);
-                              setProperties(prev =>
-                                prev.map(p =>
-                                  p.property_id === property.property_id ? { ...p, approval_status: newStatus } : p
-                                )
-                              );
-                            } else {
-                              alert('Failed to update approval status');
-                            }
-                          } catch (error) {
-                            console.error('Error updating approval status:', error);
-                            alert('An error occurred.');
-                          }
-                        }}
+                        onChange={(e) => updateApprovalStatus(property.property_id, e.target.value)}
                         displayEmpty
-                        // disabled={property.approval_status === 'approved' || property.approval_status === 'rejected'}
                         sx={{
                           borderRadius: '8px',
                           backgroundColor: '#f9f9f9',
@@ -391,10 +438,8 @@ const AssetsUI = () => {
                         <MenuItem value={property.approval_status}>
                           <em>{property.approval_status}</em>
                         </MenuItem>
-
                         <MenuItem value="approved">Approved</MenuItem>
                         <MenuItem value="rejected">Rejected</MenuItem>
-                        {/* <MenuItem value="Pending">Pending</MenuItem> */}
                       </Select>
                     </FormControl>
 
@@ -470,30 +515,12 @@ const AssetsUI = () => {
                             textTransform: 'none',
                             '&:hover': { backgroundColor: '#59ed7c', color: 'rgb(5,5,5)' }
                           }}
-                          // onClick={() => handleViewDetails(property)}
                           onClick={() => navigate(`/a-assets/${property.property_id}`, { state: { property } })}
                         >
                           VIEW DETAILS
                         </Button>
-
                       </Grid>
-
                     </Grid>
-                    {/* <Grid item xs={12}>
-                      <Button
-                        fullWidth
-                        variant="outlined"
-                        sx={{
-                          borderColor: '#4A90E2',
-                          color: '#4A90E2',
-                          textTransform: 'none'
-                        }}
-                        onClick={() => navigate("/investment-page")}
-                      >
-                        {property.looking_to === 'sell' ? 'BUY NOW' : 'RENT NOW'}
-                      </Button>
-                    </Grid> */}
-
                   </CardContent>
                   {/* Image Carousel Dialog */}
                   <Dialog open={openCarousel} onClose={handleCloseCarousel} maxWidth="md" fullWidth>
@@ -545,11 +572,6 @@ const AssetsUI = () => {
           page={page}
           onChange={handlePageChange}
         />
-
-        {/* Pagination */}
-        {/* <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
-          <Pagination count={3} shape="rounded" />
-        </Box> */}
 
         {/* Property Details Dialog */}
         {selectedProperty && (
@@ -621,9 +643,6 @@ const AssetsUI = () => {
               <Button onClick={handleCloseDialog} variant="contained" color="error">
                 CLOSE
               </Button>
-              {/* <Button variant="contained" color="success">
-                {selectedProperty.looking_to === 'sell' ? 'BUY NOW' : 'RENT NOW'}
-              </Button> */}
             </DialogActions>
           </Dialog>
         )}

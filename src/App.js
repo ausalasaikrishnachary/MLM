@@ -66,6 +66,7 @@ import PartnerCommission from "./Components/Panel/Partner/PartnerCommission/Part
 import EditMyAssets from "./Components/Panel/Partner/Asset/EditMyAssets";
 import I_EditMyAsset from "./Components/Panel/Investor/Asset/EditMyAsset";
 import I_MyAssests from "./Components/Panel/Investor/Asset/New-AssetsDetails";
+import CommissionView from "./Components/Panel/Admin/Transactions/CommissionView";
 
 
 
@@ -103,6 +104,7 @@ function App() {
               <Route path="/a-edit-subscription/:id" element={<EditSubscription />} />
               <Route path="/a-assets/:id" element={<AssetDetails />} />
               <Route path="/a-assets/edit/:id" element={<EditAsset />} />
+              <Route path="/a-commission/:transactionId" element={<CommissionView />} />
 
 
               <Route path="/i-dashboard" element={<InvestorDashboard />} />

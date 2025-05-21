@@ -29,8 +29,14 @@ import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import PaginationComponent from '../../../Shared/Pagination';
 import { baseurl } from '../../../BaseURL/BaseURL';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
+<<<<<<< HEAD
 const PartnerMyAssets = () => {
+=======
+const PartnerMyAssets = () => {  
+>>>>>>> 8154989636b864c1e571a75c5dc7f389a431d2c9
   const [sortBy, setSortBy] = useState('');
   const [properties, setProperties] = useState([]);
   const [filteredProperties, setFilteredProperties] = useState([]);
@@ -40,8 +46,12 @@ const PartnerMyAssets = () => {
   const navigate = useNavigate();
   const userId = localStorage.getItem("user_id");
   const referralId = localStorage.getItem('referral_id');
+  const [currentImageIndices, setCurrentImageIndices] = useState({});
   const [page, setPage] = useState(1);
-  const totalPages = 5;
+  const itemsPerPage = 6;
+   const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
+    const startIndex = (page - 1) * itemsPerPage;
+    const paginatedProperties = filteredProperties.slice(startIndex, startIndex + itemsPerPage);
 
 
   const fetchProperties = async () => {
@@ -167,6 +177,22 @@ const PartnerMyAssets = () => {
     }
   };
 
+   const handleNextImage = (propertyId, totalImages) => (e) => {
+    e.stopPropagation();
+    setCurrentImageIndices(prev => ({
+      ...prev,
+      [propertyId]: (prev[propertyId] || 0) < totalImages - 1 ? (prev[propertyId] || 0) + 1 : 0
+    }));
+  };
+
+  const handlePrevImage = (propertyId, totalImages) => (e) => {
+    e.stopPropagation();
+    setCurrentImageIndices(prev => ({
+      ...prev,
+      [propertyId]: (prev[propertyId] || 0) > 0 ? (prev[propertyId] || 0) - 1 : totalImages - 1
+    }));
+  };
+
   return (
     <>
       <PartnerHeader />
@@ -246,7 +272,8 @@ const PartnerMyAssets = () => {
         {/* Cards Section */}
         {filteredProperties.length > 0 ? (
           <Grid container spacing={3}>
-            {filteredProperties.map((property) => (
+            {/* {filteredProperties.map((property) => ( */}
+             {paginatedProperties.map((property) => (
               <Grid item xs={12} md={6} lg={4} key={property.id}>
                 <Card
                   sx={{
@@ -263,11 +290,65 @@ const PartnerMyAssets = () => {
                     <CardMedia
                       component="img"
                       height="220"
-                      image={property.images.length > 0 ? `${baseurl}${property.images[0].image}` : 'https://via.placeholder.com/300'}
+                      image={property.images.length > 0 ? 
+                      `${baseurl}${property.images[currentImageIndices[property.property_id] || 0]?.image}` : 
+                      'https://via.placeholder.com/300'}
                       alt={property.property_title}
                       sx={{ objectFit: 'cover', borderRadius: '12px 12px 0 0', cursor: 'pointer' }}
                       onClick={() => handleImageClick(property)}
                     />
+                     {/* Navigation arrows when there are multiple images */}
+                                        {property.images.length > 1 && (
+                                          <>
+                                            <IconButton
+                                              sx={{
+                                                position: 'absolute',
+                                                left: 10,
+                                                top: '50%',
+                                                transform: 'translateY(-50%)',
+                                                backgroundColor: 'rgba(36, 36, 36, 0.5)',
+                                                color: 'white',
+                                                '&:hover': {
+                                                  backgroundColor: 'rgba(0,0,0,0.7)'
+                                                }
+                                              }}
+                                              onClick={handlePrevImage(property.property_id, property.images.length)}
+                                            >
+                                              <ChevronLeftIcon />
+                                            </IconButton>
+                                            <IconButton
+                                              sx={{
+                                                position: 'absolute',
+                                                right: 10,
+                                                top: '50%',
+                                                transform: 'translateY(-50%)',
+                                                backgroundColor: 'rgba(90, 81, 81, 0.5)',
+                                                color: 'white',
+                                                '&:hover': {
+                                                  backgroundColor: 'rgba(0,0,0,0.7)'
+                                                }
+                                              }}
+                                              onClick={handleNextImage(property.property_id, property.images.length)}
+                                            >
+                                              <ChevronRightIcon />
+                                            </IconButton>
+                                            {/* Image counter */}
+                                            <Box
+                                              sx={{
+                                                position: 'absolute',
+                                                bottom: 10,
+                                                right: 10,
+                                                backgroundColor: 'rgba(0,0,0,0.5)',
+                                                color: 'white',
+                                                px: 1,
+                                                borderRadius: '4px',
+                                                fontSize: '0.75rem'
+                                              }}
+                                            >
+                                              {`${(currentImageIndices[property.property_id] || 0) + 1}/${property.images.length}`}
+                                            </Box>
+                                          </>
+                                        )}
                     <Box
                       sx={{
                         position: 'absolute',

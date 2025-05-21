@@ -6,24 +6,22 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TableRow,
-  Paper,
   Box,
   CircularProgress,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
+  IconButton,
+  Tooltip,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../../Shared/Navbar/Navbar';
-import { Grid, Tooltip, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { baseurl } from '../../../BaseURL/BaseURL';
-
 
 function Subscription() {
   const [userType, setUserType] = useState('Client');
@@ -31,6 +29,24 @@ function Subscription() {
   const [planDataMap, setPlanDataMap] = useState({});
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  const cellStyle = {
+    fontWeight: 'bold',
+    textAlign: 'center',
+    border: '1px solid #000',
+    backgroundColor: '#f0f0f0',
+  };
+
+  const cellBodyStyle = {
+    textAlign: 'center',
+    border: '1px solid #000',
+  };
+
+  const noDataStyle = {
+    textAlign: 'center',
+    border: '1px solid #000',
+    padding: 2,
+  };
 
   const fetchVariantsAndPlans = async (type) => {
     setLoading(true);
@@ -40,8 +56,8 @@ function Subscription() {
       setVariantData(variants);
 
       const planIds = [...new Set(variants.map(v => v.plan_id))];
-
       const plansMap = {};
+      
       await Promise.all(
         planIds.map(async (id) => {
           try {
@@ -76,7 +92,6 @@ function Subscription() {
 
       if (response.ok) {
         alert(`Variant ID ${variantId} deleted successfully.`);
-        // Refresh the data
         fetchVariantsAndPlans(userType);
       } else {
         const errorData = await response.json();
@@ -88,22 +103,16 @@ function Subscription() {
     }
   };
 
-
   return (
     <>
       <Header />
-      <Container maxWidth="lg" sx={{ pt: 4 }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-          <Typography variant="h5" fontWeight="bold">
-            Subscription Plan Variants
-          </Typography>
-          <Button variant="contained" color="primary" onClick={() => navigate('/a-addsubscriptions')}>
-            + Add Subscription
-          </Button>
-        </Box>
+      <Container>
+        <div style={{ textAlign: 'center', marginTop: "12%" }}>
+          <h2 style={{ fontWeight: 'bold' }}>Subscription Plan Variants</h2>
+        </div>
 
-        <Box mb={3}>
-          <FormControl fullWidth sx={{ maxWidth: 300 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <FormControl sx={{ width: 200 }}>
             <InputLabel>User Type</InputLabel>
             <Select
               value={userType}
@@ -114,6 +123,14 @@ function Subscription() {
               <MenuItem value="Agent">Agent</MenuItem>
             </Select>
           </FormControl>
+          
+          <Button 
+            variant="contained" 
+            color="primary" 
+            onClick={() => navigate('/a-addsubscriptions')}
+          >
+            + Add Subscription
+          </Button>
         </Box>
 
         {loading ? (
@@ -121,57 +138,60 @@ function Subscription() {
             <CircularProgress />
           </Box>
         ) : (
-          <TableContainer component={Paper}>
-            <Table aria-label="plan variants table">
-              <TableHead>
-                <TableRow>
-                  {/* <TableCell><strong>Variant ID</strong></TableCell> */}
-                  <TableCell><strong>Plan Name</strong></TableCell>
-                  <TableCell><strong>Description</strong></TableCell>
-                  <TableCell><strong>Duration (Days)</strong></TableCell>
-                  <TableCell><strong>Price</strong></TableCell>
-                  <TableCell align="center"><strong>Actions</strong></TableCell>
-
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {variantData.map((variant, index) => {
+          <Table sx={{ border: '1px solid black', width: '100%' }}>
+            <TableHead>
+              <TableRow>
+                <TableCell sx={cellStyle}>Plan Name</TableCell>
+                <TableCell sx={cellStyle}>Description</TableCell>
+                <TableCell sx={cellStyle}>Duration (Days)</TableCell>
+                <TableCell sx={cellStyle}>Price</TableCell>
+                <TableCell sx={cellStyle}>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {variantData.length > 0 ? (
+                variantData.map((variant, index) => {
                   const plan = planDataMap[variant.plan_id] || {};
                   return (
                     <TableRow key={index}>
-                      {/* <TableCell>{variant.variant_id}</TableCell> */}
-                      <TableCell>{plan.plan_name || '—'}</TableCell>
-                      <TableCell>{plan.description || '—'}</TableCell>
-                      <TableCell>{variant.duration_in_days}</TableCell>
-                      <TableCell>₹{variant.price}</TableCell>
-                      <TableCell align="center">
-                        <Box display="flex" justifyContent="center" alignItems="center" gap={2}>
+                      <TableCell sx={cellBodyStyle}>{plan.plan_name || '—'}</TableCell>
+                      <TableCell sx={cellBodyStyle}>{plan.description || '—'}</TableCell>
+                      <TableCell sx={cellBodyStyle}>{variant.duration_in_days}</TableCell>
+                      <TableCell sx={cellBodyStyle}>₹{variant.price}</TableCell>
+                      <TableCell sx={cellBodyStyle}>
+                        <Box display="flex" justifyContent="center" gap={1}>
                           <Tooltip title="Edit">
                             <IconButton
-                              sx={{ color: '#1976d2' }}
+                              size="small"
+                              color="primary"
                               onClick={() => navigate(`/a-edit-subscription/${variant.variant_id}`, { state: { variant } })}
                             >
-                              <EditIcon />
+                              <EditIcon fontSize="small" />
                             </IconButton>
                           </Tooltip>
-
                           <Tooltip title="Delete">
                             <IconButton
-                              sx={{ color: '#d32f2f' }}
+                              size="small"
+                              color="error"
                               onClick={() => handleDelete(variant.variant_id)}
                             >
-                              <DeleteIcon />
+                              <DeleteIcon fontSize="small" />
                             </IconButton>
                           </Tooltip>
                         </Box>
                       </TableCell>
-
                     </TableRow>
                   );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                })
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={5} sx={noDataStyle}>
+                    No subscription variants found
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         )}
       </Container>
     </>
