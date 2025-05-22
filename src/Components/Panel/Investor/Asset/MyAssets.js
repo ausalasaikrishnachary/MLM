@@ -33,7 +33,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import { baseurl } from '../../../BaseURL/BaseURL';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-
+import VideocamIcon from '@mui/icons-material/Videocam';
 
 const MyAssets = () => {
   const [sortBy, setSortBy] = useState('');
@@ -189,6 +189,50 @@ const MyAssets = () => {
     }));
   };
 
+  // Function to get all media (images + videos) for a property
+  const getAllMedia = (property) => {
+    const media = [];
+
+    // Add images
+    if (property.images && property.images.length > 0) {
+      media.push(...property.images.map(img => ({
+        type: 'image',
+        url: `${baseurl}${img.image}`,
+        alt: `Property image`
+      })));
+    }
+
+    // Add videos
+    if (property.videos && property.videos.length > 0) {
+      media.push(...property.videos.map(vid => ({
+        type: 'video',
+        url: `${baseurl}${vid.video}`,
+        alt: `Property video`
+      })));
+    }
+
+    return media;
+  };
+
+  // Function to get the current media URL for a property
+  const getCurrentMediaUrl = (property) => {
+    const media = getAllMedia(property);
+    if (media.length === 0) return 'https://via.placeholder.com/300';
+
+    const currentIndex = currentImageIndices[property.property_id] || 0;
+    return media[currentIndex]?.url || 'https://via.placeholder.com/300';
+  };
+
+  // Function to check if current media is a video
+  const isCurrentMediaVideo = (property) => {
+    const media = getAllMedia(property);
+    if (media.length === 0) return false;
+
+    const currentIndex = currentImageIndices[property.property_id] || 0;
+    return media[currentIndex]?.type === 'video';
+  };
+
+
   return (
     <>
       <InvestorHeader />
@@ -268,265 +312,298 @@ const MyAssets = () => {
         {/* Cards Section */}
         {filteredProperties.length > 0 ? (
           <Grid container spacing={3}>
-            {/* {filteredProperties.map((property) => ( */}
-            {paginatedProperties.map((property) => (
-              <Grid item xs={12} md={6} lg={4} key={property.id}>
-                <Card
-                  sx={{
-                    borderRadius: 2,
-                    transition: 'all 0.3s ease',
-                    position: 'relative',
-                    '&:hover': {
-                      transform: 'translateY(-5px)',
-                      boxShadow: '0 4px 15px rgba(0,0,0,0.749)',
-                    }
-                  }}
-                >
-                  <Box sx={{ position: 'relative' }}>
-                    <CardMedia
-                      component="img"
-                      height="220"
-                      image={property.images.length > 0 ?
-                        `${baseurl}${property.images[currentImageIndices[property.property_id] || 0]?.image}` :
-                        'https://via.placeholder.com/300'}
-                      alt={property.property_title}
-                      sx={{ objectFit: 'cover', borderRadius: '12px 12px 0 0', cursor: 'pointer' }}
-                      onClick={() => handleImageClick(property)}
-                    />
-                    {/* Navigation arrows when there are multiple images */}
-                    {property.images.length > 1 && (
-                      <>
-                        <IconButton
-                          sx={{
-                            position: 'absolute',
-                            left: 10,
-                            top: '50%',
-                            transform: 'translateY(-50%)',
-                            backgroundColor: 'rgba(36, 36, 36, 0.5)',
-                            color: 'white',
-                            '&:hover': {
-                              backgroundColor: 'rgba(0,0,0,0.7)'
-                            }
-                          }}
-                          onClick={handlePrevImage(property.property_id, property.images.length)}
-                        >
-                          <ChevronLeftIcon />
-                        </IconButton>
-                        <IconButton
-                          sx={{
-                            position: 'absolute',
-                            right: 10,
-                            top: '50%',
-                            transform: 'translateY(-50%)',
-                            backgroundColor: 'rgba(90, 81, 81, 0.5)',
-                            color: 'white',
-                            '&:hover': {
-                              backgroundColor: 'rgba(0,0,0,0.7)'
-                            }
-                          }}
-                          onClick={handleNextImage(property.property_id, property.images.length)}
-                        >
-                          <ChevronRightIcon />
-                        </IconButton>
-                        {/* Image counter */}
-                        <Box
-                          sx={{
-                            position: 'absolute',
-                            bottom: 10,
-                            right: 10,
-                            backgroundColor: 'rgba(0,0,0,0.5)',
-                            color: 'white',
-                            px: 1,
-                            borderRadius: '4px',
-                            fontSize: '0.75rem'
-                          }}
-                        >
-                          {`${(currentImageIndices[property.property_id] || 0) + 1}/${property.images.length}`}
+            {paginatedProperties.map((property) => {
+              const media = getAllMedia(property);
+              const currentIndex = currentImageIndices[property.property_id] || 0;
+              const totalMedia = media.length;
+
+              return (
+                <Grid item xs={12} md={6} lg={4} key={property.id}>
+                  <Card
+                    sx={{
+                      borderRadius: 2,
+                      transition: 'all 0.3s ease',
+                      position: 'relative',
+                      '&:hover': {
+                        transform: 'translateY(-5px)',
+                        boxShadow: '0 4px 15px rgba(0,0,0,0.749)',
+                      }
+                    }}
+                  >
+                    <Box sx={{ position: 'relative' }}>
+                      {isCurrentMediaVideo(property) ? (
+                        <Box sx={{ height: '220px', position: 'relative' }}>
+                          <video
+                            controls
+                            style={{
+                              width: '100%',
+                              height: '220px',
+                              objectFit: 'cover',
+                              borderRadius: '12px 12px 0 0',
+                              cursor: 'pointer'
+                            }}
+                            onClick={() => handleImageClick(property)}
+                          >
+                            <source src={getCurrentMediaUrl(property)} type="video/mp4" />
+                            Your browser does not support the video tag.
+                          </video>
+                          <VideocamIcon
+                            sx={{
+                              position: 'absolute',
+                              top: 8,
+                              left: 8,
+                              color: 'white',
+                              backgroundColor: 'rgba(0,0,0,0.5)',
+                              borderRadius: '50%',
+                              padding: '4px'
+                            }}
+                          />
                         </Box>
-                      </>
-                    )}
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        top: 15,
-                        right: -30,
-                        width: '150px',
-                        transform: 'rotate(45deg)',
-                        backgroundColor: "red",
-                        color: 'white',
-                        textAlign: 'center',
-                        fontSize: '12px',
-                        fontWeight: 'bold',
-                        textTransform: 'uppercase',
-                        py: '4px',
-                        boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-                      }}
-                    >
-                      {property.looking_to === 'sell' ? 'sell' : 'Rent'}
-                    </Box>
+                      ) : (
+                        <CardMedia
+                          component="img"
+                          height="220"
+                          image={getCurrentMediaUrl(property)}
+                          alt={property.property_title}
+                          sx={{ objectFit: 'cover', borderRadius: '12px 12px 0 0', cursor: 'pointer' }}
+                          onClick={() => handleImageClick(property)}
+                        />
+                      )}
 
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        top: 15,
-                        left: -30,
-                        width: '150px',
-                        transform: 'rotate(-45deg)',
-                        backgroundColor:
-                          property.status === 'available'
-                            ? '#2ECC71'
-                            : property.status === 'booked'
-                              ? '#E67E22'
-                              : '#E74C3C',
-                        color: 'white',
-                        textAlign: 'center',
-                        fontSize: '12px',
-                        fontWeight: 'bold',
-                        textTransform: 'uppercase',
-                        py: '4px',
-                        boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-                      }}
-                    >
-                      {property.status}
-                    </Box>
-
-                  </Box>
-                  <CardContent>
-                    <Typography fontWeight="bold" mb={1}>
-                      {property.property_title}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" mb={2}>
-                      {property.city}, {property.state}
-                    </Typography>
-                    <Grid
-                      container
-                      spacing={2}
-                      sx={{
-                        p: 1.5,
-                        borderRadius: 1,
-                        mb: 2
-                      }}
-                    >
-                      <Grid item xs={6}>
-                        <Typography variant="caption" color="text.secondary">
-                          Plot Area
-                        </Typography>
-                        <Typography fontWeight="600" color="#4A90E2">
-                          {property.plot_area_sqft} sqft
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="caption" color="text.secondary">
-                          Built-up Area
-                        </Typography>
-                        <Typography fontWeight="600" color="#4A90E2">
-                          {property.builtup_area_sqft} sqft
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="caption" color="text.secondary">
-                          Property Value
-                        </Typography>
-                        <Typography fontWeight="600" color="#4A90E2">
-                          ₹{property.total_property_value}
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography variant="caption" color="text.secondary">
-                          Floors
-                        </Typography>
-                        <Typography fontWeight="600" color="#4A90E2">
-                          {property.number_of_floors}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                    <Box
-                      sx={{
-                        backgroundColor: '#F8F9FA',
-                        borderRadius: 1,
-                        p: 1.5,
-                        mb: 2
-                      }}
-                    >
-                      <Grid container>
-                        <Grid item xs={6}>
-                          <Typography variant="body2" color="text.secondary">
-                            Email
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography
-                            variant="body2"
-                            fontWeight="bold"
-                            color="#4A90E2"
-                            align="right"
-                            display="flex"
-                            justifyContent="flex-end"
-                            alignItems="center"
-                            gap={1}
+                      {/* Navigation arrows when there are multiple media items */}
+                      {totalMedia > 1 && (
+                        <>
+                          <IconButton
+                            sx={{
+                              position: 'absolute',
+                              left: 10,
+                              top: '50%',
+                              transform: 'translateY(-50%)',
+                              backgroundColor: 'rgba(36, 36, 36, 0.5)',
+                              color: 'white',
+                              '&:hover': {
+                                backgroundColor: 'rgba(0,0,0,0.7)'
+                              }
+                            }}
+                            onClick={handlePrevImage(property.property_id, totalMedia)}
                           >
-                            <EmailIcon fontSize="small" />
-                            {property.owner_email}
+                            <ChevronLeftIcon />
+                          </IconButton>
+                          <IconButton
+                            sx={{
+                              position: 'absolute',
+                              right: 10,
+                              top: '50%',
+                              transform: 'translateY(-50%)',
+                              backgroundColor: 'rgba(90, 81, 81, 0.5)',
+                              color: 'white',
+                              '&:hover': {
+                                backgroundColor: 'rgba(0,0,0,0.7)'
+                              }
+                            }}
+                            onClick={handleNextImage(property.property_id, totalMedia)}
+                          >
+                            <ChevronRightIcon />
+                          </IconButton>
+                          {/* Media counter */}
+                          <Box
+                            sx={{
+                              position: 'absolute',
+                              bottom: 10,
+                              right: 10,
+                              backgroundColor: 'rgba(0,0,0,0.5)',
+                              color: 'white',
+                              px: 1,
+                              borderRadius: '4px',
+                              fontSize: '0.75rem'
+                            }}
+                          >
+                            {`${currentIndex + 1}/${totalMedia}`}
+                          </Box>
+                        </>
+                      )}
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          top: 15,
+                          right: -30,
+                          width: '150px',
+                          transform: 'rotate(45deg)',
+                          backgroundColor: "red",
+                          color: 'white',
+                          textAlign: 'center',
+                          fontSize: '12px',
+                          fontWeight: 'bold',
+                          textTransform: 'uppercase',
+                          py: '4px',
+                          boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+                        }}
+                      >
+                        {property.looking_to === 'sell' ? 'sell' : 'Rent'}
+                      </Box>
+
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          top: 15,
+                          left: -30,
+                          width: '150px',
+                          transform: 'rotate(-45deg)',
+                          backgroundColor:
+                            property.status === 'available'
+                              ? '#2ECC71'
+                              : property.status === 'booked'
+                                ? '#E67E22'
+                                : '#E74C3C',
+                          color: 'white',
+                          textAlign: 'center',
+                          fontSize: '12px',
+                          fontWeight: 'bold',
+                          textTransform: 'uppercase',
+                          py: '4px',
+                          boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+                        }}
+                      >
+                        {property.status}
+                      </Box>
+
+                    </Box>
+                    <CardContent>
+                      <Typography fontWeight="bold" mb={1}>
+                        {property.property_title}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" mb={2}>
+                        {property.city}, {property.state}
+                      </Typography>
+                      <Grid
+                        container
+                        spacing={2}
+                        sx={{
+                          p: 1.5,
+                          borderRadius: 1,
+                          mb: 2
+                        }}
+                      >
+                        <Grid item xs={6}>
+                          <Typography variant="caption" color="text.secondary">
+                            Plot Area
+                          </Typography>
+                          <Typography fontWeight="600" color="#4A90E2">
+                            {property.plot_area_sqft} sqft
                           </Typography>
                         </Grid>
                         <Grid item xs={6}>
-                          <Typography variant="body2" color="text.secondary">
-                            Contact                         </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            Built-up Area
+                          </Typography>
+                          <Typography fontWeight="600" color="#4A90E2">
+                            {property.builtup_area_sqft} sqft
+                          </Typography>
                         </Grid>
                         <Grid item xs={6}>
-                          <Typography
-                            variant="body2"
-                            fontWeight="bold"
-                            color="text.secondary"
-                            align="right"
-                            display="flex"
-                            justifyContent="flex-end"
-                            alignItems="center"
-                            gap={1} // adds spacing between icon and text
-
-                          >
-                            <CallIcon fontSize="small" />
-                            {property.owner_contact}
+                          <Typography variant="caption" color="text.secondary">
+                            Property Value
+                          </Typography>
+                          <Typography fontWeight="600" color="#4A90E2">
+                            ₹{property.total_property_value}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography variant="caption" color="text.secondary">
+                            Floors
+                          </Typography>
+                          <Typography fontWeight="600" color="#4A90E2">
+                            {property.number_of_floors}
                           </Typography>
                         </Grid>
                       </Grid>
-                    </Box>
-                    <Box display="flex" alignItems="center">
-                      <IconButton
-                        aria-label="edit"
-                        size="medium"
-                        sx={{ color: '#1976d2' }}
-                        onClick={() => navigate(`/i-myassets/edit/${property.property_id}`, { state: { property } })}
+                      <Box
+                        sx={{
+                          backgroundColor: '#F8F9FA',
+                          borderRadius: 1,
+                          p: 1.5,
+                          mb: 2
+                        }}
                       >
-                        <EditIcon fontSize="medium" />
-                      </IconButton>
-                      <IconButton
-                        aria-label="delete"
-                        size="medium"
-                        sx={{ color: 'red', ml: '4px' }}
-                        onClick={() => handleDelete(property.property_id)}
-                      >
-                        <DeleteIcon fontSize="medium" />
-                      </IconButton>
-                    </Box>
-                    <Grid container spacing={1}>
-                      <Grid item xs={12}>
-                        <Button
-                          fullWidth
-                          variant="contained"
-                          sx={{
-                            backgroundColor: '#149c33',
-                            color: 'white',
-                            textTransform: 'none',
-                            '&:hover': { backgroundColor: '#59ed7c', color: 'rgb(5,5,5)' }
-                          }}
-                          // onClick={() => handleViewDetails(property)}
-                          onClick={() => navigate(`/assets/${property.property_id}`, { state: { property } })}
+                        <Grid container>
+                          <Grid item xs={6}>
+                            <Typography variant="body2" color="text.secondary">
+                              Email
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography
+                              variant="body2"
+                              fontWeight="bold"
+                              color="#4A90E2"
+                              align="right"
+                              display="flex"
+                              justifyContent="flex-end"
+                              alignItems="center"
+                              gap={1}
+                            >
+                              <EmailIcon fontSize="small" />
+                              {property.owner_email}
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="body2" color="text.secondary">
+                              Contact                         </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography
+                              variant="body2"
+                              fontWeight="bold"
+                              color="text.secondary"
+                              align="right"
+                              display="flex"
+                              justifyContent="flex-end"
+                              alignItems="center"
+                              gap={1} // adds spacing between icon and text
+
+                            >
+                              <CallIcon fontSize="small" />
+                              {property.owner_contact}
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                      </Box>
+                      <Box display="flex" alignItems="center">
+                        <IconButton
+                          aria-label="edit"
+                          size="medium"
+                          sx={{ color: '#1976d2' }}
+                          onClick={() => navigate(`/i-myassets/edit/${property.property_id}`, { state: { property } })}
                         >
-                          VIEW DETAILS
-                        </Button>
-                      </Grid>
-                      {/* <Grid item xs={12}>
+                          <EditIcon fontSize="medium" />
+                        </IconButton>
+                        <IconButton
+                          aria-label="delete"
+                          size="medium"
+                          sx={{ color: 'red', ml: '4px' }}
+                          onClick={() => handleDelete(property.property_id)}
+                        >
+                          <DeleteIcon fontSize="medium" />
+                        </IconButton>
+                      </Box>
+                      <Grid container spacing={1}>
+                        <Grid item xs={12}>
+                          <Button
+                            fullWidth
+                            variant="contained"
+                            sx={{
+                              backgroundColor: '#149c33',
+                              color: 'white',
+                              textTransform: 'none',
+                              '&:hover': { backgroundColor: '#59ed7c', color: 'rgb(5,5,5)' }
+                            }}
+                            // onClick={() => handleViewDetails(property)}
+                            onClick={() => navigate(`/assets/${property.property_id}`, { state: { property } })}
+                          >
+                            VIEW DETAILS
+                          </Button>
+                        </Grid>
+                        {/* <Grid item xs={12}>
                       <Button
                         fullWidth
                         variant="outlined"
@@ -540,38 +617,49 @@ const MyAssets = () => {
                         {property.looking_to === 'sell' ? 'BUY NOW' : 'RENT NOW'}
                       </Button>
                     </Grid> */}
-                    </Grid>
-                  </CardContent>
-                  {/* Image Carousel Dialog */}
-                  <Dialog open={openCarousel} onClose={handleCloseCarousel} maxWidth="md" fullWidth>
-                    <Box sx={{ p: 2, background: '#000' }}>
-                      {selectedProperty && selectedProperty.images && selectedProperty.images.length > 0 ? (
-                        <Carousel
-                          showThumbs={false}
-                          infiniteLoop
-                          useKeyboardArrows
-                          dynamicHeight
-                          autoPlay
-                          emulateTouch
-                        >
-                          {selectedProperty.images.map((imgObj, idx) => (
-                            <div key={idx}>
-                              <img
-                                src={`${baseurl}${imgObj.image}`}
-                                alt={`property-img-${idx}`}
-                                style={{ borderRadius: 8, maxHeight: '550px', objectFit: 'cover' }}
-                              />
-                            </div>
-                          ))}
-                        </Carousel>
-                      ) : (
-                        <Typography color="white">No images available.</Typography>
-                      )}
-                    </Box>
-                  </Dialog>
-                </Card>
-              </Grid>
-            ))}
+                      </Grid>
+                    </CardContent>
+                    {/* Image Carousel Dialog */}
+                    <Dialog open={openCarousel} onClose={handleCloseCarousel} maxWidth="md" fullWidth>
+                      <Box sx={{ p: 2, background: '#000' }}>
+                        {selectedProperty && getAllMedia(selectedProperty).length > 0 ? (
+                          <Carousel
+                            showThumbs={false}
+                            infiniteLoop
+                            useKeyboardArrows
+                            dynamicHeight
+                            autoPlay
+                            emulateTouch
+                          >
+                            {getAllMedia(selectedProperty).map((media, idx) => (
+                              <div key={idx}>
+                                {media.type === 'image' ? (
+                                  <img
+                                    src={media.url}
+                                    alt={media.alt}
+                                    style={{ borderRadius: 8, maxHeight: '550px', objectFit: 'cover' }}
+                                  />
+                                ) : (
+                                  <video
+                                    controls
+                                    style={{ borderRadius: 8, maxHeight: '550px', width: '100%' }}
+                                  >
+                                    <source src={media.url} type="video/mp4" />
+                                    Your browser does not support the video tag.
+                                  </video>
+                                )}
+                              </div>
+                            ))}
+                          </Carousel>
+                        ) : (
+                          <Typography color="white">No media available.</Typography>
+                        )}
+                      </Box>
+                    </Dialog>
+                  </Card>
+                </Grid>
+              );
+            })}
           </Grid>
         ) : (
           <Box sx={{
