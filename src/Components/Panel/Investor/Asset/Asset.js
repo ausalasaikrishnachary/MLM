@@ -567,8 +567,8 @@ const AssetsUI = () => {
                           autoPlay
                           emulateTouch
                         >
-                          {selectedProperty.images.map((imgObj, idx) => (
-                            <div key={idx}>
+                          {selectedProperty?.images?.map((imgObj, idx) => (
+                            <div key={`image-${idx}`}>
                               <img
                                 src={`${baseurl}${imgObj.image}`}
                                 alt={`property-img-${idx}`}
@@ -576,7 +576,17 @@ const AssetsUI = () => {
                               />
                             </div>
                           ))}
+                          {selectedProperty?.videos?.map((vidObj, idx) => (
+                            <div key={`video-${idx}`}>
+                              <video
+                                controls
+                                src={`${baseurl}${vidObj.video}`}
+                                style={{ borderRadius: 8, maxHeight: '550px', width: '100%', objectFit: 'cover' }}
+                              />
+                            </div>
+                          ))}
                         </Carousel>
+
                       ) : (
                         <Typography color="white">No images available.</Typography>
                       )}

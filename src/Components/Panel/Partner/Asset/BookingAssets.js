@@ -13,14 +13,14 @@ import {
 import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
 import axios from 'axios';
 
-import { useParams,useLocation } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { baseurl } from '../../../BaseURL/BaseURL';
 
 function BookingAssets() {
   const [property, setProperty] = useState({ property_title: '', total_property_value: '' });
   const [loading, setLoading] = useState(true);
-  const [bookingAmount, setBookingAmount] = useState(0);
+  // const [bookingAmount, setBookingAmount] = useState(0);
   const [referralAgents, setReferralAgents] = useState([]);
   const [selectedReferralId, setSelectedReferralId] = useState('');
 
@@ -31,16 +31,11 @@ function BookingAssets() {
   const loggedInReferralId = localStorage.getItem('referral_id');
 
   useEffect(() => {
-
-    axios.get(`${baseurl}/property/${propertyId}/`)
-
     // Fetch Property
     axios.get(`https://rahul30.pythonanywhere.com/property/${propertyId}/`)
-
       .then((res) => {
         const prop = res.data;
         setProperty(prop);
-        setBookingAmount(calculateBookingAmount(Number(prop.total_property_value)));
         setLoading(false);
       })
       .catch((err) => {
@@ -48,7 +43,7 @@ function BookingAssets() {
         setLoading(false);
       });
 
-    // Fetch Agent Referral IDs (excluding current user's referral_id)
+    // Fetch Agent Referral IDs
     axios.get('https://rahul30.pythonanywhere.com/users/role/Agent/')
       .then((res) => {
         const agentsWithReferral = res.data.filter(
@@ -61,12 +56,8 @@ function BookingAssets() {
       });
   }, []);
 
-  const calculateBookingAmount = (value) => {
-    if (value <= 500000) return 11000;
-    if (value <= 1000000) return 21000;
-    if (value <= 2000000) return 51000;
-    return 100000;
-  };
+
+
 
   const handleBooking = () => {
     const username = localStorage.getItem('user_name');
@@ -74,6 +65,8 @@ function BookingAssets() {
     const propertyValue = Number(property.total_property_value);
     const agentId = property?.user_id || null;
     const propertyName = property?.property_title || null;
+    const paidAmount = Number(property.booking_amount);
+    const remainingAmount = Number(property.total_property_value) - paidAmount;
 
     const payload = {
       property_name: propertyName,
@@ -85,8 +78,8 @@ function BookingAssets() {
       property_id: Number(propertyId),
       agent_id: agentId,
       user_id: userId,
-      paid_amount: bookingAmount,
-      remaining_amount: propertyValue - bookingAmount,
+      paid_amount: paidAmount,
+      remaining_amount: remainingAmount,
       payment_type: "Booking-Amount",
       payment_method: "Cash",
     };
@@ -126,7 +119,7 @@ function BookingAssets() {
                   label="Property Title"
                   value={property.property_title}
                   variant="outlined"
-                  
+
                 />
               </Grid>
               <Grid item xs={12} lg={4}>
@@ -135,17 +128,17 @@ function BookingAssets() {
                   label="Property Value"
                   value={property.total_property_value}
                   variant="outlined"
-                  
+
                 />
               </Grid>
               <Grid item xs={12} lg={4}>
                 <TextField
                   fullWidth
                   label="Booking Amount"
-                  value={bookingAmount}
+                  value={property.booking_amount || ''}
                   variant="outlined"
-                  
                 />
+
               </Grid>
               <Grid item xs={12} lg={4}>
                 <FormControl fullWidth>
