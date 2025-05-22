@@ -26,15 +26,23 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 
 export default function Header() {
   // Updated nav items with no submenu for Transactions.
-  const navItems = [
-    { label: 'Dashboard', path: '/a-dashboard' },
-    { label: 'Properties', path: '/a-asset' },
-    { label: 'Transactions', path: '/a-transactionmoniter' },
-    { label: 'All Leads', path: '/a-investormanagement' },
-    { label: 'Agents', path: '/a-partners' },
-    { label: 'Commission', path: '/a-commission' },
-    { label: 'Subscriptions', path: '/a-subscriptions' },
-  ];
+const navItems = [
+  { label: 'Dashboard', path: '/a-dashboard' },
+  { label: 'Properties', path: '/a-asset' },
+  {
+    label: 'Operations',
+    submenu: [
+      { label: 'Transactions', path: '/a-transactionmoniter' },
+      { label: 'Commission', path: '/a-commission' },
+      { label: 'Subscriptions', path: '/a-subscriptions' },
+      { label: 'Booking Slab', path: '/a-bookingslab' },
+      { label: 'KYC', path: '/a-profiledetails' },
+    ],
+  },
+  { label: 'Users', path: '/a-investormanagement' },
+  { label: 'Agents', path: '/a-partners' },
+];
+
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
