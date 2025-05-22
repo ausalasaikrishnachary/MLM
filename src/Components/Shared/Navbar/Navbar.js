@@ -22,40 +22,40 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 
 export default function Header() {
-  // Updated nav items with no submenu for Transactions.
-const navItems = [
-  { label: 'Dashboard', path: '/a-dashboard' },
-  { label: 'Properties', path: '/a-asset' },
-  {
-    label: 'Operations',
-    submenu: [
-      { label: 'Transactions', path: '/a-transactionmoniter' },
-      { label: 'Commission', path: '/a-commission' },
-      { label: 'Subscriptions', path: '/a-subscriptions' },
-      { label: 'Booking Slab', path: '/a-bookingslab' },
-      { label: 'KYC', path: '/a-profiledetails' },
-    ],
-  },
-  { label: 'Users', path: '/a-investormanagement' },
-  { label: 'Agents', path: '/a-partners' },
-];
-
+  // Navigation items with Operations dropdown
+  const navItems = [
+    { label: 'Dashboard', path: '/a-dashboard' },
+    { label: 'Properties', path: '/a-asset' },
+    { label: 'Users', path: '/a-investormanagement' },
+    { 
+      label: 'Operations', 
+      subItems: [
+        { label: 'Transactions', path: '/a-transactionmoniter' },
+        { label: 'Commission', path: '/a-commission' },
+        { label: 'Subscriptions', path: '/a-subscriptions' },
+        { label: 'Booking Slab', path: '/a-bookingslab' },
+        { label: 'KYC', path: '/a-profiledetails' },
+      ]
+    },
+    // { label: 'Agents', path: '/a-partners' },
+  ];
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();
   const location = useLocation();
 
-  // State for mobile drawer.
+  // State for mobile drawer
   const [mobileOpen, setMobileOpen] = useState(false);
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
   };
 
-  // State for Profile Avatar dropdown menu.
+  // State for Profile Avatar dropdown menu
   const [profileAnchorEl, setProfileAnchorEl] = useState(null);
   const profileMenuOpen = Boolean(profileAnchorEl);
   const handleAvatarClick = (event) => {
@@ -65,7 +65,22 @@ const navItems = [
     setProfileAnchorEl(null);
   };
 
-  // Drawer content for mobile view with a close (cross) button.
+  // State for Operations dropdown menu
+  const [operationsAnchorEl, setOperationsAnchorEl] = useState(null);
+  const operationsMenuOpen = Boolean(operationsAnchorEl);
+  const handleOperationsClick = (event) => {
+    setOperationsAnchorEl(event.currentTarget);
+  };
+  const handleOperationsMenuClose = () => {
+    setOperationsAnchorEl(null);
+  };
+
+  // Check if any sub-item is active for highlighting the Operations button
+  const isOperationsActive = navItems
+    .find(item => item.label === 'Operations')
+    ?.subItems.some(subItem => location.pathname === subItem.path);
+
+  // Drawer content for mobile view
   const drawer = (
     <Box sx={{ width: 250 }}>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 2 }}>
@@ -76,23 +91,60 @@ const navItems = [
 
       <List>
         {navItems.map((item) => (
-          <ListItem key={item.label} disablePadding>
-            <ListItemButton
-              onClick={() => {
-                handleDrawerToggle();
-                navigate(item.path);
-              }}
-            >
-              <ListItemText
-                primary={item.label}
-                primaryTypographyProps={{
-                  color: location.pathname === item.path ? 'blue' : 'inherit',
-                  fontWeight: 'bold',
-                  fontSize: '16px',
-                }}
-              />
-            </ListItemButton>
-          </ListItem>
+          <React.Fragment key={item.label}>
+            {item.path ? (
+              <ListItem disablePadding>
+                <ListItemButton
+                  onClick={() => {
+                    handleDrawerToggle();
+                    navigate(item.path);
+                  }}
+                >
+                  <ListItemText
+                    primary={item.label}
+                    primaryTypographyProps={{
+                      color: location.pathname === item.path ? 'blue' : 'inherit',
+                      fontWeight: location.pathname === item.path ? 'bold' : 'normal',
+                      fontSize: '16px',
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            ) : (
+              <>
+                <ListItem disablePadding>
+                  <ListItemButton>
+                    <ListItemText
+                      primary={item.label}
+                      primaryTypographyProps={{
+                        fontWeight: isOperationsActive ? 'bold' : 'normal',
+                        fontSize: '16px',
+                      }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+                {item.subItems.map((subItem) => (
+                  <ListItem key={subItem.label} disablePadding sx={{ pl: 4 }}>
+                    <ListItemButton
+                      onClick={() => {
+                        handleDrawerToggle();
+                        navigate(subItem.path);
+                      }}
+                    >
+                      <ListItemText
+                        primary={subItem.label}
+                        primaryTypographyProps={{
+                          color: location.pathname === subItem.path ? 'blue' : 'inherit',
+                          fontWeight: location.pathname === subItem.path ? 'bold' : 'normal',
+                          fontSize: '14px',
+                        }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+              </>
+            )}
+          </React.Fragment>
         ))}
       </List>
     </Box>
@@ -105,12 +157,14 @@ const navItems = [
         sx={{
           backgroundColor: 'white',
           color: '#000',
-          boxShadow: '-moz-initial',
+          boxShadow: 'none',
+          borderBottom: '1px solid #e0e0e0',
+          zIndex: theme.zIndex.drawer + 1,
         }}
       >
-        <Toolbar>
+        <Toolbar sx={{ minHeight: '64px' }}>
           {isMobile ? (
-            // Mobile Layout.
+            // Mobile Layout
             <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
               <IconButton
                 edge="start"
@@ -131,8 +185,6 @@ const navItems = [
                       height: '50px',
                       width: 'auto',
                       maxWidth: '150px',
-
-                      // transform: 'scale(2.0)',
                     }}
                   />
                 </Link>
@@ -142,29 +194,18 @@ const navItems = [
                 <IconButton sx={{ color: '#000' }}>
                   <NotificationsNoneIcon />
                 </IconButton>
-                <Typography
-                  sx={{
-                    ml: 2,
-                    mr: 2,
-                    color: '#000',
-                    fontWeight: 'bold',
-                    fontSize: '16px',
-                  }}
-                >
-                  Admin
-                </Typography>
                 <Avatar
                   onClick={handleAvatarClick}
-                  sx={{ width: 40, height: 40, cursor: 'pointer' }}
+                  sx={{ width: 40, height: 40, cursor: 'pointer', ml: 2 }}
                   alt="Profile Avatar"
                   src="https://via.placeholder.com/40"
                 />
               </Box>
             </Box>
           ) : (
-            // Desktop Layout.
+            // Desktop Layout
             <>
-              <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mr: 4 }}>
                 <Link to="/a-dashboard" style={{ textDecoration: 'none', color: '#333333' }}>
                   <img
                     src={Logo}
@@ -174,72 +215,137 @@ const navItems = [
                       width: 'auto',
                       maxWidth: '150px',
                       paddingTop: "8px"
-                      // transform: 'scale(2.0)',
                     }}
                   />
                 </Link>
-              </Typography>
+              </Box>
 
-              {/* Nav Items rendered as simple buttons */}
+              {/* Navigation Items */}
               <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', gap: 3 }}>
                 {navItems.map((item) => (
-                  <Button
-                    key={item.label}
-                    onClick={() => navigate(item.path)}
-                    sx={{
-                      color: location.pathname === item.path ? 'blue' : '#000',
-                      fontWeight: 'bold',
-                      textTransform: 'none',
-                      fontSize: '16px',
-                    }}
-                  >
-                    {item.label}
-                  </Button>
+                  item.path ? (
+                    <Button
+                      key={item.label}
+                      onClick={() => navigate(item.path)}
+                      sx={{
+                        color: location.pathname === item.path ? 'primary.main' : 'text.primary',
+                        fontWeight: location.pathname === item.path ? 'bold' : 'normal',
+                        textTransform: 'none',
+                        fontSize: '16px',
+                        '&:hover': {
+                          color: 'primary.main',
+                        },
+                      }}
+                    >
+                      {item.label}
+                    </Button>
+                  ) : (
+                    <Button
+                      key={item.label}
+                      onClick={handleOperationsClick}
+                      endIcon={<ArrowDropDownIcon />}
+                      sx={{
+                        color: isOperationsActive ? 'primary.main' : 'text.primary',
+                        fontWeight: isOperationsActive ? 'bold' : 'normal',
+                        textTransform: 'none',
+                        fontSize: '16px',
+                        '&:hover': {
+                          color: 'primary.main',
+                        },
+                      }}
+                    >
+                      {item.label}
+                    </Button>
+                  )
                 ))}
               </Box>
 
-              <IconButton sx={{ color: '#000' }}>
-                <NotificationsNoneIcon />
-              </IconButton>
-              <Typography
-                sx={{
-                  ml: 2,
-                  mr: 2,
-                  color: '#000',
-                  fontWeight: 'bold',
-                  fontSize: '16px',
-                }}
-              >
-                Admin
-              </Typography>
-              <Avatar
-                onClick={handleAvatarClick}
-                sx={{ width: 40, height: 40, cursor: 'pointer' }}
-                alt="Admin"
-                src="https://via.placeholder.com/40"
-              />
+              <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
+                <IconButton sx={{ color: 'text.primary' }}>
+                  <NotificationsNoneIcon />
+                </IconButton>
+                <Avatar
+                  onClick={handleAvatarClick}
+                  sx={{ width: 40, height: 40, cursor: 'pointer', ml: 2 }}
+                  alt="Admin"
+                  src="https://via.placeholder.com/40"
+                />
+              </Box>
             </>
           )}
         </Toolbar>
-
-        {/* Mobile Drawer */}
-        <Drawer
-          anchor="left"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{ keepMounted: true }}
-        >
-          {drawer}
-        </Drawer>
       </AppBar>
 
-      {/* Profile Avatar Dropdown Menu */}
+      {/* Mobile Drawer */}
+      <Drawer
+        anchor="left"
+        open={mobileOpen}
+        onClose={handleDrawerToggle}
+        ModalProps={{ keepMounted: true }}
+        sx={{
+          '& .MuiDrawer-paper': {
+            width: 250,
+            boxSizing: 'border-box',
+          },
+        }}
+      >
+        {drawer}
+      </Drawer>
+
+      {/* Operations Dropdown Menu */}
+      <Menu
+        anchorEl={operationsAnchorEl}
+        open={operationsMenuOpen}
+        onClose={handleOperationsMenuClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+        PaperProps={{
+          elevation: 0,
+          sx: {
+            mt: 1,
+            minWidth: 200,
+            borderRadius: '8px',
+            boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+          },
+        }}
+      >
+        {navItems.find(item => item.label === 'Operations')?.subItems.map((subItem) => (
+          <MenuItem
+            key={subItem.label}
+            onClick={() => {
+              handleOperationsMenuClose();
+              navigate(subItem.path);
+            }}
+            sx={{
+              fontSize: '14px',
+              fontWeight: location.pathname === subItem.path ? 'bold' : 'normal',
+              color: location.pathname === subItem.path ? 'primary.main' : 'text.primary',
+              '&:hover': {
+                backgroundColor: 'rgba(0, 0, 0, 0.04)',
+              },
+            }}
+          >
+            {subItem.label}
+          </MenuItem>
+        ))}
+      </Menu>
+
+      {/* Profile Dropdown Menu */}
       <Menu
         anchorEl={profileAnchorEl}
         open={profileMenuOpen}
         onClose={handleProfileMenuClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        PaperProps={{
+          elevation: 0,
+          sx: {
+            mt: 1,
+            minWidth: 180,
+            borderRadius: '8px',
+            boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
+          },
+        }}
       >
         <MenuItem
           onClick={() => {
@@ -247,8 +353,11 @@ const navItems = [
             navigate('/a-profile');
           }}
           sx={{
-            fontSize: '16px',
-            fontWeight: 'bold',
+            fontSize: '14px',
+            fontWeight: 'medium',
+            '&:hover': {
+              backgroundColor: 'rgba(0, 0, 0, 0.04)',
+            },
           }}
         >
           Profile
@@ -259,8 +368,11 @@ const navItems = [
             navigate('/a-profiledetails');
           }}
           sx={{
-            fontSize: '16px',
-            fontWeight: 'bold',
+            fontSize: '14px',
+            fontWeight: 'medium',
+            '&:hover': {
+              backgroundColor: 'rgba(0, 0, 0, 0.04)',
+            },
           }}
         >
           KYC
@@ -271,14 +383,16 @@ const navItems = [
             navigate('/');
           }}
           sx={{
-            fontSize: '16px',
-            fontWeight: 'bold',
-            color: "red",
-            display: 'flex',
-            alignItems: 'center'
+            fontSize: '14px',
+            fontWeight: 'medium',
+            color: 'error.main',
+            '&:hover': {
+              backgroundColor: 'rgba(0, 0, 0, 0.04)',
+            },
           }}
         >
-          Logout <LogoutIcon sx={{ ml: 1 }} />
+          <LogoutIcon sx={{ mr: 1, fontSize: '18px' }} />
+          Logout
         </MenuItem>
       </Menu>
     </>
