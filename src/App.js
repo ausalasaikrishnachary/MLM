@@ -67,93 +67,99 @@ import EditMyAssets from "./Components/Panel/Partner/Asset/EditMyAssets";
 import I_EditMyAsset from "./Components/Panel/Investor/Asset/EditMyAsset";
 import I_MyAssests from "./Components/Panel/Investor/Asset/New-AssetsDetails";
 import CommissionView from "./Components/Panel/Admin/Transactions/CommissionView";
+import BookingSlab from "./Components/Panel/Admin/BookingSlab/BookingSlab";
+import AddBookingSlab from "./Components/Panel/Admin/BookingSlab/AddBookingSlab";
+import EditBookingSlab from "./Components/Panel/Admin/BookingSlab/EditBookingSlab";
 
 
 
 
 function App() {
   return (
-      // <AuthProvider>
-      <Router>
-        {/* <Navbar/> */}
-        {/* <InvestorHeader/> */}
-        {/* <PartnerHeader/> */}
-        <div style={{marginTop:"85px"}}>
-          <Routes>
-              <Route path="/a-dashboard" element={<AdminDashboard />} />
-              <Route path="/a-asset" element={<AdminAsset />} />
-              <Route path="/a-investormanagement" element={<Tmanagement />} />
-              <Route path="/View_Tmanagement" element={<View_Tmanagement />} />
-              <Route path="/Edit_Tmanagement" element={<Edit_Tmanagement/>}/>
+    // <AuthProvider>
+    <Router>
+      {/* <Navbar/> */}
+      {/* <InvestorHeader/> */}
+      {/* <PartnerHeader/> */}
+      <div style={{ marginTop: "85px" }}>
+        <Routes>
+          <Route path="/a-dashboard" element={<AdminDashboard />} />
+          <Route path="/a-asset" element={<AdminAsset />} />
+          <Route path="/a-investormanagement" element={<Tmanagement />} />
+          <Route path="/View_Tmanagement" element={<View_Tmanagement />} />
+          <Route path="/Edit_Tmanagement" element={<Edit_Tmanagement />} />
 
-              <Route path="/a-transactionmoniter" element={<Tmoniter />} />
-              <Route path="/a-investment-page" element={<InvestmentPage />} />
-              <Route path="/a-add-lead" element={<AddLead />} />
-              <Route path="/a-partners" element={<PartnersDashboard />} />
-              <Route path="/a-profile" element={<AdminProfile />} />
-              <Route path="/a-profiledetails" element={<AdminKyc />} />
-              <Route path="/signup" element={<SignUp />} />
-              <Route path="/Newkyc" element={<Newkyc />} />
+          <Route path="/a-transactionmoniter" element={<Tmoniter />} />
+          <Route path="/a-investment-page" element={<InvestmentPage />} />
+          <Route path="/a-add-lead" element={<AddLead />} />
+          <Route path="/a-partners" element={<PartnersDashboard />} />
+          <Route path="/a-profile" element={<AdminProfile />} />
+          <Route path="/a-profiledetails" element={<AdminKyc />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/Newkyc" element={<Newkyc />} />
 
-              {/* <Route path="/a-commission" element={<Referral />} /> */}
-              <Route path="/a-commission" element={<Commission />} />
-              <Route path="/a-commissions/:userId" element={<CommissionByUser />} />
-              <Route path="/a-addasset" element={<AdminAssetForm />} />
-              <Route path="/a-subscriptions" element={<Subscription />} />
-              <Route path="/a-addsubscriptions" element={<AddSubscription />} />
-              <Route path="/a-edit-subscription/:id" element={<EditSubscription />} />
-              <Route path="/a-assets/:id" element={<AssetDetails />} />
-              <Route path="/a-assets/edit/:id" element={<EditAsset />} />
-              <Route path="/a-commission/:transactionId" element={<CommissionView />} />
-
-
-              <Route path="/i-dashboard" element={<InvestorDashboard />} />
-              <Route path="/i-asset" element={<InvestorAsset />} />
-              <Route path="/i-buyshares" element={<BuyShares />} />
-              <Route path="/i-sellshares" element={<SellShares />} />
-              <Route path="/i-profile" element={<InvestorProfile />} />
-              <Route path="/i-servies" element={<Services />} />
-              <Route path="/i-profiledetails" element={<Kyc />} />
-              <Route path="/i-plans" element={<Plans />} />
-              <Route path="/i-myassets" element={<MyAssets />} />
-              <Route path="/i-assets/:id" element={<PropertyDetails />} />
-               <Route path="/i-myassets/edit/:id" element={<I_EditMyAsset />} />
-                <Route path="/assets/:id" element={<I_MyAssests />} />
-              
+          {/* <Route path="/a-commission" element={<Referral />} /> */}
+          <Route path="/a-commission" element={<Commission />} />
+          <Route path="/a-commissions/:userId" element={<CommissionByUser />} />
+          <Route path="/a-addasset" element={<AdminAssetForm />} />
+          <Route path="/a-subscriptions" element={<Subscription />} />
+          <Route path="/a-addsubscriptions" element={<AddSubscription />} />
+          <Route path="/a-edit-subscription/:id" element={<EditSubscription />} />
+          <Route path="/a-assets/:id" element={<AssetDetails />} />
+          <Route path="/a-assets/edit/:id" element={<EditAsset />} />
+          <Route path="/a-commission/:transactionId" element={<CommissionView />} />
+          <Route path="/a-bookingslab" element={<BookingSlab />} />
+          <Route path="/a-add-booking-slab" element={<AddBookingSlab />} />
+          <Route path="/a-edit-booking-slab/:id" element={<EditBookingSlab />} />
 
 
-              <Route path="/p-dashboard" element={<PartnerDashboard />} />
-              <Route path="/p-report" element={<Report />} />
-              <Route path="/p-addasset" element={<AssetForm />} />
-              <Route path="/p-assets" element={<AssetDashboard />} />
-              <Route path="/p-profile" element={<PartnerProfile />} />
-              <Route path="/p-profiledetails" element={<PartnerKyc/>} />
-              <Route path="/p-leads" element={<Leads/>} />
-              <Route path="/p-addleads" element={<PAddLead/>} />
-              <Route path="/p-commission" element={<PartnerCommission/>} />
-              <Route path="/p-addproperty" element={<AddPropertyForm/>} />
-              <Route path="/p-plans" element={<PartnerPlans/>} />
-              <Route path="/p-assets/:id" element={<AssetDetail />} />
-              <Route path="/p-myassets" element={<PartnerMyAssets/>} />
-              <Route path="/p-assets/:id" element={<ViewAssetDetails />} />
-              <Route path="/p-myteam" element={<MyTeam />} />
-              <Route path="/p-latestassets" element={<LatestAssets />} />
-              <Route path="/p-activeagents" element={<MyAgents />} />
-              <Route path="/p-view-activeagents/:id" element={<ActiveUserView />} />
-              <Route path="/p-myassets/edit/:id" element={<EditMyAssets />} />
-              
-              <Route path="/p-bookingassets" element={<BookingAssets />} />
-              <Route path="/p-transaction" element={<Transaction />} />
-              <Route path="/p-payment-form" element={<PaymentForm />} />
-              <Route path="/p-transaction-details" element={<TransactionList />} />
-               <Route path="/p-pay-commission/:propertyId" element={<PayCommissionForm />} />
+          <Route path="/i-dashboard" element={<InvestorDashboard />} />
+          <Route path="/i-asset" element={<InvestorAsset />} />
+          <Route path="/i-buyshares" element={<BuyShares />} />
+          <Route path="/i-sellshares" element={<SellShares />} />
+          <Route path="/i-profile" element={<InvestorProfile />} />
+          <Route path="/i-servies" element={<Services />} />
+          <Route path="/i-profiledetails" element={<Kyc />} />
+          <Route path="/i-plans" element={<Plans />} />
+          <Route path="/i-myassets" element={<MyAssets />} />
+          <Route path="/i-assets/:id" element={<PropertyDetails />} />
+          <Route path="/i-myassets/edit/:id" element={<I_EditMyAsset />} />
+          <Route path="/assets/:id" element={<I_MyAssests />} />
 
-              <Route path="/" element={<Login />} />
-              
-          </Routes>
-          </div>
-      </Router>
-      // </AuthProvider>
+
+
+          <Route path="/p-dashboard" element={<PartnerDashboard />} />
+          <Route path="/p-report" element={<Report />} />
+          <Route path="/p-addasset" element={<AssetForm />} />
+          <Route path="/p-assets" element={<AssetDashboard />} />
+          <Route path="/p-profile" element={<PartnerProfile />} />
+          <Route path="/p-profiledetails" element={<PartnerKyc />} />
+          <Route path="/p-leads" element={<Leads />} />
+          <Route path="/p-addleads" element={<PAddLead />} />
+          <Route path="/p-commission" element={<PartnerCommission />} />
+          <Route path="/p-addproperty" element={<AddPropertyForm />} />
+          <Route path="/p-plans" element={<PartnerPlans />} />
+          <Route path="/p-assets/:id" element={<AssetDetail />} />
+          <Route path="/p-myassets" element={<PartnerMyAssets />} />
+          <Route path="/p-assets/:id" element={<ViewAssetDetails />} />
+          <Route path="/p-myteam" element={<MyTeam />} />
+          <Route path="/p-latestassets" element={<LatestAssets />} />
+          <Route path="/p-activeagents" element={<MyAgents />} />
+          <Route path="/p-view-activeagents/:id" element={<ActiveUserView />} />
+          <Route path="/p-myassets/edit/:id" element={<EditMyAssets />} />
+
+          <Route path="/p-bookingassets" element={<BookingAssets />} />
+          <Route path="/p-transaction" element={<Transaction />} />
+          <Route path="/p-payment-form" element={<PaymentForm />} />
+          <Route path="/p-transaction-details" element={<TransactionList />} />
+          <Route path="/p-pay-commission/:propertyId" element={<PayCommissionForm />} />
+
+          <Route path="/" element={<Login />} />
+
+        </Routes>
+      </div>
+    </Router>
+    // </AuthProvider>
   );
 }
 
