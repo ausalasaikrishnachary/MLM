@@ -254,6 +254,7 @@ const AssetsUI = () => {
     return media[currentIndex]?.type === 'video';
   };
 
+
   return (
     <>
       <Header />
@@ -600,6 +601,43 @@ const AssetsUI = () => {
                         </Grid>
                       </Grid>
                     </CardContent>
+                    {/* Image Carousel Dialog */}
+                    <Dialog open={openCarousel} onClose={handleCloseCarousel} maxWidth="md" fullWidth>
+                      <Box sx={{ p: 2, background: '#000' }}>
+                        {selectedProperty && getAllMedia(selectedProperty).length > 0 ? (
+                          <Carousel
+                            showThumbs={false}
+                            infiniteLoop
+                            useKeyboardArrows
+                            dynamicHeight
+                            autoPlay
+                            emulateTouch
+                          >
+                            {getAllMedia(selectedProperty).map((media, idx) => (
+                              <div key={idx}>
+                                {media.type === 'image' ? (
+                                  <img
+                                    src={media.url}
+                                    alt={media.alt}
+                                    style={{ borderRadius: 8, maxHeight: '550px', objectFit: 'cover' }}
+                                  />
+                                ) : (
+                                  <video
+                                    controls
+                                    style={{ borderRadius: 8, maxHeight: '550px', width: '100%' }}
+                                  >
+                                    <source src={media.url} type="video/mp4" />
+                                    Your browser does not support the video tag.
+                                  </video>
+                                )}
+                              </div>
+                            ))}
+                          </Carousel>
+                        ) : (
+                          <Typography color="white">No media available.</Typography>
+                        )}
+                      </Box>
+                    </Dialog>
                   </Card>
                 </Grid>
               );
@@ -624,44 +662,6 @@ const AssetsUI = () => {
           page={page}
           onChange={handlePageChange}
         />
-
-        {/* Image Carousel Dialog */}
-        <Dialog open={openCarousel} onClose={handleCloseCarousel} maxWidth="md" fullWidth>
-          <Box sx={{ p: 2, background: '#000' }}>
-            {selectedProperty && getAllMedia(selectedProperty).length > 0 ? (
-              <Carousel
-                showThumbs={false}
-                infiniteLoop
-                useKeyboardArrows
-                dynamicHeight
-                autoPlay
-                emulateTouch
-              >
-                {getAllMedia(selectedProperty).map((media, idx) => (
-                  <div key={idx}>
-                    {media.type === 'image' ? (
-                      <img
-                        src={media.url}
-                        alt={media.alt}
-                        style={{ borderRadius: 8, maxHeight: '550px', objectFit: 'cover' }}
-                      />
-                    ) : (
-                      <video
-                        controls
-                        style={{ borderRadius: 8, maxHeight: '550px', width: '100%' }}
-                      >
-                        <source src={media.url} type="video/mp4" />
-                        Your browser does not support the video tag.
-                      </video>
-                    )}
-                  </div>
-                ))}
-              </Carousel>
-            ) : (
-              <Typography color="white">No media available.</Typography>
-            )}
-          </Box>
-        </Dialog>
 
         {/* Property Details Dialog */}
         {selectedProperty && (
