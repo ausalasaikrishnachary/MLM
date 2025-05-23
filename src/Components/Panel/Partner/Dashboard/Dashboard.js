@@ -213,7 +213,8 @@ useEffect(() => {
         <Grid container spacing={3} sx={{ mb: 3 }}>
           {[
             { title: 'Listing Properties', value: counts?.total_properties ?? 0, icon: faBuilding, path: '/p-assets' },
-            { title: 'Team', value: totalAgents.toString(), icon: faUsers, path: '/p-myteam' },
+            // { title: 'Team', value: totalAgents.toString(), icon: faUsers, path: '/p-myteam' },
+             { title: 'Team', value: totalAgents.toString(), icon: faUsers, path: '/p-team' },
             { title: 'Active Agents', value: totalActiveAgents, icon: faUserCheck, path: '/p-activeagents' },
             { title: 'Latest Properties', value: counts?.total_latest_properties ?? 0, icon: faHome, path: '/p-latestassets' },
           ].map((metric, index) => (

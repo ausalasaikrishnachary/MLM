@@ -620,42 +620,40 @@ const MyAssets = () => {
                       </Grid>
                     </CardContent>
                     {/* Image Carousel Dialog */}
-                    <Dialog open={openCarousel} onClose={handleCloseCarousel} maxWidth="md" fullWidth>
-                      <Box sx={{ p: 2, background: '#000' }}>
-                        {selectedProperty && getAllMedia(selectedProperty).length > 0 ? (
-                          <Carousel
-                            showThumbs={false}
-                            infiniteLoop
-                            useKeyboardArrows
-                            dynamicHeight
-                            autoPlay
-                            emulateTouch
-                          >
-                            {getAllMedia(selectedProperty).map((media, idx) => (
-                              <div key={idx}>
-                                {media.type === 'image' ? (
-                                  <img
-                                    src={media.url}
-                                    alt={media.alt}
-                                    style={{ borderRadius: 8, maxHeight: '550px', objectFit: 'cover' }}
-                                  />
-                                ) : (
-                                  <video
-                                    controls
-                                    style={{ borderRadius: 8, maxHeight: '550px', width: '100%' }}
-                                  >
-                                    <source src={media.url} type="video/mp4" />
-                                    Your browser does not support the video tag.
-                                  </video>
-                                )}
-                              </div>
-                            ))}
-                          </Carousel>
-                        ) : (
-                          <Typography color="white">No media available.</Typography>
-                        )}
-                      </Box>
-                    </Dialog>
+                  <Dialog open={openCarousel} onClose={handleCloseCarousel} maxWidth="md" fullWidth>
+                                                          <Box sx={{ p: 2, background: '#000' }}>
+                                                            {selectedProperty && getAllMedia(selectedProperty).length > 0 ? (
+                                                             <Carousel
+                                      showThumbs={false}
+                                      infiniteLoop
+                                      useKeyboardArrows
+                                      dynamicHeight
+                                      autoPlay
+                                      emulateTouch
+                                    >
+                                      {getAllMedia(selectedProperty)
+                                        .filter((media) => media.type === 'image') // ✅ Filter only images
+                                        .map((media, idx) => (
+                                          <div key={idx}>
+                                            <img
+                                              src={media.url}
+                                              alt={media.alt || `Image ${idx + 1}`}
+                                              style={{
+                                                borderRadius: 8,
+                                                maxHeight: '550px',
+                                                objectFit: 'cover',
+                                                width: '100%',
+                                              }}
+                                            />
+                                          </div>
+                                        ))}
+                                    </Carousel>
+                                    
+                                                            ) : (
+                                                              <Typography color="white">No media available.</Typography>
+                                                            )}
+                                                          </Box>
+                                                        </Dialog>
                   </Card>
                 </Grid>
               );

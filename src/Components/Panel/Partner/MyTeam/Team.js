@@ -9,19 +9,23 @@ import {
   TableHead,
   TableRow,
   CircularProgress,
-  IconButton
+  IconButton,
+  Grid,
+  FormControl,
+  Select,
+  MenuItem
 } from '@mui/material';
-import PartnerHeader from '../../../../Shared/Partner/PartnerNavbar';
+import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { baseurl } from '../../../../BaseURL/BaseURL';
+import { baseurl } from '../../../BaseURL/BaseURL';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 
-const MyAgents = () => {
+const Team = () => {
   const [agents, setAgents] = useState([]);
+  const [allAgents, setAllAgents] = useState([]); // Store all agents for filtering
   const [loading, setLoading] = useState(true);
+  const [sortBy, setSortBy] = useState('');
   const navigate = useNavigate();
   const referral_id = localStorage.getItem("referral_id");
 
@@ -47,7 +51,8 @@ const MyAgents = () => {
     const fetchAgents = async () => {
       try {
         const response = await axios.get(`${baseurl}/agents/referral-id/${referral_id}/`);
-        setAgents(response.data.active_agents);
+        setAllAgents(response.data.agents); // Store all agents
+        setAgents(response.data.agents); // Initially show all agents
       } catch (error) {
         console.error('Error fetching agents:', error);
       } finally {
@@ -58,13 +63,50 @@ const MyAgents = () => {
     fetchAgents();
   }, [referral_id]);
 
+  const handleSortChange = (event) => {
+    const value = event.target.value;
+    setSortBy(value);
+    
+    if (value === '') {
+      setAgents(allAgents); // Show all when no filter
+    } else {
+      const filtered = allAgents.filter(agent => 
+        value === 'active' ? agent.status === 'Active' : agent.status === 'Inactive'
+      );
+      setAgents(filtered);
+    }
+  };
+
   return (
     <>
       <PartnerHeader />
       <Container>
         <div style={{ textAlign: 'center', marginTop: "12%" }}>
-          <h2 style={{ fontWeight: 'bold' }}>Active Agents</h2>
+          <h2 style={{ fontWeight: 'bold' }}>Team</h2>
         </div>
+
+        {/* Sort By Dropdown */}
+        <Grid container justifyContent="flex-end" sx={{ mt: 2, mb: 2 }}>
+          <Grid item xs={12} md={3}>
+            <FormControl fullWidth>
+              <Select
+                value={sortBy}
+                onChange={handleSortChange}
+                displayEmpty
+                sx={{
+                  borderRadius: '8px',
+                  fontSize: '15px'
+                }}
+              >
+                <MenuItem value="">
+                  <em>All Agents</em>
+                </MenuItem>
+                <MenuItem value="active">Active</MenuItem>
+                <MenuItem value="inactive">Inactive</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
 
         {loading ? (
           <Box display="flex" justifyContent="center" mt={5}>
@@ -84,8 +126,8 @@ const MyAgents = () => {
             </TableHead>
             <TableBody>
               {agents.length > 0 ? (
-                agents.map((agent, index) => (
-                  <TableRow key={index}>
+                agents.map((agent) => (
+                  <TableRow key={agent.user_id}>
                     <TableCell sx={cellBodyStyle}>{agent.username}</TableCell>
                     <TableCell sx={cellBodyStyle}>{agent.email}</TableCell>
                     <TableCell sx={cellBodyStyle}>{agent.phone_number}</TableCell>
@@ -96,15 +138,9 @@ const MyAgents = () => {
                         <IconButton
                           size="small"
                           color="primary"
-                          onClick={() => navigate(`/p-view-activeagents/${agent.user_id}`)}
+                          onClick={() => navigate(`/p-view-teamdetails/${agent.user_id}`)}
                         >
                           <VisibilityIcon fontSize="small" />
-                        </IconButton>
-                        <IconButton size="small" color="primary">
-                          <EditIcon fontSize="small" />
-                        </IconButton>
-                        <IconButton size="small" color="error">
-                          <DeleteIcon fontSize="small" />
                         </IconButton>
                       </Box>
                     </TableCell>
@@ -113,7 +149,7 @@ const MyAgents = () => {
               ) : (
                 <TableRow>
                   <TableCell colSpan={6} sx={noDataStyle}>
-                    No active agents found
+                    No Team Data Found
                   </TableCell>
                 </TableRow>
               )}
@@ -125,4 +161,4 @@ const MyAgents = () => {
   );
 };
 
-export default MyAgents;
+export default Team;

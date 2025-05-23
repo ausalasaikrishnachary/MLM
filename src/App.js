@@ -70,6 +70,8 @@ import CommissionView from "./Components/Panel/Admin/Transactions/CommissionView
 import BookingSlab from "./Components/Panel/Admin/BookingSlab/BookingSlab";
 import AddBookingSlab from "./Components/Panel/Admin/BookingSlab/AddBookingSlab";
 import EditBookingSlab from "./Components/Panel/Admin/BookingSlab/EditBookingSlab";
+import Team from "./Components/Panel/Partner/MyTeam/Team";
+import ViewTeamDetails from "./Components/Panel/Partner/MyTeam/ViewTeamDetails";
 
 
 
@@ -146,6 +148,7 @@ function App() {
           <Route path="/p-latestassets" element={<LatestAssets />} />
           <Route path="/p-activeagents" element={<MyAgents />} />
           <Route path="/p-view-activeagents/:id" element={<ActiveUserView />} />
+          <Route path="/p-view-teamdetails/:id" element={<ViewTeamDetails />} />
           <Route path="/p-myassets/edit/:id" element={<EditMyAssets />} />
 
           <Route path="/p-bookingassets" element={<BookingAssets />} />
@@ -153,6 +156,7 @@ function App() {
           <Route path="/p-payment-form" element={<PaymentForm />} />
           <Route path="/p-transaction-details" element={<TransactionList />} />
           <Route path="/p-pay-commission/:propertyId" element={<PayCommissionForm />} />
+           <Route path="/p-team" element={<Team />} />
 
           <Route path="/" element={<Login />} />
 
