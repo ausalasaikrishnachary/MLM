@@ -18,7 +18,7 @@ import {
   CardMedia,
 
 } from '@mui/material';
-import { faHourglassHalf, faMoneyBillWave, faUserPlus, faTags,faUserCheck } from '@fortawesome/free-solid-svg-icons';
+import { faHourglassHalf, faMoneyBillWave, faUserPlus, faTags, faUserCheck } from '@fortawesome/free-solid-svg-icons';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -49,6 +49,7 @@ import {
 import { Call, Email } from "@mui/icons-material";
 import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
 import { baseurl } from '../../../BaseURL/BaseURL';
+import { useNavigate } from "react-router-dom";
 
 
 ChartJS.register(
@@ -64,8 +65,11 @@ const AgentDashboard = () => {
 
   const referralId = localStorage.getItem('referral_id');
   const [totalAgents, setTotalAgents] = useState(0); // ✨ new state
+  const [totalActiveAgents, setTotalActiveAgents] = useState(0); // ✨ new state
   const [counts, setCounts] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
 
   // Chart Data
   const chartData = {
@@ -96,10 +100,12 @@ const AgentDashboard = () => {
       axios.get(`${baseurl}/agents/referral-id/${referralId}/`)
         .then(response => {
           setTotalAgents(response.data.total_agents || 0); // ✨ set the real count
+          setTotalActiveAgents(response.data.total_active_agents || 0); // ✨ set the real count
         })
         .catch(error => {
           console.error('Error fetching total agents:', error);
           setTotalAgents(0); // fallback
+          setTotalActiveAgents(0);
         });
     }
   }, [referralId]);
@@ -147,6 +153,51 @@ const AgentDashboard = () => {
     },
   ];
 
+
+  const [properties, setProperties] = useState([]);
+
+useEffect(() => {
+  const fetchProperties = async () => {
+    const userId = localStorage.getItem("user_id");
+
+    try {
+      const response = await fetch(`${baseurl}/latest-properties/`);
+      const data = await response.json();
+
+      const filteredProperties = data.filter(
+        (property) => property.user_id?.toString() !== userId
+      );
+
+      const formatted = filteredProperties.map((property) => {
+        const imagePath = property.images?.[0]?.image;
+        const imageUrl = imagePath
+          ? `${baseurl}${imagePath}`
+          : "https://via.placeholder.com/400x200?text=No+Image";
+
+        return {
+          title: property.property_title || "No Title",
+          price: `₹${Number(property.total_property_value).toLocaleString()}`,
+          badges: [
+            property.status || "N/A",
+            property.approval_status || "N/A",
+            property.looking_to?.toUpperCase() || "N/A"
+          ],
+          img: imageUrl,
+        };
+      });
+
+      setProperties(formatted.slice(0, 2)); // Show only 2 latest properties
+    } catch (error) {
+      console.error("Error fetching properties:", error);
+    }
+  };
+
+  fetchProperties();
+}, []);
+
+
+
+
   return (
     <>
       <PartnerHeader />
@@ -162,8 +213,8 @@ const AgentDashboard = () => {
         <Grid container spacing={3} sx={{ mb: 3 }}>
           {[
             { title: 'Listing Properties', value: counts?.total_properties ?? 0, icon: faBuilding, path: '/p-assets' },
-            { title: 'Our Team', value: totalAgents.toString(), icon: faUsers, path: '/p-myteam' },
-            { title: 'Active Agents', value: counts?.total_active_users ?? 0, icon: faUserCheck, path: '/p-activeagents' },
+            { title: 'Team', value: totalAgents.toString(), icon: faUsers, path: '/p-myteam' },
+            { title: 'Active Agents', value: totalActiveAgents, icon: faUserCheck, path: '/p-activeagents' },
             { title: 'Latest Properties', value: counts?.total_latest_properties ?? 0, icon: faHome, path: '/p-latestassets' },
           ].map((metric, index) => (
             <Grid item xs={12} sm={6} md={3} key={index}>
@@ -191,7 +242,7 @@ const AgentDashboard = () => {
           {[
             { title: 'Pending Commission', value: '2850', icon: faHourglassHalf },
             { title: 'Commission Received', value: '40000', icon: faMoneyBillWave },
-            { title: 'Our Leads', value: '134', icon: faUserPlus },
+            { title: 'Leads', value: '134', icon: faUserPlus },
             { title: 'Offer', value: '20%', progress: 20, color: 'error', icon: faTags },
           ].map((metric, index) => (
             <Grid item xs={12} sm={6} md={3} key={index}>
@@ -274,12 +325,14 @@ const AgentDashboard = () => {
           <Grid item xs={12} md={6}>
             <Card>
               <CardContent sx={{ display: "flex", justifyContent: "space-between" }}>
-                <Typography >Latest Property Listings</Typography>
-                <Button variant="outlined" size="small">View All</Button>
+                <Typography>Latest Property Listings</Typography>
+               <Button variant="outlined" size="small" onClick={() => navigate('/p-latestassets')}>
+  View All
+</Button>
               </CardContent>
               <CardContent sx={{ p: 0 }}>
                 <Grid container spacing={2} justifyContent="center">
-                  {propertyListings.map((property, index) => (
+                  {properties.map((property, index) => (
                     <Grid item xs={12} sm={6} key={index}>
                       <Card sx={{ m: 1 }}>
                         <CardMedia
@@ -289,7 +342,7 @@ const AgentDashboard = () => {
                           alt={property.title}
                         />
                         <CardContent>
-                          <Typography >{property.title}</Typography>
+                          <Typography>{property.title}</Typography>
                           <Typography variant="body2" color="text.secondary">
                             {property.price}
                           </Typography>
@@ -313,18 +366,18 @@ const AgentDashboard = () => {
             </Card>
           </Grid>
 
-          {/* Active Inquiries */}
+          {/* Active Inquiries (unchanged) */}
           <Grid item xs={12} md={6}>
             <Card>
               <CardContent sx={{ display: "flex", justifyContent: "space-between" }}>
-                <Typography >Active Inquiries</Typography>
+                <Typography>Active Inquiries</Typography>
                 <Button variant="outlined" size="small">View All</Button>
               </CardContent>
               <CardContent>
                 {inquiries.map((inquiry, index) => (
                   <Box key={index} p={2} sx={{ bgcolor: "background.default", borderRadius: 2, mb: 2 }}>
                     <Box display="flex" justifyContent="space-between">
-                      <Typography >{inquiry.name}</Typography>
+                      <Typography>{inquiry.name}</Typography>
                       <Badge
                         badgeContent={inquiry.status}
                         color={inquiry.status === "New" ? "warning" : "info"}
@@ -346,6 +399,7 @@ const AgentDashboard = () => {
             </Card>
           </Grid>
         </Grid>
+
 
 
         <Box mt={4}>

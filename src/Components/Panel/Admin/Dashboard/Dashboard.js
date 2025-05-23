@@ -1,4 +1,6 @@
 import React from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import { Box, Grid, Card, Typography, Stack } from "@mui/material";
 import { ArrowUpward, Business, People } from "@mui/icons-material";
 import './Dashboard.css'
@@ -39,12 +41,12 @@ import Header from "../../../Shared/Navbar/Navbar";
 
 
 
-const metrics = [
-  { value: "384", label: "Total Properties", icon: <Business />, growth: "12% from last month" },
-  { value: "76", label: "Total Agents", icon: <People />, growth: "8% from last month" },
-  { value: "₹8.6M", label: "Total Commission", icon: <CurrencyRupee />, growth: "15% from last month" },
-  { value: "43", label: "New Properties", icon: <Home />, growth: "7% from last week" },
-];
+// const metrics = [
+//   { value: "384", label: "Total Properties", icon: <Business />, growth: "12% from last month" },
+//   { value: "76", label: "Total Agents", icon: <People />, growth: "8% from last month" },
+//   { value: "₹8.6M", label: "Total Commission", icon: <CurrencyRupee />, growth: "15% from last month" },
+//   { value: "43", label: "New Properties", icon: <Home />, growth: "7% from last week" },
+// ];
 
 const properties = [
   { id: "PRO-2501", name: "Luxury Villa", location: "Bandra West, Mumbai", price: "₹3.2Cr", listedBy: "Rahul Mehta", status: "Active" },
@@ -107,6 +109,45 @@ const AdminDashboard = () => {
 
 
   const theme = useTheme();
+
+  const [counts, setCounts] = useState(null);
+
+  useEffect(() => {
+    axios.get("https://rahul30.pythonanywhere.com/counts/")
+      .then((response) => {
+        setCounts(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching counts:", error);
+      });
+  }, []);
+
+  const metrics = counts ? [
+    {
+      value: counts.total_properties,
+      label: "Total Properties",
+      icon: <Business />,
+
+    },
+    {
+      value: counts.total_active_users,
+      label: "Total Active Users",
+      icon: <People />,
+
+    },
+    {
+      value: counts.total_inactive_users,
+      label: "Total InActive Users",
+       icon: <People />,
+
+    },
+    {
+      value: counts.total_latest_properties,
+      label: "New Properties",
+      icon: <Home />,
+
+    },
+  ] : [];
 
   // Chart Data
   const chartData = {
@@ -249,34 +290,32 @@ const AdminDashboard = () => {
      
       {/* Metrics Cards */}
       <Grid container spacing={3}>
-        {metrics.map((metric, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index}>
-            <Card
-              sx={{
-                textAlign: "center",
-                p: 3,
-                borderRadius: 2,
-                boxShadow: 2,
-                transition: "0.3s",
-                "&:hover": { transform: "translateY(-5px)", boxShadow: 3 },
-              }}
-            >
-              <Stack alignItems="center" spacing={1}>
-                <Box sx={{ fontSize: 40, color: "#3498db" }}>{metric.icon}</Box>
-                <Typography variant="h4" fontWeight={700} color="text.primary">
-                  {metric.value}
-                </Typography>
-                <Typography variant="body2" color="text.secondary" fontWeight={500}>
-                  {metric.label}
-                </Typography>
-                <Typography variant="caption" sx={{ display: "flex", alignItems: "center", color: "#27ae60" }}>
-                  <ArrowUpward fontSize="small" sx={{ mr: 0.5 }} /> {metric.growth}
-                </Typography>
-              </Stack>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+      {metrics.map((metric, index) => (
+        <Grid item xs={12} sm={6} md={3} key={index}>
+          <Card
+            sx={{
+              textAlign: "center",
+              p: 3,
+              borderRadius: 2,
+              boxShadow: 2,
+              transition: "0.3s",
+              "&:hover": { transform: "translateY(-5px)", boxShadow: 3 },
+            }}
+          >
+            <Stack alignItems="center" spacing={1}>
+              <Box sx={{ fontSize: 40, color: "#3498db" }}>{metric.icon}</Box>
+              <Typography variant="h4" fontWeight={700} color="text.primary">
+                {metric.value}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" fontWeight={500}>
+                {metric.label}
+              </Typography>
+
+            </Stack>
+          </Card>
+        </Grid>
+      ))}
+    </Grid>
 
       <Container maxWidth="xl" sx={{ py: 4 }}>
       <Grid container spacing={3}>

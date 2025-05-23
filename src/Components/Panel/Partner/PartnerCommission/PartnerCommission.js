@@ -19,7 +19,7 @@ useEffect(() => {
     axios.get(`${baseurl}/properties/user-id/${userId}/`)
         .then((response) => {
             // Filter properties where status is 'sold'
-            const soldProperties = response.data.filter(property => property.status === 'Sold');
+            const soldProperties = response.data.filter(property => property.status === 'sold');
             setPropertyData(soldProperties);
             setLoading(false);
         })
@@ -49,7 +49,7 @@ useEffect(() => {
                         <TableCell sx={cellStyle}>Property Value</TableCell>
                         <TableCell sx={cellStyle}>Property Status</TableCell>
                         <TableCell sx={cellStyle}>Agent Commission</TableCell>
-                        <TableCell sx={cellStyle}>Paid Commission</TableCell>
+                        <TableCell sx={cellStyle}>Recived Commission</TableCell>
                         <TableCell sx={cellStyle}>Balance Commission</TableCell>
                         {/* <TableCell sx={cellStyle}>Commission Status</TableCell> */}
                         {/* <TableCell sx={cellStyle}>Action</TableCell> */}

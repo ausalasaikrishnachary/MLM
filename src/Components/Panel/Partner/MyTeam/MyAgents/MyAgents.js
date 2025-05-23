@@ -26,26 +26,47 @@ const MyAgents = () => {
     const [agents, setAgents] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+        const referral_id = localStorage.getItem("referral_id");
 
 
     useEffect(() => {
-        const fetchAgents = async () => {
-            try {
-                const response = await axios.get(`${baseurl}/users/role/Agent/`);
+    const fetchAgents = async () => {
+        try {
+            const response = await axios.get(`${baseurl}/agents/referral-id/${referral_id}/`);
 
-                // Filter only agents with status "Active"
-                const activeAgents = response.data.filter(agent => agent.status === "Active");
+            // Access the active_agents array from the response
+            const activeAgents = response.data.active_agents;
 
-                setAgents(activeAgents);
-            } catch (error) {
-                console.error('Error fetching agents:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
+            setAgents(activeAgents);
+        } catch (error) {
+            console.error('Error fetching agents:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-        fetchAgents();
-    }, []);
+    fetchAgents();
+}, []);
+
+
+    // useEffect(() => {
+    //     const fetchAgents = async () => {
+    //         try {
+    //             const response = await axios.get(`${baseurl}/users/role/Agent/`);
+
+    //             // Filter only agents with status "Active"
+    //             const activeAgents = response.data.filter(agent => agent.status === "Active");
+
+    //             setAgents(activeAgents);
+    //         } catch (error) {
+    //             console.error('Error fetching agents:', error);
+    //         } finally {
+    //             setLoading(false);
+    //         }
+    //     };
+
+    //     fetchAgents();
+    // }, []);
 
 
     return (
@@ -54,7 +75,7 @@ const MyAgents = () => {
             <Container maxWidth="lg" sx={{ pt: 4 }}>
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
                     <Typography variant="h5" fontWeight="bold">
-                        My Agents
+                        Active Agents
                     </Typography>
                 </Box>
 

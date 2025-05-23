@@ -44,7 +44,7 @@ function PartnerPlans() {
   useEffect(() => {
     const fetchUserSubscription = async () => {
       try {
-        const res = await fetch(`${baseurl}/user-subscriptions/${userId}/`);
+        const res = await fetch(`${baseurl}/user-subscriptions/user-id/${userId}/`);
         if (res.ok) {
           const subscription = await res.json();
           if (subscription.subscription_status === "paid") {
