@@ -72,21 +72,22 @@ const AgentDashboard = () => {
 
 
   // Chart Data
-  const chartData = {
-    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    datasets: [
-      {
-        label: 'New Properties',
-        data: [4, 3, 5, 7, 6, 3, 2],
-        backgroundColor: 'rgba(0, 123, 255, 0.6)',
-      },
-      {
-        label: 'Existing Properties',
-        data: [124, 128, 132, 139, 145, 148, 150],
-        backgroundColor: 'rgba(40, 167, 69, 0.6)',
-      },
-    ],
-  };
+  // const chartData = {
+  //   labels: ['Apartment', 'Villa', 'Plot', 'Office', 'Shop', 'Warehouse', 'Studio'],
+  //   datasets: [
+  //     {
+  //       label: 'Latest Properties',
+  //       data: [4, 3, 5, 7, 6, 3, 2],
+  //       backgroundColor: 'rgba(0, 123, 255, 0.6)',
+  //     },
+  //     {
+  //       label: 'Listing Properties',
+  //       data: [124, 128, 132, 139, 145, 148, 150],
+  //       backgroundColor: 'rgba(40, 167, 69, 0.6)',
+  //     },
+  //   ],
+  // };
+
 
   const tools = [
     { icon: <CurrencyRupee color="primary" fontSize="large" />, title: "Commission Calculator", description: "Calculate your earnings" },
@@ -123,6 +124,36 @@ const AgentDashboard = () => {
       });
   }, []);
 
+  const [chartData, setChartData] = useState(null);
+
+  useEffect(() => {
+    fetch('https://rahul30.pythonanywhere.com/property-stats/')
+      .then(res => res.json())
+      .then(data => {
+        const labels = Object.keys(data); // ['Residential', 'Commercial']
+        const latestCounts = labels.map(key => data[key].latest_count);
+        const listingCounts = labels.map(key => data[key].listing_count);
+
+        setChartData({
+          labels,
+          datasets: [
+            {
+              label: 'Latest Properties',
+              data: latestCounts,
+              backgroundColor: 'rgba(0, 123, 255, 0.6)',
+            },
+            {
+              label: 'Listing Properties',
+              data: listingCounts,
+              backgroundColor: 'rgba(40, 167, 69, 0.6)',
+            }
+          ],
+        });
+      })
+      .catch(err => console.error('Error fetching property stats:', err));
+  }, []);
+
+
   const propertyListings = [
     {
       title: "Modern Apartment",
@@ -156,44 +187,44 @@ const AgentDashboard = () => {
 
   const [properties, setProperties] = useState([]);
 
-useEffect(() => {
-  const fetchProperties = async () => {
-    const userId = localStorage.getItem("user_id");
+  useEffect(() => {
+    const fetchProperties = async () => {
+      const userId = localStorage.getItem("user_id");
 
-    try {
-      const response = await fetch(`${baseurl}/latest-properties/`);
-      const data = await response.json();
+      try {
+        const response = await fetch(`${baseurl}/latest-properties/`);
+        const data = await response.json();
 
-      const filteredProperties = data.filter(
-        (property) => property.user_id?.toString() !== userId
-      );
+        const filteredProperties = data.filter(
+          (property) => property.user_id?.toString() !== userId
+        );
 
-      const formatted = filteredProperties.map((property) => {
-        const imagePath = property.images?.[0]?.image;
-        const imageUrl = imagePath
-          ? `${baseurl}${imagePath}`
-          : "https://via.placeholder.com/400x200?text=No+Image";
+        const formatted = filteredProperties.map((property) => {
+          const imagePath = property.images?.[0]?.image;
+          const imageUrl = imagePath
+            ? `${baseurl}${imagePath}`
+            : "https://via.placeholder.com/400x200?text=No+Image";
 
-        return {
-          title: property.property_title || "No Title",
-          price: `₹${Number(property.total_property_value).toLocaleString()}`,
-          badges: [
-            property.status || "N/A",
-            property.approval_status || "N/A",
-            property.looking_to?.toUpperCase() || "N/A"
-          ],
-          img: imageUrl,
-        };
-      });
+          return {
+            title: property.property_title || "No Title",
+            price: `₹${Number(property.total_property_value).toLocaleString()}`,
+            badges: [
+              property.status || "N/A",
+              property.approval_status || "N/A",
+              property.looking_to?.toUpperCase() || "N/A"
+            ],
+            img: imageUrl,
+          };
+        });
 
-      setProperties(formatted.slice(0, 2)); // Show only 2 latest properties
-    } catch (error) {
-      console.error("Error fetching properties:", error);
-    }
-  };
+        setProperties(formatted.slice(0, 2)); // Show only 2 latest properties
+      } catch (error) {
+        console.error("Error fetching properties:", error);
+      }
+    };
 
-  fetchProperties();
-}, []);
+    fetchProperties();
+  }, []);
 
 
 
@@ -265,11 +296,10 @@ useEffect(() => {
           ))}
         </Grid>
 
-        {/* Chart & Stats Section */}
         <Grid container spacing={3} sx={{ mb: 3 }}>
-          <Grid item xs={12} lg={8}>
+          <Grid item xs={12} lg={6}>
             <Card sx={{ boxShadow: 3 }}>
-              <CardHeader
+              {/* <CardHeader
                 title="Property Statistics"
                 action={
                   <>
@@ -277,58 +307,34 @@ useEffect(() => {
                     <Button variant="contained" size="small">Weekly</Button>
                   </>
                 }
-              />
-              <CardContent sx={{ height: 300 }}>
-                <Bar
-                  data={chartData}
-                  options={{
-                    responsive: true,
-                    maintainAspectRatio: false
-                  }}
-                />
+              /> */}
+              <CardContent sx={{ height: 335 }}>
+                {chartData ? (
+                  <Bar
+                    data={chartData}
+                    options={{
+                      responsive: true,
+                      maintainAspectRatio: false,
+                      plugins: {
+                        legend: {
+                          position: 'top',
+                        },
+                      },
+                    }}
+                  />
+                ) : (
+                  <div>Loading chart...</div>
+                )}
               </CardContent>
             </Card>
           </Grid>
-
-          <Grid item xs={12} lg={4}>
-            <Card sx={{ boxShadow: 3 }}>
-              <CardHeader title="Property Statistics" />
-              <CardContent>
-                <Grid container spacing={2}>
-                  {[
-                    { title: "Today's New", value: 5 },
-                    { title: "Weekly New", value: 28 },
-                    { title: "Today's Viewings", value: 12 },
-                    { title: "Weekly Viewings", value: 64 },
-                    { title: "Today's Inquiries", value: 8 },
-                    { title: "Weekly Inquiries", value: 47 },
-                  ].map((stat, index) => (
-                    <Grid item xs={6} key={index}>
-                      <Card variant="outlined">
-                        <CardContent>
-                          <Typography variant="body2">{stat.title}</Typography>
-                          <Typography >{stat.value}</Typography>
-                        </CardContent>
-                      </Card>
-                    </Grid>
-
-                  ))}
-                </Grid>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-
-
-        <Grid container spacing={4} mt={4}>
-          {/* Latest Property Listings */}
           <Grid item xs={12} md={6}>
             <Card>
               <CardContent sx={{ display: "flex", justifyContent: "space-between" }}>
                 <Typography>Latest Property Listings</Typography>
-               <Button variant="outlined" size="small" onClick={() => navigate('/p-latestassets')}>
-  View All
-</Button>
+                <Button variant="outlined" size="small" onClick={() => navigate('/p-latestassets')}>
+                  View All
+                </Button>
               </CardContent>
               <CardContent sx={{ p: 0 }}>
                 <Grid container spacing={2} justifyContent="center">
@@ -365,9 +371,57 @@ useEffect(() => {
               </CardContent>
             </Card>
           </Grid>
+        </Grid>
+
+
+        <Grid container spacing={4} mt={4}>
+          {/* Latest Property Listings */}
+          {/* <Grid item xs={12} md={6}>
+            <Card>
+              <CardContent sx={{ display: "flex", justifyContent: "space-between" }}>
+                <Typography>Latest Property Listings</Typography>
+                <Button variant="outlined" size="small" onClick={() => navigate('/p-latestassets')}>
+                  View All
+                </Button>
+              </CardContent>
+              <CardContent sx={{ p: 0 }}>
+                <Grid container spacing={2} justifyContent="center">
+                  {properties.map((property, index) => (
+                    <Grid item xs={12} sm={6} key={index}>
+                      <Card sx={{ m: 1 }}>
+                        <CardMedia
+                          component="img"
+                          height="160"
+                          image={property.img}
+                          alt={property.title}
+                        />
+                        <CardContent>
+                          <Typography>{property.title}</Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {property.price}
+                          </Typography>
+                          <Box mt={1}>
+                            {property.badges.map((badge, i) => (
+                              <Chip
+                                key={i}
+                                label={badge}
+                                color={i === 0 ? "success" : "info"}
+                                size="small"
+                                sx={{ mr: 0.5 }}
+                              />
+                            ))}
+                          </Box>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid>
+              </CardContent>
+            </Card>
+          </Grid> */}
 
           {/* Active Inquiries (unchanged) */}
-          <Grid item xs={12} md={6}>
+          {/* <Grid item xs={12} md={6}>
             <Card>
               <CardContent sx={{ display: "flex", justifyContent: "space-between" }}>
                 <Typography>Active Inquiries</Typography>
@@ -397,12 +451,12 @@ useEffect(() => {
                 ))}
               </CardContent>
             </Card>
-          </Grid>
+          </Grid> */}
         </Grid>
 
 
 
-        <Box mt={4}>
+        {/* <Box mt={4}>
           <Card>
             <CardContent>
               <Typography gutterBottom>
@@ -425,7 +479,7 @@ useEffect(() => {
               </Grid>
             </CardContent>
           </Card>
-        </Box>
+        </Box> */}
 
         {/* Social Links */}
         <Box sx={{
