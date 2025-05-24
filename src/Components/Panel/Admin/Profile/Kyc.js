@@ -382,7 +382,7 @@ import {
   InputLabel,
   Alert
 } from "@mui/material";
-import PartnerHeader from "../../../Shared/Partner/PartnerNavbar";
+import Header from "../../../Shared/Navbar/Navbar";
 import { useNavigate } from 'react-router-dom';
 
 
@@ -520,7 +520,7 @@ const handleAadharCardUpload = (event) => {
 
   return (
     <>
-      <PartnerHeader />
+      <Header />
       <Container maxWidth="xl" sx={{ padding: 3 }}>
         <Typography variant="h4" gutterBottom textAlign="center">
           KYC Registration

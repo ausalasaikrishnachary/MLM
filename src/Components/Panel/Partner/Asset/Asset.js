@@ -54,7 +54,7 @@ const AssetsUI = () => {
 
   useEffect(() => {
     if (userId) {
-      axios.get(`${baseurl}/user-subscriptions/${userId}/`)
+      axios.get(`${baseurl}/user-subscriptions/user-id/${userId}/`)
         .then(response => {
           if (response.data.subscription_status === "paid") {
             setSubscriptionPaid(true);

@@ -88,7 +88,7 @@ function BookingAssets() {
       .then(() => {
         return axios.put(`https://rahul30.pythonanywhere.com/property/${propertyId}/`, {
           status: 'booked',
-          mediator_referral_id: selectedReferralId || " " // send blank if not selected
+          // mediator_referral_id: selectedReferralId || " " 
         });
       })
       .then(() => {
@@ -140,7 +140,7 @@ function BookingAssets() {
                 />
 
               </Grid>
-              <Grid item xs={12} lg={4}>
+              {/* <Grid item xs={12} lg={4}>
                 <FormControl fullWidth>
                   <InputLabel>Mediator Referral ID</InputLabel>
                   <Select
@@ -155,7 +155,7 @@ function BookingAssets() {
                     ))}
                   </Select>
                 </FormControl>
-              </Grid>
+              </Grid> */}
             </Grid>
             <Button
               variant="contained"
