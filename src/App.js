@@ -72,6 +72,8 @@ import AddBookingSlab from "./Components/Panel/Admin/BookingSlab/AddBookingSlab"
 import EditBookingSlab from "./Components/Panel/Admin/BookingSlab/EditBookingSlab";
 import Team from "./Components/Panel/Partner/MyTeam/Team";
 import ViewTeamDetails from "./Components/Panel/Partner/MyTeam/ViewTeamDetails";
+import Meetings from "./Components/Panel/Partner/Meetings/Meetings";
+import MeetingRequestForm from "./Components/Panel/Partner/Meetings/MeetingRequestForm";
 
 
 
@@ -157,6 +159,8 @@ function App() {
           <Route path="/p-transaction-details" element={<TransactionList />} />
           <Route path="/p-pay-commission/:propertyId" element={<PayCommissionForm />} />
            <Route path="/p-team" element={<Team />} />
+           <Route path="/p-meetings" element={<Meetings />} />
+           <Route path="/p-meetingrequest" element={<MeetingRequestForm />} />
 
           <Route path="/" element={<Login />} />
 

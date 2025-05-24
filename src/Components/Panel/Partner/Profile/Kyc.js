@@ -150,7 +150,7 @@ const handleAadharCardUpload = (event) => {
   return (
     <>
       <PartnerHeader />
-      <Container maxWidth="xl" sx={{ padding: 3 }}>
+      <Container maxWidth="lg" sx={{ p: 4 }}>
         <Typography variant="h4" gutterBottom textAlign="center">
           KYC Registration
         </Typography>

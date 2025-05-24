@@ -43,6 +43,7 @@ export default function PartnerHeader() {
     //   ],
     // },
     { label: 'My Team', path: '/p-myteam' },
+    { label: 'Meetings', path: '/p-meetings' },
     // { label: 'Report', path: '/p-report' },
     // { label: 'Commission', path: '/p-commission' },
     // { label: 'Plans', path: '/p-plans' },
@@ -55,6 +56,7 @@ export default function PartnerHeader() {
       ]
     },
   ]; 
+
 
   // Responsive helper.
   const theme = useTheme();
