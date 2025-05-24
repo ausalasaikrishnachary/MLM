@@ -45,6 +45,7 @@ export default function PartnerHeader() {
     // { label: 'Report', path: '/p-report' },
     { label: 'Commission', path: '/p-commission' },
     { label: 'Plans', path: '/p-plans' },
+    { label: 'Meetings', path: '/p-meetings' },
   ];
 
   // Responsive helper.
