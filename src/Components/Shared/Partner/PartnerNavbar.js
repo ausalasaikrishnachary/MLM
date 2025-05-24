@@ -24,6 +24,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 export default function PartnerHeader() {
   // Define nav items with navigation paths.
@@ -32,7 +33,7 @@ export default function PartnerHeader() {
     { label: 'Dashboard', path: '/p-dashboard' },
     { label: 'My Properties', path: '/p-myassets' },
     { label: 'Properties', path: '/p-assets' },
-    { label: 'Transaction', path: '/p-transaction' },
+    // { label: 'Transaction', path: '/p-transaction' },
     // {
     //   label: 'Transactions', path:"/p-transactions",
     //   path: '/p-transactions',
@@ -43,9 +44,17 @@ export default function PartnerHeader() {
     // },
     { label: 'My Team', path: '/p-myteam' },
     // { label: 'Report', path: '/p-report' },
-    { label: 'Commission', path: '/p-commission' },
-    { label: 'Plans', path: '/p-plans' },
-  ];
+    // { label: 'Commission', path: '/p-commission' },
+    // { label: 'Plans', path: '/p-plans' },
+    { 
+      label: 'Operations', 
+      subItems: [
+        { label: 'Transaction', path: '/p-transaction' },
+        { label: 'Commission', path: '/p-commission' },
+        { label: 'Plans', path: '/p-plans' },
+      ]
+    },
+  ]; 
 
   // Responsive helper.
   const theme = useTheme();
@@ -59,6 +68,20 @@ export default function PartnerHeader() {
 
   // State for mobile drawer.
   const [mobileOpen, setMobileOpen] = useState(false);
+   // State for Operations dropdown menu
+    const [operationsAnchorEl, setOperationsAnchorEl] = useState(null);
+    const operationsMenuOpen = Boolean(operationsAnchorEl);
+    const handleOperationsClick = (event) => {
+      setOperationsAnchorEl(event.currentTarget);
+    };
+    const handleOperationsMenuClose = () => {
+      setOperationsAnchorEl(null);
+    };
+  
+    // Check if any sub-item is active for highlighting the Operations button
+    const isOperationsActive = navItems
+      .find(item => item.label === 'Operations')
+      ?.subItems.some(subItem => location.pathname === subItem.path);
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
   };
@@ -194,24 +217,38 @@ export default function PartnerHeader() {
               </Typography>
 
               {/* Center: Nav Items */}
-              <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', gap: 3 }}>
+               <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', gap: 3 }}>
                 {navItems.map((item) => (
-                  <Button
-                    key={item.label}
-                    onClick={() => navigate(item.path)}
-                    sx={{
-                      color: location.pathname === item.path ? 'blue' : '#000',
-                      fontWeight: 'bold',
-                      textTransform: 'none',
-                      fontSize: "16px"
-
-                    }}
-                  >
-                    {item.label}
-                  </Button>
+                  item.path ? (
+                    <Button
+                      key={item.label}
+                      onClick={() => navigate(item.path)}
+                      sx={{
+                        color: location.pathname === item.path ? 'blue' : '#000',
+                        fontWeight: 'bold',
+                        textTransform: 'none',
+                        fontSize: "16px"
+                      }}
+                    >
+                      {item.label}
+                    </Button>
+                  ) : (
+                    <Button
+                      key={item.label}
+                      onClick={handleOperationsClick}
+                      endIcon={<ArrowDropDownIcon />}
+                      sx={{
+                        color: isOperationsActive ? 'blue' : '#000', 
+                        fontWeight: 'bold',
+                        textTransform: 'none',
+                        fontSize: "16px"
+                      }}
+                    >
+                      {item.label}
+                    </Button>
+                  )
                 ))}
               </Box>
-
               {/* Right: Notification, Username, Profile Avatar */}
               <IconButton sx={{ color: '#000' }}>
                 <NotificationsNoneIcon />
@@ -240,10 +277,35 @@ export default function PartnerHeader() {
         </Drawer>
       </AppBar>
 
+ {/* Operations Dropdown Menu */}
+      <Menu
+        anchorEl={operationsAnchorEl}
+        open={operationsMenuOpen}
+        onClose={handleOperationsMenuClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        {navItems.find(item => item.label === 'Operations')?.subItems.map((subItem) => (
+          <MenuItem
+            key={subItem.label}
+            onClick={() => {
+              handleOperationsMenuClose();
+              navigate(subItem.path);
+            }}
+            sx={{
+              fontWeight: 'bold',
+              color: location.pathname === subItem.path ? 'blue' : 'inherit',
+              fontSize: "16px"
+            }}
+          >
+            {subItem.label}
+          </MenuItem>
+        ))}
+      </Menu>
       {/* Profile Avatar Dropdown Menu */}
       <Menu
         anchorEl={profileAnchorEl}
-        open={profileMenuOpen}
+        open={profileMenuOpen} 
         onClose={handleProfileMenuClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}

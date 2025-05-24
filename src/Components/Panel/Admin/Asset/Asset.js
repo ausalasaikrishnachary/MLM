@@ -444,26 +444,28 @@ const AssetsUI = () => {
                           </Box>
                         </>
                       )}
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          top: 15,
-                          right: -30,
-                          width: '150px',
-                          transform: 'rotate(45deg)',
-                          backgroundColor: "red",
-                          color: 'white',
-                          textAlign: 'center',
-                          fontSize: '12px',
-                          fontWeight: 'bold',
-                          textTransform: 'uppercase',
-                          py: '4px',
-                          boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-                        }}
-                      >
-                        {property.looking_to === 'sell' ? 'Sell' : 'Rent'}
-                      </Box>
-                      <Box
+                     {property.status !== 'sold' && (
+  <Box
+    sx={{
+      position: 'absolute',
+      top: 15,
+      right: -30,
+      width: '150px',
+      transform: 'rotate(45deg)',
+      backgroundColor: "red",
+      color: 'white',
+      textAlign: 'center',
+      fontSize: '12px',
+      fontWeight: 'bold',
+      textTransform: 'uppercase',
+      py: '4px',
+      boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+    }}
+  >
+    {property.looking_to === 'sell' ? 'Sell' : 'Rent'}
+  </Box>
+)}
+    <Box
                         sx={{
                           position: 'absolute',
                           top: 15,

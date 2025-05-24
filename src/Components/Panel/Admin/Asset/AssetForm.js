@@ -104,7 +104,7 @@ const AddPropertyForm = () => {
     company_commission: "",
     agent_commission_paid: "",
     agent_commission_balance: "",
-    Total_property_value: "",
+    total_property_value: "",
   });
 
   useEffect(() => {
@@ -226,13 +226,26 @@ const AddPropertyForm = () => {
 
 
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+const handleChange = (e) => {
+  const { name, value, type, checked } = e.target;
+  const newValue = type === 'checkbox' ? checked : value;
+
+  setFormData(prev => {
+    const updated = {
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
-  };
+      [name]: newValue
+    };
+
+    // Parse numbers safely
+    const price = parseFloat(name === 'price' ? newValue : updated.price) || 0;
+    const commission = parseFloat(name === 'company_commission' ? newValue : updated.company_commission) || 0;
+
+    updated.total_property_value = price + commission;
+
+    return updated;
+  });
+};
+
 
   const handleFileUpload = async (e, type) => {
     const files = e.target.files;
@@ -327,7 +340,7 @@ const AddPropertyForm = () => {
         company_commission: formData.company_commission,
         agent_commission_paid: formData.agent_commission_paid,
         agent_commission_balance: formData.agent_commission_balance,
-        Total_property_value: Number(formData.price) + Number(formData.company_commission),
+        total_property_value: Number(formData.price) + Number(formData.company_commission),
       };
 
       // Log the payload for debugging
@@ -1023,29 +1036,7 @@ const AddPropertyForm = () => {
             />
           </Grid>
 
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Total Property Value"
-              name="total_property_value"
-              type="number"
-              value={formData.total_property_value}
-              onChange={handleChange}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Agent Commission"
-              name="agent_commission"
-              type="number"
-              value={formData.agent_commission}
-              onChange={handleChange}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
+           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label="Company Commission"
@@ -1056,7 +1047,33 @@ const AddPropertyForm = () => {
             />
           </Grid>
 
+
+          {/* <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Agent Commission"
+              name="agent_commission"
+              type="number"
+              value={formData.agent_commission}
+              onChange={handleChange}
+            />
+          </Grid> */}
+
+         
           <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Total Property Value"
+              name="total_property_value"
+              type="number"
+              value={formData.total_property_value}
+               InputProps={{
+    readOnly: true,
+  }}
+            />
+          </Grid>
+
+          {/* <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label="Agent Commission Paid"
@@ -1065,9 +1082,9 @@ const AddPropertyForm = () => {
               value={formData.agent_commission_paid}
               onChange={handleChange}
             />
-          </Grid>
+          </Grid> */}
 
-          <Grid item xs={12} sm={6}>
+          {/* <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label="Agent Commission Balance"
@@ -1076,7 +1093,7 @@ const AddPropertyForm = () => {
               value={formData.agent_commission_balance}
               onChange={handleChange}
             />
-          </Grid>
+          </Grid> */}
 
           <Grid item xs={12} sm={6}>
             <TextField

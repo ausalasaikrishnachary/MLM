@@ -35,7 +35,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 const PartnerMyAssets = () => {
   const [sortBy, setSortBy] = useState('');
-  const [properties, setProperties] = useState([]);
+  const [properties, setProperties] = useState([]); 
   const [filteredProperties, setFilteredProperties] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProperty, setSelectedProperty] = useState(null);
@@ -422,6 +422,7 @@ const PartnerMyAssets = () => {
                           </Box>
                         </>
                       )}
+                        {property.status !== 'sold' && (
                       <Box
                         sx={{
                           position: 'absolute',
@@ -441,6 +442,7 @@ const PartnerMyAssets = () => {
                       >
                         {property.looking_to === 'sell' ? 'Sell' : 'Rent'}
                       </Box>
+                      )}
                       <Box
                         sx={{
                           position: 'absolute',

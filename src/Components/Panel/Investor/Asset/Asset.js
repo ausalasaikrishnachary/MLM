@@ -37,7 +37,7 @@ import VideocamIcon from '@mui/icons-material/Videocam';
 
 
 const AssetsUI = () => {
-  const [sortBy, setSortBy] = useState('');
+  const [sortBy, setSortBy] = useState(''); 
   const [properties, setProperties] = useState([]);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
@@ -418,6 +418,7 @@ const AssetsUI = () => {
                           </Box>
                         </>
                       )}
+                        {property.status !== 'sold' && (
                       <Box
                         sx={{
                           position: 'absolute',
@@ -435,9 +436,34 @@ const AssetsUI = () => {
                           boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
                         }}
                       >
-                        {property.looking_to === 'sell' ? 'For Sell' : 'For Rent'}
+                        {property.looking_to === 'sell' ? 'Sell' : 'Rent'}
                       </Box>
-                    </Box>
+                      )}
+                      <Box
+                                              sx={{
+                                                position: 'absolute',
+                                                top: 15,
+                                                left: -30,
+                                                width: '150px',
+                                                transform: 'rotate(-45deg)',
+                                                backgroundColor:
+                                                  property.status === 'available'
+                                                    ? '#2ECC71'
+                                                    : property.status === 'booked'
+                                                      ? '#E67E22'
+                                                      : '#E74C3C',
+                                                color: 'white',
+                                                textAlign: 'center',
+                                                fontSize: '12px',
+                                                fontWeight: 'bold',
+                                                textTransform: 'uppercase',
+                                                py: '4px',
+                                                boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+                                              }}
+                                            >
+                                              {property.status}
+                                            </Box>
+                                          </Box>
                     <CardContent>
                       <Typography fontWeight="bold" mb={1}>
                         {property.property_title}
@@ -495,73 +521,77 @@ const AssetsUI = () => {
                           mb: 2
                         }}
                       >
-                        <Grid container>
-                          <Grid item xs={6}>
-                            <Typography variant="body2" color="text.secondary">
-                              {subscriptionPaid ? "Owner Email" : "Office Email"}
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={6}>
-                            <Typography
-                              variant="body2"
-                              fontWeight="bold"
-                              color="#4A90E2"
-                              align="right"
-                              display="flex"
-                              justifyContent="flex-end"
-                              alignItems="center"
-                              gap={1}
-                            >
-                              <EmailIcon fontSize="small" />
-                              {subscriptionPaid ? property.owner_email : "sriraj@gmail.com"}
-                            </Typography>
-                          </Grid>
+                       <Grid container>
+  {property.referral_id === null ? (
+    <>
+      <Grid item xs={6}>
+        <Typography variant="body2" color="text.secondary">
+          {subscriptionPaid ? "Owner Email" : "Office Email"}
+        </Typography>
+      </Grid>
+      <Grid item xs={6}>
+        <Typography
+          variant="body2"
+          fontWeight="bold"
+          color="#4A90E2"
+          align="right"
+          display="flex"
+          justifyContent="flex-end"
+          alignItems="center"
+          gap={1}
+        >
+          <EmailIcon fontSize="small" />
+          {subscriptionPaid ? property.owner_email : "sriraj@gmail.com"}
+        </Typography>
+      </Grid>
 
-                          <Grid item xs={6}>
-                            <Typography variant="body2" color="text.secondary">
-                              {subscriptionPaid ? "Owner Contact" : "Office Contact"}
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={6}>
-                            <Typography
-                              variant="body2"
-                              fontWeight="bold"
-                              color="text.secondary"
-                              align="right"
-                              display="flex"
-                              justifyContent="flex-end"
-                              alignItems="center"
-                              gap={1} // adds spacing between icon and text
-                            >
-                              <CallIcon fontSize="small" />
-                              {subscriptionPaid ? property.owner_contact : "+1-123-456-7890"}
-                            </Typography>
-                          </Grid>
-                          {property.referral_id !== null && (
-                            <>
-                              <Grid item xs={6}>
-                                <Typography variant="body2" color="text.secondary">
-                                  Agent Referral Id
-                                </Typography>
-                              </Grid>
-                              <Grid item xs={6}>
-                                <Typography
-                                  variant="body2"
-                                  fontWeight="bold"
-                                  color="text.secondary"
-                                  align="right"
-                                  display="flex"
-                                  justifyContent="flex-end"
-                                  alignItems="center"
-                                  gap={1}
-                                >
-                                  <PersonAddAltIcon fontSize="small" />
-                                  {property.referral_id}
-                                </Typography>
-                              </Grid>
-                            </>
-                          )}
-                        </Grid>
+      <Grid item xs={6}>
+        <Typography variant="body2" color="text.secondary">
+          {subscriptionPaid ? "Owner Contact" : "Office Contact"}
+        </Typography>
+      </Grid>
+      <Grid item xs={6}>
+        <Typography
+          variant="body2"
+          fontWeight="bold"
+          color="text.secondary"
+          align="right"
+          display="flex"
+          justifyContent="flex-end"
+          alignItems="center"
+          gap={1}
+        >
+          <CallIcon fontSize="small" />
+          {subscriptionPaid ? property.owner_contact : "+1-123-456-7890"}
+        </Typography>
+      </Grid>
+    </>
+  ) : (
+    <>
+      <Grid item xs={6}>
+        <Typography variant="body2" color="text.secondary">
+          Agent Referral Id
+        </Typography>
+      </Grid>
+      <Grid item xs={6}>
+        <Typography
+          variant="body2"
+          fontWeight="bold"
+          color="text.secondary"
+          align="right"
+          display="flex"
+          justifyContent="flex-end"
+          alignItems="center"
+          gap={1}
+        >
+          <PersonAddAltIcon fontSize="small" />
+          {property.referral_id}
+        </Typography>
+      </Grid>
+    </>
+  )}
+</Grid>
+
 
 
                       </Box>

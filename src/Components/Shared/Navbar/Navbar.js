@@ -46,6 +46,7 @@ export default function Header() {
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const user_name = localStorage.getItem("user_name");
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -104,8 +105,7 @@ export default function Header() {
                     primary={item.label}
                     primaryTypographyProps={{
                       color: location.pathname === item.path ? 'blue' : 'inherit',
-                      fontWeight: location.pathname === item.path ? 'bold' : 'normal',
-                      fontSize: '16px',
+                      fontWeight: 'bold',
                     }}
                   />
                 </ListItemButton>
@@ -117,8 +117,7 @@ export default function Header() {
                     <ListItemText
                       primary={item.label}
                       primaryTypographyProps={{
-                        fontWeight: isOperationsActive ? 'bold' : 'normal',
-                        fontSize: '16px',
+                        fontWeight: 'bold',
                       }}
                     />
                   </ListItemButton>
@@ -135,8 +134,7 @@ export default function Header() {
                         primary={subItem.label}
                         primaryTypographyProps={{
                           color: location.pathname === subItem.path ? 'blue' : 'inherit',
-                          fontWeight: location.pathname === subItem.path ? 'bold' : 'normal',
-                          fontSize: '14px',
+                          fontWeight: 'bold',
                         }}
                       />
                     </ListItemButton>
@@ -157,15 +155,14 @@ export default function Header() {
         sx={{
           backgroundColor: 'white',
           color: '#000',
-          boxShadow: 'none',
-          borderBottom: '1px solid #e0e0e0',
-          zIndex: theme.zIndex.drawer + 1,
+          boxShadow: "-moz-initial"
         }}
       >
-        <Toolbar sx={{ minHeight: '64px' }}>
+        <Toolbar>
           {isMobile ? (
-            // Mobile Layout
+            // Mobile / iPad Layout
             <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
+              {/* Left: Menu Icon */}
               <IconButton
                 edge="start"
                 color="inherit"
@@ -176,6 +173,7 @@ export default function Header() {
                 <MenuIcon />
               </IconButton>
 
+              {/* Center: Logo */}
               <Box display="flex" justifyContent="center" flexGrow={1}>
                 <Link to="/a-dashboard" style={{ textDecoration: 'none', color: '#333333' }}>
                   <img
@@ -190,14 +188,18 @@ export default function Header() {
                 </Link>
               </Box>
 
+              {/* Right: Notification, Username, Profile Avatar */}
               <Box display="flex" alignItems="center">
                 <IconButton sx={{ color: '#000' }}>
                   <NotificationsNoneIcon />
                 </IconButton>
+                <Typography sx={{ ml: 2, mr: 2, color: '#000', fontWeight: 'bold' }}>
+                  {user_name}
+                </Typography>
                 <Avatar
                   onClick={handleAvatarClick}
-                  sx={{ width: 40, height: 40, cursor: 'pointer', ml: 2 }}
-                  alt="Profile Avatar"
+                  sx={{ width: 40, height: 40, cursor: 'pointer' }}
+                  alt="Admin"
                   src="https://via.placeholder.com/40"
                 />
               </Box>
@@ -205,7 +207,8 @@ export default function Header() {
           ) : (
             // Desktop Layout
             <>
-              <Box sx={{ display: 'flex', alignItems: 'center', mr: 4 }}>
+              {/* Left: Logo */}
+                <Box sx={{ display: 'flex', alignItems: 'center', mr: 4 }}>
                 <Link to="/a-dashboard" style={{ textDecoration: 'none', color: '#333333' }}>
                   <img
                     src={Logo}
@@ -220,7 +223,7 @@ export default function Header() {
                 </Link>
               </Box>
 
-              {/* Navigation Items */}
+              {/* Center: Nav Items */}
               <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', gap: 3 }}>
                 {navItems.map((item) => (
                   item.path ? (
@@ -228,13 +231,10 @@ export default function Header() {
                       key={item.label}
                       onClick={() => navigate(item.path)}
                       sx={{
-                        color: location.pathname === item.path ? 'primary.main' : 'text.primary',
-                        fontWeight: location.pathname === item.path ? 'bold' : 'normal',
+                        color: location.pathname === item.path ? 'blue' : '#000',
+                        fontWeight: 'bold',
                         textTransform: 'none',
-                        fontSize: '16px',
-                        '&:hover': {
-                          color: 'primary.main',
-                        },
+                        fontSize: "16px"
                       }}
                     >
                       {item.label}
@@ -245,13 +245,10 @@ export default function Header() {
                       onClick={handleOperationsClick}
                       endIcon={<ArrowDropDownIcon />}
                       sx={{
-                        color: isOperationsActive ? 'primary.main' : 'text.primary',
-                        fontWeight: isOperationsActive ? 'bold' : 'normal',
+                        color: isOperationsActive ? 'blue' : '#000',
+                        fontWeight: 'bold',
                         textTransform: 'none',
-                        fontSize: '16px',
-                        '&:hover': {
-                          color: 'primary.main',
-                        },
+                        fontSize: "16px"
                       }}
                     >
                       {item.label}
@@ -260,37 +257,33 @@ export default function Header() {
                 ))}
               </Box>
 
-              <Box sx={{ display: 'flex', alignItems: 'center', ml: 2 }}>
-                <IconButton sx={{ color: 'text.primary' }}>
-                  <NotificationsNoneIcon />
-                </IconButton>
-                <Avatar
-                  onClick={handleAvatarClick}
-                  sx={{ width: 40, height: 40, cursor: 'pointer', ml: 2 }}
-                  alt="Admin"
-                  src="https://via.placeholder.com/40"
-                />
-              </Box>
+              {/* Right: Notification, Username, Profile Avatar */}
+              <IconButton sx={{ color: '#000' }}>
+                <NotificationsNoneIcon />
+              </IconButton>
+              <Typography sx={{ ml: 2, mr: 2, color: '#000', fontWeight: 'bold' }}>
+                {user_name}
+              </Typography>
+              <Avatar
+                onClick={handleAvatarClick}
+                sx={{ width: 40, height: 40, cursor: 'pointer' }}
+                alt="Admin"
+                src="https://via.placeholder.com/40"
+              />
             </>
           )}
         </Toolbar>
-      </AppBar>
 
-      {/* Mobile Drawer */}
-      <Drawer
-        anchor="left"
-        open={mobileOpen}
-        onClose={handleDrawerToggle}
-        ModalProps={{ keepMounted: true }}
-        sx={{
-          '& .MuiDrawer-paper': {
-            width: 250,
-            boxSizing: 'border-box',
-          },
-        }}
-      >
-        {drawer}
-      </Drawer>
+        {/* Mobile Drawer */}
+        <Drawer
+          anchor="left"
+          open={mobileOpen}
+          onClose={handleDrawerToggle}
+          ModalProps={{ keepMounted: true }}
+        >
+          {drawer}
+        </Drawer>
+      </AppBar>
 
       {/* Operations Dropdown Menu */}
       <Menu
@@ -299,15 +292,6 @@ export default function Header() {
         onClose={handleOperationsMenuClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-        PaperProps={{
-          elevation: 0,
-          sx: {
-            mt: 1,
-            minWidth: 200,
-            borderRadius: '8px',
-            boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
-          },
-        }}
       >
         {navItems.find(item => item.label === 'Operations')?.subItems.map((subItem) => (
           <MenuItem
@@ -317,12 +301,9 @@ export default function Header() {
               navigate(subItem.path);
             }}
             sx={{
-              fontSize: '14px',
-              fontWeight: location.pathname === subItem.path ? 'bold' : 'normal',
-              color: location.pathname === subItem.path ? 'primary.main' : 'text.primary',
-              '&:hover': {
-                backgroundColor: 'rgba(0, 0, 0, 0.04)',
-              },
+              fontWeight: 'bold',
+              color: location.pathname === subItem.path ? 'blue' : 'inherit',
+              fontSize: "16px"
             }}
           >
             {subItem.label}
@@ -337,28 +318,13 @@ export default function Header() {
         onClose={handleProfileMenuClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        PaperProps={{
-          elevation: 0,
-          sx: {
-            mt: 1,
-            minWidth: 180,
-            borderRadius: '8px',
-            boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)',
-          },
-        }}
       >
         <MenuItem
           onClick={() => {
             handleProfileMenuClose();
             navigate('/a-profile');
           }}
-          sx={{
-            fontSize: '14px',
-            fontWeight: 'medium',
-            '&:hover': {
-              backgroundColor: 'rgba(0, 0, 0, 0.04)',
-            },
-          }}
+          sx={{ fontWeight: 'bold' }}
         >
           Profile
         </MenuItem>
@@ -367,13 +333,7 @@ export default function Header() {
             handleProfileMenuClose();
             navigate('/a-profiledetails');
           }}
-          sx={{
-            fontSize: '14px',
-            fontWeight: 'medium',
-            '&:hover': {
-              backgroundColor: 'rgba(0, 0, 0, 0.04)',
-            },
-          }}
+          sx={{ fontWeight: 'bold' }}
         >
           KYC
         </MenuItem>
@@ -383,16 +343,14 @@ export default function Header() {
             navigate('/');
           }}
           sx={{
-            fontSize: '14px',
-            fontWeight: 'medium',
-            color: 'error.main',
-            '&:hover': {
-              backgroundColor: 'rgba(0, 0, 0, 0.04)',
-            },
+            fontSize: '16px',
+            fontWeight: 'bold',
+            color: "red",
+            display: 'flex',
+            alignItems: 'center'
           }}
         >
-          <LogoutIcon sx={{ mr: 1, fontSize: '18px' }} />
-          Logout
+          Logout <LogoutIcon sx={{ ml: 1 }} />
         </MenuItem>
       </Menu>
     </>

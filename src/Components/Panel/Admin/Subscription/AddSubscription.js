@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'; // ⬅ make sure useEffect is imported
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
   Box,
@@ -16,6 +16,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Grid,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import Header from '../../../Shared/Navbar/Navbar';
@@ -31,8 +32,7 @@ function AddSubscription() {
     description: '',
   });
 
-  const [planOptions, setPlanOptions] = useState(['Basic', 'Standard', 'Premium']);
-
+  const [planOptions, setPlanOptions] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [newPlan, setNewPlan] = useState({
     plan_name: '',
@@ -41,10 +41,9 @@ function AddSubscription() {
   });
   const [allPlans, setAllPlans] = useState([]);
 
-
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if ((name === 'plan_id' || name === 'duration_in_days') && isNaN(value)) return;
+    if ((name === 'duration_in_days') && isNaN(value)) return;
 
     if (name === 'plan_name') {
       const selected = allPlans.find(plan => plan.plan_name === value);
@@ -57,7 +56,6 @@ function AddSubscription() {
       setFormData({ ...formData, [name]: value });
     }
   };
-
 
   const fetchPlans = async () => {
     try {
@@ -74,12 +72,8 @@ function AddSubscription() {
     fetchPlans();
   }, []);
 
-
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       const selectedPlan = allPlans.find(plan => plan.plan_name === formData.plan_name);
 
@@ -89,7 +83,7 @@ function AddSubscription() {
       }
 
       const payload = {
-        plan_id: selectedPlan.plan_id, // Fetch plan ID from selected plan
+        plan_id: selectedPlan.plan_id,
         duration_in_days: Number(formData.duration_in_days),
         price: Number(formData.price),
       };
@@ -101,24 +95,18 @@ function AddSubscription() {
       );
 
       alert('Plan variant added successfully!');
-      console.log(response.data);
-
-      // Reset form
       setFormData({
         plan_name: '',
         price: '',
         duration_in_days: '',
         description: '',
       });
-
-      // Navigate to /a-subscriptions
       navigate('/a-subscriptions');
     } catch (error) {
       console.error('Error adding plan variant:', error);
       alert('Failed to add plan variant. Please try again.');
     }
   };
-
 
   const handleNewPlanChange = (e) => {
     const { name, value } = e.target;
@@ -142,8 +130,6 @@ function AddSubscription() {
       alert('Plan added successfully!');
       setNewPlan({ plan_name: '', description: '', user_type: '' });
       setOpenModal(false);
-
-      // Refresh the plans list
       fetchPlans();
     } catch (error) {
       console.error('Error adding plan:', error);
@@ -154,120 +140,181 @@ function AddSubscription() {
     }
   };
 
-
   return (
     <>
       <Header />
-      <Container maxWidth="md" sx={{ mt: 4 }}>
-        <Paper elevation={3} sx={{ p: 4 }}>
-          <Typography variant="h5" gutterBottom>
-            Add Subscription Plan Variant
-          </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <FormControl fullWidth required>
-                <InputLabel id="plan-name-label">Plan</InputLabel>
-                <Select
-                  labelId="plan-name-label"
-                  id="plan-name"
-                  name="plan_name"
-                  value={formData.plan_name}
-                  onChange={handleChange}
-                  label="Plan"
+      <Container maxWidth="xl" sx={{ padding: 4 }}>
+        <Typography variant="h4" gutterBottom textAlign="center">
+          Add Subscription Plan Variant
+        </Typography>
+        
+        <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%" }}>
+          <Grid container spacing={2}>
+            {/* Plan Selection */}
+            <Grid item xs={12} md={4}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <FormControl fullWidth required>
+                  <InputLabel id="plan-name-label">Plan</InputLabel>
+                  <Select
+                    labelId="plan-name-label"
+                    id="plan-name"
+                    name="plan_name"
+                    value={formData.plan_name}
+                    onChange={handleChange}
+                    label="Plan"
+                    variant="outlined"
+                  >
+                    {planOptions.map((plan) => (
+                      <MenuItem key={plan.id} value={plan.plan_name}>
+                        {`${plan.plan_name} (${plan.user_type})`}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <IconButton 
+                  color="primary" 
+                  onClick={() => setOpenModal(true)}
+                  sx={{ 
+                    backgroundColor: 'primary.main',
+                    color: 'white',
+                    '&:hover': {
+                      backgroundColor: 'primary.dark',
+                    }
+                  }}
                 >
-                  {planOptions.map((plan) => (
-                    <MenuItem key={plan.id} value={plan.plan_name}>
-                      {`${plan.plan_name} (${plan.user_type})`}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+                  <AddIcon />
+                </IconButton>
+              </Box>
+            </Grid>
 
-              <IconButton color="primary" onClick={() => setOpenModal(true)}>
-                <AddIcon />
-              </IconButton>
-            </Box>
+            {/* Price */}
+            <Grid item xs={12} md={4}>
+              <TextField
+                label="Price"
+                name="price"
+                value={formData.price}
+                onChange={handleChange}
+                fullWidth
+                variant="outlined"
+                required
+              />
+            </Grid>
 
-            <TextField
-              label="Price"
-              name="price"
-              value={formData.price}
-              onChange={handleChange}
-              fullWidth
-              margin="normal"
-              required
-            />
-            <TextField
-              label="Duration (in days)"
-              name="duration_in_days"
-              value={formData.duration_in_days}
-              onChange={handleChange}
-              fullWidth
-              margin="normal"
-              required
-            />
-            <TextField
-              label="Description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              fullWidth
-              margin="normal"
-              multiline
-              rows={3}
-              required
-              InputProps={{
-                readOnly: true,
-              }}
-            />
+            {/* Duration */}
+            <Grid item xs={12} md={4}>
+              <TextField
+                label="Duration (in days)"
+                name="duration_in_days"
+                value={formData.duration_in_days}
+                onChange={handleChange}
+                fullWidth
+                variant="outlined"
+                required
+              />
+            </Grid>
 
-            <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>
-              Submit
-            </Button>
-          </Box>
-        </Paper>
+            {/* Description */}
+            <Grid item xs={4}>
+              <TextField
+                label="Description"
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                fullWidth
+                variant="outlined"
+                multiline
+                rows={2}
+                required
+                InputProps={{
+                  readOnly: true,
+                }}
+              />
+            </Grid>
+
+            {/* Submit Button */}
+          <Grid container justifyContent="center">
+  <Grid item xs="auto">
+    <Button 
+      type="submit" 
+      variant="contained" 
+      fullWidth={false}
+      sx={{ 
+        height: '56px',
+        fontSize: '1rem',
+        mt: 2,
+        px: 4 // optional: padding-x to widen the button a bit
+      }}
+    >
+      Add Subscription Plan Variant
+    </Button>
+  </Grid>
+</Grid>
+
+          </Grid>
+        </Box>
       </Container>
 
       {/* Add Plan Modal */}
-      <Dialog open={openModal} onClose={() => setOpenModal(false)}>
+      <Dialog open={openModal} onClose={() => setOpenModal(false)} maxWidth="sm" fullWidth>
         <DialogTitle>New Subscription Plan</DialogTitle>
         <DialogContent>
-          <FormControl fullWidth margin="normal" required>
-            <InputLabel>User Type</InputLabel>
-            <Select
-              name="user_type"
-              value={newPlan.user_type}
-              onChange={handleNewPlanChange}
-              label="User Type"
-            >
-              <MenuItem value="Agent">Agent</MenuItem>
-              <MenuItem value="Client">Client</MenuItem>
-            </Select>
-          </FormControl>
-          <TextField
-            label="Plan Name"
-            name="plan_name"
-            value={newPlan.plan_name}
-            onChange={handleNewPlanChange}
-            fullWidth
-            margin="normal"
-            required
-          />
-          <TextField
-            label="Description"
-            name="description"
-            value={newPlan.description}
-            onChange={handleNewPlanChange}
-            fullWidth
-            margin="normal"
-            multiline
-            rows={3}
-            required
-          />
+          <Grid container spacing={2} sx={{ mt: 1 }}>
+            <Grid item xs={12}>
+              <FormControl fullWidth required>
+                <InputLabel>User Type</InputLabel>
+                <Select
+                  name="user_type"
+                  value={newPlan.user_type}
+                  onChange={handleNewPlanChange}
+                  label="User Type"
+                  variant="outlined"
+                >
+                  <MenuItem value="Agent">Agent</MenuItem>
+                  <MenuItem value="Client">Client</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Plan Name"
+                name="plan_name"
+                value={newPlan.plan_name}
+                onChange={handleNewPlanChange}
+                fullWidth
+                variant="outlined"
+                required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Description"
+                name="description"
+                value={newPlan.description}
+                onChange={handleNewPlanChange}
+                fullWidth
+                variant="outlined"
+                multiline
+                rows={3}
+                required
+              />
+            </Grid>
+          </Grid>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenModal(false)}>Cancel</Button>
-          <Button onClick={handleAddPlan} variant="contained">Add</Button>
+          <Button 
+            onClick={() => setOpenModal(false)} 
+            variant="outlined"
+            sx={{ mr: 2 }}
+          >
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleAddPlan} 
+            variant="contained"
+            sx={{ mr: 2 }}
+          >
+            Add Plan
+          </Button>
         </DialogActions>
       </Dialog>
     </>
