@@ -11,7 +11,7 @@ import {
   InputLabel,
   Alert
 } from "@mui/material";
-import PartnerHeader from "../../../Shared/Partner/PartnerNavbar";
+import InvestorNavbar from "../../../Shared/Investor/InvestorNavbar";
 import { useNavigate } from 'react-router-dom';
 
 
@@ -149,8 +149,8 @@ const handleAadharCardUpload = (event) => {
 
   return (
     <>
-      <PartnerHeader />
-      <Container maxWidth="xl" sx={{ padding: 3 }}>
+      <InvestorNavbar />
+      <Container maxWidth="lg" sx={{ p: 4 }}>
         <Typography variant="h4" gutterBottom textAlign="center">
           KYC Registration
         </Typography>

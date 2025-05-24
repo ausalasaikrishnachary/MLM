@@ -25,7 +25,6 @@ const MeetingRequestForm = ({ profileType, onSubmit }) => {
   const [form, setForm] = useState({
     date: "",
     startTime: "",
-    endTime: "",
     name: "",
     email: "",
     referralId: "",
@@ -47,7 +46,6 @@ const MeetingRequestForm = ({ profileType, onSubmit }) => {
     setForm({
       date: "",
       startTime: "",
-      endTime: "",
       name: "",
       email: "",
       referralId: "",
@@ -117,19 +115,6 @@ const MeetingRequestForm = ({ profileType, onSubmit }) => {
                 required
               />
             </Grid>
-            <Grid item xs={6} sm={4}>
-              <TextField
-                fullWidth
-                type="time"
-                name="endTime"
-                label="End Time"
-                InputLabelProps={{ shrink: true }}
-                value={form.endTime}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-
             <Grid item xs={12}>
               <Button type="submit" variant="contained">
                 Submit Meeting Request
