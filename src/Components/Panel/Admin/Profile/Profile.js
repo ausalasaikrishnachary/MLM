@@ -1,112 +1,98 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { Box, Card, Typography, Divider, Button } from "@mui/material";
-import InvestorHeader from "../../../Shared/Investor/InvestorNavbar";
+
 import Header from "../../../Shared/Navbar/Navbar";
 
 const AdminProfile = () => {
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    axios
+      .get("https://rahul30.pythonanywhere.com/users/1/")
+      .then((response) => setUserData(response.data))
+      .catch((error) => console.error("Error fetching user data:", error));
+  }, []);
+
+  if (!userData) return <Typography sx={{ mt: 4, textAlign: "center" }}>Loading...</Typography>;
+
   return (
     <>
-    <Header/>
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "flex-start",
-        height: "100vh",
-        // backgroundColor: "#f8f9fa",
-        // pt: "40px",
-      }}
-    >
-      <Card
+      <Header />
+      <Box
         sx={{
-          width: "700px",
-          mt: "40px",
-          borderRadius: "12px",
-          boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.2)",
-          overflow: "hidden", // Ensures header border radius is maintained
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "flex-start",
+          height: "100vh",
         }}
       >
-        {/* Header */}
-        {/* <Box
+        <Card
           sx={{
-            backgroundColor: "rgb(30, 10, 80)",
-            color: "white",
-            textAlign: "center",
-            p: "15px",
-            fontSize: "20px",
+            width: "700px",
+            mt: "40px",
+            borderRadius: "12px",
+            boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.2)",
+            overflow: "hidden",
           }}
         >
-          <Typography variant="h6" sx={{ m: 0 }}>
-            Profile Details
-          </Typography>
-        </Box> */}
+          {/* Header */}
+          <Box sx={{ textAlign: "center", py: 2 }}>
+            <Typography
+              variant="h5"
+              sx={{
+                color: "rgb(30, 10, 80)",
+                fontWeight: "bold",
+                letterSpacing: 1,
+              }}
+            >
+              Profile
+            </Typography>
+          </Box>
 
-        {/* Card Body */}
-        <Box sx={{ p: "20px" }}>
-          <ProfileField label="First Name:" value="Aditya" />
-          <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
-          <ProfileField label="Last Name:" value="Roy" />
-          <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
-          <ProfileField label="Date of Birth:" value="19 February 2001" />
-          <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
-          <ProfileField label="Gender:" value="Male" />
-          <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
-          <ProfileField
-            label="Email Address:"
-            value="aditya.roy@example.com"
-          />
-          <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
-          <ProfileField label="Mobile Number:" value="+91 9876543210" />
-          <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
-          <ProfileField label="Role:" value="Buyer" />
+          {/* Card Body */}
+          <Box sx={{ p: "20px" }}>
+            <ProfileField label="First Name:" value={userData.first_name} />
+            <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
+            <ProfileField label="Last Name:" value={userData.last_name} />
+            <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
+            <ProfileField label="Date of Birth:" value={userData.date_of_birth} />
+            <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
+            <ProfileField label="Gender:" value={userData.gender} />
+            <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
+            <ProfileField label="Email Address:" value={userData.email} />
+            <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
+            <ProfileField label="Mobile Number:" value={userData.phone_number} />
+            <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
+            <ProfileField label="Role:" value={userData.roles[0]?.role_name || "N/A"} />
+            <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
+              <ProfileField label="Pan number:" value={userData.pan_number} />
+             <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
+              <ProfileField label="Aadhaar number:" value={userData.aadhaar_number} />
+            
+          </Box>
 
-          {/* Nominee Details */}
-          <Typography
-            sx={{
-              textAlign: "center",
-              fontSize: "18px",
-              fontWeight: "bold",
-              color: "rgb(30, 10, 80)",
-              mt: "15px",
-            }}
-          >
-            Nominee Details
-          </Typography>
-          <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
-          <ProfileField label="Nominee Name:" value="Shanthi Roy" />
-          <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
-          <ProfileField
-            label="Nominee Email:"
-            value="nominee.roy@example.com"
-          />
-          <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
-          <ProfileField
-            label="Nominee Mobile Number:"
-            value="+91 8765432109"
-          />
-        </Box>
-
-        {/* Footer with Close Button */}
-        <Box sx={{ textAlign: "center", p: "15px" }}>
-          <Button
-            variant="contained"
-            sx={{
-              backgroundColor: "rgb(20, 5, 60)",
-              color: "white",
-              padding: "8px 20px",
-              fontSize: "14px",
-              borderRadius: "20px",
-              transition: "0.3s ease-in-out",
-              "&:hover": {
-                backgroundColor: "rgb(15, 4, 50)",
-              },
-            }}
-          >
-            Close
-          </Button>
-        </Box>
-      </Card>
-    </Box>
+          {/* Footer with Close Button */}
+          <Box sx={{ textAlign: "center", p: "15px" }}>
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: "rgb(20, 5, 60)",
+                color: "white",
+                padding: "8px 20px",
+                fontSize: "14px",
+                borderRadius: "20px",
+                transition: "0.3s ease-in-out",
+                "&:hover": {
+                  backgroundColor: "rgb(15, 4, 50)",
+                },
+              }}
+            >
+              Close
+            </Button>
+          </Box>
+        </Card>
+      </Box>
     </>
   );
 };

@@ -1,37 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { Box, Card, Typography, Divider, Button, CircularProgress } from "@mui/material";
-import PartnerHeader from "../../../Shared/Partner/PartnerNavbar";
-import { baseurl } from '../../../BaseURL/BaseURL';
+import axios from "axios";
+import { Box, Card, Typography, Divider, Button } from "@mui/material";
+
+import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
 
 const PartnerProfile = () => {
   const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const userId = localStorage.getItem("user_id");
 
   useEffect(() => {
-    fetch(`${baseurl}/users/${userId}/`)
-      .then((res) => res.json())
-      .then((data) => {
-        setUserData(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching user data:", err);
-        setLoading(false);
-      });
+    axios
+      .get("https://rahul30.pythonanywhere.com/users/2/")
+      .then((response) => setUserData(response.data))
+      .catch((error) => console.error("Error fetching user data:", error));
   }, []);
 
-  if (loading) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (!userData) {
-    return <Typography textAlign="center" mt={5}>No user data available.</Typography>;
-  }
+  if (!userData) return <Typography sx={{ mt: 4, textAlign: "center" }}>Loading...</Typography>;
 
   return (
     <>
@@ -42,7 +25,6 @@ const PartnerProfile = () => {
           justifyContent: "center",
           alignItems: "flex-start",
           height: "100vh",
-          backgroundColor: "#f8f9fa",
         }}
       >
         <Card
@@ -54,54 +36,43 @@ const PartnerProfile = () => {
             overflow: "hidden",
           }}
         >
-          <Box
-            sx={{
-              backgroundColor: "rgb(30, 10, 80)",
-              color: "white",
-              textAlign: "center",
-              p: "15px",
-              fontSize: "20px",
-            }}
-          >
-            <Typography variant="h6" sx={{ m: 0 }}>
-              Profile Details
-            </Typography>
-          </Box>
-
-          <Box sx={{ p: "20px" }}>
-            <ProfileField label="First Name:" value={userData.first_name || "-"} />
-            <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
-            <ProfileField label="Last Name:" value={userData.last_name || "-"} />
-            <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
-            <ProfileField label="Date of Birth:" value={userData.date_of_birth || "-"} />
-            <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
-            <ProfileField label="Gender:" value={userData.gender || "-"} />
-            <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
-            <ProfileField label="Email Address:" value={userData.email || "-"} />
-            <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
-            <ProfileField label="Mobile Number:" value={userData.phone_number || "-"} />
-            <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
-            <ProfileField label="Role:" value="Partner" />
-
+          {/* Header */}
+          <Box sx={{ textAlign: "center", py: 2 }}>
             <Typography
+              variant="h5"
               sx={{
-                textAlign: "center",
-                fontSize: "18px",
-                fontWeight: "bold",
                 color: "rgb(30, 10, 80)",
-                mt: "15px",
+                fontWeight: "bold",
+                letterSpacing: 1,
               }}
             >
-              Nominee Details
+              Profile
             </Typography>
-            <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
-            <ProfileField label="Nominee Name:" value={userData.nominee_reference_to || "-"} />
-            <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
-            <ProfileField label="Nominee Email:" value="-" />
-            <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
-            <ProfileField label="Nominee Mobile Number:" value="-" />
           </Box>
 
+          {/* Card Body */}
+          <Box sx={{ p: "20px" }}>
+            <ProfileField label="First Name:" value={userData.first_name} />
+            <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
+            <ProfileField label="Last Name:" value={userData.last_name} />
+            <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
+            <ProfileField label="Date of Birth:" value={userData.date_of_birth} />
+            <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
+            <ProfileField label="Gender:" value={userData.gender} />
+            <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
+            <ProfileField label="Email Address:" value={userData.email} />
+            <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
+            <ProfileField label="Mobile Number:" value={userData.phone_number} />
+            <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
+            <ProfileField label="Role:" value={userData.roles[0]?.role_name || "N/A"} />
+            <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
+              <ProfileField label="Pan number:" value={userData.pan_number} />
+             <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
+              <ProfileField label="Aadhaar number:" value={userData.aadhaar_number} />
+            
+          </Box>
+
+          {/* Footer with Close Button */}
           <Box sx={{ textAlign: "center", p: "15px" }}>
             <Button
               variant="contained"
