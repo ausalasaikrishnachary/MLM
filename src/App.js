@@ -74,6 +74,8 @@ import Team from "./Components/Panel/Partner/MyTeam/Team";
 import ViewTeamDetails from "./Components/Panel/Partner/MyTeam/ViewTeamDetails";
 import Meetings from "./Components/Panel/Partner/Meetings/Meetings";
 import MeetingRequestForm from "./Components/Panel/Partner/Meetings/MeetingRequestForm";
+import MeetingRequests from "./Components/Panel/Admin/Meetings/MeetingRequests";
+import SheduleMeeting from "./Components/Panel/Admin/Meetings/SheduleMeeting";
 
 
 
@@ -115,6 +117,8 @@ function App() {
           <Route path="/a-bookingslab" element={<BookingSlab />} />
           <Route path="/a-add-booking-slab" element={<AddBookingSlab />} />
           <Route path="/a-edit-booking-slab/:id" element={<EditBookingSlab />} />
+          <Route path="/a-meetings" element={<MeetingRequests />} />
+          <Route path="/shedulemeet/:agentId" element={<SheduleMeeting />} />
 
 
           <Route path="/i-dashboard" element={<InvestorDashboard />} />

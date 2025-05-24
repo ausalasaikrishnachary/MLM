@@ -1,130 +1,142 @@
 import React, { useState } from "react";
 import {
-  TextField,
-  Button,
-  Grid,
-  MenuItem,
-  Typography,
-  Box,
-  Container,
+    TextField,
+    Button,
+    Grid,
+    Typography,
+    Container,
 } from "@mui/material";
 import Header from "../../../Shared/Partner/PartnerNavbar";
+import { useLocation, useNavigate } from 'react-router-dom';
 
-const timeZones = [
-  "UTC",
-  "IST",
-  "PST",
-  "EST",
-  "CST",
-  "GMT",
-  "UTC+5:30",
-  "UTC-5:00",
-];
-
-const MeetingRequestForm = ({ profileType, onSubmit }) => {
-  const [form, setForm] = useState({
+const MeetingRequestForm = () => {
+const [form, setForm] = useState({
     date: "",
     startTime: "",
-    name: "",
-    email: "",
-    referralId: "",
-  });
+    name: localStorage.getItem("user_name") || "",
+    email: localStorage.getItem("email") || "",
+    referralId: localStorage.getItem("referral_id") || "",
+});
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+    const location = useLocation();
+    const navigate = useNavigate();
+    const { profileType } = location.state || {};
+    const agentId = localStorage.getItem("user_id");  // agent = user_id
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const meetingData = {
-      ...form,
-      profileType,
-      attendees: form.attendees.split(",").map((email) => email.trim()),
-      createdAt: new Date().toISOString(),
+
+    const handleChange = (e) => {
+        setForm({ ...form, [e.target.name]: e.target.value });
     };
-    onSubmit(meetingData);
-    setForm({
-      date: "",
-      startTime: "",
-      name: "",
-      email: "",
-      referralId: "",
-    });
-  };
 
-  return (
-    <>
-      <Header />
-      <Container maxWidth="lg" sx={{ p: 4 }}>
-        <Typography variant="h6" mb={2}>
-          Meeting Request for <strong>{profileType}</strong>
-        </Typography>
-        <form onSubmit={handleSubmit}>
-          <Grid container spacing={2} >
-            {/* New fields */}
-            <Grid item xs={12} sm={4}>
-              <TextField
-                fullWidth
-                name="name"
-                label="Name"
-                value={form.name}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <TextField
-                fullWidth
-                name="email"
-                label="Email"
-                value={form.email}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <TextField
-                fullWidth
-                name="referralId"
-                label="Referral ID"
-                value={form.referralId}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <TextField
-                fullWidth
-                type="date"
-                name="date"
-                label="Date"
-                InputLabelProps={{ shrink: true }}
-                value={form.date}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-            <Grid item xs={6} sm={4}>
-              <TextField
-                fullWidth
-                type="time"
-                name="startTime"
-                label="Start Time"
-                InputLabelProps={{ shrink: true }}
-                value={form.startTime}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Button type="submit" variant="contained">
-                Submit Meeting Request
-              </Button>
-            </Grid>
-          </Grid>
-        </form>
-      </Container>
-    </>
-  );
+const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const payload = {
+        user_id: parseInt(agentId),
+        referral_id: form.referralId,
+        name: form.name,
+        email: form.email,
+        profile_type: profileType,
+        requested_date: form.date,
+        requested_time: form.startTime,
+    };
+
+    try {
+        const response = await fetch("https://rahul30.pythonanywhere.com/meeting-requests/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+        });
+
+        if (response.ok) {
+            alert("Meeting request submitted successfully!");
+            navigate("/p-meetings");
+        } else {
+            const errorData = await response.json();
+            console.error("Submission failed:", errorData);
+            alert("Submission failed. Please check your input.");
+        }
+    } catch (error) {
+        console.error("Error submitting meeting request:", error);
+        alert("An error occurred. Please try again later.");
+    }
+};
+
+
+    return (
+        <>
+            <Header />
+            <Container maxWidth="lg" sx={{ p: 4 }}>
+                <Typography variant="h6" mb={2}>
+                    Meeting Request for <strong>{profileType}</strong>
+                </Typography>
+                <form onSubmit={handleSubmit}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} sm={4}>
+                            <TextField
+                                fullWidth
+                                name="name"
+                                label="Name"
+                                value={form.name}
+                                onChange={handleChange}
+                                required
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                            <TextField
+                                fullWidth
+                                name="email"
+                                label="Email"
+                                value={form.email}
+                                onChange={handleChange}
+                                required
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                            <TextField
+                                fullWidth
+                                name="referralId"
+                                label="Referral ID"
+                                value={form.referralId}
+                                onChange={handleChange}
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={4}>
+                            <TextField
+                                fullWidth
+                                type="date"
+                                name="date"
+                                label="Date"
+                                InputLabelProps={{ shrink: true }}
+                                value={form.date}
+                                onChange={handleChange}
+                                required
+                            />
+                        </Grid>
+                        <Grid item xs={6} sm={4}>
+                            <TextField
+                                fullWidth
+                                type="time"
+                                name="startTime"
+                                label="Start Time"
+                                InputLabelProps={{ shrink: true }}
+                                value={form.startTime}
+                                onChange={handleChange}
+                                required
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Button type="submit" variant="contained">
+                                Submit Meeting Request
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </form>
+            </Container>
+        </>
+    );
 };
 
 export default MeetingRequestForm;

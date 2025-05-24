@@ -41,6 +41,7 @@ export default function Header() {
         { label: 'KYC', path: '/a-profiledetails' },
       ]
     },
+        { label: 'Meetings', path: '/a-meetings' },
     // { label: 'Agents', path: '/a-partners' },
   ];
 
