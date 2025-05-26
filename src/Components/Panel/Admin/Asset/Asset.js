@@ -33,6 +33,9 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { baseurl } from '../../../BaseURL/BaseURL';
 import VideocamIcon from '@mui/icons-material/Videocam';
+import CallIcon from '@mui/icons-material/Call';
+import EmailIcon from '@mui/icons-material/Email';
+import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 
 const AssetsUI = () => {
   const [sortBy, setSortBy] = useState('');
@@ -444,28 +447,28 @@ const AssetsUI = () => {
                           </Box>
                         </>
                       )}
-                     {property.status !== 'sold' && (
-  <Box
-    sx={{
-      position: 'absolute',
-      top: 15,
-      right: -30,
-      width: '150px',
-      transform: 'rotate(45deg)',
-      backgroundColor: "red",
-      color: 'white',
-      textAlign: 'center',
-      fontSize: '12px',
-      fontWeight: 'bold',
-      textTransform: 'uppercase',
-      py: '4px',
-      boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-    }}
-  >
-    {property.looking_to === 'sell' ? 'Sell' : 'Rent'}
-  </Box>
-)}
-    <Box
+                      {property.status !== 'sold' && (
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            top: 15,
+                            right: -30,
+                            width: '150px',
+                            transform: 'rotate(45deg)',
+                            backgroundColor: "red",
+                            color: 'white',
+                            textAlign: 'center',
+                            fontSize: '12px',
+                            fontWeight: 'bold',
+                            textTransform: 'uppercase',
+                            py: '4px',
+                            boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+                          }}
+                        >
+                          {property.looking_to === 'sell' ? 'Sell' : 'Rent'}
+                        </Box>
+                      )}
+                      <Box
                         sx={{
                           position: 'absolute',
                           top: 15,
@@ -566,6 +569,86 @@ const AssetsUI = () => {
                           </Typography>
                         </Grid>
                       </Grid>
+                      <Box
+                        sx={{
+                          backgroundColor: '#F8F9FA',
+                          borderRadius: 1,
+                          p: 1.5,
+                          mb: 2
+                        }}
+                      >
+                        <Grid container>
+                          {property.referral_id === null ? (
+                            <>
+                              <Grid item xs={6}>
+                                <Typography variant="body2" color="text.secondary">
+                                  Office Email
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={6}>
+                                <Typography
+                                  variant="body2"
+                                  fontWeight="bold"
+                                  color="#4A90E2"
+                                  align="right"
+                                  display="flex"
+                                  justifyContent="flex-end"
+                                  alignItems="center"
+                                  gap={1}
+                                >
+                                  <EmailIcon fontSize="small" />
+                                  {property.owner_email}
+                                </Typography>
+                              </Grid>
+
+                              <Grid item xs={6}>
+                                <Typography variant="body2" color="text.secondary">
+                                  Office Contact
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={6}>
+                                <Typography
+                                  variant="body2"
+                                  fontWeight="bold"
+                                  color="text.secondary"
+                                  align="right"
+                                  display="flex"
+                                  justifyContent="flex-end"
+                                  alignItems="center"
+                                  gap={1}
+                                >
+                                  <CallIcon fontSize="small" />
+                                  {property.owner_contact}
+                                </Typography>
+                              </Grid>
+                            </>
+                          ) : (
+                            <>
+                              <Grid item xs={6}>
+                                <Typography variant="body2" color="text.secondary">
+                                  Agent Referral Id
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={6}>
+                                <Typography
+                                  variant="body2"
+                                  fontWeight="bold"
+                                  color="text.secondary"
+                                  align="right"
+                                  display="flex"
+                                  justifyContent="flex-end"
+                                  alignItems="center"
+                                  gap={1}
+                                >
+                                  <PersonAddAltIcon fontSize="small" />
+                                  {property.referral_id}
+                                </Typography>
+                              </Grid>
+                            </>
+                          )}
+                        </Grid>
+                      </Box>
+
                       <Grid container spacing={1}>
                         <Grid item xs={12} display="flex" justifyContent="right" gap={2}>
                           <Tooltip title="Edit">
@@ -604,40 +687,40 @@ const AssetsUI = () => {
                       </Grid>
                     </CardContent>
                     {/* Image Carousel Dialog */}
-                     <Dialog open={openCarousel} onClose={handleCloseCarousel} maxWidth="md" fullWidth>
-                                        <Box sx={{ p: 2, background: '#000' }}>
-                                          {selectedProperty && getAllMedia(selectedProperty).length > 0 ? (
-                                           <Carousel
-                    showThumbs={false}
-                    infiniteLoop
-                    useKeyboardArrows
-                    dynamicHeight
-                    autoPlay
-                    emulateTouch
-                  >
-                    {getAllMedia(selectedProperty)
-                      .filter((media) => media.type === 'image') // ✅ Filter only images
-                      .map((media, idx) => (
-                        <div key={idx}>
-                          <img
-                            src={media.url}
-                            alt={media.alt || `Image ${idx + 1}`}
-                            style={{
-                              borderRadius: 8,
-                              maxHeight: '550px',
-                              objectFit: 'cover',
-                              width: '100%',
-                            }}
-                          />
-                        </div>
-                      ))}
-                  </Carousel>
-                  
-                                          ) : (
-                                            <Typography color="white">No media available.</Typography>
-                                          )}
-                                        </Box>
-                                      </Dialog>
+                    <Dialog open={openCarousel} onClose={handleCloseCarousel} maxWidth="md" fullWidth>
+                      <Box sx={{ p: 2, background: '#000' }}>
+                        {selectedProperty && getAllMedia(selectedProperty).length > 0 ? (
+                          <Carousel
+                            showThumbs={false}
+                            infiniteLoop
+                            useKeyboardArrows
+                            dynamicHeight
+                            autoPlay
+                            emulateTouch
+                          >
+                            {getAllMedia(selectedProperty)
+                              .filter((media) => media.type === 'image') // ✅ Filter only images
+                              .map((media, idx) => (
+                                <div key={idx}>
+                                  <img
+                                    src={media.url}
+                                    alt={media.alt || `Image ${idx + 1}`}
+                                    style={{
+                                      borderRadius: 8,
+                                      maxHeight: '550px',
+                                      objectFit: 'cover',
+                                      width: '100%',
+                                    }}
+                                  />
+                                </div>
+                              ))}
+                          </Carousel>
+
+                        ) : (
+                          <Typography color="white">No media available.</Typography>
+                        )}
+                      </Box>
+                    </Dialog>
                   </Card>
                 </Grid>
               );
