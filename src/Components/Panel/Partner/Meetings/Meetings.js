@@ -2,6 +2,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from "../../../Shared/Partner/PartnerNavbar";
 import { Box, Card, CardContent, Typography, Button, Grid, Avatar } from '@mui/material';
+import TableLayout from '../../../Shared/TableLayout';
+import DisplayRequest from './DisplayRequests';
 
 const profiles = [
     {
@@ -92,7 +94,9 @@ function Meetings() {
                             </Card>
                         </Grid>
                     ))}
+                    
                 </Grid>
+                <DisplayRequest/>
             </Box>
         </>
     );

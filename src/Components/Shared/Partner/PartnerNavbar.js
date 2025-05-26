@@ -43,19 +43,19 @@ export default function PartnerHeader() {
     //   ],
     // },
     { label: 'My Team', path: '/p-myteam' },
-    { label: 'Meetings', path: '/p-meetings' },
     // { label: 'Report', path: '/p-report' },
     // { label: 'Commission', path: '/p-commission' },
     // { label: 'Plans', path: '/p-plans' },
-    { 
-      label: 'Operations', 
+    {
+      label: 'Operations',
       subItems: [
         { label: 'Transaction', path: '/p-transaction' },
         { label: 'Commission', path: '/p-commission' },
         { label: 'Plans', path: '/p-plans' },
       ]
     },
-  ]; 
+    { label: 'Meetings', path: '/p-meetings' },
+  ];
 
 
   // Responsive helper.
@@ -70,20 +70,20 @@ export default function PartnerHeader() {
 
   // State for mobile drawer.
   const [mobileOpen, setMobileOpen] = useState(false);
-   // State for Operations dropdown menu
-    const [operationsAnchorEl, setOperationsAnchorEl] = useState(null);
-    const operationsMenuOpen = Boolean(operationsAnchorEl);
-    const handleOperationsClick = (event) => {
-      setOperationsAnchorEl(event.currentTarget);
-    };
-    const handleOperationsMenuClose = () => {
-      setOperationsAnchorEl(null);
-    };
-  
-    // Check if any sub-item is active for highlighting the Operations button
-    const isOperationsActive = navItems
-      .find(item => item.label === 'Operations')
-      ?.subItems.some(subItem => location.pathname === subItem.path);
+  // State for Operations dropdown menu
+  const [operationsAnchorEl, setOperationsAnchorEl] = useState(null);
+  const operationsMenuOpen = Boolean(operationsAnchorEl);
+  const handleOperationsClick = (event) => {
+    setOperationsAnchorEl(event.currentTarget);
+  };
+  const handleOperationsMenuClose = () => {
+    setOperationsAnchorEl(null);
+  };
+
+  // Check if any sub-item is active for highlighting the Operations button
+  const isOperationsActive = navItems
+    .find(item => item.label === 'Operations')
+    ?.subItems.some(subItem => location.pathname === subItem.path);
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
   };
@@ -219,7 +219,7 @@ export default function PartnerHeader() {
               </Typography>
 
               {/* Center: Nav Items */}
-               <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', gap: 3 }}>
+              <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', gap: 3 }}>
                 {navItems.map((item) => (
                   item.path ? (
                     <Button
@@ -240,7 +240,7 @@ export default function PartnerHeader() {
                       onClick={handleOperationsClick}
                       endIcon={<ArrowDropDownIcon />}
                       sx={{
-                        color: isOperationsActive ? 'blue' : '#000', 
+                        color: isOperationsActive ? 'blue' : '#000',
                         fontWeight: 'bold',
                         textTransform: 'none',
                         fontSize: "16px"
@@ -279,7 +279,7 @@ export default function PartnerHeader() {
         </Drawer>
       </AppBar>
 
- {/* Operations Dropdown Menu */}
+      {/* Operations Dropdown Menu */}
       <Menu
         anchorEl={operationsAnchorEl}
         open={operationsMenuOpen}
@@ -307,7 +307,7 @@ export default function PartnerHeader() {
       {/* Profile Avatar Dropdown Menu */}
       <Menu
         anchorEl={profileAnchorEl}
-        open={profileMenuOpen} 
+        open={profileMenuOpen}
         onClose={handleProfileMenuClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
