@@ -513,7 +513,7 @@ const AssetsUI = () => {
                           </Typography>
                         </Grid>
                       </Grid>
-                      <Box
+                      {/* <Box
                         sx={{
                           backgroundColor: '#F8F9FA',
                           borderRadius: 1,
@@ -594,6 +594,77 @@ const AssetsUI = () => {
 
 
 
+                      </Box> */}
+                                            <Box
+                        sx={{
+                          backgroundColor: '#F8F9FA',
+                          borderRadius: 1,
+                          p: 1.5,
+                          mb: 2
+                        }}
+                      >
+                        <Grid container>
+                          {subscriptionPaid && property.referral_id ? (
+                            <Grid item xs={12}>
+                              <Typography
+                                variant="body2"
+                                fontWeight="bold"
+                                color="#E67E22"
+                                textAlign="center"
+                                display="flex"
+                                justifyContent="center"
+                                alignItems="center"
+                                gap={1}
+                              >
+                                Referral ID: {property.referral_id}
+                              </Typography>
+                            </Grid>
+                          ) : (
+                            <>
+                              <Grid item xs={6}>
+                                <Typography variant="body2" color="text.secondary">
+                                  {subscriptionPaid ? "Owner Email" : "Office Email"}
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={6}>
+                                <Typography
+                                  variant="body2"
+                                  fontWeight="bold"
+                                  color="#4A90E2"
+                                  align="right"
+                                  display="flex"
+                                  justifyContent="flex-end"
+                                  alignItems="center"
+                                  gap={1}
+                                >
+                                  <EmailIcon fontSize="small" />
+                                  {subscriptionPaid ? property.owner_email : "sriraj@gmail.com"}
+                                </Typography>
+                              </Grid>
+                      
+                              <Grid item xs={6}>
+                                <Typography variant="body2" color="text.secondary">
+                                  {subscriptionPaid ? "Owner Contact" : "Office Contact"}
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={6}>
+                                <Typography
+                                  variant="body2"
+                                  fontWeight="bold"
+                                  color="text.secondary"
+                                  align="right"
+                                  display="flex"
+                                  justifyContent="flex-end"
+                                  alignItems="center"
+                                  gap={1}
+                                >
+                                  <CallIcon fontSize="small" />
+                                  {subscriptionPaid ? property.owner_contact : "+1-123-456-7890"}
+                                </Typography>
+                              </Grid>
+                            </>
+                          )}
+                        </Grid>
                       </Box>
                       <Grid container spacing={1}>
                         <Grid item xs={12}>
