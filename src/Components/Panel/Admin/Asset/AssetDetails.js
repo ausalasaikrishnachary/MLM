@@ -84,8 +84,10 @@ import {
 } from '@mui/material';
 import Header from '../../../Shared/Navbar/Navbar';
 import { baseurl } from '../../../BaseURL/BaseURL';
+import { useNavigate } from 'react-router-dom';
 
 const AssetDetails = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const { property } = location.state || {};
   const { id } = useParams();
@@ -107,9 +109,9 @@ const AssetDetails = () => {
     <>
       <Header />
       <Container sx={{ py: 4 }}>
-          <Box mt={1}>
-          <Button variant="outlined" href="/a-asset">Back</Button>
-        </Box>
+         <Button variant="outlined" onClick={() => navigate(-1)}>
+        Back
+      </Button>
         <Box display="flex" alignItems="center" gap={2} mb={3} mt={3}>
           <Typography variant="h4">{property.property_title}</Typography>
           <Chip 

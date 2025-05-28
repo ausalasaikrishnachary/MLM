@@ -17,12 +17,10 @@ function Commission() {
             .get(`${baseurl}/property/`)
             .then((response) => {
                 // Filter sold properties with non-null, positive commission balance
-                const filteredData = response.data.filter(
-                    (item) =>
-                        item.status === 'sold' &&
-                        item.agent_commission_balance !== null &&
-                        parseFloat(item.agent_commission_balance) > 0
-                );
+                 const filteredData = response.data.filter(
+                (item) =>
+                    item.status === 'sold' && item.referral_id !== null
+            );
 
                 // Remove duplicates based on user_id
                 const uniqueByUserId = [];
@@ -50,20 +48,20 @@ function Commission() {
         <>
             <Header />
             <>
-                <div style={{ textAlign: 'center',marginTop: "8%" }}>
+                <div style={{ textAlign: 'center', marginTop: "8%" }}>
                     <h2 style={{ fontWeight: 'bold' }}>Agent Commission</h2>
                 </div>
-                <Table sx={{ border: '1px solid black', width: '90%', marginLeft: "5%",  }}>
+                <Table sx={{ border: '1px solid black', width: '90%', marginLeft: "5%", }}>
                     <TableHead>
                         <TableRow>
                             <TableCell sx={cellStyle}>Agent Name</TableCell>
                             <TableCell sx={cellStyle}>Agent Referral Id</TableCell>
-                            <TableCell sx={cellStyle}>Property Name</TableCell>
+                            {/* <TableCell sx={cellStyle}>Property Name</TableCell> */}
                             {/* <TableCell sx={cellStyle}>City</TableCell>
               <TableCell sx={cellStyle}>State</TableCell>
               <TableCell sx={cellStyle}>Country</TableCell>
               <TableCell sx={cellStyle}>Owner</TableCell> */}
-                            <TableCell sx={cellStyle}>Property Value</TableCell>
+                            {/* <TableCell sx={cellStyle}>Property Value</TableCell> */}
                             <TableCell sx={cellStyle}>Property Status</TableCell>
                             {/* <TableCell sx={cellStyle}>Approval</TableCell> */}
 
@@ -72,7 +70,7 @@ function Commission() {
                             {/* <TableCell sx={cellStyle}>Agent commission</TableCell>
                             <TableCell sx={cellStyle}>paid commission</TableCell>
                             <TableCell sx={cellStyle}>Balance commission</TableCell> */}
-                            <TableCell sx={cellStyle}>Created</TableCell>
+                            {/* <TableCell sx={cellStyle}>Created</TableCell> */}
                             {/* <TableCell sx={cellStyle}>Action</TableCell> */}
                         </TableRow>
                     </TableHead>
@@ -92,15 +90,15 @@ function Commission() {
                                 >
                                     <TableCell sx={cellBodyStyle}>{property.username}</TableCell>
                                     <TableCell sx={cellBodyStyle}>{property.referral_id}</TableCell>
-                                    <TableCell sx={cellBodyStyle}>{property.property_title}</TableCell>
-                                    <TableCell sx={cellBodyStyle}>{property.total_property_value}</TableCell>
+                                    {/* <TableCell sx={cellBodyStyle}>{property.property_title}</TableCell> */}
+                                    {/* <TableCell sx={cellBodyStyle}>{property.total_property_value}</TableCell> */}
                                     <TableCell sx={cellBodyStyle}>{property.status}</TableCell>
                                     {/* <TableCell sx={cellBodyStyle}>{property.agent_commission}</TableCell>
                                     <TableCell sx={cellBodyStyle}>{property.agent_commission_paid}</TableCell>
                                     <TableCell sx={cellBodyStyle}>{property.agent_commission_balance}</TableCell> */}
-                                    <TableCell sx={cellBodyStyle}>
+                                    {/* <TableCell sx={cellBodyStyle}>
                                         {new Date(property.created_at).toLocaleDateString('en-IN')}
-                                    </TableCell>
+                                    </TableCell> */}
                                     {/* <TableCell
                                         sx={cellBodyStyle}
                                         onClick={(e) => e.stopPropagation()} // Prevent row click

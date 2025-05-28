@@ -1,100 +1,167 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
-    Table, TableBody, TableCell, TableHead, TableRow, Button
+    Table, TableBody, TableCell, TableHead, TableRow,
+    Tabs, Tab, Box, Typography
 } from '@mui/material';
 import Header from "../../../Shared/Partner/PartnerNavbar";
 import { baseurl } from '../../../BaseURL/BaseURL';
 
-
 function PartnerCommission() {
-    // const { userId } = useParams();
     const [propertyData, setPropertyData] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [tabIndex, setTabIndex] = useState(0);
+    const [companyCommissionData, setCompanyCommissionData] = useState(null);
+    const [companyLoading, setCompanyLoading] = useState(true);
     const navigate = useNavigate();
     const userId = localStorage.getItem("user_id");
+    const referralId = localStorage.getItem("referral_id");
 
-useEffect(() => {
-    axios.get(`${baseurl}/properties/user-id/${userId}/`)
-        .then((response) => {
-            // Filter properties where status is 'sold'
-            const soldProperties = response.data.filter(property => property.status === 'sold');
-            setPropertyData(soldProperties);
-            setLoading(false);
-        })
-        .catch((error) => {
-            console.error('Error fetching data:', error);
-            setLoading(false);
-        });
-}, [userId]);
+    useEffect(() => {
+        axios.get(`${baseurl}/properties/user-id/${userId}/`)
+            .then((response) => {
+                const soldProperties = response.data.filter(property => property.status === 'sold');
+                setPropertyData(soldProperties);
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.error('Error fetching property data:', error);
+                setLoading(false);
+            });
+    }, [userId]);
+
+    useEffect(() => {
+        if (referralId) {
+            axios.get(`${baseurl}/company-commissions/referral-id/${referralId}/`)
+                .then((response) => {
+                    setCompanyCommissionData(response.data);
+                    setCompanyLoading(false);
+                })
+                .catch((error) => {
+                    console.error('Error fetching company commission:', error);
+                    setCompanyLoading(false);
+                });
+        } else {
+            console.warn("Referral ID not found in localStorage.");
+            setCompanyLoading(false);
+        }
+    }, [referralId]); // <-- Add referralId in dependency
 
 
-    const handlePayCommission = (propertyId) => {
-        navigate(`/p-pay-commission/${propertyId}`);
+    const handleTabChange = (event, newValue) => {
+        setTabIndex(newValue);
     };
 
     return (
         <>
             <Header />
-            <div style={{ textAlign: 'center', marginTop: "8%" }}>
-                <h2 style={{ fontWeight: 'bold' }}>Commission Table</h2>
+            <div style={{ textAlign: 'center', paddingTop: "1%" }}>
+                <h2 style={{ fontWeight: 'bold' }}>Commission Dashboard</h2>
             </div>
-            <Table sx={{ border: '1px solid black', width: '90%', marginLeft: "5%", }}>
-                <TableHead>
-                    <TableRow>
-                        {/* <TableCell sx={cellStyle}>Agent Name</TableCell>
-                        <TableCell sx={cellStyle}>Agent Referral Id</TableCell> */}
-                        <TableCell sx={cellStyle}>Property Name</TableCell>
-                        <TableCell sx={cellStyle}>Property Value</TableCell>
-                        <TableCell sx={cellStyle}>Property Status</TableCell>
-                        <TableCell sx={cellStyle}>Agent Commission</TableCell>
-                        <TableCell sx={cellStyle}>Recived Commission</TableCell>
-                        <TableCell sx={cellStyle}>Balance Commission</TableCell>
-                        {/* <TableCell sx={cellStyle}>Commission Status</TableCell> */}
-                        {/* <TableCell sx={cellStyle}>Action</TableCell> */}
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {loading ? (
-                        <TableRow>
-                            <TableCell colSpan={10} sx={noDataStyle}>Loading...</TableCell>
-                        </TableRow>
-                    ) : propertyData.length > 0 ? (
-                        propertyData.map((property) => (
-                            <TableRow key={property.id}>
-                                {/* <TableCell sx={cellBodyStyle}>{property.username}</TableCell>
-                                <TableCell sx={cellBodyStyle}>{property.referral_id}</TableCell> */}
-                                <TableCell sx={cellBodyStyle}>{property.property_title}</TableCell>
-                                <TableCell sx={cellBodyStyle}>{property.property_value}</TableCell>
-                                <TableCell sx={cellBodyStyle}>{property.status}</TableCell>
-                                <TableCell sx={cellBodyStyle}>{property.agent_commission}</TableCell>
-                                <TableCell sx={cellBodyStyle}>{property.agent_commission_paid}</TableCell>
-                                <TableCell sx={cellBodyStyle}>{property.agent_commission_balance}</TableCell>
-                                {/* <TableCell sx={cellBodyStyle}>{property.commission_status}</TableCell> */}
-                                {/* <TableCell sx={cellBodyStyle}>
-                                    {new Date(property.created_at).toLocaleDateString('en-IN')}
-                                </TableCell> */}
-                                {/* <TableCell sx={cellBodyStyle}>
-                                    <Button
-                                        variant="contained"
-                                        size="small"
-                                        color="primary"
-                                        onClick={() => handlePayCommission(property.property_id)}
-                                        disabled={Number(property.agent_commission_balance) <= 0}
-                                    >
-                                        Pay Commission
-                                    </Button>
-                                </TableCell> */}
-                            </TableRow>
-                        ))
-                    ) : (
-                        <TableRow>
-                            <TableCell colSpan={10} sx={noDataStyle}>No Data Found</TableCell>
-                        </TableRow>
-                    )}
-                </TableBody>
-            </Table>
+
+            <Box sx={{ width: '90%', margin: 'auto', mt: 4 }}>
+                <Tabs value={tabIndex} onChange={handleTabChange} centered>
+                    <Tab label="Agent Commission" />
+                    <Tab label="Company Commission" />
+                </Tabs>
+
+                {/* Agent Commission Tab */}
+                {tabIndex === 0 && (
+                    <Box mt={4}>
+                        {/* <Typography variant="h6" gutterBottom align="center">Agent Commission</Typography> */}
+                        <Table sx={{ border: '1px solid black' }}>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell sx={cellStyle}>Property Name</TableCell>
+                                    <TableCell sx={cellStyle}>Property Value</TableCell>
+                                    <TableCell sx={cellStyle}>Property Status</TableCell>
+                                    <TableCell sx={cellStyle}>Agent Commission</TableCell>
+                                    <TableCell sx={cellStyle}>Received Commission</TableCell>
+                                    <TableCell sx={cellStyle}>Balance Commission</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {loading ? (
+                                    <TableRow>
+                                        <TableCell colSpan={6} sx={noDataStyle}>Loading...</TableCell>
+                                    </TableRow>
+                                ) : propertyData.length > 0 ? (
+                                    propertyData.map((property) => (
+                                        <TableRow key={property.id}>
+                                            <TableCell sx={cellBodyStyle}>{property.property_title}</TableCell>
+                                            <TableCell sx={cellBodyStyle}>{property.property_value}</TableCell>
+                                            <TableCell sx={cellBodyStyle}>{property.status}</TableCell>
+                                            <TableCell sx={cellBodyStyle}>{property.agent_commission}</TableCell>
+                                            <TableCell sx={cellBodyStyle}>{property.agent_commission_paid}</TableCell>
+                                            <TableCell sx={cellBodyStyle}>{property.agent_commission_balance}</TableCell>
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                    <TableRow>
+                                        <TableCell colSpan={6} sx={noDataStyle}>No Data Found</TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </Box>
+                )}
+
+
+                {/* Company Commission Tab */}
+                {tabIndex === 1 && (
+                    <Box mt={4}>
+                        {/* <Typography variant="h6" gutterBottom align="center">
+                            Company Commission
+                        </Typography> */}
+
+                        {companyLoading ? (
+                            <Typography align="center">Loading...</Typography>
+                        ) : !companyCommissionData || (Array.isArray(companyCommissionData) && companyCommissionData.length === 0) ? (
+                            <Typography align="center">No data available.</Typography>
+                        ) : (
+                            <Table sx={{ border: '1px solid black' }}>
+                                <TableHead>
+                                    <TableRow>
+                                        {/* <TableCell sx={cellStyle}>Commission ID</TableCell> */}
+                                        {/* <TableCell sx={cellStyle}>Transaction ID</TableCell> */}
+                                        {/* <TableCell sx={cellStyle}>Agent ID</TableCell> */}
+                                        <TableCell sx={cellStyle}>Property ID</TableCell>
+                                        <TableCell sx={cellStyle}>Agent Name</TableCell>
+
+                                        <TableCell sx={cellStyle}>Referral ID</TableCell>
+
+                                        <TableCell sx={cellStyle}>Level No</TableCell>
+                                        <TableCell sx={cellStyle}>Percentage</TableCell>
+                                        <TableCell sx={cellStyle}>Amount</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {(Array.isArray(companyCommissionData)
+                                        ? companyCommissionData
+                                        : [companyCommissionData]
+                                    ).map((item, index) => (
+                                        <TableRow key={index}>
+                                            {/* <TableCell sx={cellBodyStyle}>{item.commission_id}</TableCell> */}
+                                            {/* <TableCell sx={cellBodyStyle}>{item.transaction_id}</TableCell> */}
+                                            {/* <TableCell sx={cellBodyStyle}>{item.agent_id}</TableCell> */}
+                                            <TableCell sx={cellBodyStyle}>{item.property_id}</TableCell>
+                                            <TableCell sx={cellBodyStyle}>{item.agent_name}</TableCell>
+
+                                            <TableCell sx={cellBodyStyle}>{item.referral_id}</TableCell>
+                                            <TableCell sx={cellBodyStyle}>{item.level_no}</TableCell>
+                                            <TableCell sx={cellBodyStyle}>{item.percentage_value}%</TableCell>
+                                            <TableCell sx={cellBodyStyle}>{item.amount}</TableCell>
+
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        )}
+                    </Box>
+                )}
+
+            </Box>
         </>
     );
 }

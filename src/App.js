@@ -76,6 +76,12 @@ import Meetings from "./Components/Panel/Partner/Meetings/Meetings";
 import MeetingRequestForm from "./Components/Panel/Partner/Meetings/MeetingRequestForm";
 import MeetingRequests from "./Components/Panel/Admin/Meetings/MeetingRequests";
 import SheduleMeeting from "./Components/Panel/Admin/Meetings/SheduleMeeting";
+import PendingAssets from "./Components/Panel/Admin/Asset/PendingAssets";
+import BookedAssets from "./Components/Panel/Admin/Asset/BookedAssets";
+import AvailableAssets from "./Components/Panel/Admin/Asset/AvailableAssets";
+import RejectedAssets from "./Components/Panel/Admin/Asset/RejectedAssets";
+import SoldAssets from "./Components/Panel/Admin/Asset/SoldAssets";
+import ApprovedAssets from "./Components/Panel/Admin/Asset/ApprovedAssets";
 
 
 
@@ -119,6 +125,12 @@ function App() {
           <Route path="/a-edit-booking-slab/:id" element={<EditBookingSlab />} />
           <Route path="/a-meetings" element={<MeetingRequests />} />
           <Route path="/shedulemeet/:agentId" element={<SheduleMeeting />} />
+          <Route path="/a-pendingassets" element={<PendingAssets />} />
+          <Route path="/a-bookedassets" element={<BookedAssets />} />
+          <Route path="/a-availableassets" element={<AvailableAssets />} />
+          <Route path="/a-rejectedassets" element={<RejectedAssets />} />
+          <Route path="/a-soldassets" element={<SoldAssets />} />
+          <Route path="/a-approvedassets" element={<ApprovedAssets />} />
 
 
           <Route path="/i-dashboard" element={<InvestorDashboard />} />
