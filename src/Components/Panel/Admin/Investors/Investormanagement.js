@@ -18,11 +18,20 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Header from "../../../Shared/Navbar/Navbar";
 import { baseurl } from '../../../BaseURL/BaseURL';
+import { Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 
 const Tmanagement = () => {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedRole, setSelectedRole] = useState("All");
+const uniqueRoles = ["All", ...new Set(data.map(user => user.role).filter(Boolean))];
+
+const filteredData = selectedRole === "All"
+  ? data
+  : data.filter(user => user.role === selectedRole);
+
+
 
   useEffect(() => {
     axios
@@ -99,18 +108,33 @@ const Tmanagement = () => {
       <Header />
       <Container>
         <div style={{ textAlign: 'center', marginTop: "12%" }}>
-          <h2 style={{ fontWeight: 'bold' }}>Leads Management</h2>
+          {/* <h2 style={{ fontWeight: 'bold' }}>Leads Management</h2> */}
         </div>
         
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-          <Button 
-            variant="contained" 
-            color="primary" 
-            onClick={() => navigate("/a-add-lead")}
-          >
-            Add Lead
-          </Button>
-        </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+  <FormControl sx={{ minWidth: 200 }}>
+    <InputLabel id="role-filter-label">Filter by Role</InputLabel>
+    <Select
+      labelId="role-filter-label"
+      value={selectedRole}
+      label="Filter by Role"
+      onChange={(e) => setSelectedRole(e.target.value)}
+    >
+      {uniqueRoles.map((role) => (
+        <MenuItem key={role} value={role}>
+          {role || "Unknown"}
+        </MenuItem>
+      ))}
+    </Select>
+  </FormControl>
+
+  <Button variant="contained" color="primary" onClick={() => navigate("/a-add-lead")}>
+    Add Lead
+  </Button>
+</Box>
+
+     
+
 
         <Table sx={{ border: '1px solid black', width: '100%' }}>
           <TableHead>
@@ -132,7 +156,7 @@ const Tmanagement = () => {
                 <TableCell colSpan={8} sx={noDataStyle}>Loading...</TableCell>
               </TableRow>
             ) : data.length > 0 ? (
-              data.map((user) => (
+              filteredData.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell sx={cellBodyStyle}>{user.id}</TableCell>
                   <TableCell sx={cellBodyStyle}>{user.name}</TableCell>

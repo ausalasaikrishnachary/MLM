@@ -270,7 +270,7 @@ const AgentDashboard = () => {
         </Grid>
 
         {/* Second Metrics Row */}
-        <Grid container spacing={3} sx={{ mb: 3 }}>
+        {/* <Grid container spacing={3} sx={{ mb: 3 }}>
           {[
             { title: 'Pending Commission', value: '2850', icon: faHourglassHalf },
             { title: 'Commission Received', value: '40000', icon: faMoneyBillWave },
@@ -295,7 +295,7 @@ const AgentDashboard = () => {
               </Card>
             </Grid>
           ))}
-        </Grid>
+        </Grid> */}
 
         <Grid container spacing={3} sx={{ mb: 3 }}>
           <Grid item xs={12} lg={6}>

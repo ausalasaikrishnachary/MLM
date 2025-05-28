@@ -346,6 +346,7 @@ const AssetsUI = () => {
                 <Grid item xs={12} md={6} lg={4} key={property.id}>
                   <Card
                     sx={{
+                      height: 770, 
                       borderRadius: 2,
                       transition: 'all 0.3s ease',
                       position: 'relative',
@@ -624,6 +625,26 @@ const AssetsUI = () => {
                             </>
                           ) : (
                             <>
+                            <Grid item xs={6}>
+                                <Typography variant="body2" color="text.secondary">
+                                  Added By 
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={6}>
+                                <Typography
+                                  variant="body2"
+                                  fontWeight="bold"
+                                  color="text.secondary"
+                                  align="right"
+                                  display="flex"
+                                  justifyContent="flex-end"
+                                  alignItems="center"
+                                  gap={1}
+                                >
+                                  <PersonAddAltIcon fontSize="small" />
+                                  {property.username}
+                                </Typography>
+                              </Grid>
                               <Grid item xs={6}>
                                 <Typography variant="body2" color="text.secondary">
                                   Agent Referral Id

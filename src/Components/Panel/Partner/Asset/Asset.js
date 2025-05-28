@@ -518,9 +518,22 @@ const AssetsUI = () => {
           alignItems="center"
           gap={1}
         >
+          Added by: {property.username}
+        </Typography>
+        <Typography
+          variant="body2"
+          fontWeight="bold"
+          color="#E67E22"
+          textAlign="center"
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          gap={1}
+        >
           Referral ID: {property.referral_id}
         </Typography>
       </Grid>
+      
     ) : (
       <>
         <Grid item xs={6}>
