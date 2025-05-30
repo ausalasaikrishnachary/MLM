@@ -83,7 +83,7 @@ function AddBookingSlab() {
                 onChange={handleChange}
                 variant="outlined"
                 type="number"
-                required
+                // required
                 InputProps={{
                   inputProps: { 
                     min: formData.min_value || 0 

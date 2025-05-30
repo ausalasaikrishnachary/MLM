@@ -69,32 +69,19 @@ const AgentDashboard = () => {
   const [counts, setCounts] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [transactionSummary, setTransactionSummary] = useState(null);
 
+  useEffect(() => {
+    fetch('https://rahul30.pythonanywhere.com/transactions/grouped/7/')
+      .then((res) => res.json())
+      .then((data) => {
+        setTransactionSummary(data);
+      })
+      .catch((err) => {
+        console.error("Error fetching transaction summary:", err);
+      });
+  }, []);
 
-  // Chart Data
-  // const chartData = {
-  //   labels: ['Apartment', 'Villa', 'Plot', 'Office', 'Shop', 'Warehouse', 'Studio'],
-  //   datasets: [
-  //     {
-  //       label: 'Latest Properties',
-  //       data: [4, 3, 5, 7, 6, 3, 2],
-  //       backgroundColor: 'rgba(0, 123, 255, 0.6)',
-  //     },
-  //     {
-  //       label: 'Listing Properties',
-  //       data: [124, 128, 132, 139, 145, 148, 150],
-  //       backgroundColor: 'rgba(40, 167, 69, 0.6)',
-  //     },
-  //   ],
-  // };
-
-
-  const tools = [
-    { icon: <CurrencyRupee color="primary" fontSize="large" />, title: "Commission Calculator", description: "Calculate your earnings" },
-    { icon: <Group color="success" fontSize="large" />, title: "Referral System", description: "Refer clients and earn" },
-    { icon: <Search color="warning" fontSize="large" />, title: "Lead Generator", description: "Find new clients" },
-    { icon: <CalendarToday color="error" fontSize="large" />, title: "Schedule Viewings", description: "Book client appointments" }
-  ];
 
   useEffect(() => {
     if (referralId) {
@@ -152,38 +139,6 @@ const AgentDashboard = () => {
       })
       .catch(err => console.error('Error fetching property stats:', err));
   }, []);
-
-
-  const propertyListings = [
-    {
-      title: "Modern Apartment",
-      price: "₹425,000",
-      img: "https://media.istockphoto.com/id/1393537665/photo/modern-townhouse-design.jpg?s=612x612&w=0&k=20&c=vgQesOXDRzz0UfOZxmUtE-rFe75YgA9GvkKS8eeeumE=",
-      badges: ["New", "3 Bed", "2 Bath"],
-    },
-    {
-      title: "Suburban House",
-      price: "₹685,000",
-      img: "https://images.squarespace-cdn.com/content/v1/53dd6676e4b0fedfbc26ea91/b050385e-d2f4-4152-96e5-00c364e5ef18/2490861534_d220818fa4_o.jpg",
-      badges: ["New", "4 Bed", "3 Bath"],
-    },
-  ];
-
-  const inquiries = [
-    {
-      name: "Hrithik",
-      status: "New",
-      message: "Interested in Modern Apartment",
-      time: "2 hours ago",
-    },
-    {
-      name: "Varun",
-      status: "Follow Up",
-      message: "Scheduled viewing for Suburban House",
-      time: "Yesterday at 4:30 PM",
-    },
-  ];
-
 
   const [properties, setProperties] = useState([]);
 
@@ -245,7 +200,7 @@ const AgentDashboard = () => {
           {[
             { title: 'Listing Properties', value: counts?.total_properties ?? 0, icon: faBuilding, path: '/p-assets' },
             // { title: 'Team', value: totalAgents.toString(), icon: faUsers, path: '/p-myteam' },
-             { title: 'Team', value: totalAgents.toString(), icon: faUsers, path: '/p-team' },
+            { title: 'Team', value: totalAgents.toString(), icon: faUsers, path: '/p-team' },
             { title: 'Active Agents', value: totalActiveAgents, icon: faUserCheck, path: '/p-activeagents' },
             { title: 'Latest Properties', value: counts?.total_latest_properties ?? 0, icon: faHome, path: '/p-latestassets' },
           ].map((metric, index) => (
@@ -269,46 +224,70 @@ const AgentDashboard = () => {
           ))}
         </Grid>
 
-        {/* Second Metrics Row */}
-        {/* <Grid container spacing={3} sx={{ mb: 3 }}>
-          {[
-            { title: 'Pending Commission', value: '2850', icon: faHourglassHalf },
-            { title: 'Commission Received', value: '40000', icon: faMoneyBillWave },
-            { title: 'Leads', value: '134', icon: faUserPlus },
-            { title: 'Offer', value: '20%', progress: 20, color: 'error', icon: faTags },
-          ].map((metric, index) => (
-            <Grid item xs={12} sm={6} md={3} key={index}>
-              <Card sx={{ boxShadow: 3, borderRadius: "15px", height: "150px" }}>
+        {transactionSummary && (
+          <Grid container spacing={3} sx={{ mb: 3 }}>
+            <Grid item xs={12} sm={6} md={3}>
+              <Card sx={{ borderRadius: "15px", boxShadow: 3 }}>
                 <CardContent sx={{ textAlign: 'center' }}>
-                  <FontAwesomeIcon icon={metric.icon} size="2x" color="#666" />
-                  <Typography sx={{ mt: 1 }}>{metric.title}</Typography>
-                  <Typography variant="h4" sx={{ my: 1 }}>{metric.value}</Typography>
-                  {metric.progress ? (
-                    <LinearProgress
-                      variant="determinate"
-                      value={metric.progress}
-                      color={metric.color}
-                      sx={{ height: 10, borderRadius: 5 }}
-                    />
-                  ) : null}
+                  <FontAwesomeIcon icon={faUserPlus} size="2x" color="#666" />
+                  <Typography sx={{ mt: 1 }}>Bookings</Typography>
+                  <Typography variant="h4">{transactionSummary.Bookings.count}</Typography>
                 </CardContent>
               </Card>
             </Grid>
-          ))}
-        </Grid> */}
+
+            <Grid item xs={12} sm={6} md={3}>
+              <Card sx={{ borderRadius: "15px", boxShadow: 3 }}>
+                <CardContent sx={{ textAlign: 'center' }}>
+                  <FontAwesomeIcon icon={faTags} size="2x" color="#666" />
+                  <Typography sx={{ mt: 1 }}>Purchased</Typography>
+                  <Typography variant="h4">{transactionSummary.Purchased.count}</Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={3}>
+              <Card sx={{ borderRadius: "15px", boxShadow: 3 }}>
+                <CardContent sx={{ textAlign: 'center' }}>
+                  <FontAwesomeIcon icon={faMoneyBillWave} size="2x" color="#666" />
+                  <Typography sx={{ mt: 1 }}>Agent Total Commission</Typography>
+                  <Typography variant="h4">
+                    ₹{transactionSummary.totals.total_agent_commission.toLocaleString()}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={3}>
+              <Card sx={{ borderRadius: "15px", boxShadow: 3 }}>
+                <CardContent sx={{ textAlign: 'center' }}>
+                  <FontAwesomeIcon icon={faMoneyBillWave} size="2x" color="#28a745" />
+                  <Typography sx={{ mt: 1 }}>Agent Paid Commission</Typography>
+                  <Typography variant="h4">
+                    ₹{transactionSummary.totals.total_agent_commission_paid.toLocaleString()}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={3}>
+              <Card sx={{ borderRadius: "15px", boxShadow: 3 }}>
+                <CardContent sx={{ textAlign: 'center' }}>
+                  <FontAwesomeIcon icon={faMoneyBillWave} size="2x" color="#dc3545" />
+                  <Typography sx={{ mt: 1 }}>Agent Balance Commission</Typography>
+                  <Typography variant="h4">
+                    ₹{transactionSummary.totals.total_agent_commission_balance.toLocaleString()}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        )}
+
 
         <Grid container spacing={3} sx={{ mb: 3 }}>
           <Grid item xs={12} lg={6}>
             <Card sx={{ boxShadow: 3 }}>
-              {/* <CardHeader
-                title="Property Statistics"
-                action={
-                  <>
-                    <Button variant="outlined" size="small" sx={{ mr: 1 }}>Daily</Button>
-                    <Button variant="contained" size="small">Weekly</Button>
-                  </>
-                }
-              /> */}
               <CardContent sx={{ height: 335 }}>
                 {chartData ? (
                   <Bar
@@ -373,114 +352,6 @@ const AgentDashboard = () => {
             </Card>
           </Grid>
         </Grid>
-
-
-        <Grid container spacing={4} mt={4}>
-          {/* Latest Property Listings */}
-          {/* <Grid item xs={12} md={6}>
-            <Card>
-              <CardContent sx={{ display: "flex", justifyContent: "space-between" }}>
-                <Typography>Latest Property Listings</Typography>
-                <Button variant="outlined" size="small" onClick={() => navigate('/p-latestassets')}>
-                  View All
-                </Button>
-              </CardContent>
-              <CardContent sx={{ p: 0 }}>
-                <Grid container spacing={2} justifyContent="center">
-                  {properties.map((property, index) => (
-                    <Grid item xs={12} sm={6} key={index}>
-                      <Card sx={{ m: 1 }}>
-                        <CardMedia
-                          component="img"
-                          height="160"
-                          image={property.img}
-                          alt={property.title}
-                        />
-                        <CardContent>
-                          <Typography>{property.title}</Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            {property.price}
-                          </Typography>
-                          <Box mt={1}>
-                            {property.badges.map((badge, i) => (
-                              <Chip
-                                key={i}
-                                label={badge}
-                                color={i === 0 ? "success" : "info"}
-                                size="small"
-                                sx={{ mr: 0.5 }}
-                              />
-                            ))}
-                          </Box>
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                  ))}
-                </Grid>
-              </CardContent>
-            </Card>
-          </Grid> */}
-
-          {/* Active Inquiries (unchanged) */}
-          {/* <Grid item xs={12} md={6}>
-            <Card>
-              <CardContent sx={{ display: "flex", justifyContent: "space-between" }}>
-                <Typography>Active Inquiries</Typography>
-                <Button variant="outlined" size="small">View All</Button>
-              </CardContent>
-              <CardContent>
-                {inquiries.map((inquiry, index) => (
-                  <Box key={index} p={2} sx={{ bgcolor: "background.default", borderRadius: 2, mb: 2 }}>
-                    <Box display="flex" justifyContent="space-between">
-                      <Typography>{inquiry.name}</Typography>
-                      <Badge
-                        badgeContent={inquiry.status}
-                        color={inquiry.status === "New" ? "warning" : "info"}
-                      />
-                    </Box>
-                    <Typography variant="body2">{inquiry.message}</Typography>
-                    <Typography variant="caption" color="text.secondary">{inquiry.time}</Typography>
-                    <Box mt={1}>
-                      <Button variant="contained" size="small" startIcon={<Call />} sx={{ mr: 1 }}>
-                        Call
-                      </Button>
-                      <Button variant="outlined" size="small" startIcon={<Email />}>
-                        Email
-                      </Button>
-                    </Box>
-                  </Box>
-                ))}
-              </CardContent>
-            </Card>
-          </Grid> */}
-        </Grid>
-
-
-
-        {/* <Box mt={4}>
-          <Card>
-            <CardContent>
-              <Typography gutterBottom>
-                Quick Access Tools
-              </Typography>
-              <Grid container spacing={3} textAlign="center">
-                {tools.map((tool, index) => (
-                  <Grid item xs={12} sm={6} md={3} key={index}>
-                    <Card variant="outlined">
-                      <CardContent>
-                        <Box mb={1}>{tool.icon}</Box>
-                        <Typography >{tool.title}</Typography>
-                        <Typography variant="body2" color="textSecondary">
-                          {tool.description}
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                ))}
-              </Grid>
-            </CardContent>
-          </Card>
-        </Box> */}
 
         {/* Social Links */}
         <Box sx={{

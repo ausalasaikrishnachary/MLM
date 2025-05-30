@@ -4,6 +4,9 @@ import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import image2 from "./../Images/logo.png";
 import { baseurl } from '../BaseURL/BaseURL';
+import { IconButton, InputAdornment } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+
 
 const Login = () => {
   const navigate = useNavigate();
@@ -16,6 +19,12 @@ const Login = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [showResetPassword, setShowResetPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+
+  const handleTogglePassword = () => {
+    setShowPassword((prev) => !prev);
+  };
 
 
   const handleEmailChange = (e) => {
@@ -267,7 +276,25 @@ const Login = () => {
                   Login
                 </Typography>
                 <TextField fullWidth label="Email" variant="outlined" margin="normal" value={email} onChange={handleEmailChange} />
-                <TextField fullWidth label="Password" type="password" variant="outlined" margin="normal" value={password} onChange={(e) => setPassword(e.target.value)} />
+                <TextField
+                  fullWidth
+                  label="Password"
+                  type={showPassword ? "text" : "password"}
+                  variant="outlined"
+                  margin="normal"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton onClick={handleTogglePassword} edge="end">
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 1 }}>
                   <Link href="/signup" sx={{ cursor: "pointer", color: "primary.main" }}>
                     Register

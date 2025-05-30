@@ -24,7 +24,7 @@ function MyTeam() {
   const fetchAgentWithChildren = async (refId) => {
     try {
       const response = await axios.get(`${baseurl}/agents/referral-id/${refId}/`);
-      return response.data.users.map(user => ({
+      return response.data.agents.map(user => ({
         ...user,
         children: [],
         expanded: false,

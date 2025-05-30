@@ -168,6 +168,7 @@ function PaymentForm() {
         "receiver_account_number",
         "ifsc",
         "role",
+        "agent_commission"
     ];
 
 
