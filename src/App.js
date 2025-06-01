@@ -82,6 +82,11 @@ import AvailableAssets from "./Components/Panel/Admin/Asset/AvailableAssets";
 import RejectedAssets from "./Components/Panel/Admin/Asset/RejectedAssets";
 import SoldAssets from "./Components/Panel/Admin/Asset/SoldAssets";
 import ApprovedAssets from "./Components/Panel/Admin/Asset/ApprovedAssets";
+import PartnerBookedAssets from "./Components/Panel/Partner/Asset/PartnerBookedAssets";
+import PartnerPurchasedAssets from "./Components/Panel/Partner/Asset/PartnerPurchasedAssets";
+import SoldProperties from "./Components/Panel/Partner/Asset/SoldProperties";
+import ListingProperties from "./Components/Panel/Partner/Asset/ListingProperties";
+import LatestProperties from "./Components/Panel/Partner/Asset/LatestProperties";
 
 
 
@@ -177,6 +182,11 @@ function App() {
            <Route path="/p-team" element={<Team />} />
            <Route path="/p-meetings" element={<Meetings />} />
            <Route path="/p-meetingrequest" element={<MeetingRequestForm />} />
+           <Route path="/p-bookedassets" element={<PartnerBookedAssets />} />
+           <Route path="/p-purchasedassets" element={<PartnerPurchasedAssets />} />
+           <Route path="/p-soldassets" element={<SoldProperties />} />
+           <Route path="/p-listingassets" element={<ListingProperties />} />
+           <Route path="/p-latestProperties" element={<LatestProperties />} />
 
           <Route path="/" element={<Login />} />
 

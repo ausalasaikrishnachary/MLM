@@ -90,7 +90,7 @@ function PartnerCommission() {
                                     propertyData.map((property) => (
                                         <TableRow key={property.id}>
                                             <TableCell sx={cellBodyStyle}>{property.property_title}</TableCell>
-                                            <TableCell sx={cellBodyStyle}>{property.property_value}</TableCell>
+                                            <TableCell sx={cellBodyStyle}>{property.total_property_value}</TableCell>
                                             <TableCell sx={cellBodyStyle}>{property.status}</TableCell>
                                             <TableCell sx={cellBodyStyle}>{property.agent_commission}</TableCell>
                                             <TableCell sx={cellBodyStyle}>{property.agent_commission_paid}</TableCell>
@@ -126,12 +126,13 @@ function PartnerCommission() {
                                         {/* <TableCell sx={cellStyle}>Commission ID</TableCell> */}
                                         {/* <TableCell sx={cellStyle}>Transaction ID</TableCell> */}
                                         {/* <TableCell sx={cellStyle}>Agent ID</TableCell> */}
-                                        <TableCell sx={cellStyle}>Property ID</TableCell>
-                                        <TableCell sx={cellStyle}>Agent Name</TableCell>
+                                        <TableCell sx={cellStyle}>Property Name</TableCell>
+                                        <TableCell sx={cellStyle}>Buyer Name</TableCell>
+                                        {/* <TableCell sx={cellStyle}>Agent Name</TableCell> */}
 
-                                        <TableCell sx={cellStyle}>Referral ID</TableCell>
+                                        {/* <TableCell sx={cellStyle}>Referral ID</TableCell> */}
 
-                                        <TableCell sx={cellStyle}>Level No</TableCell>
+                                        <TableCell sx={cellStyle}>My Level No</TableCell>
                                         <TableCell sx={cellStyle}>Percentage</TableCell>
                                         <TableCell sx={cellStyle}>Amount</TableCell>
                                     </TableRow>
@@ -145,10 +146,10 @@ function PartnerCommission() {
                                             {/* <TableCell sx={cellBodyStyle}>{item.commission_id}</TableCell> */}
                                             {/* <TableCell sx={cellBodyStyle}>{item.transaction_id}</TableCell> */}
                                             {/* <TableCell sx={cellBodyStyle}>{item.agent_id}</TableCell> */}
-                                            <TableCell sx={cellBodyStyle}>{item.property_id}</TableCell>
-                                            <TableCell sx={cellBodyStyle}>{item.agent_name}</TableCell>
-
-                                            <TableCell sx={cellBodyStyle}>{item.referral_id}</TableCell>
+                                            <TableCell sx={cellBodyStyle}>{item.property_name}</TableCell>
+                                            <TableCell sx={cellBodyStyle}>{item.buyer_username}</TableCell>
+                                            {/* <TableCell sx={cellBodyStyle}>{item.agent_name}</TableCell> */}
+                                            {/* <TableCell sx={cellBodyStyle}>{item.referral_id}</TableCell> */}
                                             <TableCell sx={cellBodyStyle}>{item.level_no}</TableCell>
                                             <TableCell sx={cellBodyStyle}>{item.percentage_value}%</TableCell>
                                             <TableCell sx={cellBodyStyle}>{item.amount}</TableCell>

@@ -18,7 +18,7 @@ import {
   CardMedia,
 
 } from '@mui/material';
-import { faHourglassHalf, faMoneyBillWave, faUserPlus, faTags, faUserCheck } from '@fortawesome/free-solid-svg-icons';
+import { faHourglassHalf, faMoneyBillWave, faUserPlus, faTags, faUserCheck, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -67,12 +67,34 @@ const AgentDashboard = () => {
   const [totalAgents, setTotalAgents] = useState(0); // ✨ new state
   const [totalActiveAgents, setTotalActiveAgents] = useState(0); // ✨ new state
   const [counts, setCounts] = useState(null);
+  const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [transactionSummary, setTransactionSummary] = useState(null);
+  const userId = localStorage.getItem("user_id");
 
   useEffect(() => {
-    fetch('https://rahul30.pythonanywhere.com/transactions/grouped/7/')
+    if (!userId) return;
+
+    axios
+      .get(`${baseurl}/property-stats/user-id/${userId}/`)
+      .then((response) => {
+        const data = response.data;
+        setProperty({
+          total_properties: data.listing.properties.count,
+          total_latest_properties: data.latest.properties.count,
+          total_sold_properties: data.sold.properties.count,
+        });
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching counts:", error);
+        setLoading(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    fetch(`${baseurl}/transactions/grouped/user-id/${userId}/`)
       .then((res) => res.json())
       .then((data) => {
         setTransactionSummary(data);
@@ -114,26 +136,29 @@ const AgentDashboard = () => {
   const [chartData, setChartData] = useState(null);
 
   useEffect(() => {
-    fetch('https://rahul30.pythonanywhere.com/property-stats/')
+    const userId = localStorage.getItem("user_id");
+    if (!userId) return;
+
+    fetch(`https://rahul30.pythonanywhere.com/property-stats/user-id/${userId}/`)
       .then(res => res.json())
       .then(data => {
-        const labels = Object.keys(data); // ['Residential', 'Commercial']
-        const latestCounts = labels.map(key => data[key].latest_count);
-        const listingCounts = labels.map(key => data[key].listing_count);
+        const listingCount = data.listing.properties.count;
+        const latestCount = data.latest.properties.count;
+        const soldCount = data.sold.properties.count;
 
         setChartData({
-          labels,
+          labels: ['Properties'],
           datasets: [
             {
-              label: 'Latest Properties',
-              data: latestCounts,
-              backgroundColor: 'rgba(0, 123, 255, 0.6)',
+              label: 'Listing Properties',
+              data: [listingCount],
+              backgroundColor: 'rgba(40, 167, 69, 0.6)',
             },
             {
-              label: 'Listing Properties',
-              data: listingCounts,
-              backgroundColor: 'rgba(40, 167, 69, 0.6)',
-            }
+              label: 'Latest Properties',
+              data: [latestCount],
+              backgroundColor: 'rgba(0, 123, 255, 0.6)',
+            },
           ],
         });
       })
@@ -160,13 +185,19 @@ const AgentDashboard = () => {
             ? `${baseurl}${imagePath}`
             : "https://via.placeholder.com/400x200?text=No+Image";
 
+          // Safely format price
+          const priceValue = Number(property.total_property_value);
+          const formattedPrice = !isNaN(priceValue)
+            ? `₹${priceValue}`
+            : "₹0";
+
           return {
             title: property.property_title || "No Title",
-            price: `₹${Number(property.total_property_value).toLocaleString()}`,
+            price: formattedPrice,
             badges: [
               property.status || "N/A",
               property.approval_status || "N/A",
-              property.looking_to?.toUpperCase() || "N/A"
+              property.looking_to?.toUpperCase() || "N/A",
             ],
             img: imageUrl,
           };
@@ -180,6 +211,7 @@ const AgentDashboard = () => {
 
     fetchProperties();
   }, []);
+
 
 
 
@@ -198,11 +230,11 @@ const AgentDashboard = () => {
         {/* Top Metrics Row */}
         <Grid container spacing={3} sx={{ mb: 3 }}>
           {[
-            { title: 'Listing Properties', value: counts?.total_properties ?? 0, icon: faBuilding, path: '/p-assets' },
+            { title: 'Listing Properties', value: property?.total_properties ?? 0, icon: faBuilding, path: '/p-listingassets' },
             // { title: 'Team', value: totalAgents.toString(), icon: faUsers, path: '/p-myteam' },
             { title: 'Team', value: totalAgents.toString(), icon: faUsers, path: '/p-team' },
             { title: 'Active Agents', value: totalActiveAgents, icon: faUserCheck, path: '/p-activeagents' },
-            { title: 'Latest Properties', value: counts?.total_latest_properties ?? 0, icon: faHome, path: '/p-latestassets' },
+            { title: 'Latest Properties', value: property?.total_latest_properties ?? 0, icon: faHome, path: '/p-latestProperties' },
           ].map((metric, index) => (
             <Grid item xs={12} sm={6} md={3} key={index}>
               <Link to={metric.path} style={{ textDecoration: 'none' }}>
@@ -227,32 +259,70 @@ const AgentDashboard = () => {
         {transactionSummary && (
           <Grid container spacing={3} sx={{ mb: 3 }}>
             <Grid item xs={12} sm={6} md={3}>
-              <Card sx={{ borderRadius: "15px", boxShadow: 3 }}>
+              <Card
+                sx={{
+                  borderRadius: "15px",
+                  boxShadow: 3,
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s',
+                  '&:hover': { transform: 'translateY(-4px)' },
+                }}
+                onClick={() => navigate('/p-bookedassets')}
+              >
                 <CardContent sx={{ textAlign: 'center' }}>
                   <FontAwesomeIcon icon={faUserPlus} size="2x" color="#666" />
                   <Typography sx={{ mt: 1 }}>Bookings</Typography>
-                  <Typography variant="h4">{transactionSummary.Bookings.count}</Typography>
+                  <Typography variant="h4">{transactionSummary.bookings.properties.count}</Typography>
                 </CardContent>
               </Card>
             </Grid>
 
             <Grid item xs={12} sm={6} md={3}>
-              <Card sx={{ borderRadius: "15px", boxShadow: 3 }}>
+              <Card
+                sx={{
+                  borderRadius: "15px",
+                  boxShadow: 3,
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s',
+                  '&:hover': { transform: 'translateY(-4px)' },
+                }}
+                onClick={() => navigate('/p-purchasedassets')}
+              >
                 <CardContent sx={{ textAlign: 'center' }}>
                   <FontAwesomeIcon icon={faTags} size="2x" color="#666" />
                   <Typography sx={{ mt: 1 }}>Purchased</Typography>
-                  <Typography variant="h4">{transactionSummary.Purchased.count}</Typography>
+                  <Typography variant="h4">{transactionSummary.purchased.properties.count}</Typography>
                 </CardContent>
               </Card>
             </Grid>
 
             <Grid item xs={12} sm={6} md={3}>
+              <Card
+                sx={{
+                  borderRadius: "15px",
+                  boxShadow: 3,
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s',
+                  '&:hover': { transform: 'translateY(-4px)' },
+                }}
+                onClick={() => navigate('/p-soldassets')}
+              >
+                <CardContent sx={{ textAlign: 'center' }}>
+                  <FontAwesomeIcon icon={faCheckCircle} size="2x" color="#666" />
+                  <Typography sx={{ mt: 1 }}>Sold</Typography>
+                  <Typography variant="h4">{property?.total_sold_properties ?? 0}</Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+
+
+            {/* <Grid item xs={12} sm={6} md={3}>
               <Card sx={{ borderRadius: "15px", boxShadow: 3 }}>
                 <CardContent sx={{ textAlign: 'center' }}>
                   <FontAwesomeIcon icon={faMoneyBillWave} size="2x" color="#666" />
                   <Typography sx={{ mt: 1 }}>Agent Total Commission</Typography>
                   <Typography variant="h4">
-                    ₹{transactionSummary.totals.total_agent_commission.toLocaleString()}
+                    ₹{transactionSummary.totals.total_agent_commission}
                   </Typography>
                 </CardContent>
               </Card>
@@ -264,7 +334,7 @@ const AgentDashboard = () => {
                   <FontAwesomeIcon icon={faMoneyBillWave} size="2x" color="#28a745" />
                   <Typography sx={{ mt: 1 }}>Agent Paid Commission</Typography>
                   <Typography variant="h4">
-                    ₹{transactionSummary.totals.total_agent_commission_paid.toLocaleString()}
+                    ₹{transactionSummary.totals.total_agent_commission_paid}
                   </Typography>
                 </CardContent>
               </Card>
@@ -276,11 +346,11 @@ const AgentDashboard = () => {
                   <FontAwesomeIcon icon={faMoneyBillWave} size="2x" color="#dc3545" />
                   <Typography sx={{ mt: 1 }}>Agent Balance Commission</Typography>
                   <Typography variant="h4">
-                    ₹{transactionSummary.totals.total_agent_commission_balance.toLocaleString()}
+                    ₹{transactionSummary.totals.total_agent_commission_balance}
                   </Typography>
                 </CardContent>
               </Card>
-            </Grid>
+            </Grid> */}
           </Grid>
         )}
 
