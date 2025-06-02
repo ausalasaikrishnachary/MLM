@@ -125,7 +125,7 @@ function PartnerPlans() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            status: "Active"
+            status: "active"
           }),
         });
 

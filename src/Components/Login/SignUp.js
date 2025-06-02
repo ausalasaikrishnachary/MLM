@@ -30,7 +30,7 @@ const SignUp = () => {
         status: "",
         pan_number: "",
         aadhaar_number: "",
-        kyc_status: "Pending",
+        kyc_status: "pending",
         account_holder_name: "",
         bank_name: "",
         branch_name: "",
@@ -40,7 +40,7 @@ const SignUp = () => {
         nominee_reference_to: "",
         referral_id: "",
         referred_by:"",
-        status:"Inactive"
+        status:""
     });
 
     const hiddenFields = [

@@ -240,6 +240,7 @@ const AssetForm = () => {
         owner_email: formData.ownerEmail,
         is_featured: formData.isFeatured,
         // amenities: JSON.stringify(formData.amenities),
+        amenities: formData.amenities.map(id => Number(id)),
         category: formData.category,
         property_type: formData.propertyType,
         user_id: userId,

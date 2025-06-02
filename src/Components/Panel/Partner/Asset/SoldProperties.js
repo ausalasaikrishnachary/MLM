@@ -183,7 +183,7 @@ const SoldProperties = () => {
                                         {property.city}, {property.state}
                                     </Typography>
                                     <Typography variant="body2" color="text.secondary" mb={1}>
-                                        Added By: <strong>{property.first_name}</strong>
+                                        Purchased By: <strong>{property.first_name}</strong>
                                     </Typography>
                                     {/* <FormControl fullWidth size="small" sx={{ mt: 2 }}>
                                         <Typography variant="subtitle2" sx={{ mb: 0.5, fontWeight: 500 }}>
