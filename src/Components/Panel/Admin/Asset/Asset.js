@@ -108,6 +108,15 @@ const AssetsUI = () => {
       case 'price-low':
         results.sort((a, b) => a.property_value - b.property_value);
         break;
+      case 'sold':
+        results = results.filter((property) => property.status?.toLowerCase() === 'sold');
+        break;
+      case 'available':
+        results = results.filter((property) => property.status?.toLowerCase() === 'available');
+        break;
+      case 'booked':
+        results = results.filter((property) => property.status?.toLowerCase() === 'booked');
+        break;
       default:
         // No sorting
         break;
@@ -309,6 +318,9 @@ const AssetsUI = () => {
                   <MenuItem value="oldest">Oldest</MenuItem>
                   <MenuItem value="price-high">Price: High to Low</MenuItem>
                   <MenuItem value="price-low">Price: Low to High</MenuItem>
+                  <MenuItem value="sold">Sold</MenuItem>
+                  <MenuItem value="available">Available</MenuItem>
+                  <MenuItem value="booked">Booked</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -346,7 +358,7 @@ const AssetsUI = () => {
                 <Grid item xs={12} md={6} lg={4} key={property.id}>
                   <Card
                     sx={{
-                      height: 770, 
+                      height: 770,
                       borderRadius: 2,
                       transition: 'all 0.3s ease',
                       position: 'relative',
@@ -625,9 +637,9 @@ const AssetsUI = () => {
                             </>
                           ) : (
                             <>
-                            <Grid item xs={6}>
+                              <Grid item xs={6}>
                                 <Typography variant="body2" color="text.secondary">
-                                  Added By 
+                                  Added By
                                 </Typography>
                               </Grid>
                               <Grid item xs={6}>

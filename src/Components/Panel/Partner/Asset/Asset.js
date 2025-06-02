@@ -36,7 +36,7 @@ import VideocamIcon from '@mui/icons-material/Videocam';
 
 
 const AssetsUI = () => {
-  const [sortBy, setSortBy] = useState(''); 
+  const [sortBy, setSortBy] = useState('');
   const [properties, setProperties] = useState([]);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
@@ -127,6 +127,15 @@ const AssetsUI = () => {
       case 'price-low':
         results.sort((a, b) => a.property_value - b.property_value);
         break;
+      case 'sold':
+        results = results.filter((property) => property.status?.toLowerCase() === 'sold');
+        break;
+      case 'available':
+        results = results.filter((property) => property.status?.toLowerCase() === 'available');
+        break;
+      case 'booked':
+        results = results.filter((property) => property.status?.toLowerCase() === 'booked');
+        break;
       default:
         // No sorting
         break;
@@ -188,7 +197,7 @@ const AssetsUI = () => {
   // Function to get all media (images + videos) for a property
   const getAllMedia = (property) => {
     const media = [];
-    
+
     // Add images
     if (property.images && property.images.length > 0) {
       media.push(...property.images.map(img => ({
@@ -197,7 +206,7 @@ const AssetsUI = () => {
         alt: `Property image`
       })));
     }
-    
+
     // Add videos
     if (property.videos && property.videos.length > 0) {
       media.push(...property.videos.map(vid => ({
@@ -206,7 +215,7 @@ const AssetsUI = () => {
         alt: `Property video`
       })));
     }
-    
+
     return media;
   };
 
@@ -214,7 +223,7 @@ const AssetsUI = () => {
   const getCurrentMediaUrl = (property) => {
     const media = getAllMedia(property);
     if (media.length === 0) return 'https://via.placeholder.com/300';
-    
+
     const currentIndex = currentImageIndices[property.property_id] || 0;
     return media[currentIndex]?.url || 'https://via.placeholder.com/300';
   };
@@ -223,7 +232,7 @@ const AssetsUI = () => {
   const isCurrentMediaVideo = (property) => {
     const media = getAllMedia(property);
     if (media.length === 0) return false;
-    
+
     const currentIndex = currentImageIndices[property.property_id] || 0;
     return media[currentIndex]?.type === 'video';
   };
@@ -279,6 +288,9 @@ const AssetsUI = () => {
                   <MenuItem value="oldest">Oldest</MenuItem>
                   <MenuItem value="price-high">Price: High to Low</MenuItem>
                   <MenuItem value="price-low">Price: Low to High</MenuItem>
+                  <MenuItem value="sold">Sold</MenuItem>
+                  <MenuItem value="available">Available</MenuItem>
+                  <MenuItem value="booked">Booked</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -292,7 +304,7 @@ const AssetsUI = () => {
               const media = getAllMedia(property);
               const currentIndex = currentImageIndices[property.property_id] || 0;
               const totalMedia = media.length;
-              
+
               return (
                 <Grid item xs={12} md={6} lg={4} key={property.id}>
                   <Card
@@ -323,7 +335,7 @@ const AssetsUI = () => {
                             <source src={getCurrentMediaUrl(property)} type="video/mp4" />
                             Your browser does not support the video tag.
                           </video>
-                          <VideocamIcon 
+                          <VideocamIcon
                             sx={{
                               position: 'absolute',
                               top: 8,
@@ -345,7 +357,7 @@ const AssetsUI = () => {
                           onClick={() => handleImageClick(property)}
                         />
                       )}
-                      
+
                       {/* Navigation arrows when there are multiple media items */}
                       {totalMedia > 1 && (
                         <>
@@ -399,25 +411,25 @@ const AssetsUI = () => {
                         </>
                       )}
                       {property.status !== 'sold' && (
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          top: 15,
-                          right: -30,
-                          width: '150px',
-                          transform: 'rotate(45deg)',
-                          backgroundColor: "red",
-                          color: 'white',
-                          textAlign: 'center',
-                          fontSize: '12px',
-                          fontWeight: 'bold',
-                          textTransform: 'uppercase',
-                          py: '4px',
-                          boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-                        }}
-                      >
-                        {property.looking_to}
-                      </Box>
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            top: 15,
+                            right: -30,
+                            width: '150px',
+                            transform: 'rotate(45deg)',
+                            backgroundColor: "red",
+                            color: 'white',
+                            textAlign: 'center',
+                            fontSize: '12px',
+                            fontWeight: 'bold',
+                            textTransform: 'uppercase',
+                            py: '4px',
+                            boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+                          }}
+                        >
+                          {property.looking_to}
+                        </Box>
                       )}
                       <Box
                         sx={{
@@ -498,89 +510,89 @@ const AssetsUI = () => {
                         </Grid>
                       </Grid>
                       <Box
-  sx={{
-    backgroundColor: '#F8F9FA',
-    borderRadius: 1,
-    p: 1.5,
-    mb: 2
-  }}
->
-  <Grid container>
-    {subscriptionPaid && property.referral_id ? (
-      <Grid item xs={12}>
-        <Typography
-          variant="body2"
-          fontWeight="bold"
-          color="#E67E22"
-          textAlign="center"
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          gap={1}
-        >
-          Added by: {property.username}
-        </Typography>
-        <Typography
-          variant="body2"
-          fontWeight="bold"
-          color="#E67E22"
-          textAlign="center"
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          gap={1}
-        >
-          Referral ID: {property.referral_id}
-        </Typography>
-      </Grid>
-      
-    ) : (
-      <>
-        <Grid item xs={6}>
-          <Typography variant="body2" color="text.secondary">
-            {subscriptionPaid ? "Owner Email" : "Office Email"}
-          </Typography>
-        </Grid>
-        <Grid item xs={6}>
-          <Typography
-            variant="body2"
-            fontWeight="bold"
-            color="#4A90E2"
-            align="right"
-            display="flex"
-            justifyContent="flex-end"
-            alignItems="center"
-            gap={1}
-          >
-            <EmailIcon fontSize="small" />
-            {subscriptionPaid ? property.owner_email : "sriraj@gmail.com"}
-          </Typography>
-        </Grid>
+                        sx={{
+                          backgroundColor: '#F8F9FA',
+                          borderRadius: 1,
+                          p: 1.5,
+                          mb: 2
+                        }}
+                      >
+                        <Grid container>
+                          {subscriptionPaid && property.referral_id ? (
+                            <Grid item xs={12}>
+                              <Typography
+                                variant="body2"
+                                fontWeight="bold"
+                                color="#E67E22"
+                                textAlign="center"
+                                display="flex"
+                                justifyContent="center"
+                                alignItems="center"
+                                gap={1}
+                              >
+                                Added by: {property.username}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                fontWeight="bold"
+                                color="#E67E22"
+                                textAlign="center"
+                                display="flex"
+                                justifyContent="center"
+                                alignItems="center"
+                                gap={1}
+                              >
+                                Referral ID: {property.referral_id}
+                              </Typography>
+                            </Grid>
 
-        <Grid item xs={6}>
-          <Typography variant="body2" color="text.secondary">
-            {subscriptionPaid ? "Owner Contact" : "Office Contact"}
-          </Typography>
-        </Grid>
-        <Grid item xs={6}>
-          <Typography
-            variant="body2"
-            fontWeight="bold"
-            color="text.secondary"
-            align="right"
-            display="flex"
-            justifyContent="flex-end"
-            alignItems="center"
-            gap={1}
-          >
-            <CallIcon fontSize="small" />
-            {subscriptionPaid ? property.owner_contact : "+1-123-456-7890"}
-          </Typography>
-        </Grid>
-      </>
-    )}
-  </Grid>
-</Box>
+                          ) : (
+                            <>
+                              <Grid item xs={6}>
+                                <Typography variant="body2" color="text.secondary">
+                                  {subscriptionPaid ? "Owner Email" : "Office Email"}
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={6}>
+                                <Typography
+                                  variant="body2"
+                                  fontWeight="bold"
+                                  color="#4A90E2"
+                                  align="right"
+                                  display="flex"
+                                  justifyContent="flex-end"
+                                  alignItems="center"
+                                  gap={1}
+                                >
+                                  <EmailIcon fontSize="small" />
+                                  {subscriptionPaid ? property.owner_email : "sriraj@gmail.com"}
+                                </Typography>
+                              </Grid>
+
+                              <Grid item xs={6}>
+                                <Typography variant="body2" color="text.secondary">
+                                  {subscriptionPaid ? "Owner Contact" : "Office Contact"}
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={6}>
+                                <Typography
+                                  variant="body2"
+                                  fontWeight="bold"
+                                  color="text.secondary"
+                                  align="right"
+                                  display="flex"
+                                  justifyContent="flex-end"
+                                  alignItems="center"
+                                  gap={1}
+                                >
+                                  <CallIcon fontSize="small" />
+                                  {subscriptionPaid ? property.owner_contact : "+1-123-456-7890"}
+                                </Typography>
+                              </Grid>
+                            </>
+                          )}
+                        </Grid>
+                      </Box>
 
                       <Grid container spacing={1}>
                         <Grid item xs={12}>
@@ -620,31 +632,31 @@ const AssetsUI = () => {
                     <Dialog open={openCarousel} onClose={handleCloseCarousel} maxWidth="md" fullWidth>
                       <Box sx={{ p: 2, background: '#000' }}>
                         {selectedProperty && getAllMedia(selectedProperty).length > 0 ? (
-                         <Carousel
-  showThumbs={false}
-  infiniteLoop
-  useKeyboardArrows
-  dynamicHeight
-  autoPlay
-  emulateTouch
->
-  {getAllMedia(selectedProperty)
-    .filter((media) => media.type === 'image') // ✅ Filter only images
-    .map((media, idx) => (
-      <div key={idx}>
-        <img
-          src={media.url}
-          alt={media.alt || `Image ${idx + 1}`}
-          style={{
-            borderRadius: 8,
-            maxHeight: '550px',
-            objectFit: 'cover',
-            width: '100%',
-          }}
-        />
-      </div>
-    ))}
-</Carousel>
+                          <Carousel
+                            showThumbs={false}
+                            infiniteLoop
+                            useKeyboardArrows
+                            dynamicHeight
+                            autoPlay
+                            emulateTouch
+                          >
+                            {getAllMedia(selectedProperty)
+                              .filter((media) => media.type === 'image') // ✅ Filter only images
+                              .map((media, idx) => (
+                                <div key={idx}>
+                                  <img
+                                    src={media.url}
+                                    alt={media.alt || `Image ${idx + 1}`}
+                                    style={{
+                                      borderRadius: 8,
+                                      maxHeight: '550px',
+                                      objectFit: 'cover',
+                                      width: '100%',
+                                    }}
+                                  />
+                                </div>
+                              ))}
+                          </Carousel>
 
                         ) : (
                           <Typography color="white">No media available.</Typography>

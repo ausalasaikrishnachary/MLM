@@ -87,6 +87,9 @@ import PartnerPurchasedAssets from "./Components/Panel/Partner/Asset/PartnerPurc
 import SoldProperties from "./Components/Panel/Partner/Asset/SoldProperties";
 import ListingProperties from "./Components/Panel/Partner/Asset/ListingProperties";
 import LatestProperties from "./Components/Panel/Partner/Asset/LatestProperties";
+import ActiveAgents from "./Components/Panel/Admin/Agents/ActiveAgents";
+import InactiveAgents from "./Components/Panel/Admin/Agents/InactiveAgents";
+import NewProperties from "./Components/Panel/Admin/Asset/NewProperties";
 
 
 
@@ -136,6 +139,10 @@ function App() {
           <Route path="/a-rejectedassets" element={<RejectedAssets />} />
           <Route path="/a-soldassets" element={<SoldAssets />} />
           <Route path="/a-approvedassets" element={<ApprovedAssets />} />
+
+            <Route path="/a-activeagents" element={<ActiveAgents />} />
+            <Route path="/a-Inactiveagents" element={<InactiveAgents />} />
+            <Route path="/a-Newproperties" element={<NewProperties />} />
 
 
           <Route path="/i-dashboard" element={<InvestorDashboard />} />

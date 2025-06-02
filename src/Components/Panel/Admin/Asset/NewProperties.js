@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import IconButton from '@mui/material/IconButton';
 import {
   Container,
   Box,
@@ -20,80 +17,83 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Pagination
+  Pagination,
+  IconButton,
+  Tooltip
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
+import Header from '../../../Shared/Navbar/Navbar';
 import { useNavigate } from "react-router-dom";
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import PaginationComponent from '../../../Shared/Pagination';
-import { baseurl } from '../../../BaseURL/BaseURL';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import VideocamIcon from '@mui/icons-material/Videocam';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { baseurl } from '../../../BaseURL/BaseURL';
+import VideocamIcon from '@mui/icons-material/Videocam';
+import CallIcon from '@mui/icons-material/Call';
+import EmailIcon from '@mui/icons-material/Email';
+import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 
-const PartnerMyAssets = () => {
+const NewProperties = () => {
   const [sortBy, setSortBy] = useState('');
   const [properties, setProperties] = useState([]);
   const [filteredProperties, setFilteredProperties] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
-  const navigate = useNavigate();
-  const userId = localStorage.getItem("user_id");
-  const referralId = localStorage.getItem('referral_id');
+  const [searchQuery, setSearchQuery] = useState('');
   const [currentImageIndices, setCurrentImageIndices] = useState({});
-  const [page, setPage] = useState(1);
+  const navigate = useNavigate();
   const itemsPerPage = 6;
+  const [page, setPage] = useState(1);
   const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
   const startIndex = (page - 1) * itemsPerPage;
   const paginatedProperties = filteredProperties.slice(startIndex, startIndex + itemsPerPage);
-
-
-  const fetchProperties = async () => {
-    try {
-      const response = await fetch(`${baseurl}/properties/user-id/${userId}/`);
-      const data = await response.json();
-      console.log("userid", userId)
-      setProperties(data);
-      setFilteredProperties(data);
-    } catch (error) {
-      console.error('Error fetching properties:', error);
-    }
-  };
+  const [openCarousel, setOpenCarousel] = useState(false);
 
   useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        const response = await fetch('https://rahul30.pythonanywhere.com/latest-properties/');
+        const data = await response.json();
+        setProperties(data);
+        setFilteredProperties(data);
+      } catch (error) {
+        console.error('Error fetching properties:', error);
+      }
+    };
     fetchProperties();
   }, []);
 
+
+  // Apply both search and sort filters
   useEffect(() => {
     let results = [...properties];
 
+    // Apply search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      const referralId = localStorage.getItem('referral_id');
-
       results = results.filter(property => {
         const searchFields = [
           property.property_title,
           property.first_name,
           property.city,
-          property.state,
           property.owner_name,
           property.owner_contact,
+          property.state,
           property.address,
           property.description,
+          property.referral_id,
           property.property_value?.toString(),
           property.plot_area_sqft?.toString(),
-          property.builtup_area_sqft?.toString(),
-          referralId
+          property.builtup_area_sqft?.toString()
         ].filter(Boolean);
 
         return searchFields.some(field => field.toLowerCase().includes(query));
       });
     }
-
 
     // Apply sort filter
     switch (sortBy) {
@@ -109,15 +109,6 @@ const PartnerMyAssets = () => {
       case 'price-low':
         results.sort((a, b) => a.property_value - b.property_value);
         break;
-      case 'sold':
-        results = results.filter((property) => property.status?.toLowerCase() === 'sold');
-        break;
-      case 'available':
-        results = results.filter((property) => property.status?.toLowerCase() === 'available');
-        break;
-      case 'booked':
-        results = results.filter((property) => property.status?.toLowerCase() === 'booked');
-        break;
       default:
         // No sorting
         break;
@@ -132,7 +123,6 @@ const PartnerMyAssets = () => {
 
   const handlePageChange = (event, value) => {
     setPage(value);
-    // Fetch data based on `value` or update UI accordingly
   };
 
   const handleSortChange = (event) => {
@@ -148,8 +138,6 @@ const PartnerMyAssets = () => {
     setOpenDialog(false);
     setSelectedProperty(null);
   };
-
-  const [openCarousel, setOpenCarousel] = useState(false);
 
   const handleImageClick = (property) => {
     setSelectedProperty(property);
@@ -172,8 +160,8 @@ const PartnerMyAssets = () => {
 
       if (response.ok) {
         alert('Property deleted successfully.');
-        fetchProperties();
-        // Refresh list or redirect as needed
+        setProperties(prev => prev.filter(p => p.property_id !== propertyId));
+        setFilteredProperties(prev => prev.filter(p => p.property_id !== propertyId));
       } else {
         alert(`Failed to delete property. Status: ${response.status}`);
       }
@@ -197,6 +185,34 @@ const PartnerMyAssets = () => {
       ...prev,
       [propertyId]: (prev[propertyId] || 0) > 0 ? (prev[propertyId] || 0) - 1 : totalImages - 1
     }));
+  };
+
+  const updateApprovalStatus = async (propertyId, newStatus) => {
+    try {
+      const response = await fetch(`${baseurl}/property/${propertyId}/`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ approval_status: newStatus })
+      });
+
+      if (response.ok) {
+        alert('Approval status updated successfully.');
+        const updatedData = await response.json();
+        setProperties(prev =>
+          prev.map(p => (p.property_id === propertyId ? { ...p, approval_status: updatedData.approval_status } : p))
+        );
+        setFilteredProperties(prev =>
+          prev.map(p => (p.property_id === propertyId ? { ...p, approval_status: updatedData.approval_status } : p))
+        );
+      } else {
+        alert(`Failed to update approval status. Status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Error updating approval status:', error);
+      alert('An error occurred while updating the approval status.');
+    }
   };
 
   // Function to get all media (images + videos) for a property
@@ -242,12 +258,13 @@ const PartnerMyAssets = () => {
     return media[currentIndex]?.type === 'video';
   };
 
+
   return (
     <>
-      <PartnerHeader />
+      <Header />
       <Container sx={{ py: 4 }}>
         <Typography variant="h4" sx={{ marginLeft: '10px', textAlign: "center" }}>
-          Properties
+          New Properties
         </Typography>
         <Box
           sx={{
@@ -293,9 +310,6 @@ const PartnerMyAssets = () => {
                   <MenuItem value="oldest">Oldest</MenuItem>
                   <MenuItem value="price-high">Price: High to Low</MenuItem>
                   <MenuItem value="price-low">Price: Low to High</MenuItem>
-                  <MenuItem value="sold">Sold</MenuItem>
-                  <MenuItem value="available">Available</MenuItem>
-                  <MenuItem value="booked">Booked</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -313,7 +327,7 @@ const PartnerMyAssets = () => {
                     backgroundColor: '#27AE60'
                   }
                 }}
-                onClick={() => navigate('/p-addasset')}
+              // onClick={() => navigate('/a-addasset')}
               >
                 Add Property
               </Button>
@@ -333,6 +347,7 @@ const PartnerMyAssets = () => {
                 <Grid item xs={12} md={6} lg={4} key={property.id}>
                   <Card
                     sx={{
+                      height: 770,
                       borderRadius: 2,
                       transition: 'all 0.3s ease',
                       position: 'relative',
@@ -487,6 +502,33 @@ const PartnerMyAssets = () => {
                       <Typography variant="body2" color="text.secondary" mb={2}>
                         {property.city}, {property.state}
                       </Typography>
+                      <Typography variant="body2" color="text.secondary" mb={1}>
+                        Added By: <strong>{property.first_name}</strong>
+                      </Typography>
+                      <FormControl fullWidth size="small" sx={{ mt: 2 }}>
+                        <Typography variant="subtitle2" sx={{ mb: 0.5, fontWeight: 500 }}>
+                          Approval Status
+                        </Typography>
+                        <Select
+                          value={property.approval_status || ''}
+                          onChange={(e) => updateApprovalStatus(property.property_id, e.target.value)}
+                          displayEmpty
+                          sx={{
+                            borderRadius: '8px',
+                            backgroundColor: '#f9f9f9',
+                            '&:hover': {
+                              backgroundColor: '#f0f0f0'
+                            }
+                          }}
+                        >
+                          <MenuItem value={property.approval_status}>
+                            <em>{property.approval_status}</em>
+                          </MenuItem>
+                          <MenuItem value="approved">Approved</MenuItem>
+                          <MenuItem value="rejected">Rejected</MenuItem>
+                        </Select>
+                      </FormControl>
+
                       <Grid
                         container
                         spacing={2}
@@ -531,65 +573,125 @@ const PartnerMyAssets = () => {
                       </Grid>
                       <Box
                         sx={{
-
+                          backgroundColor: '#F8F9FA',
                           borderRadius: 1,
                           p: 1.5,
                           mb: 2
                         }}
                       >
-                        <Box
-                          display="flex"
-                          justifyContent="space-between"
-                          alignItems="center"
-                          sx={{ width: '100%', mb: '12px' }}
-                        >
-                          {/* Left side: Agent Referral Id */}
-                          <Box
-                            sx={{
-                              display: 'flex',
-                              flexDirection: 'column',
-                            }}
-                          >
-                            <Typography variant="body2" color="text.secondary">
-                              Agent Referral Id
-                            </Typography>
-                            <Typography
-                              variant="body2"
-                              fontWeight="bold"
-                              color="#4A90E2"
-                              sx={{ mt: 0.5 }}
-                            >
-                              {property.referral_id}
-                            </Typography>
-                          </Box>
+                        <Grid container>
+                          {property.referral_id === null ? (
+                            <>
+                              <Grid item xs={6}>
+                                <Typography variant="body2" color="text.secondary">
+                                  Office Email
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={6}>
+                                <Typography
+                                  variant="body2"
+                                  fontWeight="bold"
+                                  color="#4A90E2"
+                                  align="right"
+                                  display="flex"
+                                  justifyContent="flex-end"
+                                  alignItems="center"
+                                  gap={1}
+                                >
+                                  <EmailIcon fontSize="small" />
+                                  {property.owner_email}
+                                </Typography>
+                              </Grid>
 
-                          {/* Right side: Edit/Delete buttons */}
-                          <Box display="flex" alignItems="center">
+                              <Grid item xs={6}>
+                                <Typography variant="body2" color="text.secondary">
+                                  Office Contact
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={6}>
+                                <Typography
+                                  variant="body2"
+                                  fontWeight="bold"
+                                  color="text.secondary"
+                                  align="right"
+                                  display="flex"
+                                  justifyContent="flex-end"
+                                  alignItems="center"
+                                  gap={1}
+                                >
+                                  <CallIcon fontSize="small" />
+                                  {property.owner_contact}
+                                </Typography>
+                              </Grid>
+                            </>
+                          ) : (
+                            <>
+                              <Grid item xs={6}>
+                                <Typography variant="body2" color="text.secondary">
+                                  Added By
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={6}>
+                                <Typography
+                                  variant="body2"
+                                  fontWeight="bold"
+                                  color="text.secondary"
+                                  align="right"
+                                  display="flex"
+                                  justifyContent="flex-end"
+                                  alignItems="center"
+                                  gap={1}
+                                >
+                                  <PersonAddAltIcon fontSize="small" />
+                                  {property.username}
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={6}>
+                                <Typography variant="body2" color="text.secondary">
+                                  Agent Referral Id
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={6}>
+                                <Typography
+                                  variant="body2"
+                                  fontWeight="bold"
+                                  color="text.secondary"
+                                  align="right"
+                                  display="flex"
+                                  justifyContent="flex-end"
+                                  alignItems="center"
+                                  gap={1}
+                                >
+                                  <PersonAddAltIcon fontSize="small" />
+                                  {property.referral_id}
+                                </Typography>
+                              </Grid>
+                            </>
+                          )}
+                        </Grid>
+                      </Box>
+
+                      <Grid container spacing={1}>
+                        <Grid item xs={12} display="flex" justifyContent="right" gap={2}>
+                          <Tooltip title="Edit">
                             <IconButton
-                              aria-label="edit"
-                              size="medium"
                               sx={{ color: '#1976d2' }}
-                              onClick={() => navigate(`/p-myassets/edit/${property.property_id}`, { state: { property } })}
+                            //   onClick={() => navigate(`/a-assets/edit/${property.property_id}`, { state: { property } })}
                             >
-                              <EditIcon fontSize="medium" />
+                              <EditIcon />
                             </IconButton>
+                          </Tooltip>
+
+                          <Tooltip title="Delete">
                             <IconButton
-                              aria-label="delete"
-                              size="medium"
-                              sx={{ color: 'red', ml: '4px' }}
+                              sx={{ color: '#d32f2f' }}
                               onClick={() => handleDelete(property.property_id)}
                             >
-                              <DeleteIcon fontSize="medium" />
+                              <DeleteIcon />
                             </IconButton>
-                          </Box>
-                        </Box>
-
-                      </Box>
-                      <Grid container spacing={1}>
+                          </Tooltip>
+                        </Grid>
                         <Grid item xs={12}>
-
-
-
                           <Button
                             fullWidth
                             variant="contained"
@@ -599,29 +701,14 @@ const PartnerMyAssets = () => {
                               textTransform: 'none',
                               '&:hover': { backgroundColor: '#59ed7c', color: 'rgb(5,5,5)' }
                             }}
-                            // onClick={() => handleViewDetails(property)}
-                            onClick={() => navigate(`/p-assets/${property.property_id}`, { state: { property } })}
+                          // onClick={() => navigate(`/a-assets/${property.property_id}`, { state: { property } })}
                           >
                             VIEW DETAILS
                           </Button>
                         </Grid>
-                        {/* <Grid item xs={12}>
-                      <Button
-                        fullWidth
-                        variant="outlined"
-                        sx={{
-                          borderColor: '#4A90E2',
-                          color: '#4A90E2',
-                          textTransform: 'none'
-                        }}
-                        onClick={() => navigate("/investment-page")}
-                      >
-                        {property.looking_to === 'sell' ? 'BUY NOW' : 'RENT NOW'}
-                      </Button>
-                    </Grid> */}
                       </Grid>
                     </CardContent>
-                    {/* Media Carousel Dialog */}
+                    {/* Image Carousel Dialog */}
                     <Dialog open={openCarousel} onClose={handleCloseCarousel} maxWidth="md" fullWidth>
                       <Box sx={{ p: 2, background: '#000' }}>
                         {selectedProperty && getAllMedia(selectedProperty).length > 0 ? (
@@ -674,16 +761,12 @@ const PartnerMyAssets = () => {
             </Typography>
           </Box>
         )}
+
         <PaginationComponent
           count={totalPages}
           page={page}
           onChange={handlePageChange}
         />
-
-        {/* Pagination */}
-        {/* <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
-          <Pagination count={3} shape="rounded" />
-        </Box> */}
 
         {/* Property Details Dialog */}
         {selectedProperty && (
@@ -742,21 +825,18 @@ const PartnerMyAssets = () => {
                     <Typography fontWeight="bold">Other Features:</Typography>
                     <Typography variant="body2">{selectedProperty.other_features}</Typography>
                   </Box>
-                  {/* <Box>
+                  <Box>
                     <Typography fontWeight="bold">Contact:</Typography>
                     <Typography variant="body2">
                       {selectedProperty.owner_name} - {selectedProperty.owner_contact} ({selectedProperty.owner_email})
                     </Typography>
-                  </Box> */}
+                  </Box>
                 </Grid>
               </Grid>
             </DialogContent>
             <DialogActions>
               <Button onClick={handleCloseDialog} variant="contained" color="error">
                 CLOSE
-              </Button>
-              <Button variant="contained" color="success">
-                {selectedProperty.looking_to === 'sell' ? 'BUY NOW' : 'RENT NOW'}
               </Button>
             </DialogActions>
           </Dialog>
@@ -766,4 +846,4 @@ const PartnerMyAssets = () => {
   );
 };
 
-export default PartnerMyAssets;
+export default NewProperties;

@@ -37,7 +37,7 @@ import VideocamIcon from '@mui/icons-material/Videocam';
 
 
 const AssetsUI = () => {
-  const [sortBy, setSortBy] = useState(''); 
+  const [sortBy, setSortBy] = useState('');
   const [properties, setProperties] = useState([]);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
@@ -127,6 +127,15 @@ const AssetsUI = () => {
         break;
       case 'price-low':
         results.sort((a, b) => a.property_value - b.property_value);
+        break;
+      case 'sold':
+        results = results.filter((property) => property.status?.toLowerCase() === 'sold');
+        break;
+      case 'available':
+        results = results.filter((property) => property.status?.toLowerCase() === 'available');
+        break;
+      case 'booked':
+        results = results.filter((property) => property.status?.toLowerCase() === 'booked');
         break;
       default:
         // No sorting
@@ -281,6 +290,9 @@ const AssetsUI = () => {
                   <MenuItem value="oldest">Oldest</MenuItem>
                   <MenuItem value="price-high">Price: High to Low</MenuItem>
                   <MenuItem value="price-low">Price: Low to High</MenuItem>
+                  <MenuItem value="sold">Sold</MenuItem>
+                  <MenuItem value="available">Available</MenuItem>
+                  <MenuItem value="booked">Booked</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -418,15 +430,40 @@ const AssetsUI = () => {
                           </Box>
                         </>
                       )}
-                        {property.status !== 'sold' && (
+                      {property.status !== 'sold' && (
+                        <Box
+                          sx={{
+                            position: 'absolute',
+                            top: 15,
+                            right: -30,
+                            width: '150px',
+                            transform: 'rotate(45deg)',
+                            backgroundColor: "red",
+                            color: 'white',
+                            textAlign: 'center',
+                            fontSize: '12px',
+                            fontWeight: 'bold',
+                            textTransform: 'uppercase',
+                            py: '4px',
+                            boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+                          }}
+                        >
+                          {property.looking_to === 'sell' ? 'Sell' : 'Rent'}
+                        </Box>
+                      )}
                       <Box
                         sx={{
                           position: 'absolute',
                           top: 15,
-                          right: -30,
+                          left: -30,
                           width: '150px',
-                          transform: 'rotate(45deg)',
-                          backgroundColor: "red",
+                          transform: 'rotate(-45deg)',
+                          backgroundColor:
+                            property.status === 'available'
+                              ? '#2ECC71'
+                              : property.status === 'booked'
+                                ? '#E67E22'
+                                : '#E74C3C',
                           color: 'white',
                           textAlign: 'center',
                           fontSize: '12px',
@@ -436,34 +473,9 @@ const AssetsUI = () => {
                           boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
                         }}
                       >
-                        {property.looking_to === 'sell' ? 'Sell' : 'Rent'}
+                        {property.status}
                       </Box>
-                      )}
-                      <Box
-                                              sx={{
-                                                position: 'absolute',
-                                                top: 15,
-                                                left: -30,
-                                                width: '150px',
-                                                transform: 'rotate(-45deg)',
-                                                backgroundColor:
-                                                  property.status === 'available'
-                                                    ? '#2ECC71'
-                                                    : property.status === 'booked'
-                                                      ? '#E67E22'
-                                                      : '#E74C3C',
-                                                color: 'white',
-                                                textAlign: 'center',
-                                                fontSize: '12px',
-                                                fontWeight: 'bold',
-                                                textTransform: 'uppercase',
-                                                py: '4px',
-                                                boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-                                              }}
-                                            >
-                                              {property.status}
-                                            </Box>
-                                          </Box>
+                    </Box>
                     <CardContent>
                       <Typography fontWeight="bold" mb={1}>
                         {property.property_title}
@@ -595,7 +607,7 @@ const AssetsUI = () => {
 
 
                       </Box> */}
-                                            <Box
+                      <Box
                         sx={{
                           backgroundColor: '#F8F9FA',
                           borderRadius: 1,
@@ -641,7 +653,7 @@ const AssetsUI = () => {
                                   {subscriptionPaid ? property.owner_email : "sriraj@gmail.com"}
                                 </Typography>
                               </Grid>
-                      
+
                               <Grid item xs={6}>
                                 <Typography variant="body2" color="text.secondary">
                                   {subscriptionPaid ? "Owner Contact" : "Office Contact"}
@@ -686,40 +698,40 @@ const AssetsUI = () => {
                       </Grid>
                     </CardContent>
                     {/* Image Carousel Dialog */}
-                  <Dialog open={openCarousel} onClose={handleCloseCarousel} maxWidth="md" fullWidth>
-                                                          <Box sx={{ p: 2, background: '#000' }}>
-                                                            {selectedProperty && getAllMedia(selectedProperty).length > 0 ? (
-                                                             <Carousel
-                                      showThumbs={false}
-                                      infiniteLoop
-                                      useKeyboardArrows
-                                      dynamicHeight
-                                      autoPlay
-                                      emulateTouch
-                                    >
-                                      {getAllMedia(selectedProperty)
-                                        .filter((media) => media.type === 'image') // ✅ Filter only images
-                                        .map((media, idx) => (
-                                          <div key={idx}>
-                                            <img
-                                              src={media.url}
-                                              alt={media.alt || `Image ${idx + 1}`}
-                                              style={{
-                                                borderRadius: 8,
-                                                maxHeight: '550px',
-                                                objectFit: 'cover',
-                                                width: '100%',
-                                              }}
-                                            />
-                                          </div>
-                                        ))}
-                                    </Carousel>
-                                    
-                                                            ) : (
-                                                              <Typography color="white">No media available.</Typography>
-                                                            )}
-                                                          </Box>
-                                                        </Dialog>
+                    <Dialog open={openCarousel} onClose={handleCloseCarousel} maxWidth="md" fullWidth>
+                      <Box sx={{ p: 2, background: '#000' }}>
+                        {selectedProperty && getAllMedia(selectedProperty).length > 0 ? (
+                          <Carousel
+                            showThumbs={false}
+                            infiniteLoop
+                            useKeyboardArrows
+                            dynamicHeight
+                            autoPlay
+                            emulateTouch
+                          >
+                            {getAllMedia(selectedProperty)
+                              .filter((media) => media.type === 'image') // ✅ Filter only images
+                              .map((media, idx) => (
+                                <div key={idx}>
+                                  <img
+                                    src={media.url}
+                                    alt={media.alt || `Image ${idx + 1}`}
+                                    style={{
+                                      borderRadius: 8,
+                                      maxHeight: '550px',
+                                      objectFit: 'cover',
+                                      width: '100%',
+                                    }}
+                                  />
+                                </div>
+                              ))}
+                          </Carousel>
+
+                        ) : (
+                          <Typography color="white">No media available.</Typography>
+                        )}
+                      </Box>
+                    </Dialog>
                   </Card>
                 </Grid>
               );
