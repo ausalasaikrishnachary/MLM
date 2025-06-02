@@ -129,6 +129,15 @@ const MyAssets = () => {
       case 'price-low':
         results.sort((a, b) => a.property_value - b.property_value);
         break;
+      case 'sold':
+        results = results.filter((property) => property.status?.toLowerCase() === 'sold');
+        break;
+      case 'available':
+        results = results.filter((property) => property.status?.toLowerCase() === 'available');
+        break;
+      case 'booked':
+        results = results.filter((property) => property.status?.toLowerCase() === 'booked');
+        break;
       default:
         // No sorting
         break;
@@ -284,6 +293,9 @@ const MyAssets = () => {
                   <MenuItem value="oldest">Oldest</MenuItem>
                   <MenuItem value="price-high">Price: High to Low</MenuItem>
                   <MenuItem value="price-low">Price: Low to High</MenuItem>
+                  <MenuItem value="sold">Sold</MenuItem>
+                  <MenuItem value="available">Available</MenuItem>
+                  <MenuItem value="booked">Booked</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
@@ -620,40 +632,40 @@ const MyAssets = () => {
                       </Grid>
                     </CardContent>
                     {/* Image Carousel Dialog */}
-                  <Dialog open={openCarousel} onClose={handleCloseCarousel} maxWidth="md" fullWidth>
-                                                          <Box sx={{ p: 2, background: '#000' }}>
-                                                            {selectedProperty && getAllMedia(selectedProperty).length > 0 ? (
-                                                             <Carousel
-                                      showThumbs={false}
-                                      infiniteLoop
-                                      useKeyboardArrows
-                                      dynamicHeight
-                                      autoPlay
-                                      emulateTouch
-                                    >
-                                      {getAllMedia(selectedProperty)
-                                        .filter((media) => media.type === 'image') // ✅ Filter only images
-                                        .map((media, idx) => (
-                                          <div key={idx}>
-                                            <img
-                                              src={media.url}
-                                              alt={media.alt || `Image ${idx + 1}`}
-                                              style={{
-                                                borderRadius: 8,
-                                                maxHeight: '550px',
-                                                objectFit: 'cover',
-                                                width: '100%',
-                                              }}
-                                            />
-                                          </div>
-                                        ))}
-                                    </Carousel>
-                                    
-                                                            ) : (
-                                                              <Typography color="white">No media available.</Typography>
-                                                            )}
-                                                          </Box>
-                                                        </Dialog>
+                    <Dialog open={openCarousel} onClose={handleCloseCarousel} maxWidth="md" fullWidth>
+                      <Box sx={{ p: 2, background: '#000' }}>
+                        {selectedProperty && getAllMedia(selectedProperty).length > 0 ? (
+                          <Carousel
+                            showThumbs={false}
+                            infiniteLoop
+                            useKeyboardArrows
+                            dynamicHeight
+                            autoPlay
+                            emulateTouch
+                          >
+                            {getAllMedia(selectedProperty)
+                              .filter((media) => media.type === 'image') // ✅ Filter only images
+                              .map((media, idx) => (
+                                <div key={idx}>
+                                  <img
+                                    src={media.url}
+                                    alt={media.alt || `Image ${idx + 1}`}
+                                    style={{
+                                      borderRadius: 8,
+                                      maxHeight: '550px',
+                                      objectFit: 'cover',
+                                      width: '100%',
+                                    }}
+                                  />
+                                </div>
+                              ))}
+                          </Carousel>
+
+                        ) : (
+                          <Typography color="white">No media available.</Typography>
+                        )}
+                      </Box>
+                    </Dialog>
                   </Card>
                 </Grid>
               );

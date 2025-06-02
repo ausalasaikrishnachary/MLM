@@ -83,24 +83,28 @@ const AdminDashboard = () => {
       value: counts.total_properties,
       label: "Total Properties",
       icon: <Business />,
+      path: "/a-asset",
 
     },
     {
       value: counts.total_active_users,
       label: "Total Active Users",
       icon: <People />,
+      path: "/a-activeagents",
 
     },
     {
       value: counts.total_inactive_users,
       label: "Total InActive Users",
       icon: <People />,
+      path: "/a-Inactiveagents",
 
     },
     {
       value: counts.total_latest_properties,
       label: "New Properties",
       icon: <Home />,
+      path: "/a-Newproperties",
 
     },
   ] : [];
@@ -174,11 +178,13 @@ const AdminDashboard = () => {
           {metrics.map((metric, index) => (
             <Grid item xs={12} sm={6} md={3} key={index}>
               <Card
+                onClick={() => navigate(metric.path)}
                 sx={{
                   textAlign: "center",
                   p: 3,
                   borderRadius: 2,
                   boxShadow: 2,
+                  cursor: "pointer",
                   transition: "0.3s",
                   "&:hover": { transform: "translateY(-5px)", boxShadow: 3 },
                 }}
@@ -232,7 +238,7 @@ const AdminDashboard = () => {
           <Grid container spacing={3}>
             {/* Property Performance Chart */}
             <Grid item xs={12} lg={12}>
-              <Card sx={{  height: '100%', boxShadow: 3, borderRadius: 2 }}>
+              <Card sx={{ height: '100%', boxShadow: 3, borderRadius: 2 }}>
                 <CardContent sx={{ overflowX: 'auto' }}>
                   <div style={{ width: '1400px' }}> {/* or any width you need */}
                     {chartData && <Bar data={chartData} options={options} />}
