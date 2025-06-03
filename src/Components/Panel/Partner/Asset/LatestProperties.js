@@ -415,7 +415,7 @@ const LatestProperties = () => {
                                                             textTransform: 'none',
                                                             '&:hover': { backgroundColor: '#59ed7c', color: 'rgb(5,5,5)' }
                                                         }}
-                                                        onClick={() => navigate(`/a-assets/${property.property_id}`, { state: { property } })}
+                                                        onClick={() => navigate(`/p-assets/${property.property_id}`, { state: { property } })}
                                                     >
                                                         VIEW DETAILS
                                                     </Button>

@@ -58,8 +58,10 @@ import {
 } from '@mui/material';
 import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
 import { baseurl } from '../../../BaseURL/BaseURL';
+import { useNavigate } from "react-router-dom";
 
 const AssetDetail = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const { property } = location.state || {};
   const { id } = useParams();
@@ -82,7 +84,7 @@ const AssetDetail = () => {
       <PartnerHeader />
       <Container sx={{ py: 4 }}>
          <Box mt={1}>
-          <Button variant="outlined" href="/p-assets">Back</Button>
+          <Button variant="outlined" onClick={() => navigate(-1)}>Back</Button>
         </Box> 
         <Box display="flex" alignItems="center" gap={2} mb={3}>
           <Typography variant="h4">{property.property_title}</Typography>

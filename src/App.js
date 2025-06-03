@@ -173,7 +173,7 @@ function App() {
           <Route path="/p-plans" element={<PartnerPlans />} />
           <Route path="/p-assets/:id" element={<AssetDetail />} />
           <Route path="/p-myassets" element={<PartnerMyAssets />} />
-          <Route path="/p-assets/:id" element={<ViewAssetDetails />} />
+          {/* <Route path="/p-assets/:id" element={<ViewAssetDetails />} /> */}
           <Route path="/p-myteam" element={<MyTeam />} />
           <Route path="/p-latestassets" element={<LatestAssets />} />
           <Route path="/p-activeagents" element={<MyAgents />} />

@@ -5,8 +5,10 @@ import {
 } from '@mui/material';
 import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
 import { baseurl } from '../../../BaseURL/BaseURL';
+import { useNavigate } from "react-router-dom";
 
 const ViewAssetDetails = () => {
+      const navigate = useNavigate();
   const location = useLocation();
   const { property } = location.state || {};
   const { id } = useParams();
@@ -42,7 +44,7 @@ const ViewAssetDetails = () => {
       </Grid>
 
       <Box mt={4}>
-        <Button variant="outlined" href="/i-asset">Back</Button>
+        <Button variant="outlined" onClick={() => navigate(-1)}>Back</Button>
       </Box>
     </Container>
     </>
