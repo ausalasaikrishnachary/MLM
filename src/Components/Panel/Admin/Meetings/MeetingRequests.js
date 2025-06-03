@@ -5,6 +5,7 @@ import Header from '../../../Shared/Navbar/Navbar';
 import { useNavigate } from 'react-router-dom';
 import TableLayout from '../../../Shared/TableLayout'; // Adjust path as needed
 import { Select, MenuItem } from '@mui/material';
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 function MeetingRequests() {
   const [tabValue, setTabValue] = useState(0);
@@ -19,7 +20,7 @@ function MeetingRequests() {
 
   const fetchMeetingRequests = () => {
     setLoading(true);
-    axios.get('https://rahul30.pythonanywhere.com/meeting-requests/')
+    axios.get(`${baseurl}/meeting-requests/`)
       .then((response) => {
         setMeetingData(response.data);
         setLoading(false);
@@ -32,7 +33,7 @@ function MeetingRequests() {
 
   const fetchScheduledMeetings = () => {
     setLoading(true);
-    axios.get('https://rahul30.pythonanywhere.com/scheduled-meetings/')
+    axios.get(`${baseurl}/scheduled-meetings/`)
       .then((response) => {
         setScheduledData(response.data);
         setLoading(false);
@@ -56,7 +57,7 @@ const handleStatusChange = (scheduleId, newStatus) => {
   };
 
   axios
-    .put(`https://rahul30.pythonanywhere.com/scheduled-meetings/${scheduleId}/`, payload)
+    .put(`${baseurl}/scheduled-meetings/${scheduleId}/`, payload)
     .then(() => {
       fetchScheduledMeetings(); // Refresh data
       console.log(`Status updated to ${newStatus}`);

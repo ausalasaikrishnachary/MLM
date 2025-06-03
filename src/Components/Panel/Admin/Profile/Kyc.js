@@ -384,6 +384,7 @@ import {
 } from "@mui/material";
 import Header from "../../../Shared/Navbar/Navbar";
 import { useNavigate } from 'react-router-dom';
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 
 const PartnerKyc = () => {
@@ -468,7 +469,7 @@ const handleAadharCardUpload = (event) => {
     if (panCardFile) formDataToSend.append("pan", panCardFile);
     if (aadhaarCardFile) formDataToSend.append("aadhaar", aadhaarCardFile);
 
-    const response = await fetch("https://rahul30.pythonanywhere.com/users/", {
+    const response = await fetch(`${baseurl}/users/`, {
       method: "POST",
       body: formDataToSend
     });

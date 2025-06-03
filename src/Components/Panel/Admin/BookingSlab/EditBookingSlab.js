@@ -5,6 +5,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { TextField, Button, Paper, Typography, Box } from '@mui/material';
 import axios from 'axios';
 import Header from "../../../Shared/Navbar/Navbar";
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 function EditBookingSlab() {
     const { id } = useParams();
@@ -16,7 +17,7 @@ function EditBookingSlab() {
     });
 
     useEffect(() => {
-        axios.get(`https://rahul30.pythonanywhere.com/booking-slabs/${id}/`)
+        axios.get(`baseurl/booking-slabs/${id}/`)
             .then(response => setForm(response.data))
             .catch(error => console.error('Failed to load slab:', error));
     }, [id]);
@@ -27,7 +28,7 @@ function EditBookingSlab() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.put(`https://rahul30.pythonanywhere.com/booking-slabs/${id}/`, form)
+        axios.put(`${baseurl}/booking-slabs/${id}/`, form)
             .then(() => {
                 alert('Booking slab updated successfully!');
                 navigate('/booking-slab'); // Adjust route as per your routing

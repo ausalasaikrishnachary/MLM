@@ -139,7 +139,7 @@ const AgentDashboard = () => {
     const userId = localStorage.getItem("user_id");
     if (!userId) return;
 
-    fetch(`https://rahul30.pythonanywhere.com/property-stats/user-id/${userId}/`)
+    fetch(`${baseurl}/property-stats/user-id/${userId}/`)
       .then(res => res.json())
       .then(data => {
         const listingCount = data.listing.properties.count;

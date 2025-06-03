@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 function SheduleMeeting() {
     const location = useLocation();
@@ -43,7 +44,7 @@ const [form, setForm] = useState({
     useEffect(() => {
         if (RequestId) {
             axios
-                .get(`https://rahul30.pythonanywhere.com/meeting-requests/${RequestId}/`)
+                .get(`${baseurl}/meeting-requests/${RequestId}/`)
                 .then((res) => {
                     const data = res.data;
                     setForm((prev) => ({
@@ -103,7 +104,7 @@ const handleSubmit = async (e) => {
     console.log("Payload being sent:", payload);
 
     try {
-        await axios.post('https://rahul30.pythonanywhere.com/scheduled-meetings/', payload);
+        await axios.post(`${baseurl}/scheduled-meetings/`, payload);
         alert('Meeting scheduled successfully.');
         setForm({
             name: '',

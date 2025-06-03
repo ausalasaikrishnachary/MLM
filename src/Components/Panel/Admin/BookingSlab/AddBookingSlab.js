@@ -10,6 +10,7 @@ import {
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Header from "../../../Shared/Navbar/Navbar";
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 function AddBookingSlab() {
   const [formData, setFormData] = useState({
@@ -31,7 +32,7 @@ function AddBookingSlab() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('https://rahul30.pythonanywhere.com/booking-slabs/', formData);
+      await axios.post(`${baseurl}/booking-slabs/`, formData);
       alert('Booking Slab added successfully!');
       navigate('/a-bookingslab');
     } catch (error) {

@@ -32,7 +32,7 @@ function BookingAssets() {
 
   useEffect(() => {
     // Fetch Property
-    axios.get(`https://rahul30.pythonanywhere.com/property/${propertyId}/`)
+    axios.get(`${baseurl}/property/${propertyId}/`)
       .then((res) => {
         const prop = res.data;
         setProperty(prop);
@@ -44,7 +44,7 @@ function BookingAssets() {
       });
 
     // Fetch Agent Referral IDs
-    axios.get('https://rahul30.pythonanywhere.com/users/role/Agent/')
+    axios.get(`${baseurl}/users/role/Agent/`)
       .then((res) => {
         const agentsWithReferral = res.data.filter(
           agent => agent.referral_id && agent.referral_id !== loggedInReferralId
@@ -84,9 +84,9 @@ function BookingAssets() {
       payment_method: "Cash",
     };
 
-    axios.post('https://rahul30.pythonanywhere.com/transactions/', payload)
+    axios.post(`${baseurl}/transactions/`, payload)
       .then(() => {
-        return axios.put(`https://rahul30.pythonanywhere.com/property/${propertyId}/`, {
+        return axios.put(`${baseurl}/property/${propertyId}/`, {
           status: 'booked',
           // mediator_referral_id: selectedReferralId || " " 
         });

@@ -11,6 +11,7 @@ import {
   Box,
   Button,
 } from "@mui/material";
+import { baseurl } from '../../../BaseURL/BaseURL';
 import axios from "axios";
 import Header from "../../../Shared/Navbar/Navbar";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -25,7 +26,7 @@ const CommissionView = () => {
     const fetchCommissionData = async () => {
       try {
         const response = await axios.get(
-          `https://rahul30.pythonanywhere.com/commissions/preview/${transactionId}/`
+          `${baseurl}/commissions/preview/${transactionId}/`
         );
         setCommissions(response.data);
       } catch (error) {

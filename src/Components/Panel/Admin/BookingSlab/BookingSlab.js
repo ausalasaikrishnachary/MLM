@@ -8,6 +8,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 function BookingSlab() {
   const [slabs, setSlabs] = useState([]);
@@ -34,7 +35,7 @@ function BookingSlab() {
 
   const fetchSlabs = () => {
     setLoading(true);
-    axios.get('https://rahul30.pythonanywhere.com/booking-slabs/')
+    axios.get(`${baseurl}/booking-slabs/`)
       .then(response => {
         setSlabs(response.data);
         setLoading(false);
@@ -47,7 +48,7 @@ function BookingSlab() {
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this slab?")) {
-      axios.delete(`https://rahul30.pythonanywhere.com/booking-slabs/${id}/`)
+      axios.delete(`${baseurl}/booking-slabs/${id}/`)
         .then(() => {
           fetchSlabs(); // Refresh the list
         })

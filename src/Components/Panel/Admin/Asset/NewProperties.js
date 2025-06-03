@@ -56,7 +56,7 @@ const NewProperties = () => {
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const response = await fetch('https://rahul30.pythonanywhere.com/latest-properties/');
+        const response = await fetch(`${baseurl}/latest-properties/`);
         const data = await response.json();
         setProperties(data);
         setFilteredProperties(data);

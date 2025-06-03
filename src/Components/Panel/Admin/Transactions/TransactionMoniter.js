@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import Header from "../../../Shared/Navbar/Navbar";
 import axios from "axios";
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 const Tmoniter = () => {
   const [transactions, setTransactions] = useState([]);
@@ -41,14 +42,14 @@ const Tmoniter = () => {
     const fetchTransactions = async () => {
       try {
         const res = await axios.get(
-          "https://rahul30.pythonanywhere.com/transactions/payment-type/Full-Amount/"
+          "baseurl/transactions/payment-type/Full-Amount/"
         );
 
         const transactionsWithStatus = await Promise.all(
           res.data.map(async (transaction) => {
             try {
               const propertyRes = await axios.get(
-                `https://rahul30.pythonanywhere.com/property/${transaction.property_id}/`
+                `baseurl/property/${transaction.property_id}/`
               );
               const status = propertyRes.data.company_commission_status || "N/A";
               return {
@@ -77,7 +78,7 @@ const Tmoniter = () => {
   }, []);
 
   const handlePayCommission = async (transaction) => {
-    const url = `https://rahul30.pythonanywhere.com/commission/distribute/${transaction.transaction_id}/`;
+    const url = `${baseurl}/commission/distribute/${transaction.transaction_id}/`;
     try {
       console.log("Initiating commission payment for:", transaction.transaction_id);
       const response = await axios.post(url);

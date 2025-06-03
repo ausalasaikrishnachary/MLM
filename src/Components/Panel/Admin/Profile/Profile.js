@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Box, Card, Typography, Divider, Button } from "@mui/material";
-
+import { baseurl } from '../../../BaseURL/BaseURL';
 import Header from "../../../Shared/Navbar/Navbar";
 
 const AdminProfile = () => {
@@ -9,7 +9,7 @@ const AdminProfile = () => {
 
   useEffect(() => {
     axios
-      .get("https://rahul30.pythonanywhere.com/users/1/")
+      .get(`${baseurl}/users/1/`)
       .then((response) => setUserData(response.data))
       .catch((error) => console.error("Error fetching user data:", error));
   }, []);

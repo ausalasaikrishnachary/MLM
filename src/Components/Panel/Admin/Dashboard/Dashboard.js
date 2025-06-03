@@ -23,6 +23,7 @@ import { Person, Home, CurrencyRupee, Description } from "@mui/icons-material";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Header from "../../../Shared/Navbar/Navbar";
 import { useNavigate } from 'react-router-dom';
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 const AdminDashboard = () => {
   const [counts, setCounts] = useState(null);
@@ -69,7 +70,7 @@ const AdminDashboard = () => {
 
 
   useEffect(() => {
-    axios.get("https://rahul30.pythonanywhere.com/counts/")
+    axios.get(`${baseurl}/counts/`)
       .then((response) => {
         setCounts(response.data);
       })
@@ -112,7 +113,7 @@ const AdminDashboard = () => {
   const [chartData, setChartData] = useState(null);
 
   useEffect(() => {
-    axios.get('https://rahul30.pythonanywhere.com/property-stats/')
+    axios.get(`${baseurl}/property-stats/`)
       .then((res) => {
         const data = res.data;
 

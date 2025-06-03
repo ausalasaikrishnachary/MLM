@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import TableLayout from '../../../Shared/TableLayout';
 import Header from "../../../Shared/Partner/PartnerNavbar";
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 function DisplayRequests() {
   const [data, setData] = useState([]);
@@ -23,7 +24,7 @@ function DisplayRequests() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('https://rahul30.pythonanywhere.com/meeting-requests/');
+        const response = await axios.get(`${baseurl}/meeting-requests/`);
         setData(response.data);
       } catch (error) {
         console.error('Error fetching meeting requests:', error);

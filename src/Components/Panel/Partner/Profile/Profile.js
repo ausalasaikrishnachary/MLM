@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Box, Card, Typography, Divider, Button } from "@mui/material";
-
+import { baseurl } from '../../../BaseURL/BaseURL';
 import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
 
 const PartnerProfile = () => {
@@ -9,7 +9,7 @@ const PartnerProfile = () => {
 
   useEffect(() => {
     axios
-      .get("https://rahul30.pythonanywhere.com/users/2/")
+      .get(`${baseurl}/users/2/`)
       .then((response) => setUserData(response.data))
       .catch((error) => console.error("Error fetching user data:", error));
   }, []);

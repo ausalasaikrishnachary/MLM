@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 import Header from "../../../Shared/Partner/PartnerNavbar";
 import { useLocation, useNavigate } from 'react-router-dom';
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 const MeetingRequestForm = () => {
 const [form, setForm] = useState({
@@ -42,7 +43,7 @@ const handleSubmit = async (e) => {
     };
 
     try {
-        const response = await fetch("https://rahul30.pythonanywhere.com/meeting-requests/", {
+        const response = await fetch(`${baseurl}/meeting-requests/`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

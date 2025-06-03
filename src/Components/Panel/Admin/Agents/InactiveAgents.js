@@ -46,7 +46,7 @@ const InactiveAgents = () => {
   useEffect(() => {
     const fetchAgents = async () => {
       try {
-        const response = await axios.get('https://rahul30.pythonanywhere.com/users/status/Inactive/');
+        const response = await axios.get(`${baseurl}/users/status/Inactive/`);
         setAgents(response.data); // assuming the API returns an array of agents
       } catch (error) {
         console.error('Error fetching agents:', error);
