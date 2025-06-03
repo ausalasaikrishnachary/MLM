@@ -205,6 +205,20 @@ const PropertyDetails = () => {
               <strong>Contact:</strong> {property.owner_contact}<br />
               <strong>Email:</strong> {property.owner_email}
             </Typography>
+            <Typography variant="h6" gutterBottom>Buyer Details</Typography>
+                        <Divider sx={{ mb: 2 }} />
+                        {property.buyer_user ? (
+                          <Typography mb={3}>
+                            <strong>Username:</strong> {property.buyer_user.username}<br />
+                            <strong>Referral ID:</strong> {property.buyer_user.referral_id}<br />
+                            <strong>Contact:</strong> {property.buyer_user.phone_number}<br />
+                            <strong>Email:</strong> {property.buyer_user.email}<br />
+                            <strong>Booking Date:</strong> {property.buyer_user.booking_date}<br />
+                            <strong>Purchase Date:</strong> {property.buyer_user.purchase_date}
+                          </Typography>
+                        ) : (
+                          <Typography mb={3}>No buyer information available</Typography>
+                        )}
 
             <Typography variant="h6" gutterBottom>System Information</Typography>
             <Divider sx={{ mb: 2 }} />
