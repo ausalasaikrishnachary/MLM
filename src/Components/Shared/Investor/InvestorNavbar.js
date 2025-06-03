@@ -38,7 +38,7 @@ export default function InvestorHeader() {
         { label: 'Buy Properties', path: '/i-buyshares' },
       ],
     },
-    { label: 'Services', path: '/i-servies' },
+    // { label: 'Services', path: '/i-servies' },
     { label: 'Plans', path: '/i-plans' },
   ];
 

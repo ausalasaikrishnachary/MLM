@@ -128,9 +128,9 @@ const filteredData = selectedRole === "All"
     </Select>
   </FormControl>
 
-  <Button variant="contained" color="primary" onClick={() => navigate("/a-add-lead")}>
+  {/* <Button variant="contained" color="primary" onClick={() => navigate("/a-add-lead")}>
     Add Lead
-  </Button>
+  </Button> */}
 </Box>
 
      
