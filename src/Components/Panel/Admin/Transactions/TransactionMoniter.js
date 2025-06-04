@@ -42,14 +42,14 @@ const Tmoniter = () => {
     const fetchTransactions = async () => {
       try {
         const res = await axios.get(
-          "baseurl/transactions/payment-type/Full-Amount/"
+          `${baseurl}/transactions/payment-type/Full-Amount/`
         );
 
         const transactionsWithStatus = await Promise.all(
           res.data.map(async (transaction) => {
             try {
               const propertyRes = await axios.get(
-                `baseurl/property/${transaction.property_id}/`
+                `${baseurl}/property/${transaction.property_id}/`
               );
               const status = propertyRes.data.company_commission_status || "N/A";
               return {

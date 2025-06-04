@@ -17,7 +17,7 @@ function EditBookingSlab() {
     });
 
     useEffect(() => {
-        axios.get(`baseurl/booking-slabs/${id}/`)
+        axios.get(`${baseurl}/booking-slabs/${id}/`)
             .then(response => setForm(response.data))
             .catch(error => console.error('Failed to load slab:', error));
     }, [id]);
