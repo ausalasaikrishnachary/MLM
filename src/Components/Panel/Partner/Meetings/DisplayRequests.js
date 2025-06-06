@@ -21,10 +21,12 @@ function DisplayRequests() {
     // { key: 'user_id', label: 'User ID' },
   ];
 
+   const userId = localStorage.getItem("user_id");
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${baseurl}/meeting-requests/`);
+        const response = await axios.get(`${baseurl}/meeting-requests/user-id/${userId}/`);
         setData(response.data);
       } catch (error) {
         console.error('Error fetching meeting requests:', error);
