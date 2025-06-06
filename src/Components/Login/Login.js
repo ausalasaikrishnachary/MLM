@@ -44,6 +44,25 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
+
+    // Validate email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email) {
+      setEmailError("Email is required");
+      return;
+    } else if (!emailRegex.test(email)) {
+      setEmailError("Enter a valid email address");
+      return;
+    } else {
+      setEmailError("");
+    }
+
+    // Validate password
+    if (!password) {
+      setError("Password is required");
+      return;
+    }
+
     setIsLoading(true); // Start loading
 
     try {
@@ -64,8 +83,6 @@ const Login = () => {
         localStorage.setItem("referred_by", data.referred_by);
         localStorage.setItem("user_name", data.first_name);
 
-        console.log(data)
-
         const userRoles = data.roles || [];
 
         if (userRoles.length > 1) {
@@ -76,16 +93,15 @@ const Login = () => {
           setError("No roles assigned. Please contact support.");
         }
       } else {
-        setError(data.error);
+        setError(data.error || "Invalid credentials");
       }
     } catch (err) {
       setError("Something went wrong. Please try again.");
-    }
-
-    finally {
+    } finally {
       setIsLoading(false); // Stop loading
     }
   };
+
 
   const selectUserRole = async (roles) => {
     const { value: selectedRole } = await Swal.fire({
@@ -275,7 +291,18 @@ const Login = () => {
                 <Typography variant="h4" align="center" gutterBottom>
                   Login
                 </Typography>
-                <TextField fullWidth label="Email" variant="outlined" margin="normal" value={email} onChange={handleEmailChange} />
+
+                <TextField
+                  fullWidth
+                  label="Email"
+                  variant="outlined"
+                  margin="normal"
+                  value={email}
+                  onChange={handleEmailChange}
+                  error={!!emailError}
+                  helperText={emailError}
+                />
+
                 <TextField
                   fullWidth
                   label="Password"
@@ -284,6 +311,8 @@ const Login = () => {
                   margin="normal"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  error={!password && error === "Password is required"}
+                  helperText={!password && error === "Password is required" ? "Password is required" : ""}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
@@ -303,6 +332,7 @@ const Login = () => {
                     Forgot Password?
                   </Link>
                 </Box>
+
                 <Button
                   fullWidth
                   variant="contained"
@@ -321,8 +351,18 @@ const Login = () => {
                   {isLoading ? "Logging In..." : "Login"}
                 </Button>
 
+                {error && (
+                  <Typography
+                    variant="body2"
+                    color="error"
+                    sx={{ mt: 2, textAlign: 'center' }}
+                  >
+                    {error}
+                  </Typography>
+                )}
 
               </>
+
             )}
           </Grid>
         </Grid>
