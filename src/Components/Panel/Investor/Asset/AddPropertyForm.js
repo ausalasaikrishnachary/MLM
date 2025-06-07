@@ -24,6 +24,7 @@ import { styled } from '@mui/material/styles';
 import axios from 'axios';
 import InvestorHeader from "../../../Shared/Investor/InvestorNavbar"
 import { useNavigate } from "react-router-dom";
+  import Swal from 'sweetalert2';
 import { baseurl } from '../../../BaseURL/BaseURL';
 
 
@@ -277,7 +278,7 @@ const AddPropertyForm = () => {
       });
 
       console.log('Submission successful:', response.data);
-      alert('Property submitted successfully!');
+     Swal.fire('Success', 'Property updated successfully!', 'success');
       navigate("/i-myassets");
 
       // Optionally reset form or redirect here
@@ -299,8 +300,7 @@ const AddPropertyForm = () => {
       } else {
         errorMessage += `: ${error.message}`;
       }
-
-      alert(errorMessage);
+  Swal.fire('Error', 'An error occurred while updating.', 'error');
     } finally {
       setIsSubmitting(false);
     }

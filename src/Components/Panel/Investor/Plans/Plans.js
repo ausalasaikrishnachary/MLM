@@ -14,6 +14,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import InvestorHeader from "../../../Shared/Investor/InvestorNavbar";
 import { baseurl } from '../../../BaseURL/BaseURL';
 
@@ -98,41 +99,72 @@ function PartnerPlans() {
 
   const [subscribedVariants, setSubscribedVariants] = useState([]);
 
+const handleBuy = async (variant) => {
+  const confirmResult = await Swal.fire({
+    title: 'Are you sure?',
+    text: 'Do you want to subscribe to this plan?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, Subscribe',
+    cancelButtonText: 'Cancel',
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+  });
 
-  const handleBuy = async (variant) => {
-    const confirmSubscribe = window.confirm("Are you sure you want to subscribe to this plan?");
-    if (!confirmSubscribe) return;
+  if (!confirmResult.isConfirmed) return;
 
-    const userId = localStorage.getItem('user_id'); // Make sure it's already stored in localStorage
-    if (!userId) {
-      alert("User ID not found in localStorage!");
-      return;
-    }
+  const userId = localStorage.getItem('user_id');
+  if (!userId) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Missing User ID',
+      text: 'User ID not found in localStorage!',
+    });
+    return;
+  }
 
-    try {
-      const response = await fetch(`${baseurl}/subscriptions/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          user_id: parseInt(userId),
-          subscription_variant: variant.variant_id,
-          subscription_status: "paid"
-        }),
+  try {
+    const response = await fetch(`${baseurl}/subscriptions/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        user_id: parseInt(userId),
+        subscription_variant: variant.variant_id,
+        subscription_status: "paid",
+      }),
+    });
+
+    if (response.ok) {
+      setSubscribedVariants((prev) => [...prev, variant.variant_id]);
+
+      await Swal.fire({
+        icon: 'success',
+        title: 'Subscribed!',
+        text: 'Subscription successful!',
+        timer: 2000,
+        showConfirmButton: false,
       });
 
-      if (response.ok) {
-        alert("Subscription successful!");
-        setSubscribedVariants((prev) => [...prev, variant.variant_id]);
-      } else {
-        alert("Failed to subscribe. Please try again.");
-      }
-    } catch (error) {
-      console.error("Subscription error:", error);
-      alert("Something went wrong.");
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Subscription Failed',
+        text: 'Please try again.',
+      });
     }
-  };
+  } catch (error) {
+    console.error("Subscription error:", error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Something went wrong',
+      text: error.message || 'Unexpected error occurred.',
+    });
+  }
+};
+
+
   return (
     <>
       <InvestorHeader />
