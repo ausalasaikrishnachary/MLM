@@ -9,6 +9,7 @@ import image2 from "./../Images/logo.png";
 import { Link, Navigate } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { baseurl } from '../BaseURL/BaseURL';
+import Swal from "sweetalert2";
 
 const SignUp = () => {
     const navigate = useNavigate();
@@ -121,42 +122,55 @@ const SignUp = () => {
         setFileName(file.name);
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        // if (!pancard || !aadhar || !image) {
-        //   alert("Please upload Pancard, Aadhar, and an Image.");
-        //   return;
-        // }
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-        const formDataToSend = new FormData();
-        Object.keys(formData).forEach((key) => {
-            formDataToSend.append(key, formData[key]);
-        });
+  const formDataToSend = new FormData();
+  Object.keys(formData).forEach((key) => {
+    formDataToSend.append(key, formData[key]);
+  });
 
-        // Append files ONLY if they are selected
-        if (pancard) formDataToSend.append("pan", pancard);
-        if (aadhar) formDataToSend.append("aadhaar", aadhar);
-        if (image) formDataToSend.append("image", image);
+  if (pancard) formDataToSend.append("pan", pancard);
+  if (aadhar) formDataToSend.append("aadhaar", aadhar);
+  if (image) formDataToSend.append("image", image);
 
-        try {
-            const response = await fetch(`${baseurl}/users/`, {
-                method: "POST",
-                body: formDataToSend,
-            });
-            const responseData = await response.json();
-            if (response.ok) {
-                alert("User registered successfully!");
-                setUsers([...users, responseData]);
-                navigate("/");
-            } else {
-                console.error("Server Error:", responseData);
-                alert(`Failed to register user: ${JSON.stringify(responseData)}`);
-            }
-        } catch (error) {
-            console.error("Error submitting form:", error);
-            alert("An error occurred while submitting the form.");
-        }
-    };
+  try {
+    const response = await fetch(`${baseurl}/users/`, {
+      method: "POST",
+      body: formDataToSend,
+    });
+
+    const responseData = await response.json();
+
+    if (response.ok) {
+      Swal.fire({
+        icon: "success",
+        title: "User Registered",
+        text: "User registered successfully!",
+        confirmButtonColor: "#3085d6"
+      }).then(() => {
+        setUsers([...users, responseData]);
+        navigate("/");
+      });
+    } else {
+      console.error("Server Error:", responseData);
+      Swal.fire({
+        icon: "error",
+        title: "Registration Failed",
+        text: `Failed to register user: ${JSON.stringify(responseData)}`,
+        confirmButtonColor: "#d33"
+      });
+    }
+  } catch (error) {
+    console.error("Error submitting form:", error);
+    Swal.fire({
+      icon: "error",
+      title: "Submission Error",
+      text: "An error occurred while submitting the form.",
+      confirmButtonColor: "#d33"
+    });
+  }
+};
 
     // Role Dialog States
     const [openRoleDialog, setOpenRoleDialog] = useState(false);
