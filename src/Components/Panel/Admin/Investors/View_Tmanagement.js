@@ -19,7 +19,6 @@ const View_Tmanagement = () => {
   const user = location.state?.user;
   const contentRef = useRef();
 
-
   if (!user) return <Typography sx={{ p: 3 }}>No user data available</Typography>;
 
   const handlePrint = () => {
@@ -84,7 +83,8 @@ const View_Tmanagement = () => {
         }}
       >
         {/* Action Buttons */}
-        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3,width: "80%",
+            mx: "auto", }}>
           <Button
             variant="outlined"
             startIcon={<ArrowBackIcon />}
@@ -114,9 +114,13 @@ const View_Tmanagement = () => {
         </Box>
 
         {/* Main Content */}
-        <Box ref={contentRef}>
-          {/* Top User Info (Removed) */}
-
+        <Box
+          ref={contentRef}
+          sx={{
+            width: "80%",
+            mx: "auto",
+          }}
+        >
           <Section title="Personal Information">
             {Field("User ID", user.user_id)}
             {Field("Username", user.username)}
@@ -127,10 +131,6 @@ const View_Tmanagement = () => {
             {Field("Referral ID", user.referral_id)}
             {Field("Gender", user.gender)}
             {Field("Date of Birth", user.date_of_birth)}
-            {/* {Field("Level No", user.level_no)} */}
-            {/* {Field("password", user.password)} */}
-            {/* {Field("Image", user.image)} */}
-
           </Section>
 
           <Section title="Contact Information">
@@ -158,14 +158,10 @@ const View_Tmanagement = () => {
             {Field("Aadhaar Number", user.aadhaar_number)}
             {Field("KYC Status", user.kyc_status)}
             {Field("Nominee Reference To", user.nominee_reference_to)}
-            {/* {Field("aadhaar", user.aadhaar)}
-            {Field("pan", user.pan)} */}
           </Section>
 
           <Section title="Other Information">
             {Field("Referred By", user.referred_by)}
-            {/* {Field("Created At", user.created_at)}
-            {Field("Updated At", user.updated_at)} */}
           </Section>
         </Box>
       </Box>
