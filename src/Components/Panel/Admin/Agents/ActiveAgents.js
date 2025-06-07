@@ -80,7 +80,7 @@ const ActiveAgents = () => {
                 <TableCell sx={cellStyle}>Phone Number</TableCell>
                 <TableCell sx={cellStyle}>Referral ID</TableCell>
                 <TableCell sx={cellStyle}>Status</TableCell>
-                <TableCell sx={cellStyle}>Actions</TableCell>
+                {/* <TableCell sx={cellStyle}>Actions</TableCell> */}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -92,7 +92,7 @@ const ActiveAgents = () => {
                     <TableCell sx={cellBodyStyle}>{agent.phone_number}</TableCell>
                     <TableCell sx={cellBodyStyle}>{agent.referral_id || '—'}</TableCell>
                     <TableCell sx={cellBodyStyle}>{agent.status || '—'}</TableCell>
-                    <TableCell sx={cellBodyStyle}>
+                    {/* <TableCell sx={cellBodyStyle}>
                       <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
                         <IconButton
                           size="small"
@@ -108,7 +108,7 @@ const ActiveAgents = () => {
                           <DeleteIcon fontSize="small" />
                         </IconButton>
                       </Box>
-                    </TableCell>
+                    </TableCell> */}
                   </TableRow>
                 ))
               ) : (
