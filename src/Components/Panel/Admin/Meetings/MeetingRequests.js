@@ -77,17 +77,20 @@ const handleStatusChange = (scheduleId, newStatus) => {
     else fetchScheduledMeetings();
   };
 
-  const headers = [
-    { label: tabValue === 0 ? 'RequestId' : 'ScheduleId', key: 'id' },
-    { label: 'UserId', key: 'user_id' },
-    { label: 'Agent Name', key: 'name' },
-    { label: 'Agent Referral ID', key: 'referral_id' },
-    { label: 'Email', key: 'email' },
-    { label: 'Profile Type', key: 'profile_type' },
-    { label: tabValue === 0 ? 'Requested Date' : 'Scheduled Date', key: 'date' },
-    { label: tabValue === 0 ? 'Requested Time' : 'Scheduled Time', key: 'time' },
-    { label: 'Action', key: 'action' },
-  ];
+const headers = [
+  ...(tabValue === 0
+    ? [{ label: 'RequestId', key: 'id' }]
+    : []), // Don't include ScheduleId for scheduled meetings
+  { label: 'UserId', key: 'user_id' },
+  { label: 'Agent Name', key: 'name' },
+  { label: 'Agent Referral ID', key: 'referral_id' },
+  { label: 'Email', key: 'email' },
+  { label: 'Profile Type', key: 'profile_type' },
+  { label: tabValue === 0 ? 'Requested Date' : 'Scheduled Date', key: 'date' },
+  { label: tabValue === 0 ? 'Requested Time' : 'Scheduled Time', key: 'time' },
+  { label: 'Action', key: 'action' },
+];
+
 
 const getTableData = () => {
   const source = tabValue === 0 ? meetingData : scheduledData;
