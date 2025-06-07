@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
 import { baseurl } from '../../../BaseURL/BaseURL';
+  import Swal from 'sweetalert2';
 
 function PaymentForm() {
     const navigate = useNavigate();
@@ -72,59 +73,71 @@ function PaymentForm() {
     }
 }, [propertyId]);
 
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-    
-        const updatedData = {
-            ...formData,
-            paid_amount: parseFloat(formData.remaining_amount),
-            remaining_amount: 0,
-            payment_type: "Full-Amount",
-            company_commission: companyCommission
-        };
-    
-        try {
-            // 1. Submit the transaction
-            const response = await fetch(`${baseurl}/transactions/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(updatedData),
-            });
-    
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(`API Error: ${JSON.stringify(errorData)}`);
-            }
-    
-            const result = await response.json();
-            console.log('Transaction stored successfully:', result);
-    
-            // 2. Update the property status to "sold"
-            const propertyId = formData.property_id; // Ensure this exists in formData
-            const statusUpdateResponse = await fetch(`${baseurl}/property/${propertyId}/`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ status: 'sold', agent_commission_balance: agentCommission }),
-            });
-    
-            if (!statusUpdateResponse.ok) {
-                const errorData = await statusUpdateResponse.json();
-                throw new Error(`Status Update Error: ${JSON.stringify(errorData)}`);
-            }
-    
-            console.log(`Property ${propertyId} status updated to sold`);
-            alert('Transaction submitted and property marked as sold!');
-            navigate('/p-transaction');
-        } catch (error) {
-            console.error('Submit error:', error);
-            alert('Failed to complete operation: ' + error.message);
-        }
-    };
+  const updatedData = {
+    ...formData,
+    paid_amount: parseFloat(formData.remaining_amount),
+    remaining_amount: 0,
+    payment_type: "Full-Amount",
+    company_commission: companyCommission,
+  };
+
+  try {
+    // 1. Submit the transaction
+    const response = await fetch(`${baseurl}/transactions/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`API Error: ${JSON.stringify(errorData)}`);
+    }
+
+    const result = await response.json();
+    console.log('Transaction stored successfully:', result);
+
+    // 2. Update property status to "sold"
+    const propertyId = formData.property_id;
+    const statusUpdateResponse = await fetch(`${baseurl}/property/${propertyId}/`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ status: 'sold', agent_commission_balance: agentCommission }),
+    });
+
+    if (!statusUpdateResponse.ok) {
+      const errorData = await statusUpdateResponse.json();
+      throw new Error(`Status Update Error: ${JSON.stringify(errorData)}`);
+    }
+
+    console.log(`Property ${propertyId} status updated to sold`);
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Success!',
+      text: 'Transaction submitted and property marked as sold!',
+      timer: 2500,
+      showConfirmButton: false
+    });
+
+    navigate('/p-transaction');
+  } catch (error) {
+    console.error('Submit error:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Failed to complete operation: ' + error.message,
+    });
+  }
+};
+
     
 
 

@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import TableLayout from '../../../Shared/TableLayout'; // Adjust path as needed
 import { Select, MenuItem } from '@mui/material';
 import { baseurl } from '../../../BaseURL/BaseURL';
+import Swal from 'sweetalert2';
 
 function MeetingRequests() {
   const [tabValue, setTabValue] = useState(0);
@@ -42,32 +43,45 @@ function MeetingRequests() {
         console.error('Error fetching scheduled meetings:', error);
         setLoading(false);
       });
-  };
+  }
 
 const handleStatusChange = (scheduleId, newStatus) => {
   const meeting = scheduledData.find((item) => item.scheduled_meeting_id === scheduleId);
-  
+
   if (!meeting) {
-    alert('Meeting not found');
+    Swal.fire({
+      icon: 'error',
+      title: 'Not Found',
+      text: 'Meeting not found',
+    });
     return;
   }
 
-  const payload = {
-    status: newStatus,
-  };
+  const payload = { status: newStatus };
 
   axios
     .put(`${baseurl}/scheduled-meetings/${scheduleId}/`, payload)
     .then(() => {
       fetchScheduledMeetings(); // Refresh data
       console.log(`Status updated to ${newStatus}`);
-      // alert('Status updated successfully!');
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: 'Status updated successfully!',
+        timer: 2000,
+        showConfirmButton: false,
+      });
     })
     .catch((error) => {
       console.error('Error updating meeting status:', error.response?.data || error.message);
-      alert('Failed to update status. Please try again.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Update Failed',
+        text: 'Failed to update status. Please try again.',
+      });
     });
 };
+
 
 
 

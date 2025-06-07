@@ -14,6 +14,7 @@ import {
 import Header from "../../../Shared/Navbar/Navbar";
 import axios from "axios";
 import { baseurl } from '../../../BaseURL/BaseURL';
+  import Swal from 'sweetalert2';
 
 const Tmoniter = () => {
   const [transactions, setTransactions] = useState([]);
@@ -77,18 +78,29 @@ const Tmoniter = () => {
     fetchTransactions();
   }, []);
 
-  const handlePayCommission = async (transaction) => {
-    const url = `${baseurl}/commission/distribute/${transaction.transaction_id}/`;
-    try {
-      console.log("Initiating commission payment for:", transaction.transaction_id);
-      const response = await axios.post(url);
-      console.log("Commission distributed:", response.data);
-      alert(`Commission distributed for Transaction ID ${transaction.transaction_id}`);
-    } catch (error) {
-      console.error("Failed to distribute commission:", error);
-      alert(`Error distributing commission for Transaction ID ${transaction.transaction_id}`);
-    }
-  };
+const handlePayCommission = async (transaction) => {
+  const url = `${baseurl}/commission/distribute/${transaction.transaction_id}/`;
+  try {
+    console.log("Initiating commission payment for:", transaction.transaction_id);
+    const response = await axios.post(url);
+    console.log("Commission distributed:", response.data);
+    Swal.fire({
+      icon: 'success',
+      title: 'Commission Distributed',
+      text: `Commission distributed for Transaction ID ${transaction.transaction_id}`,
+      timer: 2000,
+      showConfirmButton: false
+    });
+  } catch (error) {
+    console.error("Failed to distribute commission:", error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Distribution Failed',
+      text: `Error distributing commission for Transaction ID ${transaction.transaction_id}`
+    });
+  }
+};
+
 
   const cellStyle = {
     fontWeight: 'bold',

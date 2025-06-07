@@ -11,6 +11,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Header from "../../../Shared/Navbar/Navbar";
 import { baseurl } from '../../../BaseURL/BaseURL';
+ import Swal from 'sweetalert2';
 
 function AddBookingSlab() {
   const [formData, setFormData] = useState({
@@ -29,17 +30,31 @@ function AddBookingSlab() {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.post(`${baseurl}/booking-slabs/`, formData);
-      alert('Booking Slab added successfully!');
-      navigate('/a-bookingslab');
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      alert('Error submitting form');
-    }
-  };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    await axios.post(`${baseurl}/booking-slabs/`, formData);
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Success!',
+      text: 'Booking Slab added successfully!',
+      timer: 2000,
+      showConfirmButton: false
+    });
+
+    navigate('/a-bookingslab');
+  } catch (error) {
+    console.error('Error submitting form:', error);
+
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Error submitting form'
+    });
+  }
+};
+
 
   return (
     <>

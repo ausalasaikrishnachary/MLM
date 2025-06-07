@@ -8,6 +8,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate, useLocation } from 'react-router-dom';
 import Header from "../../../Shared/Navbar/Navbar";
 import { baseurl } from '../../../BaseURL/BaseURL';
+import Swal from 'sweetalert2';
 
 const Edit_Tmanagement = () => {
   const [users, setUsers] = useState([]);
@@ -84,38 +85,51 @@ const Edit_Tmanagement = () => {
     setFiles(prev => ({ ...prev, [name]: files[0] }));
   };
 
-  const handleSubmit = async () => {
-    const data = new FormData();
+const handleSubmit = async () => {
+  const data = new FormData();
 
-    Object.entries(formData).forEach(([key, value]) => {
-      if (key === 'roles') {
-        const roleIds = value.map(role => role.role_id || role);
-        data.append('roles', JSON.stringify(roleIds));
-      } else if (key === 'password') {
-        if (value?.trim()) data.append('password', value);
-      } else if (!['image', 'pan', 'aadhaar'].includes(key)) {
-        data.append(key, value ?? '');
-      }
-    });
-
-    Object.entries(files).forEach(([key, file]) => {
-      if (file) data.append(key, file);
-    });
-
-    try {
-      const response = await axios.put(
-        `${baseurl}/users/${selectedUserId}/`,
-        data,
-        {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        }
-      );
-      alert('User updated successfully!');
-    } catch (error) {
-      console.error('Update error:', error.response?.data || error.message);
-      alert('Failed to update user. Check the console for details.');
+  Object.entries(formData).forEach(([key, value]) => {
+    if (key === 'roles') {
+      const roleIds = value.map(role => role.role_id || role);
+      data.append('roles', JSON.stringify(roleIds));
+    } else if (key === 'password') {
+      if (value?.trim()) data.append('password', value);
+    } else if (!['image', 'pan', 'aadhaar'].includes(key)) {
+      data.append(key, value ?? '');
     }
-  };
+  });
+
+  Object.entries(files).forEach(([key, file]) => {
+    if (file) data.append(key, file);
+  });
+
+  try {
+    const response = await axios.put(
+      `${baseurl}/users/${selectedUserId}/`,
+      data,
+      {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      }
+    );
+
+    await Swal.fire({
+      icon: 'success',
+      title: 'Success',
+      text: 'User updated successfully!',
+      timer: 2000,
+      showConfirmButton: false
+    });
+
+  } catch (error) {
+    console.error('Update error:', error.response?.data || error.message);
+    await Swal.fire({
+      icon: 'error',
+      title: 'Update Failed',
+      text: 'Failed to update user. Check the console for details.'
+    });
+  }
+};
+
 
   return (
 

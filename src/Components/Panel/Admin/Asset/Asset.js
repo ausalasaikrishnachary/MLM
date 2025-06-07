@@ -23,6 +23,7 @@ import {
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import Header from '../../../Shared/Navbar/Navbar';
+ import Swal from 'sweetalert2';
 import { useNavigate } from "react-router-dom";
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
@@ -156,28 +157,52 @@ const AssetsUI = () => {
     setOpenCarousel(false);
     setSelectedProperty(null);
   };
+const handleDelete = async (propertyId) => {
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: "Do you really want to delete this property?",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Yes, delete it!'
+  });
 
-  const handleDelete = async (propertyId) => {
-    const confirmed = window.confirm("Are you sure you want to delete this property?");
-    if (!confirmed) return;
+  if (!result.isConfirmed) return;
 
-    try {
-      const response = await fetch(`${baseurl}/property/${propertyId}/`, {
-        method: 'DELETE',
+  try {
+    const response = await fetch(`${baseurl}/property/${propertyId}/`, {
+      method: 'DELETE',
+    });
+
+    if (response.ok) {
+      setProperties(prev => prev.filter(p => p.property_id !== propertyId));
+      setFilteredProperties(prev => prev.filter(p => p.property_id !== propertyId));
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Deleted!',
+        text: 'Property has been deleted.',
+        timer: 2000,
+        showConfirmButton: false
       });
-
-      if (response.ok) {
-        alert('Property deleted successfully.');
-        setProperties(prev => prev.filter(p => p.property_id !== propertyId));
-        setFilteredProperties(prev => prev.filter(p => p.property_id !== propertyId));
-      } else {
-        alert(`Failed to delete property. Status: ${response.status}`);
-      }
-    } catch (error) {
-      console.error('Error deleting property:', error);
-      alert('An error occurred while deleting the property.');
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Deletion Failed',
+        text: `Failed to delete property. Status: ${response.status}`
+      });
     }
-  };
+  } catch (error) {
+    console.error('Error deleting property:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'An error occurred while deleting the property.'
+    });
+  }
+};
+
 
   const handleNextImage = (propertyId, totalImages) => (e) => {
     e.stopPropagation();
@@ -195,33 +220,59 @@ const AssetsUI = () => {
     }));
   };
 
-  const updateApprovalStatus = async (propertyId, newStatus) => {
-    try {
-      const response = await fetch(`${baseurl}/property/${propertyId}/`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ approval_status: newStatus })
-      });
+const updateApprovalStatus = async (propertyId, newStatus) => {
+  try {
+    const response = await fetch(`${baseurl}/property/${propertyId}/`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ approval_status: newStatus })
+    });
 
-      if (response.ok) {
-        alert('Approval status updated successfully.');
-        const updatedData = await response.json();
-        setProperties(prev =>
-          prev.map(p => (p.property_id === propertyId ? { ...p, approval_status: updatedData.approval_status } : p))
-        );
-        setFilteredProperties(prev =>
-          prev.map(p => (p.property_id === propertyId ? { ...p, approval_status: updatedData.approval_status } : p))
-        );
-      } else {
-        alert(`Failed to update approval status. Status: ${response.status}`);
-      }
-    } catch (error) {
-      console.error('Error updating approval status:', error);
-      alert('An error occurred while updating the approval status.');
+    if (response.ok) {
+      const updatedData = await response.json();
+
+      setProperties(prev =>
+        prev.map(p =>
+          p.property_id === propertyId
+            ? { ...p, approval_status: updatedData.approval_status }
+            : p
+        )
+      );
+
+      setFilteredProperties(prev =>
+        prev.map(p =>
+          p.property_id === propertyId
+            ? { ...p, approval_status: updatedData.approval_status }
+            : p
+        )
+      );
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: 'Approval status updated successfully.',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Update Failed',
+        text: `Failed to update approval status. Status: ${response.status}`
+      });
     }
-  };
+  } catch (error) {
+    console.error('Error updating approval status:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'An error occurred while updating the approval status.'
+    });
+  }
+};
+
 
   // Function to get all media (images + videos) for a property
   const getAllMedia = (property) => {

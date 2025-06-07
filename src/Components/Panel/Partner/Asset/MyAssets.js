@@ -26,6 +26,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
 import { useNavigate } from "react-router-dom";
 import { Carousel } from 'react-responsive-carousel';
+ import Swal from 'sweetalert2';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import PaginationComponent from '../../../Shared/Pagination';
 import { baseurl } from '../../../BaseURL/BaseURL';
@@ -161,27 +162,50 @@ const PartnerMyAssets = () => {
     setSelectedProperty(null);
   };
 
-  const handleDelete = async (propertyId) => {
-    const confirmed = window.confirm("Are you sure you want to delete this property?");
-    if (!confirmed) return;
+const handleDelete = async (propertyId) => {
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: "Do you really want to delete this property?",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Yes, delete it!'
+  });
 
-    try {
-      const response = await fetch(`${baseurl}/property/${propertyId}/`, {
-        method: 'DELETE',
+  if (!result.isConfirmed) return;
+
+  try {
+    const response = await fetch(`${baseurl}/property/${propertyId}/`, {
+      method: 'DELETE',
+    });
+
+    if (response.ok) {
+      await Swal.fire({
+        icon: 'success',
+        title: 'Deleted!',
+        text: 'Property deleted successfully.',
+        timer: 2000,
+        showConfirmButton: false
       });
-
-      if (response.ok) {
-        alert('Property deleted successfully.');
-        fetchProperties();
-        // Refresh list or redirect as needed
-      } else {
-        alert(`Failed to delete property. Status: ${response.status}`);
-      }
-    } catch (error) {
-      console.error('Error deleting property:', error);
-      alert('An error occurred while deleting the property.');
+      fetchProperties(); // Refresh the list
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Failed',
+        text: `Failed to delete property. Status: ${response.status}`
+      });
     }
-  };
+  } catch (error) {
+    console.error('Error deleting property:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'An error occurred while deleting the property.'
+    });
+  }
+};
+
 
   const handleNextImage = (propertyId, totalImages) => (e) => {
     e.stopPropagation();

@@ -5,6 +5,7 @@ import {
     Grid, TextField, Typography, CircularProgress, Box, Button
 } from '@mui/material';
 import Header from "../../../Shared/Navbar/Navbar";
+  import Swal from 'sweetalert2';
 import { baseurl } from '../../../BaseURL/BaseURL';
 
 function PayCommissionForm() {
@@ -30,44 +31,62 @@ function PayCommissionForm() {
         fetchProperty();
     }, [propertyId]);
 
-    const handleUpdateCommission = async () => {
-        const amount = parseFloat(payCommissionAmount);
+const handleUpdateCommission = async () => {
+  const amount = parseFloat(payCommissionAmount);
 
-        if (!amount || amount <= 0) {
-            alert('Enter a valid commission amount.');
-            return;
-        }
+  if (!amount || amount <= 0) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Invalid Amount',
+      text: 'Enter a valid commission amount.'
+    });
+    return;
+  }
 
-        const agentCommission = parseFloat(property.agent_commission);
-        const paid = parseFloat(property.agent_commission_paid || 0);
-        const balance = parseFloat(property.agent_commission_balance || 0);
+  const agentCommission = parseFloat(property.agent_commission);
+  const paid = parseFloat(property.agent_commission_paid || 0);
+  const balance = parseFloat(property.agent_commission_balance || 0);
 
-        if (amount > balance) {
-            alert('Amount exceeds remaining commission balance.');
-            return;
-        }
+  if (amount > balance) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Exceeded Balance',
+      text: 'Amount exceeds remaining commission balance.'
+    });
+    return;
+  }
 
-        const updatedProperty = {
-            ...property,
-            agent_commission_paid: paid + amount,
-            agent_commission_balance: agentCommission - (paid + amount),
-        };
+  const updatedProperty = {
+    ...property,
+    agent_commission_paid: paid + amount,
+    agent_commission_balance: agentCommission - (paid + amount),
+  };
 
-        try {
-            setUpdating(true);
-            await axios.put(
-                `${baseurl}/property/${propertyId}/`,
-                updatedProperty
-            );
-            alert('Commission updated successfully!');
-            setProperty(updatedProperty);
-            setPayCommissionAmount('');
-        } catch (err) {
-            alert('Failed to update commission.');
-        } finally {
-            setUpdating(false);
-        }
-    };
+  try {
+    setUpdating(true);
+    await axios.put(`${baseurl}/property/${propertyId}/`, updatedProperty);
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Success',
+      text: 'Commission updated successfully!',
+      timer: 2000,
+      showConfirmButton: false
+    });
+
+    setProperty(updatedProperty);
+    setPayCommissionAmount('');
+  } catch (err) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Update Failed',
+      text: 'Failed to update commission.'
+    });
+  } finally {
+    setUpdating(false);
+  }
+};
+
 
     if (loading) {
         return (

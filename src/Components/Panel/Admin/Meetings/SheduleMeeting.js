@@ -15,6 +15,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { baseurl } from '../../../BaseURL/BaseURL';
+import Swal from 'sweetalert2';
 
 function SheduleMeeting() {
     const location = useLocation();
@@ -76,12 +77,17 @@ const [form, setForm] = useState({
     };
 
     // Handle form submit
+
 const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     if (!requestId || !form.meeting_link) {
-        alert("Request ID or Meeting Link is missing.");
+        Swal.fire({
+            icon: 'warning',
+            title: 'Missing Information',
+            text: 'Request ID or Meeting Link is missing.',
+        });
         setLoading(false);
         return;
     }
@@ -105,7 +111,14 @@ const handleSubmit = async (e) => {
 
     try {
         await axios.post(`${baseurl}/scheduled-meetings/`, payload);
-        alert('Meeting scheduled successfully.');
+        await Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: 'Meeting scheduled successfully.',
+            timer: 2000,
+            showConfirmButton: false,
+        });
+
         setForm({
             name: '',
             email: '',
@@ -124,13 +137,15 @@ const handleSubmit = async (e) => {
         if (error.response) {
             console.error('Server Response:', error.response.data);
         }
-        alert('Failed to schedule meeting.');
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to schedule meeting.',
+        });
     } finally {
         setLoading(false);
     }
 };
-
-
 
 
     return (

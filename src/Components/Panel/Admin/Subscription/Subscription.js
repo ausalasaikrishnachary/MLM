@@ -22,6 +22,7 @@ import Header from '../../../Shared/Navbar/Navbar';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { baseurl } from '../../../BaseURL/BaseURL';
+import Swal from 'sweetalert2';
 
 function Subscription() {
   const [userType, setUserType] = useState('Client');
@@ -81,27 +82,50 @@ function Subscription() {
     fetchVariantsAndPlans(userType);
   }, [userType]);
 
-  const handleDelete = async (variantId) => {
-    const confirmDelete = window.confirm(`Are you sure you want to delete variant ID ${variantId}?`);
-    if (!confirmDelete) return;
+const handleDelete = async (variantId) => {
+  const result = await Swal.fire({
+    title: `Delete Variant ID ${variantId}?`,
+    text: "This action cannot be undone.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Yes, delete it!",
+    cancelButtonText: "Cancel",
+  });
 
-    try {
-      const response = await fetch(`${baseurl}/subscription/plan-variants/${variantId}/`, {
-        method: 'DELETE',
+  if (!result.isConfirmed) return;
+
+  try {
+    const response = await fetch(`${baseurl}/subscription/plan-variants/${variantId}/`, {
+      method: 'DELETE',
+    });
+
+    if (response.ok) {
+      await Swal.fire({
+        icon: "success",
+        title: "Deleted!",
+        text: `Variant ID ${variantId} deleted successfully.`,
+        timer: 2000,
+        showConfirmButton: false,
       });
-
-      if (response.ok) {
-        alert(`Variant ID ${variantId} deleted successfully.`);
-        fetchVariantsAndPlans(userType);
-      } else {
-        const errorData = await response.json();
-        alert(`Failed to delete variant ID ${variantId}. Reason: ${errorData.detail || 'Unknown error'}`);
-      }
-    } catch (error) {
-      console.error('Error deleting variant:', error);
-      alert('An error occurred while trying to delete the variant.');
+      fetchVariantsAndPlans(userType);
+    } else {
+      const errorData = await response.json();
+      await Swal.fire({
+        icon: "error",
+        title: "Failed to delete",
+        text: errorData.detail || 'Unknown error',
+      });
     }
-  };
+  } catch (error) {
+    console.error('Error deleting variant:', error);
+    await Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: 'An error occurred while trying to delete the variant.',
+    });
+  }
+};
+
 
   return (
     <>

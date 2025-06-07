@@ -14,6 +14,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import Header from "../../../Shared/Partner/PartnerNavbar";
 import { baseurl } from '../../../BaseURL/BaseURL';
+ import Swal from 'sweetalert2';
 
 function PartnerPlans() {
   const [variantData, setVariantData] = useState([]);
@@ -93,53 +94,80 @@ function PartnerPlans() {
     fetchVariantsAndPlans();
   }, []);
 
-  const handleBuy = async (variant) => {
-    const confirmSubscribe = window.confirm("Are you sure you want to subscribe to this plan?");
-    if (!confirmSubscribe) return;
+const handleBuy = async (variant) => {
+  const confirmResult = await Swal.fire({
+    title: "Are you sure?",
+    text: "Do you want to subscribe to this plan?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "Yes, subscribe!",
+    cancelButtonText: "Cancel"
+  });
 
-    if (!userId) {
-      alert("User ID not found in localStorage!");
-      return;
-    }
+  if (!confirmResult.isConfirmed) return;
 
-    try {
-      const response = await fetch(`${baseurl}/subscriptions/`, {
-        method: 'POST',
+  if (!userId) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'User ID Missing',
+      text: 'User ID not found in localStorage!'
+    });
+    return;
+  }
+
+  try {
+    const response = await fetch(`${baseurl}/subscriptions/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        user_id: parseInt(userId),
+        subscription_variant: variant.variant_id,
+        subscription_status: "paid"
+      }),
+    });
+
+    if (response.ok) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Subscription Successful!',
+        timer: 2000,
+        showConfirmButton: false
+      });
+
+      setSubscribedVariants((prev) => [...prev, variant.variant_id]);
+
+      // Update user status
+      const updateResponse = await fetch(`${baseurl}/users/${userId}/`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          user_id: parseInt(userId),
-          subscription_variant: variant.variant_id,
-          subscription_status: "paid"
-        }),
+        body: JSON.stringify({ status: "active" }),
       });
 
-      if (response.ok) {
-        alert("Subscription successful!");
-        setSubscribedVariants((prev) => [...prev, variant.variant_id]);
-
-        const updateResponse = await fetch(`${baseurl}/users/${userId}/`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            status: "active"
-          }),
-        });
-
-        if (!updateResponse.ok) {
-          console.warn("Failed to update user status.");
-        }
-      } else {
-        alert("Failed to subscribe. Please try again.");
+      if (!updateResponse.ok) {
+        console.warn("Failed to update user status.");
       }
-    } catch (error) {
-      console.error("Subscription error:", error);
-      alert("Something went wrong.");
+
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Subscription Failed',
+        text: 'Please try again.'
+      });
     }
-  };
+
+  } catch (error) {
+    console.error("Subscription error:", error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Something went wrong. Please try again.'
+    });
+  }
+};
 
   return (
     <>

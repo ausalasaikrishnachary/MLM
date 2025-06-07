@@ -13,6 +13,9 @@ import {
 import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
 import axios from 'axios';
 
+ import Swal from 'sweetalert2';
+
+
 import { useParams, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { baseurl } from '../../../BaseURL/BaseURL';
@@ -56,50 +59,60 @@ function BookingAssets() {
       });
   }, []);
 
+const handleBooking = () => {
+  const username = localStorage.getItem('user_name');
+  const userId = Number(localStorage.getItem('user_id'));
+  const propertyValue = Number(property.total_property_value);
+  const agentId = property?.user_id || null;
+  const propertyName = property?.property_title || null;
+  const paidAmount = Number(property.booking_amount);
+  const remainingAmount = propertyValue - paidAmount;
 
-
-
-  const handleBooking = () => {
-    const username = localStorage.getItem('user_name');
-    const userId = Number(localStorage.getItem('user_id'));
-    const propertyValue = Number(property.total_property_value);
-    const agentId = property?.user_id || null;
-    const propertyName = property?.property_title || null;
-    const paidAmount = Number(property.booking_amount);
-    const remainingAmount = Number(property.total_property_value) - paidAmount;
-
-    const payload = {
-      property_name: propertyName,
-      purchased_from: 'agent',
-      purchased_type: 'direct',
-      username: username,
-      property_value: propertyValue,
-      transaction_date: new Date().toISOString().split('T')[0],
-      property_id: Number(propertyId),
-      agent_id: agentId,
-      user_id: userId,
-      paid_amount: paidAmount,
-      remaining_amount: remainingAmount,
-      payment_type: "Booking-Amount",
-      payment_method: "Cash",
-    };
-
-    axios.post(`${baseurl}/transactions/`, payload)
-      .then(() => {
-        return axios.put(`${baseurl}/property/${propertyId}/`, {
-          status: 'booked',
-          // mediator_referral_id: selectedReferralId || " " 
-        });
-      })
-      .then(() => {
-        alert('Booking successful and status updated!');
-        navigate('/p-transaction');
-      })
-      .catch((err) => {
-        alert('Booking or status update failed!');
-        console.error('Error:', err.response?.data || err);
-      });
+  const payload = {
+    property_name: propertyName,
+    purchased_from: 'agent',
+    purchased_type: 'direct',
+    username: username,
+    property_value: propertyValue,
+    transaction_date: new Date().toISOString().split('T')[0],
+    property_id: Number(propertyId),
+    agent_id: agentId,
+    user_id: userId,
+    paid_amount: paidAmount,
+    remaining_amount: remainingAmount,
+    payment_type: "Booking-Amount",
+    payment_method: "Cash",
   };
+
+  axios.post(`${baseurl}/transactions/`, payload)
+    .then(() => {
+      return axios.put(`${baseurl}/property/${propertyId}/`, {
+        status: 'booked',
+        // mediator_referral_id: selectedReferralId || " "
+      });
+    })
+    .then(() => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Booking Successful!',
+        text: 'Transaction completed and property status updated.',
+        confirmButtonColor: '#3085d6',
+        timer: 2500,
+        showConfirmButton: false
+      });
+      navigate('/p-transaction');
+    })
+    .catch((err) => {
+      console.error('Error:', err.response?.data || err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Failed!',
+        text: 'Booking or status update failed.',
+        confirmButtonColor: '#d33'
+      });
+    });
+};
+
 
   return (
     <>

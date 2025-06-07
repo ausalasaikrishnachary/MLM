@@ -27,6 +27,7 @@ import axios from 'axios';
 import Header from '../../../Shared/Navbar/Navbar';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from "react-router-dom";
+  import Swal from 'sweetalert2';
 import { baseurl } from '../../../BaseURL/BaseURL';
 
 const steps = [
@@ -372,14 +373,14 @@ const handleChange = (e) => {
       }
 
       // Submit to API
-      const response = await axios.post(`${baseurl}/property/`, payload, {
+      const response = await axios.post(`${baseurl}/property/`, payload, { 
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
 
       console.log('Submission successful:', response.data);
-      alert('Property submitted successfully!');
+       Swal.fire('Success', 'Property updated successfully!', 'success');
       navigate("/a-asset");
 
       // Optionally reset form or redirect here
@@ -402,7 +403,7 @@ const handleChange = (e) => {
         errorMessage += `: ${error.message}`;
       }
 
-      alert(errorMessage);
+      Swal.fire('Error', 'An error occurred while updating.', 'error');
     } finally {
       setIsSubmitting(false);
     }

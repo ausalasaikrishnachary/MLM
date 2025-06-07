@@ -9,6 +9,7 @@ import {
 import Header from "../../../Shared/Partner/PartnerNavbar";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { baseurl } from '../../../BaseURL/BaseURL';
+import Swal from 'sweetalert2';
 
 const MeetingRequestForm = () => {
 const [form, setForm] = useState({
@@ -52,18 +53,33 @@ const handleSubmit = async (e) => {
         });
 
         if (response.ok) {
-            alert("Meeting request submitted successfully!");
+            await Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'Meeting request submitted successfully!',
+                timer: 2000,
+                showConfirmButton: false
+            });
             navigate("/p-meetings");
         } else {
             const errorData = await response.json();
             console.error("Submission failed:", errorData);
-            alert("Submission failed. Please check your input.");
+            Swal.fire({
+                icon: 'error',
+                title: 'Submission Failed',
+                text: 'Please check your input and try again.'
+            });
         }
     } catch (error) {
         console.error("Error submitting meeting request:", error);
-        alert("An error occurred. Please try again later.");
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred. Please try again later.'
+        });
     }
 };
+
 
 
     return (

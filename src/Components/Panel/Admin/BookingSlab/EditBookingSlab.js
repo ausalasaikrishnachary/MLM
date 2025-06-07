@@ -5,6 +5,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { TextField, Button, Paper, Typography, Box } from '@mui/material';
 import axios from 'axios';
 import Header from "../../../Shared/Navbar/Navbar";
+  import Swal from 'sweetalert2';
 import { baseurl } from '../../../BaseURL/BaseURL';
 
 function EditBookingSlab() {
@@ -26,15 +27,29 @@ function EditBookingSlab() {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        axios.put(`${baseurl}/booking-slabs/${id}/`, form)
-            .then(() => {
-                alert('Booking slab updated successfully!');
-                navigate('/booking-slab'); // Adjust route as per your routing
-            })
-            .catch(error => console.error('Failed to update:', error));
-    };
+
+const handleSubmit = (e) => {
+  e.preventDefault();
+  axios.put(`${baseurl}/booking-slabs/${id}/`, form)
+    .then(() => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Updated!',
+        text: 'Booking slab updated successfully!',
+        timer: 2000,
+        showConfirmButton: false
+      });
+      navigate('/a-bookingslab'); // Adjust route as needed
+    })
+    .catch(error => {
+      console.error('Failed to update:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Update Failed',
+        text: 'An error occurred while updating the booking slab.'
+      });
+    });
+};
 
     return (
         <>

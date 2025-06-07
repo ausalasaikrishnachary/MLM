@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
+ import Swal from 'sweetalert2';
 import DeleteIcon from "@mui/icons-material/Delete";
 import Header from "../../../Shared/Navbar/Navbar";
 import { baseurl } from '../../../BaseURL/BaseURL';
@@ -66,24 +67,49 @@ const filteredData = selectedRole === "All"
     navigate("/Edit_Tmanagement", { state: { user } });
   };
 
-  const handleDelete = (user_id) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
+const handleDelete = (user_id) => {
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'Do you really want to delete this user?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Yes, delete it!',
+  }).then((result) => {
+    if (result.isConfirmed) {
       axios
         .delete(`${baseurl}/users/${user_id}`)
         .then((res) => {
           if (res.status === 200) {
             setData((prevData) => prevData.filter((user) => user.id !== user_id));
-            console.log("User deleted successfully");
+            Swal.fire({
+              icon: 'success',
+              title: 'Deleted!',
+              text: 'User has been deleted.',
+              timer: 2000,
+              showConfirmButton: false
+            });
           } else {
-            console.error("Failed to delete user");
+            Swal.fire({
+              icon: 'error',
+              title: 'Failed',
+              text: 'Failed to delete user.'
+            });
           }
         })
         .catch((err) => {
           console.error("Error deleting user:", err.response ? err.response.data : err);
-          alert("Error deleting user, please try again.");
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error deleting user, please try again.'
+          });
         });
     }
-  };
+  });
+};
+
 
   const cellStyle = {
     fontWeight: 'bold',

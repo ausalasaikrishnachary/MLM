@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+ import Swal from 'sweetalert2';
 import {
   Box,
   Button,
@@ -72,73 +73,100 @@ function AddSubscription() {
     fetchPlans();
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const selectedPlan = allPlans.find(plan => plan.plan_name === formData.plan_name);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const selectedPlan = allPlans.find(plan => plan.plan_name === formData.plan_name);
 
-      if (!selectedPlan) {
-        alert("Selected plan not found.");
-        return;
-      }
-
-      const payload = {
-        plan_id: selectedPlan.plan_id,
-        duration_in_days: Number(formData.duration_in_days),
-        price: Number(formData.price),
-      };
-
-      const response = await axios.post(
-        `${baseurl}/subscription/plan-variants/`,
-        payload,
-        { headers: { 'Content-Type': 'application/json' } }
-      );
-
-      alert('Plan variant added successfully!');
-      setFormData({
-        plan_name: '',
-        price: '',
-        duration_in_days: '',
-        description: '',
+    if (!selectedPlan) {
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Plan Not Found',
+        text: 'Selected plan not found.',
       });
-      navigate('/a-subscriptions');
-    } catch (error) {
-      console.error('Error adding plan variant:', error);
-      alert('Failed to add plan variant. Please try again.');
+      return;
     }
-  };
+
+    const payload = {
+      plan_id: selectedPlan.plan_id,
+      duration_in_days: Number(formData.duration_in_days),
+      price: Number(formData.price),
+    };
+
+    await axios.post(
+      `${baseurl}/subscription/plan-variants/`,
+      payload,
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+
+    await Swal.fire({
+      icon: 'success',
+      title: 'Success',
+      text: 'Plan variant added successfully!',
+      timer: 2000,
+      showConfirmButton: false,
+    });
+
+    setFormData({
+      plan_name: '',
+      price: '',
+      duration_in_days: '',
+      description: '',
+    });
+    navigate('/a-subscriptions');
+  } catch (error) {
+    console.error('Error adding plan variant:', error);
+    await Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Failed to add plan variant. Please try again.',
+    });
+  }
+};
+
 
   const handleNewPlanChange = (e) => {
     const { name, value } = e.target;
     setNewPlan({ ...newPlan, [name]: value });
   };
 
-  const handleAddPlan = async () => {
-    try {
-      const payload = {
-        plan_name: newPlan.plan_name,
-        description: newPlan.description,
-        user_type: newPlan.user_type,
-      };
+const handleAddPlan = async () => {
+  try {
+    const payload = {
+      plan_name: newPlan.plan_name,
+      description: newPlan.description,
+      user_type: newPlan.user_type,
+    };
 
-      const response = await axios.post(
-        `${baseurl}/subscription/plans/`,
-        payload,
-        { headers: { 'Content-Type': 'application/json' } }
-      );
+    await axios.post(
+      `${baseurl}/subscription/plans/`,
+      payload,
+      { headers: { 'Content-Type': 'application/json' } }
+    );
 
-      alert('Plan added successfully!');
-      setNewPlan({ plan_name: '', description: '', user_type: '' });
-      setOpenModal(false);
-      fetchPlans();
-    } catch (error) {
-      console.error('Error adding plan:', error);
-      alert(
+    await Swal.fire({
+      icon: 'success',
+      title: 'Success',
+      text: 'Plan added successfully!',
+      timer: 2000,
+      showConfirmButton: false,
+    });
+
+    setNewPlan({ plan_name: '', description: '', user_type: '' });
+    setOpenModal(false);
+    fetchPlans();
+  } catch (error) {
+    console.error('Error adding plan:', error);
+    await Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text:
         error?.response?.data?.message ||
-        'Failed to add plan. Please check if all fields are filled correctly.'
-      );
-    }
-  };
+        'Failed to add plan. Please check if all fields are filled correctly.',
+    });
+  }
+};
+
 
   return (
     <>

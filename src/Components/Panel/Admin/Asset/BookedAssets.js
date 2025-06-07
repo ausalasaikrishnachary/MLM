@@ -21,6 +21,7 @@ import {
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import Header from '../../../Shared/Navbar/Navbar';
+ import Swal from 'sweetalert2';
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { Carousel } from 'react-responsive-carousel';
@@ -77,33 +78,59 @@ const BookedAssets = () => {
         setSelectedProperty(null);
     };
 
-    const updateApprovalStatus = async (propertyId, newStatus) => {
-        try {
-            const response = await fetch(`${baseurl}/property/${propertyId}/`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ approval_status: newStatus })
-            });
+const updateApprovalStatus = async (propertyId, newStatus) => {
+  try {
+    const response = await fetch(`${baseurl}/property/${propertyId}/`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ approval_status: newStatus })
+    });
 
-            if (response.ok) {
-                alert('Approval status updated successfully.');
-                const updatedData = await response.json();
-                setProperties(prev =>
-                    prev.map(p => (p.property_id === propertyId ? { ...p, approval_status: updatedData.approval_status } : p))
-                );
-                setFilteredProperties(prev =>
-                    prev.map(p => (p.property_id === propertyId ? { ...p, approval_status: updatedData.approval_status } : p))
-                );
-            } else {
-                alert(`Failed to update approval status. Status: ${response.status}`);
-            }
-        } catch (error) {
-            console.error('Error updating approval status:', error);
-            alert('An error occurred while updating the approval status.');
-        }
-    };
+    if (response.ok) {
+      const updatedData = await response.json();
+
+      setProperties(prev =>
+        prev.map(p =>
+          p.property_id === propertyId
+            ? { ...p, approval_status: updatedData.approval_status }
+            : p
+        )
+      );
+
+      setFilteredProperties(prev =>
+        prev.map(p =>
+          p.property_id === propertyId
+            ? { ...p, approval_status: updatedData.approval_status }
+            : p
+        )
+      );
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: 'Approval status updated successfully.',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Update Failed',
+        text: `Failed to update approval status. Status: ${response.status}`
+      });
+    }
+  } catch (error) {
+    console.error('Error updating approval status:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'An error occurred while updating the approval status.'
+    });
+  }
+};
+
 
     useEffect(() => {
         let results = [...properties];
