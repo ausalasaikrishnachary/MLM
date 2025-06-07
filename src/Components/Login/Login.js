@@ -192,12 +192,13 @@ const Login = () => {
       sx={{
         height: "100vh",
         display: "flex",
-        alignItems: "center",
+        flexDirection: "column",
         justifyContent: "center",
+        alignItems: "center",
         backgroundImage: "url(https://cdn.pixabay.com/photo/2018/11/22/23/57/london-3833039_1280.jpg)",
         backgroundSize: "cover",
         backgroundPosition: "center",
-        marginTop: "-85px"
+        marginTop: "-85px",
       }}
     >
       <Paper elevation={4} sx={{ display: "flex", width: "90%", maxWidth: 900, borderRadius: 2, overflow: "hidden" }}>
@@ -367,6 +368,20 @@ const Login = () => {
           </Grid>
         </Grid>
       </Paper>
+
+      <Box sx={{ mt: 2, textAlign: "center" }}>
+        <Typography variant="body2" color="white" sx={{ opacity: 0.9 }}>
+          © {new Date().getFullYear()} SHRIRAJ. All rights reserved. <br />
+          <Link href="/terms" target="_blank" underline="hover" color="inherit" sx={{ mx: 1 }}>
+            Terms & Conditions
+          </Link>
+          |
+          <Link href="/privacy" target="_blank" underline="hover" color="inherit" sx={{ mx: 1 }}>
+            Privacy Policy
+          </Link>
+        </Typography>
+      </Box>
+
     </Box>
   );
 };

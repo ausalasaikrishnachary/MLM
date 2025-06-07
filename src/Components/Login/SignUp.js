@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
 import {
     Box, TextField, Button, Typography, Paper, Grid, MenuItem,
-    IconButton, InputAdornment
+    IconButton, InputAdornment, Link, Checkbox, FormControlLabel
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import image2 from "./../Images/logo.png";
-import { Link, Navigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { baseurl } from '../BaseURL/BaseURL';
 import Swal from "sweetalert2";
+import { color } from "@mui/system";
 
 const SignUp = () => {
+    const [acceptedTC, setAcceptedTC] = useState(false);
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         username: "",
@@ -40,8 +42,8 @@ const SignUp = () => {
         ifsc_code: "",
         nominee_reference_to: "",
         referral_id: "",
-        referred_by:"",
-        status:""
+        referred_by: "",
+        status: ""
     });
 
     const hiddenFields = [
@@ -122,55 +124,55 @@ const SignUp = () => {
         setFileName(file.name);
     };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-  const formDataToSend = new FormData();
-  Object.keys(formData).forEach((key) => {
-    formDataToSend.append(key, formData[key]);
-  });
+        const formDataToSend = new FormData();
+        Object.keys(formData).forEach((key) => {
+            formDataToSend.append(key, formData[key]);
+        });
 
-  if (pancard) formDataToSend.append("pan", pancard);
-  if (aadhar) formDataToSend.append("aadhaar", aadhar);
-  if (image) formDataToSend.append("image", image);
+        if (pancard) formDataToSend.append("pan", pancard);
+        if (aadhar) formDataToSend.append("aadhaar", aadhar);
+        if (image) formDataToSend.append("image", image);
 
-  try {
-    const response = await fetch(`${baseurl}/users/`, {
-      method: "POST",
-      body: formDataToSend,
-    });
+        try {
+            const response = await fetch(`${baseurl}/users/`, {
+                method: "POST",
+                body: formDataToSend,
+            });
 
-    const responseData = await response.json();
+            const responseData = await response.json();
 
-    if (response.ok) {
-      Swal.fire({
-        icon: "success",
-        title: "User Registered",
-        text: "User registered successfully!",
-        confirmButtonColor: "#3085d6"
-      }).then(() => {
-        setUsers([...users, responseData]);
-        navigate("/");
-      });
-    } else {
-      console.error("Server Error:", responseData);
-      Swal.fire({
-        icon: "error",
-        title: "Registration Failed",
-        text: `Failed to register user: ${JSON.stringify(responseData)}`,
-        confirmButtonColor: "#d33"
-      });
-    }
-  } catch (error) {
-    console.error("Error submitting form:", error);
-    Swal.fire({
-      icon: "error",
-      title: "Submission Error",
-      text: "An error occurred while submitting the form.",
-      confirmButtonColor: "#d33"
-    });
-  }
-};
+            if (response.ok) {
+                Swal.fire({
+                    icon: "success",
+                    title: "User Registered",
+                    text: "User registered successfully!",
+                    confirmButtonColor: "#3085d6"
+                }).then(() => {
+                    setUsers([...users, responseData]);
+                    navigate("/");
+                });
+            } else {
+                console.error("Server Error:", responseData);
+                Swal.fire({
+                    icon: "error",
+                    title: "Registration Failed",
+                    text: `Failed to register user: ${JSON.stringify(responseData)}`,
+                    confirmButtonColor: "#d33"
+                });
+            }
+        } catch (error) {
+            console.error("Error submitting form:", error);
+            Swal.fire({
+                icon: "error",
+                title: "Submission Error",
+                text: "An error occurred while submitting the form.",
+                confirmButtonColor: "#d33"
+            });
+        }
+    };
 
     // Role Dialog States
     const [openRoleDialog, setOpenRoleDialog] = useState(false);
@@ -216,12 +218,13 @@ const handleSubmit = async (e) => {
             sx={{
                 height: "100vh",
                 display: "flex",
-                alignItems: "center",
+                flexDirection: "column",
                 justifyContent: "center",
+                alignItems: "center",
                 backgroundImage: "url(https://cdn.pixabay.com/photo/2018/11/22/23/57/london-3833039_1280.jpg)",
                 backgroundSize: "cover",
                 backgroundPosition: "center",
-                mt: "-85px"
+                marginTop: "-85px",
             }}
         >
             <Paper elevation={4} sx={{ display: "flex", width: "90%", maxWidth: 1000, borderRadius: 2, overflow: "hidden" }}>
@@ -318,22 +321,48 @@ const handleSubmit = async (e) => {
                                 )}
 
                             </Grid>
-                            {/* <Grid container justifyContent="center" style={{ marginTop: 20 }}>
-                                <Button type="submit" variant="contained" color="primary" size="small">
-                                    Submit
-                                </Button>
-                            </Grid> */}
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        checked={acceptedTC}
+                                        onChange={(e) => setAcceptedTC(e.target.checked)}
+                                        name="acceptedTC"
+                                        color="primary"
+                                    />
+                                }
+                                label={
+                                    <Typography variant="body2">
+                                        I agree to the{" "}
+                                        <Link href="/terms" target="_blank" underline="hover">
+                                            Terms & Conditions
+                                        </Link>{" "}
+                                        and{" "}
+                                        <Link href="/privacy" target="_blank" underline="hover">
+                                            Privacy Policy
+                                        </Link>
+                                    </Typography>
+                                }
+                            />
                             <Button
                                 type="submit"
                                 variant="contained"
                                 fullWidth
-                                sx={{ mt: 3, bgcolor: "#00cc8f", "&:hover": { bgcolor: "#004080", color: "#fff" } }}
+                                disabled={!acceptedTC}
+                                sx={{
+                                    mt: 3,
+                                    bgcolor: acceptedTC ? "#00cc8f" : "grey.500",
+                                    "&:hover": {
+                                        bgcolor: acceptedTC ? "#004080" : "grey.600",
+                                        color: acceptedTC ? "#fff" : "inherit"
+                                    }
+                                }}
                             >
                                 Register
                             </Button>
+
                             <Typography align="center" sx={{ mt: 2 }}>
                                 Already registered?{" "}
-                                <Link to="/" style={{ color: "#004080", textDecoration: "underline" }}>
+                                <Link href="/" sx={{ cursor: "pointer", color: "primary.main" }}>
                                     Login
                                 </Link>
                             </Typography>
@@ -342,6 +371,20 @@ const handleSubmit = async (e) => {
                     </Grid>
                 </Grid>
             </Paper>
+
+            <Box sx={{ mt: 2, textAlign: "center" }}>
+                <Typography variant="body2" color="white" sx={{ opacity: 0.9 }}>
+                    © {new Date().getFullYear()} SHRIRAJ. All rights reserved. <br />
+                    <Link href="/terms" target="_blank" underline="hover" color="inherit" sx={{ mx: 1 }}>
+                        Terms & Conditions
+                    </Link>
+                    |
+                    <Link href="/privacy" target="_blank" underline="hover" color="inherit" sx={{ mx: 1 }}>
+                        Privacy Policy
+                    </Link>
+                </Typography>
+            </Box>
+
         </Box>
     );
 };

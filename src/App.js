@@ -90,6 +90,9 @@ import LatestProperties from "./Components/Panel/Partner/Asset/LatestProperties"
 import ActiveAgents from "./Components/Panel/Admin/Agents/ActiveAgents";
 import InactiveAgents from "./Components/Panel/Admin/Agents/InactiveAgents";
 import NewProperties from "./Components/Panel/Admin/Asset/NewProperties";
+import Transactions from "./Components/Panel/Investor/Transactions/Transactions";
+import Tdetails from "./Components/Panel/Investor/Transactions/T_Details";
+import Payment from "./Components/Panel/Investor/Transactions/Payment";
 
 
 
@@ -147,8 +150,9 @@ function App() {
 
           <Route path="/i-dashboard" element={<InvestorDashboard />} />
           <Route path="/i-asset" element={<InvestorAsset />} />
-          <Route path="/i-buyshares" element={<BuyShares />} />
-          <Route path="/i-sellshares" element={<SellShares />} />
+          <Route path="/i-transactions" element={<Transactions />} />
+          <Route path="/i-transaction-details" element={<Tdetails />} />
+          <Route path="/i-payment-form" element={<Payment />} />
           <Route path="/i-profile" element={<InvestorProfile />} />
           <Route path="/i-servies" element={<Services />} />
           <Route path="/i-profiledetails" element={<Kyc />} />

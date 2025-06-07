@@ -27,18 +27,11 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 
 export default function InvestorHeader() {
   // Define nav items with navigation paths.
-  // For the "Transactions" item, we add a submenu.
   const navItems = [
     { label: 'Dashboard', path: '/i-dashboard' },
     { label: 'My Properties', path: '/i-myassets' },
     { label: 'Properties', path: '/i-asset' },
-    {
-      label: 'Transactions',
-      submenu: [
-        { label: 'Buy Properties', path: '/i-buyshares' },
-      ],
-    },
-    // { label: 'Services', path: '/i-servies' },
+    { label: 'Transactions', path: '/i-transactions' }, // Direct link to transactions page
     { label: 'Plans', path: '/i-plans' },
   ];
 
@@ -56,12 +49,6 @@ export default function InvestorHeader() {
     setMobileOpen((prevState) => !prevState);
   };
 
-  // State to manage open/close for mobile's nested submenu.
-  const [mobileSubmenuOpen, setMobileSubmenuOpen] = useState({});
-  const toggleMobileSubmenu = (label) => {
-    setMobileSubmenuOpen((prev) => ({ ...prev, [label]: !prev[label] }));
-  };
-
   // State for the Profile Avatar dropdown menu.
   const [profileAnchorEl, setProfileAnchorEl] = useState(null);
   const profileMenuOpen = Boolean(profileAnchorEl);
@@ -70,16 +57,6 @@ export default function InvestorHeader() {
   };
   const handleProfileMenuClose = () => {
     setProfileAnchorEl(null);
-  };
-
-  // State for the Transactions dropdown menu in desktop view.
-  const [transAnchorEl, setTransAnchorEl] = useState(null);
-  const transMenuOpen = Boolean(transAnchorEl);
-  const handleTransClick = (event) => {
-    setTransAnchorEl(event.currentTarget);
-  };
-  const handleTransClose = () => {
-    setTransAnchorEl(null);
   };
 
   // Drawer content for mobile view with a close (cross) button.
@@ -94,65 +71,23 @@ export default function InvestorHeader() {
 
       <List>
         {navItems.map((item) => (
-          <Box key={item.label}>
-            {item.submenu ? (
-              <>
-                <ListItem disablePadding>
-                  <ListItemButton onClick={() => toggleMobileSubmenu(item.label)}>
-                    <ListItemText
-                      primary={item.label}
-                      primaryTypographyProps={{
-                        color: item.submenu.some((sub) => sub.path === location.pathname)
-                          ? 'blue'
-                          : 'inherit',
-                        fontWeight: 'bold',
-                        fontSize: '16px',
-                      }}
-                    />
-                    {mobileSubmenuOpen[item.label] ? <ExpandLess /> : <ExpandMore />}
-                  </ListItemButton>
-                </ListItem>
-                {mobileSubmenuOpen[item.label] &&
-                  item.submenu.map((subitem) => (
-                    <ListItem key={subitem.label} disablePadding sx={{ pl: 4 }}>
-                      <ListItemButton
-                        onClick={() => {
-                          handleDrawerToggle();
-                          navigate(subitem.path);
-                        }}
-                      >
-                        <ListItemText
-                          primary={subitem.label}
-                          primaryTypographyProps={{
-                            color: location.pathname === subitem.path ? 'blue' : 'inherit',
-                            fontWeight: 'bold',
-                            fontSize: '16px',
-                          }}
-                        />
-                      </ListItemButton>
-                    </ListItem>
-                  ))}
-              </>
-            ) : (
-              <ListItem disablePadding>
-                <ListItemButton
-                  onClick={() => {
-                    handleDrawerToggle();
-                    navigate(item.path);
-                  }}
-                >
-                  <ListItemText
-                    primary={item.label}
-                    primaryTypographyProps={{
-                      color: location.pathname === item.path ? 'blue' : 'inherit',
-                      fontWeight: 'bold',
-                      fontSize: '16px',
-                    }}
-                  />
-                </ListItemButton>
-              </ListItem>
-            )}
-          </Box>
+          <ListItem key={item.label} disablePadding>
+            <ListItemButton
+              onClick={() => {
+                handleDrawerToggle();
+                navigate(item.path);
+              }}
+            >
+              <ListItemText
+                primary={item.label}
+                primaryTypographyProps={{
+                  color: location.pathname === item.path ? 'blue' : 'inherit',
+                  fontWeight: 'bold',
+                  fontSize: '16px',
+                }}
+              />
+            </ListItemButton>
+          </ListItem>
         ))}
       </List>
     </Box>
@@ -163,7 +98,7 @@ export default function InvestorHeader() {
       <AppBar
         position="fixed"
         sx={{
-          backgroundColor: 'white', // Adjust color as needed.
+          backgroundColor: 'white',
           color: '#000',
           boxShadow: "-moz-initial"
         }}
@@ -193,7 +128,6 @@ export default function InvestorHeader() {
                       height: '50px',
                       width: 'auto',
                       maxWidth: '150px',
-                      // transform: 'scale(2.0)',
                     }}
                   />
                 </Link>
@@ -219,7 +153,7 @@ export default function InvestorHeader() {
                   onClick={handleAvatarClick}
                   sx={{ width: 40, height: 40, cursor: 'pointer' }}
                   alt="Profile Avatar"
-                  src="https://via.placeholder.com/40" // Replace with your own image.
+                  src="https://via.placeholder.com/40"
                 />
               </Box>
             </Box>
@@ -237,7 +171,6 @@ export default function InvestorHeader() {
                       width: 'auto',
                       maxWidth: '150px',
                       paddingTop: "8px"
-                      // transform: 'scale(2.0)',
                     }}
                   />
                 </Link>
@@ -245,39 +178,20 @@ export default function InvestorHeader() {
 
               {/* Center: Nav Items */}
               <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', gap: 3 }}>
-                {navItems.map((item) =>
-                  item.submenu ? (
-                    // Nav Item with submenu (Transactions)
-                    <Button
-                      key={item.label}
-                      onClick={handleTransClick}
-                      sx={{
-                        color: item.submenu.some((sub) => sub.path === location.pathname)
-                          ? 'blue'
-                          : '#000',
-                        fontWeight: 'bold',
-                        textTransform: 'none',
-                        fontSize: '16px',
-                      }}
-                      endIcon={<ExpandMore />}
-                    >
-                      {item.label}
-                    </Button>
-                  ) : (
-                    <Button
-                      key={item.label}
-                      onClick={() => navigate(item.path)}
-                      sx={{
-                        color: location.pathname === item.path ? 'blue' : '#000',
-                        fontWeight: 'bold',
-                        textTransform: 'none',
-                        fontSize: '16px',
-                      }}
-                    >
-                      {item.label}
-                    </Button>
-                  )
-                )}
+                {navItems.map((item) => (
+                  <Button
+                    key={item.label}
+                    onClick={() => navigate(item.path)}
+                    sx={{
+                      color: location.pathname === item.path ? 'blue' : '#000',
+                      fontWeight: 'bold',
+                      textTransform: 'none',
+                      fontSize: '16px',
+                    }}
+                  >
+                    {item.label}
+                  </Button>
+                ))}
               </Box>
 
               {/* Right: Notification, Username, Profile Avatar */}
@@ -299,7 +213,7 @@ export default function InvestorHeader() {
                 onClick={handleAvatarClick}
                 sx={{ width: 40, height: 40, cursor: 'pointer' }}
                 alt="Investor"
-                src="https://via.placeholder.com/40" // Replace with your own image.
+                src="https://via.placeholder.com/40"
               />
             </>
           )}
@@ -357,34 +271,6 @@ export default function InvestorHeader() {
         >
           Logout <LogoutIcon sx={{ ml: 1 }} />
         </MenuItem>
-      </Menu>
-
-      {/* Transactions Dropdown Menu for Desktop */}
-      <Menu
-        anchorEl={transAnchorEl}
-        open={transMenuOpen}
-        onClose={handleTransClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        {navItems
-          .find((item) => item.label === 'Transactions')
-          .submenu.map((subitem) => (
-            <MenuItem
-              key={subitem.label}
-              onClick={() => {
-                handleTransClose();
-                navigate(subitem.path);
-              }}
-              sx={{
-                color: location.pathname === subitem.path ? 'blue' : 'inherit',
-                fontWeight: 'bold',
-                fontSize: '16px',
-              }}
-            >
-              {subitem.label}
-            </MenuItem>
-          ))}
       </Menu>
     </>
   );
