@@ -564,9 +564,9 @@ const updateApprovalStatus = async (propertyId, newStatus) => {
                       <Typography variant="body2" color="text.secondary" mb={2}>
                         {property.city}, {property.state}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary" mb={1}>
+                      {/* <Typography variant="body2" color="text.secondary" mb={1}>
                         Added By: <strong>{property.first_name}</strong>
-                      </Typography>
+                      </Typography> */}
                       <FormControl fullWidth size="small" sx={{ mt: 2 }}>
                         <Typography variant="subtitle2" sx={{ mb: 0.5, fontWeight: 500 }}>
                           Approval Status
