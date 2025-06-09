@@ -20,7 +20,7 @@ import {
     Pagination
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
+import InvestorHeader from "../../../Shared/Investor/InvestorNavbar";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { Carousel } from 'react-responsive-carousel';
@@ -29,7 +29,7 @@ import { baseurl } from '../../../BaseURL/BaseURL';
 import PaginationComponent from '../../../Shared/Pagination';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-const PartnerBookedAssets = () => {
+const I_SoldProperties = () => {
     const [sortBy, setSortBy] = useState('');
     const [properties, setProperties] = useState([]);
     const [selectedProperty, setSelectedProperty] = useState(null);
@@ -45,14 +45,14 @@ const PartnerBookedAssets = () => {
     const paginatedProperties = filteredProperties.slice(startIndex, startIndex + itemsPerPage);
 
     useEffect(() => {
-        const fetchBookedProperties = async () => {
+        const fetchSoldProperties = async () => {
             try {
-                const response = await fetch(`${baseurl}/transactions/grouped/${userId}/`);
+                const response = await fetch(`${baseurl}/property-stats/user-id/${userId}/`);
                 const data = await response.json();
 
-                if (data.bookings && data.bookings.properties) {
-                    setProperties(data.bookings.properties.list);
-                    setFilteredProperties(data.bookings.properties.list);
+                if (data.sold && data.sold.properties) {
+                    setProperties(data.sold.properties.list);
+                    setFilteredProperties(data.sold.properties.list);
                 } else {
                     setProperties([]);
                 }
@@ -61,7 +61,7 @@ const PartnerBookedAssets = () => {
             }
         };
 
-        fetchBookedProperties();
+        fetchSoldProperties();
     }, []);
 
     const handleCloseDialog = () => {
@@ -108,6 +108,7 @@ const PartnerBookedAssets = () => {
             alert('An error occurred while updating the approval status.');
         }
     };
+
     useEffect(() => {
         let results = [...properties];
 
@@ -168,7 +169,7 @@ const PartnerBookedAssets = () => {
 
     return (
         <>
-            <PartnerHeader />
+            <InvestorHeader />
             <Container sx={{ py: 4 }}>
                 <Box position="relative" mb={3} height="56px">
                     {/* Back Button aligned left */}
@@ -184,7 +185,7 @@ const PartnerBookedAssets = () => {
 
                     {/* Centered Heading */}
                     <Typography variant="h4" align="center" sx={{ lineHeight: '46px' }}>
-                        Booked Assets
+                        Sold Properties
                     </Typography>
                 </Box>
 
@@ -237,6 +238,7 @@ const PartnerBookedAssets = () => {
                         </Grid>
                     </Grid>
                 </Box>
+                {/* Cards Section */}
                 {filteredProperties.length > 0 ? (
                     <>
                         <Grid container spacing={3}>
@@ -567,4 +569,4 @@ const PartnerBookedAssets = () => {
     );
 };
 
-export default PartnerBookedAssets;
+export default I_SoldProperties;

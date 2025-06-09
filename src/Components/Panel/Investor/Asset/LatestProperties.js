@@ -20,7 +20,7 @@ import {
     Pagination
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
+import InvestorHeader from "../../../Shared/Investor/InvestorNavbar";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { Carousel } from 'react-responsive-carousel';
@@ -29,7 +29,7 @@ import { baseurl } from '../../../BaseURL/BaseURL';
 import PaginationComponent from '../../../Shared/Pagination';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-const PartnerBookedAssets = () => {
+const I_LatestProperties = () => {
     const [sortBy, setSortBy] = useState('');
     const [properties, setProperties] = useState([]);
     const [selectedProperty, setSelectedProperty] = useState(null);
@@ -45,14 +45,14 @@ const PartnerBookedAssets = () => {
     const paginatedProperties = filteredProperties.slice(startIndex, startIndex + itemsPerPage);
 
     useEffect(() => {
-        const fetchBookedProperties = async () => {
+        const fetchLatestProperties = async () => {
             try {
-                const response = await fetch(`${baseurl}/transactions/grouped/${userId}/`);
+                const response = await fetch(`${baseurl}/property-stats/user-id/${userId}/`);
                 const data = await response.json();
 
-                if (data.bookings && data.bookings.properties) {
-                    setProperties(data.bookings.properties.list);
-                    setFilteredProperties(data.bookings.properties.list);
+                if (data.latest && data.latest.properties) {
+                    setProperties(data.latest.properties.list);
+                    setFilteredProperties(data.latest.properties.list);
                 } else {
                     setProperties([]);
                 }
@@ -61,7 +61,7 @@ const PartnerBookedAssets = () => {
             }
         };
 
-        fetchBookedProperties();
+        fetchLatestProperties();
     }, []);
 
     const handleCloseDialog = () => {
@@ -108,6 +108,7 @@ const PartnerBookedAssets = () => {
             alert('An error occurred while updating the approval status.');
         }
     };
+
     useEffect(() => {
         let results = [...properties];
 
@@ -168,7 +169,7 @@ const PartnerBookedAssets = () => {
 
     return (
         <>
-            <PartnerHeader />
+            <InvestorHeader />
             <Container sx={{ py: 4 }}>
                 <Box position="relative" mb={3} height="56px">
                     {/* Back Button aligned left */}
@@ -184,7 +185,7 @@ const PartnerBookedAssets = () => {
 
                     {/* Centered Heading */}
                     <Typography variant="h4" align="center" sx={{ lineHeight: '46px' }}>
-                        Booked Assets
+                        Latest Properties
                     </Typography>
                 </Box>
 
@@ -237,6 +238,7 @@ const PartnerBookedAssets = () => {
                         </Grid>
                     </Grid>
                 </Box>
+                {/* Cards Section */}
                 {filteredProperties.length > 0 ? (
                     <>
                         <Grid container spacing={3}>
@@ -318,29 +320,6 @@ const PartnerBookedAssets = () => {
                                             <Typography variant="body2" color="text.secondary" mb={1}>
                                                 Added By: <strong>{property.first_name}</strong>
                                             </Typography>
-                                            {/* <FormControl fullWidth size="small" sx={{ mt: 2 }}>
-                                        <Typography variant="subtitle2" sx={{ mb: 0.5, fontWeight: 500 }}>
-                                            Approval Status
-                                        </Typography>
-                                        <Select
-                                            value={property.approval_status || ''}
-                                            onChange={(e) => updateApprovalStatus(property.property_id, e.target.value)}
-                                            displayEmpty
-                                            sx={{
-                                                borderRadius: '8px',
-                                                backgroundColor: '#f9f9f9',
-                                                '&:hover': {
-                                                    backgroundColor: '#f0f0f0'
-                                                }
-                                            }}
-                                        >
-                                            <MenuItem value={property.approval_status}>
-                                                <em>{property.approval_status}</em>
-                                            </MenuItem>
-                                            <MenuItem value="approved">Approved</MenuItem>
-                                            <MenuItem value="rejected">Rejected</MenuItem>
-                                        </Select>
-                                    </FormControl> */}
                                             <Grid
                                                 container
                                                 spacing={2}
@@ -567,4 +546,4 @@ const PartnerBookedAssets = () => {
     );
 };
 
-export default PartnerBookedAssets;
+export default I_LatestProperties;

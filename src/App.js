@@ -93,6 +93,11 @@ import NewProperties from "./Components/Panel/Admin/Asset/NewProperties";
 import Transactions from "./Components/Panel/Investor/Transactions/Transactions";
 import Tdetails from "./Components/Panel/Investor/Transactions/T_Details";
 import Payment from "./Components/Panel/Investor/Transactions/Payment";
+import I_ListingProperties from "./Components/Panel/Investor/Asset/ListingProperties";
+import I_LatestProperties from "./Components/Panel/Investor/Asset/LatestProperties";
+import I_BookedAssets from "./Components/Panel/Investor/Asset/BookedAssets";
+import I_PurchasedAssets from "./Components/Panel/Investor/Asset/PurchasedAssets";
+import I_SoldProperties from "./Components/Panel/Investor/Asset/SoldProperties";
 
 
 
@@ -149,6 +154,11 @@ function App() {
 
 
           <Route path="/i-dashboard" element={<InvestorDashboard />} />
+           <Route path="/i-listingassets" element={<I_ListingProperties />} />
+             <Route path="/i-latestProperties" element={<I_LatestProperties />} />
+               <Route path="/i-bookedassets" element={<I_BookedAssets />} />
+                 <Route path="/i-purchasedassets" element={<I_PurchasedAssets />} />
+                   <Route path="/i-soldassets" element={<I_SoldProperties />} />
           <Route path="/i-asset" element={<InvestorAsset />} />
           <Route path="/i-transactions" element={<Transactions />} />
           <Route path="/i-transaction-details" element={<Tdetails />} />

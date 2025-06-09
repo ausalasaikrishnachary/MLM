@@ -20,16 +20,16 @@ import {
     Pagination
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
+import InvestorHeader from "../../../Shared/Investor/InvestorNavbar";
 import { useNavigate } from "react-router-dom";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import axios from 'axios';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { baseurl } from '../../../BaseURL/BaseURL';
 import PaginationComponent from '../../../Shared/Pagination';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-const PartnerBookedAssets = () => {
+const I_PurchasedAssets = () => {
     const [sortBy, setSortBy] = useState('');
     const [properties, setProperties] = useState([]);
     const [selectedProperty, setSelectedProperty] = useState(null);
@@ -50,9 +50,9 @@ const PartnerBookedAssets = () => {
                 const response = await fetch(`${baseurl}/transactions/grouped/${userId}/`);
                 const data = await response.json();
 
-                if (data.bookings && data.bookings.properties) {
-                    setProperties(data.bookings.properties.list);
-                    setFilteredProperties(data.bookings.properties.list);
+                if (data.bookings && data.purchased.properties) {
+                    setProperties(data.purchased.properties.list);
+                    setFilteredProperties(data.purchased.properties.list);
                 } else {
                     setProperties([]);
                 }
@@ -108,6 +108,7 @@ const PartnerBookedAssets = () => {
             alert('An error occurred while updating the approval status.');
         }
     };
+
     useEffect(() => {
         let results = [...properties];
 
@@ -161,14 +162,14 @@ const PartnerBookedAssets = () => {
     const handleSortChange = (event) => {
         setSortBy(event.target.value);
     };
+
     const handlePageChange = (event, value) => {
         setPage(value);
     };
 
-
     return (
         <>
-            <PartnerHeader />
+            <InvestorHeader />
             <Container sx={{ py: 4 }}>
                 <Box position="relative" mb={3} height="56px">
                     {/* Back Button aligned left */}
@@ -184,7 +185,7 @@ const PartnerBookedAssets = () => {
 
                     {/* Centered Heading */}
                     <Typography variant="h4" align="center" sx={{ lineHeight: '46px' }}>
-                        Booked Assets
+                        Purchased Properties
                     </Typography>
                 </Box>
 
@@ -237,6 +238,7 @@ const PartnerBookedAssets = () => {
                         </Grid>
                     </Grid>
                 </Box>
+                {/* Cards Section */}
                 {filteredProperties.length > 0 ? (
                     <>
                         <Grid container spacing={3}>
@@ -567,4 +569,4 @@ const PartnerBookedAssets = () => {
     );
 };
 
-export default PartnerBookedAssets;
+export default I_PurchasedAssets;
