@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Button, Typography, Paper } from '@mui/material';
 import LegalNavbar from '../Shared/LegalNavbar'; 
+import { useNavigate } from 'react-router-dom';
 
 const Privacypolicy = () => {
   const sectionTitleStyle = {
@@ -8,6 +9,8 @@ const Privacypolicy = () => {
     fontWeight: 'bold',
     marginTop: '20px',
   };
+  const navigate = useNavigate();
+
 
   return (
       <>
@@ -159,12 +162,20 @@ const Privacypolicy = () => {
             backgroundColor: '#fff',
           }}
         >
-          <Button variant="outlined" color="secondary">
-            Cancel
-          </Button>
-          <Button variant="contained" color="primary">
-            I have read and accept the privacy policy.
-          </Button>
+          <Button
+        variant="outlined"
+        color="secondary"
+        onClick={() => navigate('/')}
+      >
+        Cancel
+      </Button>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => navigate('/')}
+      >
+        I have read and accept the terms of service
+      </Button>
         </Box>
       </Paper>
     </Box>

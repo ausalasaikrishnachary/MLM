@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Button, Typography, Paper } from '@mui/material';
 import LegalNavbar from '../Shared/LegalNavbar';
+import { useNavigate } from 'react-router-dom';
 
 const Termsandconditions = () => {
     const sectionTitleStyle = {
@@ -8,6 +9,8 @@ const Termsandconditions = () => {
         fontWeight: 'bold',
         marginTop: '20px',
     };
+    const navigate = useNavigate();
+
 
     return (
 
@@ -158,12 +161,20 @@ const Termsandconditions = () => {
                             backgroundColor: '#fff',
                         }}
                     >
-                        <Button variant="outlined" color="secondary">
-                            Cancel
-                        </Button>
-                        <Button variant="contained" color="primary">
-                            I have read and accept the terms of service.
-                        </Button>
+                     <Button
+        variant="outlined"
+        color="secondary"
+        onClick={() => navigate('/')}
+      >
+        Cancel
+      </Button>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => navigate('/')}
+      >
+        I have read and accept the terms of service
+      </Button>
                     </Box>
                 </Paper>
             </Box>
