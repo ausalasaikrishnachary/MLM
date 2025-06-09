@@ -64,7 +64,7 @@ const ActiveAgents = () => {
       <Header />
       <Container>
         <div style={{ textAlign: 'center', marginTop: "12%" }}>
-          <h2 style={{ fontWeight: 'bold' }}>Active Agents</h2>
+          <h2 style={{ fontWeight: 'bold' }}>Active Users</h2>
         </div>
 
         {loading ? (
