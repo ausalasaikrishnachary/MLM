@@ -93,11 +93,18 @@ import NewProperties from "./Components/Panel/Admin/Asset/NewProperties";
 import Transactions from "./Components/Panel/Investor/Transactions/Transactions";
 import Tdetails from "./Components/Panel/Investor/Transactions/T_Details";
 import Payment from "./Components/Panel/Investor/Transactions/Payment";
+
+import Termsandconditions from "./Components/Legal/Termsandconditions";
+import Privacypolicy from "./Components/Legal/Privacypolicy";
+import Refundpolicy from "./Components/Legal/Refundpolicy";
+
 import I_ListingProperties from "./Components/Panel/Investor/Asset/ListingProperties";
 import I_LatestProperties from "./Components/Panel/Investor/Asset/LatestProperties";
 import I_BookedAssets from "./Components/Panel/Investor/Asset/BookedAssets";
 import I_PurchasedAssets from "./Components/Panel/Investor/Asset/PurchasedAssets";
 import I_SoldProperties from "./Components/Panel/Investor/Asset/SoldProperties";
+import LegalNavabar from "./Components/Shared/LegalNavbar";
+import LegalNavbar from "./Components/Shared/LegalNavbar";
 
 
 
@@ -208,6 +215,19 @@ function App() {
            <Route path="/p-soldassets" element={<SoldProperties />} />
            <Route path="/p-listingassets" element={<ListingProperties />} />
            <Route path="/p-latestProperties" element={<LatestProperties />} />
+
+
+           <Route path="/termsandconditions" element={<Termsandconditions />} />
+           <Route path="/privacypolicy" element={<Privacypolicy />} />
+           <Route path="/refundpolicy" element={<Refundpolicy />} />
+           <Route path="/legalnavbar" element={<LegalNavbar />} />
+
+
+
+
+
+
+
 
           <Route path="/" element={<Login />} />
 

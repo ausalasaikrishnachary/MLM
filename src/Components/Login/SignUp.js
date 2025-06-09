@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { baseurl } from '../BaseURL/BaseURL';
 import Swal from "sweetalert2";
 import { color } from "@mui/system";
+import { Link as RouterLink } from "react-router-dom";
 
 const SignUp = () => {
     const [acceptedTC, setAcceptedTC] = useState(false);
@@ -333,11 +334,11 @@ const SignUp = () => {
                                 label={
                                     <Typography variant="body2">
                                         I agree to the{" "}
-                                        <Link href="/terms" target="_blank" underline="hover">
+                                        <Link href="/termsandconditions" target="_blank" underline="hover">
                                             Terms & Conditions
                                         </Link>{" "}
                                         and{" "}
-                                        <Link href="/privacy" target="_blank" underline="hover">
+                                        <Link href="/privacypolicy" target="_blank" underline="hover">
                                             Privacy Policy
                                         </Link>
                                     </Typography>
@@ -375,15 +376,33 @@ const SignUp = () => {
             <Box sx={{ mt: 2, textAlign: "center" }}>
                 <Typography variant="body2" color="white" sx={{ opacity: 0.9 }}>
                     © {new Date().getFullYear()} SHRIRAJ. All rights reserved. <br />
-                    <Link href="/terms" target="_blank" underline="hover" color="inherit" sx={{ mx: 1 }}>
+                    <Link
+                        component={RouterLink}
+                        to="/termsandconditions"
+                        underline="hover"
+                        color="inherit"
+                        sx={{ mx: 1 }}
+                    >
                         Terms & Conditions
                     </Link>
                     |
-                    <Link href="/privacy" target="_blank" underline="hover" color="inherit" sx={{ mx: 1 }}>
+                    <Link
+                        component={RouterLink}
+                        to="/privacypolicy"
+                        underline="hover"
+                        color="inherit"
+                        sx={{ mx: 1 }}
+                    >
                         Privacy Policy
                     </Link>
                     |
-                    <Link href="/Return" target="_blank" underline="hover" color="inherit" sx={{ mx: 1 }}>
+                    <Link
+                        component={RouterLink}
+                        to="/refundpolicy"
+                        underline="hover"
+                        color="inherit"
+                        sx={{ mx: 1 }}
+                    >
                         Refund Policy
                     </Link>
                 </Typography>
