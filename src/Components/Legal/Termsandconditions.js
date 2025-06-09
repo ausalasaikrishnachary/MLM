@@ -1,120 +1,169 @@
 import React from 'react';
+import { Box, Button, Typography, Paper } from '@mui/material';
+import LegalNavbar from '../Shared/LegalNavbar';
 
 const Termsandconditions = () => {
-  const sectionTitleStyle = {
-    fontSize: '18px',
-    fontWeight: 'bold',
-    marginTop: '20px',
-  };
+    const sectionTitleStyle = {
+        fontSize: '16px',
+        fontWeight: 'bold',
+        marginTop: '20px',
+    };
 
-  return (
-    <div style={{ padding: '20px' }}>
-      <h2 style={{ fontSize: '22px', fontWeight: 'bold' }}>Terms and Conditions</h2>
-      <p><strong>Effective Date:</strong> June 9, 2025</p>
+    return (
 
-      <h3 style={sectionTitleStyle}>1. Introduction</h3>
-      <p>
-        Welcome to Shriraj, a real estate platform designed to help users buy, sell, rent, or lease properties such as land, flats, and buildings.
-        By accessing or using our application, you agree to comply with and be bound by the following terms and conditions.
-      </p>
+        <>
+            <LegalNavbar />
+            <Box
+                sx={{
+                    height: '100vh',
+                    // backgroundColor: '#f0f0f0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    p: 2,
+                    mt:-7,
+                }}
+            >
+                <Paper
+                    elevation={3}
+                    sx={{
+                        width: '100%',
+                        maxWidth: 900,
+                        height: '80vh',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        borderRadius: 2,
+                        overflow: 'hidden',
+                    }}
+                >
+                    {/* Fixed Header */}
+                    <Box
+                        sx={{
+                            position: 'sticky',
+                            top: 0,
+                            backgroundColor: 'white',
+                            zIndex: 1,
+                            p: 3,
+                            borderBottom: '1px solid #e0e0e0',
+                        }}
+                    >
+                        <Typography variant="h6" fontWeight="bold">
+                            Terms and Conditions
+                        </Typography>
+                        <Typography variant="body2">
+                            <strong>Effective Date:</strong> June 9, 2025
+                        </Typography>
+                    </Box>
 
-      <h3 style={sectionTitleStyle}>2. Terms of Use for Users</h3>
-      <ul>
-        <li>
-          By expressing interest in any property or service, you authorize us and our affiliates to contact you via phone, SMS, email, or messaging platforms—even if you are registered under DND/NCPR.
-        </li>
-        <li>
-          You consent to share your personal details and uploaded documents with relevant agents, advertisers, or service providers.
-        </li>
-        <li>
-          We are not responsible for how third parties use your data after it is shared. Please refer to their privacy policies.
-        </li>
-        <li>
-          Information shared publicly (like in comments or profiles) may be viewed globally. Avoid posting sensitive or private data.
-        </li>
-        <li>
-          You are responsible for managing your privacy settings and using opt-out options where available.
-        </li>
-        <li>
-          Signing in via third-party platforms (Google, Facebook) allows us to access basic public information, such as your name and email.
-        </li>
-      </ul>
+                    {/* Scrollable Content */}
+                    <Box
+                        sx={{
+                            overflowY: 'auto',
+                            flex: 1,
+                            px: 3,
+                            pt: 2,
+                            pb: 1,
+                            backgroundColor: '#fff',
+                        }}
+                    >
+                        <Typography style={sectionTitleStyle}>1. Introduction</Typography>
+                        <Typography variant="body2">
+                            Welcome to Shriraj, a real estate platform designed to help users buy, sell, rent, or lease properties such as land, flats, and buildings.
+                            By accessing or using our application, you agree to comply with and be bound by the following terms and conditions.
+                        </Typography>
 
-      <h3 style={sectionTitleStyle}>3. User Roles</h3>
-      <ul>
-        <li><strong>Client</strong> – Can browse, inquire, and initiate transactions for properties.</li>
-        <li><strong>Agent</strong> – Can list properties, manage inquiries, and assist clients.</li>
-        <li><strong>Admin</strong> – Oversees the platform, manages users, and resolves disputes.</li>
-      </ul>
+                        <Typography style={sectionTitleStyle}>2. Terms of Use for Users</Typography>
+                        <ul>
+                            <li>By expressing interest in any property or service, you authorize us and our affiliates to contact you...</li>
+                            <li>You consent to share your personal details and uploaded documents...</li>
+                            <li>We are not responsible for how third parties use your data after it is shared...</li>
+                            <li>Information shared publicly may be viewed globally...</li>
+                            <li>You are responsible for managing your privacy settings...</li>
+                            <li>Signing in via third-party platforms allows us to access basic public information...</li>
+                        </ul>
 
-      <h3 style={sectionTitleStyle}>4. Services Offered</h3>
-      <p>We offer modules to:</p>
-      <ul>
-        <li>Buy properties</li>
-        <li>Sell properties</li>
-        <li>Rent properties</li>
-        <li>Lease properties</li>
-      </ul>
+                        <Typography style={sectionTitleStyle}>3. User Roles</Typography>
+                        <ul>
+                            <li><strong>Client</strong> – Can browse, inquire, and initiate transactions for properties.</li>
+                            <li><strong>Agent</strong> – Can list properties, manage inquiries, and assist clients.</li>
+                            <li><strong>Admin</strong> – Oversees the platform, manages users, and resolves disputes.</li>
+                        </ul>
 
-      <h3 style={sectionTitleStyle}>5. User Responsibilities</h3>
-      <ul>
-        <li>Provide accurate, complete, and updated information.</li>
-        <li>Maintain confidentiality of login credentials.</li>
-        <li>Use the platform only for lawful and intended purposes.</li>
-      </ul>
+                        <Typography style={sectionTitleStyle}>4. Services Offered</Typography>
+                        <ul>
+                            <li>Buy properties</li>
+                            <li>Sell properties</li>
+                            <li>Rent properties</li>
+                            <li>Lease properties</li>
+                        </ul>
 
-      <h3 style={sectionTitleStyle}>6. Property Listings</h3>
-      <p>
-        Agents and admins must ensure all listings are accurate and legal. Fake, misleading, or unauthorized listings are strictly prohibited.
-      </p>
+                        <Typography style={sectionTitleStyle}>5. User Responsibilities</Typography>
+                        <ul>
+                            <li>Provide accurate, complete, and updated information.</li>
+                            <li>Maintain confidentiality of login credentials.</li>
+                            <li>Use the platform only for lawful and intended purposes.</li>
+                        </ul>
 
-      <h3 style={sectionTitleStyle}>7. Communication & Interaction</h3>
-      <p>
-        Users agree to receive communications from us via email, phone, or notifications. All communication must remain professional.
-        Harassment or abuse is prohibited.
-      </p>
+                        <Typography style={sectionTitleStyle}>6. Property Listings</Typography>
+                        <Typography variant="body2">
+                            Agents and admins must ensure all listings are accurate and legal...
+                        </Typography>
 
-      <h3 style={sectionTitleStyle}>8. Payments</h3>
-      <p>
-        Fees (if applicable) for promotions, services, or premium listings must be paid promptly.
-        Payment gateways are handled through secure third-party services.
-      </p>
+                        <Typography style={sectionTitleStyle}>7. Communication & Interaction</Typography>
+                        <Typography variant="body2">
+                            Users agree to receive communications from us... Harassment or abuse is prohibited.
+                        </Typography>
 
-      <h3 style={sectionTitleStyle}>9. Account Termination</h3>
-      <p>We reserve the right to suspend or terminate accounts that violate these terms.</p>
+                        <Typography style={sectionTitleStyle}>8. Payments</Typography>
+                        <Typography variant="body2">
+                            Fees (if applicable) must be paid promptly. Payment gateways are secure third-party services.
+                        </Typography>
 
-      <h3 style={sectionTitleStyle}>10. Limitation of Liability</h3>
-      <p>
-        Shriraj is not responsible for disputes between clients and agents or the legality of property documents.
-        Users must conduct due diligence.
-      </p>
+                        <Typography style={sectionTitleStyle}>9. Account Termination</Typography>
+                        <Typography variant="body2">
+                            We reserve the right to suspend or terminate accounts that violate these terms.
+                        </Typography>
 
-      <h3 style={sectionTitleStyle}>11. Governing Law</h3>
-      <p>These terms shall be governed by the laws of India.</p>
+                        <Typography style={sectionTitleStyle}>10. Limitation of Liability</Typography>
+                        <Typography variant="body2">
+                            Shriraj is not responsible for disputes between clients and agents... Users must conduct due diligence.
+                        </Typography>
 
-      <h3 style={sectionTitleStyle}>12. Terms for Dealers, Builders, Banks, and Payment Gateways</h3>
-      <ul>
-        <li>
-          You must comply with all applicable data protection laws in collecting and processing user data.
-        </li>
-        <li>
-          Data must only be used for agreed-upon purposes and kept secure using appropriate technical and organizational safeguards.
-        </li>
-        <li>
-          You are responsible for responding to user data access or deletion requests in compliance with applicable regulations.
-        </li>
-        <li>
-          Do not share user data with sub-processors unless they offer equivalent data protection measures.
-        </li>
-        <li>
-          Personal data must be deleted or anonymized once it is no longer needed.
-        </li>
-        <li>
-          Notify us immediately in the event of a data breach involving personal data obtained from our platform.
-        </li>
-      </ul>
-    </div>
-  );
+                        <Typography style={sectionTitleStyle}>11. Governing Law</Typography>
+                        <Typography variant="body2">These terms shall be governed by the laws of India.</Typography>
+
+                        <Typography style={sectionTitleStyle}>12. Terms for Dealers, Builders, Banks, and Payment Gateways</Typography>
+                        <ul>
+                            <li>Comply with data protection laws in collecting user data.</li>
+                            <li>Data must only be used for agreed-upon purposes and kept secure.</li>
+                            <li>Respond to user data access/deletion requests per law.</li>
+                            <li>Do not share data with sub-processors unless compliant.</li>
+                            <li>Delete/anonymize data when no longer needed.</li>
+                            <li>Notify us of any data breach immediately.</li>
+                        </ul>
+                    </Box>
+
+                    {/* Buttons */}
+                    <Box
+                        sx={{
+                            p: 2,
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            borderTop: '1px solid #e0e0e0',
+                            backgroundColor: '#fff',
+                        }}
+                    >
+                        <Button variant="outlined" color="secondary">
+                            Cancel
+                        </Button>
+                        <Button variant="contained" color="primary">
+                            I have read and accept the terms of service.
+                        </Button>
+                    </Box>
+                </Paper>
+            </Box>
+        </>
+    );
 };
 
 export default Termsandconditions;

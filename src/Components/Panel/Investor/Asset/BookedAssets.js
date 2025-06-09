@@ -20,7 +20,7 @@ import {
     Pagination
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
+import InvestorHeader from "../../../Shared/Investor/InvestorNavbar";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { Carousel } from 'react-responsive-carousel';
@@ -29,7 +29,7 @@ import { baseurl } from '../../../BaseURL/BaseURL';
 import PaginationComponent from '../../../Shared/Pagination';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-const PartnerBookedAssets = () => {
+const I_BookedAssets = () => {
     const [sortBy, setSortBy] = useState('');
     const [properties, setProperties] = useState([]);
     const [selectedProperty, setSelectedProperty] = useState(null);
@@ -168,7 +168,7 @@ const PartnerBookedAssets = () => {
 
     return (
         <>
-            <PartnerHeader />
+            <InvestorHeader />
             <Container sx={{ py: 4 }}>
                 <Box position="relative" mb={3} height="56px">
                     {/* Back Button aligned left */}
@@ -436,7 +436,7 @@ const PartnerBookedAssets = () => {
                                                             textTransform: 'none',
                                                             '&:hover': { backgroundColor: '#59ed7c', color: 'rgb(5,5,5)' }
                                                         }}
-                                                        onClick={() => navigate(`/p-assets/${property.property_id}`, { state: { property } })}
+                                                        onClick={() => navigate(`/a-assets/${property.property_id}`, { state: { property } })}
                                                     >
                                                         VIEW DETAILS
                                                     </Button>
@@ -567,4 +567,4 @@ const PartnerBookedAssets = () => {
     );
 };
 
-export default PartnerBookedAssets;
+export default I_BookedAssets;

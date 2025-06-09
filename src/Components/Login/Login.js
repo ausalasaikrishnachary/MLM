@@ -6,6 +6,8 @@ import image2 from "./../Images/logo.png";
 import { baseurl } from '../BaseURL/BaseURL';
 import { IconButton, InputAdornment } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Link as RouterLink } from "react-router-dom";
+
 
 
 const Login = () => {
@@ -369,22 +371,23 @@ const Login = () => {
         </Grid>
       </Paper>
 
-      <Box sx={{ mt: 2, textAlign: "center" }}>
-        <Typography variant="body2" color="white" sx={{ opacity: 0.9 }}>
-          © {new Date().getFullYear()} SHRIRAJ. All rights reserved. <br />
-          <Link href="/terms" target="_blank" underline="hover" color="inherit" sx={{ mx: 1 }}>
-            Terms & Conditions
-          </Link>
-          |
-          <Link href="/privacy" target="_blank" underline="hover" color="inherit" sx={{ mx: 1 }}>
-            Privacy Policy
-          </Link>
-          |
-          <Link href="/Return" target="_blank" underline="hover" color="inherit" sx={{ mx: 1 }}>
-            Refund Policy
-          </Link>
-        </Typography>
-      </Box>
+    <Box sx={{ mt: 2, textAlign: "center" }}>
+  <Typography variant="body2" color="white" sx={{ opacity: 0.9 }}>
+    © {new Date().getFullYear()} SHRIRAJ. All rights reserved. <br />
+    <RouterLink to="/termsandconditions" style={{ color: "inherit", margin: "0 8px", textDecoration: "underline" }}>
+      Terms & Conditions
+    </RouterLink>
+    |
+    <RouterLink to="/privacypolicy" style={{ color: "inherit", margin: "0 8px", textDecoration: "underline" }}>
+      Privacy Policy
+    </RouterLink>
+    |
+    <RouterLink to="/refundpolicy" style={{ color: "inherit", margin: "0 8px", textDecoration: "underline" }}>
+      Refund Policy
+    </RouterLink>
+  </Typography>
+</Box>
+
 
     </Box>
   );

@@ -251,7 +251,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios'; // ✨ import axios
+import axios from 'axios';
 import './Dashboard.css'
 import {
   Box,
@@ -267,7 +267,6 @@ import {
   Avatar,
   Badge,
   CardMedia,
-
 } from '@mui/material';
 import { faHourglassHalf, faMoneyBillWave, faUserPlus, faTags, faUserCheck, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { Bar } from 'react-chartjs-2';
@@ -302,7 +301,6 @@ import InvestorHeader from '../../../Shared/Investor/InvestorNavbar';
 import { baseurl } from '../../../BaseURL/BaseURL';
 import { useNavigate } from "react-router-dom";
 
-
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -313,10 +311,9 @@ ChartJS.register(
 );
 
 const AgentDashboard = () => {
-
   const referralId = localStorage.getItem('referral_id');
-  const [totalAgents, setTotalAgents] = useState(0); // ✨ new state
-  const [totalActiveAgents, setTotalActiveAgents] = useState(0); // ✨ new state
+  const [totalAgents, setTotalAgents] = useState(0);
+  const [totalActiveAgents, setTotalActiveAgents] = useState(0);
   const [counts, setCounts] = useState(null);
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -355,17 +352,16 @@ const AgentDashboard = () => {
       });
   }, []);
 
-
   useEffect(() => {
     if (referralId) {
       axios.get(`${baseurl}/agents/referral-id/${referralId}/`)
         .then(response => {
-          setTotalAgents(response.data.total_agents || 0); // ✨ set the real count
-          setTotalActiveAgents(response.data.total_active_agents || 0); // ✨ set the real count
+          setTotalAgents(response.data.total_agents || 0);
+          setTotalActiveAgents(response.data.total_active_agents || 0);
         })
         .catch(error => {
           console.error('Error fetching total agents:', error);
-          setTotalAgents(0); // fallback
+          setTotalAgents(0);
           setTotalActiveAgents(0);
         });
     }
@@ -436,7 +432,6 @@ const AgentDashboard = () => {
             ? `${baseurl}${imagePath}`
             : "https://via.placeholder.com/400x200?text=No+Image";
 
-          // Safely format price
           const priceValue = Number(property.total_property_value);
           const formattedPrice = !isNaN(priceValue)
             ? `₹${priceValue}`
@@ -454,7 +449,7 @@ const AgentDashboard = () => {
           };
         });
 
-        setProperties(formatted.slice(0, 2)); // Show only 2 latest properties
+        setProperties(formatted.slice(0, 2));
       } catch (error) {
         console.error("Error fetching properties:", error);
       }
@@ -462,10 +457,6 @@ const AgentDashboard = () => {
 
     fetchProperties();
   }, []);
-
-
-
-
 
   return (
     <>
@@ -478,133 +469,108 @@ const AgentDashboard = () => {
           </Typography>
         </Box>
 
-        {/* Top Metrics Row */}
+        {/* First Row - 4 Cards */}
         <Grid container spacing={3} sx={{ mb: 3 }}>
-          {[
-            { title: 'Listing Properties', value: property?.total_properties ?? 0, icon: faBuilding, path: '/p-listingassets' },
-            // { title: 'Team', value: totalAgents.toString(), icon: faUsers, path: '/p-myteam' },
-            // { title: 'Team', value: totalAgents.toString(), icon: faUsers, path: '/p-team' },
-            // { title: 'Active Agents', value: totalActiveAgents, icon: faUserCheck, path: '/p-activeagents' },
-            { title: 'Latest Properties', value: property?.total_latest_properties ?? 0, icon: faHome, path: '/p-latestProperties' },
-          ].map((metric, index) => (
-            <Grid item xs={12} sm={6} md={3} key={index}>
-              <Link to={metric.path} style={{ textDecoration: 'none' }}>
-                <Card sx={{
-                  borderRadius: "15px",
-                  boxShadow: 3,
-                  transition: 'transform 0.3s',
-                  '&:hover': { transform: 'translateY(-5px)' },
-                  cursor: 'pointer'
-                }}>
-                  <CardContent sx={{ textAlign: 'center' }}>
-                    <FontAwesomeIcon icon={metric.icon} size="2x" color="#666" />
-                    <Typography sx={{ mt: 1 }}>{metric.title}</Typography>
-                    <Typography variant="h4" sx={{ my: 1 }}>{metric.value}</Typography>
-                  </CardContent>
-                </Card>
-              </Link>
-            </Grid>
-          ))}
+          {/* Listing Properties */}
+          <Grid item xs={12} sm={6} md={3}>
+            <Link to="/i-listingassets" style={{ textDecoration: 'none' }}>
+              <Card sx={{
+                borderRadius: "15px",
+                boxShadow: 3,
+                transition: 'transform 0.3s',
+                '&:hover': { transform: 'translateY(-5px)' },
+                cursor: 'pointer'
+              }}>
+                <CardContent sx={{ textAlign: 'center' }}>
+                  <FontAwesomeIcon icon={faBuilding} size="2x" color="#666" />
+                  <Typography sx={{ mt: 1 }}>Listing Properties</Typography>
+                  <Typography variant="h4" sx={{ my: 1 }}>{property?.total_properties ?? 0}</Typography>
+                </CardContent>
+              </Card>
+            </Link>
+          </Grid>
+
+          {/* Latest Properties */}
+          <Grid item xs={12} sm={6} md={3}>
+            <Link to="/i-latestProperties" style={{ textDecoration: 'none' }}>
+              <Card sx={{
+                borderRadius: "15px",
+                boxShadow: 3,
+                transition: 'transform 0.3s',
+                '&:hover': { transform: 'translateY(-5px)' },
+                cursor: 'pointer'
+              }}>
+                <CardContent sx={{ textAlign: 'center' }}>
+                  <FontAwesomeIcon icon={faHome} size="2x" color="#666" />
+                  <Typography sx={{ mt: 1 }}>Latest Properties</Typography>
+                  <Typography variant="h4" sx={{ my: 1 }}>{property?.total_latest_properties ?? 0}</Typography>
+                </CardContent>
+              </Card>
+            </Link>
+          </Grid>
+
+          {/* Bookings */}
+          <Grid item xs={12} sm={6} md={3}>
+            <Card
+              sx={{
+                borderRadius: "15px",
+                boxShadow: 3,
+                cursor: 'pointer',
+                transition: 'transform 0.2s',
+                '&:hover': { transform: 'translateY(-4px)' },
+              }}
+              onClick={() => navigate('/i-bookedassets')}
+            >
+              <CardContent sx={{ textAlign: 'center' }}> 
+                <FontAwesomeIcon icon={faUserPlus} size="2x" color="#666" />
+                <Typography sx={{ mt: 1 }}>Bookings</Typography>
+                <Typography variant="h4">{transactionSummary?.bookings?.properties?.count ?? 0}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          {/* Purchased */}
+          <Grid item xs={12} sm={6} md={3}>
+            <Card
+              sx={{
+                borderRadius: "15px",
+                boxShadow: 3,
+                cursor: 'pointer',
+                transition: 'transform 0.2s',
+                '&:hover': { transform: 'translateY(-4px)' },
+              }}
+              onClick={() => navigate('/i-purchasedassets')}
+            >
+              <CardContent sx={{ textAlign: 'center' }}>
+                <FontAwesomeIcon icon={faTags} size="2x" color="#666" />
+                <Typography sx={{ mt: 1 }}>Purchased</Typography>
+                <Typography variant="h4">{transactionSummary?.purchased?.properties?.count ?? 0}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
         </Grid>
 
-        {transactionSummary && (
-          <Grid container spacing={3} sx={{ mb: 3 }}>
-            <Grid item xs={12} sm={6} md={3}>
-              <Card
-                sx={{
-                  borderRadius: "15px",
-                  boxShadow: 3,
-                  cursor: 'pointer',
-                  transition: 'transform 0.2s',
-                  '&:hover': { transform: 'translateY(-4px)' },
-                }}
-                onClick={() => navigate('/p-bookedassets')}
-              >
-                <CardContent sx={{ textAlign: 'center' }}>
-                  <FontAwesomeIcon icon={faUserPlus} size="2x" color="#666" />
-                  <Typography sx={{ mt: 1 }}>Bookings</Typography>
-                  <Typography variant="h4">{transactionSummary.bookings.properties.count}</Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-
-            <Grid item xs={12} sm={6} md={3}>
-              <Card
-                sx={{
-                  borderRadius: "15px",
-                  boxShadow: 3,
-                  cursor: 'pointer',
-                  transition: 'transform 0.2s',
-                  '&:hover': { transform: 'translateY(-4px)' },
-                }}
-                onClick={() => navigate('/p-purchasedassets')}
-              >
-                <CardContent sx={{ textAlign: 'center' }}>
-                  <FontAwesomeIcon icon={faTags} size="2x" color="#666" />
-                  <Typography sx={{ mt: 1 }}>Purchased</Typography>
-                  <Typography variant="h4">{transactionSummary.purchased.properties.count}</Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-
-            <Grid item xs={12} sm={6} md={3}>
-              <Card
-                sx={{
-                  borderRadius: "15px",
-                  boxShadow: 3,
-                  cursor: 'pointer',
-                  transition: 'transform 0.2s',
-                  '&:hover': { transform: 'translateY(-4px)' },
-                }}
-                onClick={() => navigate('/p-soldassets')}
-              >
-                <CardContent sx={{ textAlign: 'center' }}>
-                  <FontAwesomeIcon icon={faCheckCircle} size="2x" color="#666" />
-                  <Typography sx={{ mt: 1 }}>Sold</Typography>
-                  <Typography variant="h4">{property?.total_sold_properties ?? 0}</Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-
-
-            {/* <Grid item xs={12} sm={6} md={3}>
-              <Card sx={{ borderRadius: "15px", boxShadow: 3 }}>
-                <CardContent sx={{ textAlign: 'center' }}>
-                  <FontAwesomeIcon icon={faMoneyBillWave} size="2x" color="#666" />
-                  <Typography sx={{ mt: 1 }}>Agent Total Commission</Typography>
-                  <Typography variant="h4">
-                    ₹{transactionSummary.totals.total_agent_commission}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-
-            <Grid item xs={12} sm={6} md={3}>
-              <Card sx={{ borderRadius: "15px", boxShadow: 3 }}>
-                <CardContent sx={{ textAlign: 'center' }}>
-                  <FontAwesomeIcon icon={faMoneyBillWave} size="2x" color="#28a745" />
-                  <Typography sx={{ mt: 1 }}>Agent Paid Commission</Typography>
-                  <Typography variant="h4">
-                    ₹{transactionSummary.totals.total_agent_commission_paid}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-
-            <Grid item xs={12} sm={6} md={3}>
-              <Card sx={{ borderRadius: "15px", boxShadow: 3 }}>
-                <CardContent sx={{ textAlign: 'center' }}>
-                  <FontAwesomeIcon icon={faMoneyBillWave} size="2x" color="#dc3545" />
-                  <Typography sx={{ mt: 1 }}>Agent Balance Commission</Typography>
-                  <Typography variant="h4">
-                    ₹{transactionSummary.totals.total_agent_commission_balance}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid> */}
+        {/* Second Row - Sold Card */}
+        <Grid container spacing={3} sx={{ mb: 3 }}>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card
+              sx={{
+                borderRadius: "15px",
+                boxShadow: 3,
+                cursor: 'pointer',
+                transition: 'transform 0.2s',
+                '&:hover': { transform: 'translateY(-4px)' },
+              }}
+              onClick={() => navigate('/i-soldassets')}
+            >
+              <CardContent sx={{ textAlign: 'center' }}>
+                <FontAwesomeIcon icon={faCheckCircle} size="2x" color="#666" />
+                <Typography sx={{ mt: 1 }}>Sold</Typography>
+                <Typography variant="h4">{property?.total_sold_properties ?? 0}</Typography>
+              </CardContent>
+            </Card>
           </Grid>
-        )}
-
+        </Grid>
 
         <Grid container spacing={3} sx={{ mb: 3 }}>
           <Grid item xs={12} lg={6}>
@@ -633,7 +599,7 @@ const AgentDashboard = () => {
             <Card>
               <CardContent sx={{ display: "flex", justifyContent: "space-between" }}>
                 <Typography>Latest Property Listings</Typography>
-                <Button variant="outlined" size="small" onClick={() => navigate('/p-latestassets')}>
+                <Button variant="outlined" size="small" onClick={() => navigate('/i-asset')}>
                   View All
                 </Button>
               </CardContent>
