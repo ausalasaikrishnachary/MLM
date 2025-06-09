@@ -382,6 +382,10 @@ const SignUp = () => {
                     <Link href="/privacy" target="_blank" underline="hover" color="inherit" sx={{ mx: 1 }}>
                         Privacy Policy
                     </Link>
+                    |
+                    <Link href="/Return" target="_blank" underline="hover" color="inherit" sx={{ mx: 1 }}>
+                        Return Policy
+                    </Link>
                 </Typography>
             </Box>
 
