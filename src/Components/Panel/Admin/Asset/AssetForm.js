@@ -27,7 +27,7 @@ import axios from 'axios';
 import Header from '../../../Shared/Navbar/Navbar';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from "react-router-dom";
-  import Swal from 'sweetalert2';
+import Swal from 'sweetalert2';
 import { baseurl } from '../../../BaseURL/BaseURL';
 
 const steps = [
@@ -227,25 +227,25 @@ const AddPropertyForm = () => {
 
 
 
-const handleChange = (e) => {
-  const { name, value, type, checked } = e.target;
-  const newValue = type === 'checkbox' ? checked : value;
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    const newValue = type === 'checkbox' ? checked : value;
 
-  setFormData(prev => {
-    const updated = {
-      ...prev,
-      [name]: newValue
-    };
+    setFormData(prev => {
+      const updated = {
+        ...prev,
+        [name]: newValue
+      };
 
-    // Parse numbers safely
-    const price = parseFloat(name === 'price' ? newValue : updated.price) || 0;
-    const commission = parseFloat(name === 'company_commission' ? newValue : updated.company_commission) || 0;
+      // Parse numbers safely
+      const price = parseFloat(name === 'price' ? newValue : updated.price) || 0;
+      const commission = parseFloat(name === 'company_commission' ? newValue : updated.company_commission) || 0;
 
-    updated.total_property_value = price + commission;
+      updated.total_property_value = price + commission;
 
-    return updated;
-  });
-};
+      return updated;
+    });
+  };
 
 
   const handleFileUpload = async (e, type) => {
@@ -373,14 +373,14 @@ const handleChange = (e) => {
       }
 
       // Submit to API
-      const response = await axios.post(`${baseurl}/property/`, payload, { 
+      const response = await axios.post(`${baseurl}/property/`, payload, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
 
       console.log('Submission successful:', response.data);
-       Swal.fire('Success', 'Property updated successfully!', 'success');
+      Swal.fire('Success', 'Property updated successfully!', 'success');
       navigate("/a-asset");
 
       // Optionally reset form or redirect here
@@ -1037,7 +1037,7 @@ const handleChange = (e) => {
             />
           </Grid>
 
-           <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label="Company Commission"
@@ -1060,7 +1060,7 @@ const handleChange = (e) => {
             />
           </Grid> */}
 
-         
+
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
@@ -1068,9 +1068,9 @@ const handleChange = (e) => {
               name="total_property_value"
               type="number"
               value={formData.total_property_value}
-               InputProps={{
-    readOnly: true,
-  }}
+              InputProps={{
+                readOnly: true,
+              }}
             />
           </Grid>
 

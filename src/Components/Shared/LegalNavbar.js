@@ -39,7 +39,7 @@ const LegalNavbar = () => {
       </Box>
       <List>
         {[
-          { label: 'Login', path: '/login' },
+          { label: 'Login', path: '/' },
           { label: 'Signup', path: '/signup' },
         ].map((item) => (
           <ListItem key={item.label} disablePadding>
@@ -121,7 +121,7 @@ const LegalNavbar = () => {
               <Box sx={{ flexGrow: 1 }} />
               <Button
                 variant="outlined"
-                onClick={() => navigate('/login')}
+                onClick={() => navigate('/')}
                 sx={{ marginRight: 2, textTransform: 'none', fontWeight: 'bold' }}
               >
                 Login
