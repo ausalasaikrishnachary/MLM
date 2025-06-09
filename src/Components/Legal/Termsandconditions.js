@@ -21,7 +21,11 @@ const Termsandconditions = () => {
                     alignItems: 'center',
                     justifyContent: 'center',
                     p: 2,
-                    mt:-7,
+                    mt:-15,
+                    
+                    
+                  
+
                 }}
             >
                 <Paper
@@ -34,6 +38,7 @@ const Termsandconditions = () => {
                         flexDirection: 'column',
                         borderRadius: 2,
                         overflow: 'hidden',
+                        mt:16,
                     }}
                 >
                     {/* Fixed Header */}
