@@ -599,7 +599,7 @@ const AgentDashboard = () => {
             <Card>
               <CardContent sx={{ display: "flex", justifyContent: "space-between" }}>
                 <Typography>Latest Property Listings</Typography>
-                <Button variant="outlined" size="small" onClick={() => navigate('/i-asset')}>
+                <Button variant="outlined" size="small" onClick={() => navigate('/i-latestProperties')}>
                   View All
                 </Button>
               </CardContent>

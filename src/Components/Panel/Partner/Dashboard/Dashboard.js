@@ -222,8 +222,8 @@ const AgentDashboard = () => {
       <Container maxWidth="xl" sx={{ py: 4 }}>
         {/* Header */}
         <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" gutterBottom>
-            Agent Dashboard
+          <Typography variant="h4" sx={{textAlign:"center"}} gutterBottom>
+            Dashboard
           </Typography>
         </Box>
 
