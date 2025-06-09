@@ -384,7 +384,7 @@ const SignUp = () => {
                     </Link>
                     |
                     <Link href="/Return" target="_blank" underline="hover" color="inherit" sx={{ mx: 1 }}>
-                        Return Policy
+                        Refund Policy
                     </Link>
                 </Typography>
             </Box>
