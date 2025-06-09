@@ -93,6 +93,9 @@ import NewProperties from "./Components/Panel/Admin/Asset/NewProperties";
 import Transactions from "./Components/Panel/Investor/Transactions/Transactions";
 import Tdetails from "./Components/Panel/Investor/Transactions/T_Details";
 import Payment from "./Components/Panel/Investor/Transactions/Payment";
+import Termsandconditions from "./Components/Legal/Termsandconditions";
+import Privacypolicy from "./Components/Legal/Privacypolicy";
+import Refundpolicy from "./Components/Legal/Refundpolicy";
 
 
 
@@ -198,6 +201,17 @@ function App() {
            <Route path="/p-soldassets" element={<SoldProperties />} />
            <Route path="/p-listingassets" element={<ListingProperties />} />
            <Route path="/p-latestProperties" element={<LatestProperties />} />
+
+
+           <Route path="/termsandconditions" element={<Termsandconditions />} />
+           <Route path="/privacypolicy" element={<Privacypolicy />} />
+           <Route path="/refundpolicy" element={<Refundpolicy />} />
+
+
+
+
+
+
 
           <Route path="/" element={<Login />} />
 
