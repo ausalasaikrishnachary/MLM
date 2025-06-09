@@ -106,6 +106,7 @@ const AddPropertyForm = () => {
     agent_commission_paid: "",
     agent_commission_balance: "",
     total_property_value: "",
+    documents: [],
   });
 
   useEffect(() => {
@@ -364,6 +365,13 @@ const AddPropertyForm = () => {
       formData.videos.forEach((vid) => {
         if (vid.file) {
           payload.append('videos', vid.file, vid.name);
+        }
+      });
+
+      // Add this section for documents
+      formData.documents.forEach((doc) => {
+        if (doc.file) {
+          payload.append('documents', doc.file, doc.name);
         }
       });
 
@@ -1016,6 +1024,35 @@ const AddPropertyForm = () => {
                   key={index}
                   label={vid.name}
                   onDelete={() => removeFile(index, 'videos')}
+                  sx={{ m: 0.5 }}
+                />
+              ))}
+            </Box>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant="h6" gutterBottom>Upload Documents</Typography>
+            <Button
+              component="label"
+              variant="contained"
+              startIcon={<UploadFileIcon />}
+              sx={{ mb: 2 }}
+            >
+              Upload Documents
+              <VisuallyHiddenInput
+                type="file"
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.txt" // Specify accepted document types
+                multiple
+                onChange={(e) => handleFileUpload(e, 'documents')}
+              />
+            </Button>
+
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+              {formData.documents.map((doc, index) => (
+                <Chip
+                  key={index}
+                  label={doc.name}
+                  onDelete={() => removeFile(index, 'documents')}
                   sx={{ m: 0.5 }}
                 />
               ))}
