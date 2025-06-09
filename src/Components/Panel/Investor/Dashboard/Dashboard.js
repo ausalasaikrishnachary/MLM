@@ -524,7 +524,7 @@ const AgentDashboard = () => {
               <CardContent sx={{ textAlign: 'center' }}> 
                 <FontAwesomeIcon icon={faUserPlus} size="2x" color="#666" />
                 <Typography sx={{ mt: 1 }}>Bookings</Typography>
-                <Typography variant="h4">{transactionSummary?.bookings?.properties?.count ?? 0}</Typography>
+                <Typography variant="h4" sx={{ my: 1 }} >{transactionSummary?.bookings?.properties?.count ?? 0}</Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -544,7 +544,7 @@ const AgentDashboard = () => {
               <CardContent sx={{ textAlign: 'center' }}>
                 <FontAwesomeIcon icon={faTags} size="2x" color="#666" />
                 <Typography sx={{ mt: 1 }}>Purchased</Typography>
-                <Typography variant="h4">{transactionSummary?.purchased?.properties?.count ?? 0}</Typography>
+                <Typography variant="h4" sx={{ my: 1 }} >{transactionSummary?.purchased?.properties?.count ?? 0}</Typography>
               </CardContent>
             </Card>
           </Grid>
@@ -566,7 +566,7 @@ const AgentDashboard = () => {
               <CardContent sx={{ textAlign: 'center' }}>
                 <FontAwesomeIcon icon={faCheckCircle} size="2x" color="#666" />
                 <Typography sx={{ mt: 1 }}>Sold</Typography>
-                <Typography variant="h4">{property?.total_sold_properties ?? 0}</Typography>
+                <Typography variant="h4" sx={{ my: 1 }} >{property?.total_sold_properties ?? 0}</Typography>
               </CardContent>
             </Card>
           </Grid>
