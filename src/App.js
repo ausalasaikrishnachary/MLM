@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Profiler } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import './App.css';
 import AdminDashboard from "./Components/Panel/Admin/Dashboard/Dashboard";
@@ -111,6 +111,7 @@ import ClientEditProfile from "./Components/Panel/Investor/Profile/ClientEditPro
 
 
 
+
 function App() {
   return (
     // <AuthProvider>
@@ -188,9 +189,11 @@ function App() {
           <Route path="/p-report" element={<Report />} />
           <Route path="/p-addasset" element={<AssetForm />} />
           <Route path="/p-assets" element={<AssetDashboard />} />
-          <Route path="/," element={<PartnerProfile />} />
+          <Route path="/p-profile" element={<PartnerProfile />} />
           
           <Route path="/p-profiledetails" element={<PartnerKyc />} />
+         
+          
           <Route path="/editprofile" element={<EditProfile/>} />
           <Route path="/p-leads" element={<Leads />} />
           <Route path="/p-addleads" element={<PAddLead />} />
