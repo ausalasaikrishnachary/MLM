@@ -47,7 +47,7 @@ const PartnerPurchasedAssets = () => {
     useEffect(() => {
         const fetchBookedProperties = async () => {
             try {
-                const response = await fetch(`${baseurl}/transactions/grouped/${userId}/`);
+                const response = await fetch(`${baseurl}/transactions/grouped/user-id/${userId}/`);
                 const data = await response.json();
 
                 if (data.bookings && data.purchased.properties) {

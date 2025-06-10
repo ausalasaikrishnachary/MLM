@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Profiler } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import './App.css';
 import AdminDashboard from "./Components/Panel/Admin/Dashboard/Dashboard";
@@ -106,6 +106,9 @@ import I_SoldProperties from "./Components/Panel/Investor/Asset/SoldProperties";
 import LegalNavabar from "./Components/Shared/LegalNavbar";
 import LegalNavbar from "./Components/Shared/LegalNavbar";
 import I_BookingAssets from "./Components/Panel/Investor/Asset/BookingAssets";
+import EditProfile from "./Components/Panel/Partner/Profile/EditProfile";
+import ClientEditProfile from "./Components/Panel/Investor/Profile/ClientEditProfile"
+
 
 
 
@@ -172,6 +175,7 @@ function App() {
           <Route path="/i-transaction-details" element={<Tdetails />} />
           <Route path="/i-payment-form" element={<Payment />} />
           <Route path="/i-profile" element={<InvestorProfile />} />
+          <Route path="/clienteditprofile" element={<ClientEditProfile/>} />
           <Route path="/i-servies" element={<Services />} />
           <Route path="/i-profiledetails" element={<Kyc />} />
           <Route path="/i-plans" element={<Plans />} />
@@ -188,7 +192,11 @@ function App() {
           <Route path="/p-addasset" element={<AssetForm />} />
           <Route path="/p-assets" element={<AssetDashboard />} />
           <Route path="/p-profile" element={<PartnerProfile />} />
+          
           <Route path="/p-profiledetails" element={<PartnerKyc />} />
+         
+          
+          <Route path="/editprofile" element={<EditProfile/>} />
           <Route path="/p-leads" element={<Leads />} />
           <Route path="/p-addleads" element={<PAddLead />} />
           <Route path="/p-commission" element={<PartnerCommission />} />

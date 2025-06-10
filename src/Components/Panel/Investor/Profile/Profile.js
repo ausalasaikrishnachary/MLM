@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Box, Card, Typography, Divider, Button } from "@mui/material";
+import { Box, Card, Typography, Divider, Button, IconButton } from "@mui/material";
 import { baseurl } from '../../../BaseURL/BaseURL';
 import InvestorHeader from '../../../Shared/Investor/InvestorNavbar';
+import EditIcon from "@mui/icons-material/Edit";
+import { useNavigate } from "react-router-dom";
 
 const InvestorProfile = () => {
   const [userData, setUserData] = useState(null);
+  const userId = localStorage.getItem("user_id");
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
-      .get(`${baseurl}/users/3/`)
+      .get(`${baseurl}/users/${userId}/`)
       .then((response) => setUserData(response.data))
       .catch((error) => console.error("Error fetching user data:", error));
   }, []);
@@ -34,8 +38,23 @@ const InvestorProfile = () => {
             borderRadius: "12px",
             boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.2)",
             overflow: "hidden",
+            position: "relative", // Add this line
           }}
         >
+          {/* Edit Icon */}
+          <IconButton
+            onClick={() => navigate("/clienteditprofile")} // Updated path
+            sx={{
+              position: "absolute",
+              top: 10,
+              right: 10,
+              color: "rgb(30, 10, 80)",
+            }}
+          >
+            <EditIcon />
+          </IconButton>
+
+
           {/* Header */}
           <Box sx={{ textAlign: "center", py: 2 }}>
             <Typography
@@ -66,10 +85,10 @@ const InvestorProfile = () => {
             <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
             <ProfileField label="Role:" value={userData.roles[0]?.role_name || "N/A"} />
             <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
-              <ProfileField label="Pan number:" value={userData.pan_number} />
-             <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
-              <ProfileField label="Aadhaar number:" value={userData.aadhaar_number} />
-            
+            <ProfileField label="Pan number:" value={userData.pan_number} />
+            <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
+            <ProfileField label="Aadhaar number:" value={userData.aadhaar_number} />
+
           </Box>
 
           {/* Footer with Close Button */}
