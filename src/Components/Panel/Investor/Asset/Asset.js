@@ -1468,7 +1468,7 @@ const AssetsUI = () => {
                               '&:hover': { backgroundColor: '#59ed7c', color: 'rgb(5,5,5)' }
                             }}
                             disabled={!subscriptionPaid || property.status !== 'available'}
-                            onClick={() => navigate(`/p-bookingassets?property_id=${property.property_id}`)}
+                            onClick={() => navigate(`/i-bookingassets?property_id=${property.property_id}`)}
                           >
                             Buy Now
                           </Button>

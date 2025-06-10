@@ -18,7 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import { baseurl } from '../../../BaseURL/BaseURL';
 import jsPDF from 'jspdf';
 
-function BookingAssets() {  
+function I_BookingAssets() {  
   const [property, setProperty] = useState({ property_title: '', total_property_value: '' });
   const [loading, setLoading] = useState(true);
   const [referralAgents, setReferralAgents] = useState([]);
@@ -190,7 +190,7 @@ function BookingAssets() {
           timer: 2500,
           showConfirmButton: false
         });
-        navigate('/p-transaction');
+        navigate('/i-transactions');
       })
       .catch((err) => {
         console.error('Error:', err.response?.data || err);
@@ -271,4 +271,4 @@ function BookingAssets() {
   );
 }
 
-export default BookingAssets;
+export default I_BookingAssets;

@@ -11,6 +11,7 @@ import {
 import InvestorHeader from '../../../Shared/Investor/InvestorNavbar';
 import { baseurl } from '../../../BaseURL/BaseURL';
  import Swal from 'sweetalert2';
+   import jsPDF from 'jspdf';
 
 function Payment() {
     const navigate = useNavigate();
@@ -73,6 +74,91 @@ function Payment() {
     }
 }, [propertyId]);
 
+const generateInvoice = () => {
+  const doc = new jsPDF();
+  
+  // Invoice Header
+  doc.setFontSize(22);
+  doc.setTextColor(40, 53, 147); // Dark blue
+  doc.setFont('helvetica', 'bold');
+  doc.text('INVOICE', 105, 20, null, null, 'center');
+  
+  // Company Details
+  doc.setFontSize(10);
+  doc.setTextColor(100);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Your Company Name', 105, 28, null, null, 'center');
+  doc.text('123 Business Street, City - 400001', 105, 32, null, null, 'center');
+  doc.text('GSTIN: 22AAAAA0000A1Z5 | support@company.com', 105, 36, null, null, 'center');
+  
+  // Divider Line
+  doc.setDrawColor(200, 200, 200);
+  doc.line(20, 42, 190, 42);
+  
+  // Invoice Details
+  doc.setFontSize(10);
+  doc.text(`Invoice #: INV-${Date.now().toString().slice(-6)}`, 20, 50);
+  doc.text(`Date: ${new Date().toLocaleDateString('en-IN')}`, 160, 50);
+  
+  // Property Details Table
+  doc.setFontSize(12);
+  doc.setTextColor(0, 0, 0);
+  doc.setFont('helvetica', 'bold');
+  doc.text('PROPERTY TRANSACTION DETAILS', 20, 60);
+  
+  // Table Header
+  doc.setFillColor(245, 245, 245);
+  doc.rect(20, 65, 170, 10, 'F');
+  doc.text('Description', 25, 71);
+  doc.text('Amount (₹)', 150, 71);
+  
+  // Table Rows
+  doc.setFont('helvetica', 'normal');
+  doc.text(`Property: ${formData.property_name || 'N/A'}`, 25, 81);
+  doc.text(formData.property_value || '0', 150, 81);
+  
+  doc.text('Paid Amount', 25, 91);
+  doc.text(formData.paid_amount || '0', 150, 91);
+  
+  doc.text('Remaining Amount', 25, 101);
+  doc.text(formData.remaining_amount || '0', 150, 101);
+  
+  // Total Row
+  doc.setFont('helvetica', 'bold');
+  doc.text('Total Property Value', 25, 111);
+  doc.text(formData.property_value || '0', 150, 111);
+  
+  // Divider Line
+  doc.line(20, 116, 190, 116);
+  
+  // Customer Details Section
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'bold');
+  doc.text('CUSTOMER INFORMATION', 20, 126);
+  
+  doc.setFont('helvetica', 'normal');
+  doc.text(`Name: ${localStorage.getItem('user_name') || 'N/A'}`, 20, 134);
+  doc.text(`Email: ${localStorage.getItem('email') || 'N/A'}`, 20, 142);
+  doc.text(`Phone: ${localStorage.getItem('phone_number') || 'N/A'}`, 20, 150);
+  doc.text(`Referral ID: ${localStorage.getItem('referral_id') || 'N/A'}`, 20, 158);
+  doc.text(`Referred By: ${localStorage.getItem('referred_by') || 'N/A'}`, 20, 166);
+  
+  // Footer
+  doc.setFontSize(10);
+  doc.setTextColor(100);
+  doc.text('Terms & Conditions:', 20, 180);
+  doc.text('1. This is an official invoice for property transaction.', 20, 184);
+  doc.text('2. Please retain this invoice for your records.', 20, 188);
+  doc.text('3. For any discrepancies, contact within 7 days.', 20, 192);
+  
+  doc.setFontSize(12);
+  doc.setTextColor(40, 53, 147);
+  doc.text('Thank you for your business!', 105, 200, null, null, 'center');
+  
+  // Save PDF
+  doc.save(`Invoice_${formData.property_name || 'property'}.pdf`);
+};
+
 const handleSubmit = async (e) => {
   e.preventDefault();
 
@@ -99,7 +185,9 @@ const handleSubmit = async (e) => {
 
     const result = await response.json();
     console.log('Transaction stored successfully:', result);
+        generateInvoice();
 
+    
     // Step 2: Update the property status to "sold"
     const propertyId = formData.property_id;
     const statusUpdateResponse = await fetch(`${baseurl}/property/${propertyId}/`, {
@@ -127,7 +215,7 @@ const handleSubmit = async (e) => {
       showConfirmButton: false,
     });
 
-    navigate('/p-transaction');
+    navigate('/i-transactions');
 
   } catch (error) {
     console.error('Submit error:', error);

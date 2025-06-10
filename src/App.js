@@ -105,6 +105,7 @@ import I_PurchasedAssets from "./Components/Panel/Investor/Asset/PurchasedAssets
 import I_SoldProperties from "./Components/Panel/Investor/Asset/SoldProperties";
 import LegalNavabar from "./Components/Shared/LegalNavbar";
 import LegalNavbar from "./Components/Shared/LegalNavbar";
+import I_BookingAssets from "./Components/Panel/Investor/Asset/BookingAssets";
 
 
 
@@ -175,6 +176,7 @@ function App() {
           <Route path="/i-profiledetails" element={<Kyc />} />
           <Route path="/i-plans" element={<Plans />} />
           <Route path="/i-myassets" element={<MyAssets />} />
+            <Route path="/i-bookingassets" element={<I_BookingAssets />} />
           <Route path="/i-assets/:id" element={<PropertyDetails />} />
           <Route path="/i-myassets/edit/:id" element={<I_EditMyAsset />} />
           <Route path="/assets/:id" element={<I_MyAssests />} />
