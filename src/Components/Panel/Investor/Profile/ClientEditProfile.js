@@ -6,8 +6,6 @@ import {
   TextField,
   Button,
   Typography,
-  FormControlLabel,
-  Checkbox,
   InputLabel,
 } from "@mui/material";
 import InvestorHeader from '../../../Shared/Investor/InvestorNavbar';
@@ -26,10 +24,12 @@ const ClientEditProfile = () => {
     axios
       .get(`${baseurl}/users/${userId}/`)
       .then((response) => {
-        setUserData(response.data);
+        const { password, ...userDataWithoutPassword } = response.data; // Remove password from state
+        
+        setUserData(userDataWithoutPassword);
         setFormData({
-          ...response.data,
-          role_name: response.data.roles?.[0]?.role_name || ""
+          ...userDataWithoutPassword,
+          role_name: userDataWithoutPassword.roles?.[0]?.role_name || "",
         });
       })
       .catch((error) => {
@@ -48,9 +48,15 @@ const ClientEditProfile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = new FormData();
+
+    // Add all fields except 'password' (unless it's explicitly changed in a dedicated form)
     Object.entries(formData).forEach(([key, value]) => {
-      if (value) form.append(key, value);
+      if (value && key !== 'password') {  // Exclude password unless needed
+        form.append(key, value);
+      }
     });
+
+    console.log("formdata:",formData)
 
     try {
       await axios.put(`${baseurl}/users/${userId}/`, form);
@@ -96,7 +102,6 @@ const ClientEditProfile = () => {
               { label: "Gender", name: "gender" },
               { label: "Status", name: "status" },
               { label: "Role Name", name: "role_name", disabled: true },
-              
             ].map(({ label, name, type = "text", disabled }, i) => (
               <Grid item xs={12} md={4} key={name}>
                 <TextField
@@ -220,8 +225,7 @@ const ClientEditProfile = () => {
             ))}
           </Grid>
 
-          {/* Terms & Submit */}
-         
+          {/* Submit Button */}
           <Box sx={{ display: "flex", justifyContent: "center" }}>
             <Button
               type="submit"
