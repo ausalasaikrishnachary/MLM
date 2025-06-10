@@ -188,7 +188,7 @@ function App() {
           <Route path="/p-report" element={<Report />} />
           <Route path="/p-addasset" element={<AssetForm />} />
           <Route path="/p-assets" element={<AssetDashboard />} />
-          <Route path="/p-profile" element={<PartnerProfile />} />
+          <Route path="/," element={<PartnerProfile />} />
           
           <Route path="/p-profiledetails" element={<PartnerKyc />} />
           <Route path="/editprofile" element={<EditProfile/>} />
