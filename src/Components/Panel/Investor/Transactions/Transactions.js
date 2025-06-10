@@ -123,11 +123,11 @@ const Transactions = () => {
       transaction.purchased_type.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchDate = filterDate
-      ? new Date(transaction.created_at).toISOString().slice(0, 10) === filterDate
+      ? new Date(transaction.transaction_date).toISOString().slice(0, 10) === filterDate
       : true;
 
     const matchAmount = filterAmount
-      ? parseFloat(transaction.total_paid_amount) === parseFloat(filterAmount)
+      ? parseFloat(transaction.remaining_amount) === parseFloat(filterAmount)
       : true;
 
     const matchPaymentType = filterPaymentType
