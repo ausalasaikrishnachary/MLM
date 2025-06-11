@@ -1057,7 +1057,7 @@ const handleDelete = async (propertyId) => {
                 <Dialog open={openReportDialog} onClose={() => setOpenReportDialog(false)} maxWidth="lg" fullWidth>
                   <DialogTitle>Property Report</DialogTitle>
                   <DialogContent dividers>
-                    <Box sx={{ mb: 3 }}>
+                    {/* <Box sx={{ mb: 3 }}>
                       <Typography variant="h6" gutterBottom>
                         Report Summary
                       </Typography>
@@ -1079,14 +1079,14 @@ const handleDelete = async (propertyId) => {
                           <Typography>{new Date().toLocaleDateString()}</Typography>
                         </Box>
                       </Box>
-                    </Box>
+                    </Box> */}
         
                     <TableContainer component={Paper} sx={{ maxHeight: '60vh', overflow: 'auto' }}>
                       <Table stickyHeader>
                         <TableHead>
                           <TableRow>
                             {reportColumns.filter(col => col.checked).map(column => (
-                              <TableCell key={column.id}>{column.label}</TableCell>
+                              <TableCell key={column.id} sx={{ fontWeight: 'bold', color:"#4A90E2" }} >{column.label}</TableCell>
                             ))}
                           </TableRow>
                         </TableHead>
