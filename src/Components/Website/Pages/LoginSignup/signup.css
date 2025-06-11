@@ -1,0 +1,93 @@
+/* Container for the SignUp Card */
+.signup-card {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+/* Card Heading */
+.signup-title {
+  font-size: 24px;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+/* Form */
+.signup-form {
+  width: 100%;
+}
+
+/* Input Fields */
+.signup-input-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.signup-label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.signup-phone-input {
+  display: flex;
+  align-items: center;
+}
+
+.signup-input {
+  width: 93%;
+  padding: 12px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+}
+
+/* Terms & Conditions */
+.signup-terms {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.signup-checkbox {
+  margin-right: 10px;
+}
+
+.signup-terms-label {
+  font-size: 14px;
+}
+
+/* Submit Button */
+.signup-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #2d1656;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+}
+
+.signup-button:disabled {
+  background-color: #ddd;
+  cursor: not-allowed;
+}
+
+/* Information Protection */
+.signup-info {
+  font-size: 14px;
+  text-align: center;
+}
+
+.signup-link {
+  color: #2d1656;
+  font-weight: bold;
+}
+
+.signup-link:hover {
+  text-decoration: underline;
+}
+

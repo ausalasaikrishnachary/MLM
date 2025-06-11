@@ -15,7 +15,7 @@ const Termsandconditions = () => {
     return (
 
         <>
-            <LegalNavbar />
+            {/* <LegalNavbar /> */}
             <Box
                 sx={{
                     height: '100vh',
@@ -164,14 +164,14 @@ const Termsandconditions = () => {
                      <Button
         variant="outlined"
         color="secondary"
-        onClick={() => navigate('/')}
+        onClick={() => navigate('/login')}
       >
         Cancel
       </Button>
       <Button
         variant="contained"
         color="primary"
-        onClick={() => navigate('/')}
+        onClick={() => navigate('/login')}
       >
         I have read and accept the terms of service
       </Button>

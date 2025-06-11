@@ -1,0 +1,100 @@
+.aboutus-hero-content {
+    max-width: 1200px;
+    margin: 0 auto; /* Centers the content horizontally */
+  }
+
+  
+  .aboutus-hero-content h6 {
+    font-size: 1.25rem;
+    line-height: 1.7;
+    color: #636363; /* Applied directly to the h5 element */
+  }
+  
+  
+  /* Who We Are Section */
+  .aboutus-section {
+    margin-bottom: 2rem;
+  }
+  
+  .aboutus-title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .aboutus-title h3 {
+    color: #1976d2;
+    font-weight: bold;
+  }
+  
+  /* Section Text */
+  .aboutus-text {
+    font-size: 1.1rem;
+    line-height: 1.7;
+  }
+  
+  @media (max-width: 768px) {
+    .aboutus-text {
+      font-size: 1rem;
+    }
+  
+    .aboutus-title h3 {
+      font-size: 1.5rem;
+    }
+  }
+  
+  /* What We Do Section */
+  .aboutus-what-we-do {
+    margin-bottom: 2rem;
+  }
+  
+  .aboutus-what-we-do .aboutus-title {
+    margin-bottom: 2rem;
+  }
+  
+  .aboutus-what-we-do .aboutus-text {
+    font-style: italic;
+  }
+  
+  /* Why Choose Us Section */
+  .aboutus-why-choose {
+    margin-bottom: 2rem;
+  }
+  
+  .aboutus-why-choose .aboutus-title {
+    margin-bottom: 2rem;
+  }
+  
+  .aboutus-why-choose .aboutus-text {
+    font-style: italic;
+  }
+  
+  /* Call to Action */
+  .aboutus-call-to-action {
+    background-color: #1976d2;
+    color: white;
+    padding: 3rem 0;
+    margin-top: 3rem;
+  }
+  
+  .aboutus-call-to-action .aboutus-call-to-action-content {
+    text-align: center;
+  }
+  
+  .aboutus-call-to-action h3 {
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+  }
+  
+  .aboutus-call-to-action button {
+    background-color: white;
+    color: #1976d2;
+    padding: 0.75rem 3rem;
+    border-radius: 50px;
+  }
+  
+  .aboutus-call-to-action button:hover {
+    background-color: #f5f5f5;
+  }
+  

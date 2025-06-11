@@ -333,7 +333,7 @@ export default function PartnerHeader() {
         <MenuItem
           onClick={() => {
             handleProfileMenuClose();
-            navigate('/');
+            navigate('/login');
           }}
           sx={{
             fontSize: '16px',

@@ -363,7 +363,7 @@ const SignUp = () => {
 
                             <Typography align="center" sx={{ mt: 2 }}>
                                 Already registered?{" "}
-                                <Link href="/" sx={{ cursor: "pointer", color: "primary.main" }}>
+                                <Link href="/login" sx={{ cursor: "pointer", color: "primary.main" }}>
                                     Login
                                 </Link>
                             </Typography>

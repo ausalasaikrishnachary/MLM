@@ -1,5 +1,5 @@
 import React, { Profiler } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import './App.css';
 import AdminDashboard from "./Components/Panel/Admin/Dashboard/Dashboard";
 import AdminAsset from "./Components/Panel/Admin/Asset/Asset";
@@ -108,20 +108,44 @@ import LegalNavbar from "./Components/Shared/LegalNavbar";
 import I_BookingAssets from "./Components/Panel/Investor/Asset/BookingAssets";
 import EditProfile from "./Components/Panel/Partner/Profile/EditProfile";
 import ClientEditProfile from "./Components/Panel/Investor/Profile/ClientEditProfile"
+import LandingPage from "./Components/Website/Pages/Landingpage";
+
+import Home from "./Components/Website/Pages/Home/Home";
+import Aboutus from "./Components/Website/Pages/Aboutus/Aboutus";
+import FAQAccordion from "./Components/Website/Pages/FAQs/Faqs";
+import Contact from "./Components/Website/Pages/Contactus/Contactus";
+import Properties from "./Components/Website/Pages/Properties/Properties";
+import Header from "./Components/Website/Shared/Navbar/Navbar";
+import Footer from "./Components/Website/Shared/Footer/Footer";
+import PropertyDetail from "./Components/Website/Pages/Properties/PropertyDetails";
 
 
+function Layout() {
+  const location = useLocation();
 
+  // Define paths where Header and Footer should be visible
+  const publicPaths = ["/", "/aboutus", "/FAQ", "/contactus", "/properties", "/propertydetails", "/termsandconditions", "/privacypolicy", "/refundpolicy"];
+  const footerPaths = ["/", "/aboutus", "/FAQ", "/contactus", "/properties", "/termsandconditions", "/privacypolicy", "/refundpolicy"]; // Removed '/propertydetails'
 
-
-function App() {
   return (
-    // <AuthProvider>
-    <Router>
-      {/* <Navbar/> */}
-      {/* <InvestorHeader/> */}
-      {/* <PartnerHeader/> */}
+
+    <>
+      {publicPaths.includes(location.pathname) && <Header />}
+
       <div style={{ marginTop: "85px" }}>
         <Routes>
+
+          <Route path="/" element={<Home />} />
+          <Route path="/aboutus" element={<Aboutus />} />
+          <Route path="/FAQ" element={<FAQAccordion />} />
+          <Route path="/contactus" element={<Contact />} />
+          <Route path="/properties" element={<Properties />} />
+          <Route path="/propertydetails" element={<PropertyDetail />} />
+
+
+
+
+          {/* <Route path="/home" element={<LandingPage />} /> */}
           <Route path="/a-dashboard" element={<AdminDashboard />} />
           <Route path="/a-asset" element={<AdminAsset />} />
           <Route path="/a-investormanagement" element={<Tmanagement />} />
@@ -239,12 +263,22 @@ function App() {
 
 
 
-          <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} />
 
         </Routes>
       </div>
+      {footerPaths.includes(location.pathname) && <Footer />}
+    </>
+
+
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <Layout />
     </Router>
-    // </AuthProvider>
   );
 }
 

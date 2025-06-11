@@ -106,7 +106,7 @@ const AddPropertyForm = () => {
     agent_commission_paid: "",
     agent_commission_balance: "",
     total_property_value: "",
-    documents: [],
+    files: [],
   });
 
   useEffect(() => {
@@ -368,10 +368,10 @@ const AddPropertyForm = () => {
         }
       });
 
-      // Add this section for documents
-      formData.documents.forEach((doc) => {
+      // Add this section for files
+      formData.files.forEach((doc) => {
         if (doc.file) {
-          payload.append('documents', doc.file, doc.name);
+          payload.append('files', doc.file, doc.name);
         }
       });
 
@@ -1043,16 +1043,16 @@ const AddPropertyForm = () => {
                 type="file"
                 accept=".pdf,.doc,.docx,.xls,.xlsx,.txt" // Specify accepted document types
                 multiple
-                onChange={(e) => handleFileUpload(e, 'documents')}
+                onChange={(e) => handleFileUpload(e, 'files')}
               />
             </Button>
 
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-              {formData.documents.map((doc, index) => (
+              {formData.files.map((doc, index) => (
                 <Chip
                   key={index}
                   label={doc.name}
-                  onDelete={() => removeFile(index, 'documents')}
+                  onDelete={() => removeFile(index, 'files')}
                   sx={{ m: 0.5 }}
                 />
               ))}

@@ -259,7 +259,7 @@ export default function InvestorHeader() {
         <MenuItem
           onClick={() => {
             handleProfileMenuClose();
-            navigate('/');
+            navigate('/login');
           }}
           sx={{
             fontSize: '16px',

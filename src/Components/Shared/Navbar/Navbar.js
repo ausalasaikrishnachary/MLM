@@ -341,7 +341,7 @@ export default function Header() {
         <MenuItem
           onClick={() => {
             handleProfileMenuClose();
-            navigate('/');
+            navigate('/login');
           }}
           sx={{
             fontSize: '16px',

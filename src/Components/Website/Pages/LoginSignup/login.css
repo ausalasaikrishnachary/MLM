@@ -1,0 +1,121 @@
+/* Center the login container */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 10px;
+  margin-bottom: 20px;
+}
+
+/* Card Styling */
+.login-card {
+  padding: 3rem;
+  border-radius: 15px;
+  border: 1px solid black;
+  text-align: center;
+  width: 450px;
+}
+
+/* Title */
+.login-title {
+  font-size: 30px;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+}
+
+/* Input Fields */
+.input-groups {
+  text-align: left;
+  margin-bottom: 1.5rem;
+}
+
+.input-groups label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.input-groups input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 18px;
+}
+
+/* Password Wrapper */
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  width: 100%;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.forgot-password-container {
+  text-align: right;
+  margin-bottom: 1rem;
+}
+
+.forgot-password {
+  color: #2d1656;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+/* Login Button */
+.login-btn {
+  background: #2d1656;
+  color: white;
+  width: 100%;
+  padding: 12px;
+  border-radius: 25px;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.login-btn:hover {
+  background: #190d35;
+}
+
+/* Not on Astra? + Create a Profile in One Line */
+.text-links {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+
+.create-profile {
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+/* Media Query for Mobile Screens */
+@media (max-width: 768px) {
+  .login-card {
+    padding: 20px;
+    margin: 0 20px; /* Adds spacing from left and right */
+  }
+
+  /* Adjust label size on small screens */
+  .input-groups label {
+    font-size: 16px;
+  }
+  .input-groups input {
+    width: 95%; /* Reduce width to prevent overflow */
+    font-size: 16px; /* Adjust font size for better fit */
+  }
+}
