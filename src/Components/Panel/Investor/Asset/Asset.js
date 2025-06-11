@@ -474,7 +474,7 @@ const AssetsUI = () => {
           <Typography variant="h4" sx={{ textAlign: "center" }}>
             Properties
           </Typography>
-          <Button 
+          {/* <Button 
             variant="contained" 
             color="secondary"
             onClick={openReportConfiguration}
@@ -482,7 +482,7 @@ const AssetsUI = () => {
             sx={{ ml: 2 }}
           >
             Generate Report
-          </Button>
+          </Button> */}
         </Box>
 
         <Box

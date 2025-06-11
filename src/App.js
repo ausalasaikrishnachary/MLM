@@ -159,28 +159,28 @@ function App() {
           <Route path="/a-soldassets" element={<SoldAssets />} />
           <Route path="/a-approvedassets" element={<ApprovedAssets />} />
 
-            <Route path="/a-activeagents" element={<ActiveAgents />} />
-            <Route path="/a-Inactiveagents" element={<InactiveAgents />} />
-            <Route path="/a-Newproperties" element={<NewProperties />} />
+          <Route path="/a-activeagents" element={<ActiveAgents />} />
+          <Route path="/a-Inactiveagents" element={<InactiveAgents />} />
+          <Route path="/a-Newproperties" element={<NewProperties />} />
 
 
           <Route path="/i-dashboard" element={<InvestorDashboard />} />
-           <Route path="/i-listingassets" element={<I_ListingProperties />} />
-             <Route path="/i-latestProperties" element={<I_LatestProperties />} />
-               <Route path="/i-bookedassets" element={<I_BookedAssets />} />
-                 <Route path="/i-purchasedassets" element={<I_PurchasedAssets />} />
-                   <Route path="/i-soldassets" element={<I_SoldProperties />} />
+          <Route path="/i-listingassets" element={<I_ListingProperties />} />
+          <Route path="/i-latestProperties" element={<I_LatestProperties />} />
+          <Route path="/i-bookedassets" element={<I_BookedAssets />} />
+          <Route path="/i-purchasedassets" element={<I_PurchasedAssets />} />
+          <Route path="/i-soldassets" element={<I_SoldProperties />} />
           <Route path="/i-asset" element={<InvestorAsset />} />
           <Route path="/i-transactions" element={<Transactions />} />
           <Route path="/i-transaction-details" element={<Tdetails />} />
           <Route path="/i-payment-form" element={<Payment />} />
           <Route path="/i-profile" element={<InvestorProfile />} />
-          <Route path="/clienteditprofile" element={<ClientEditProfile/>} />
+          <Route path="/clienteditprofile" element={<ClientEditProfile />} />
           <Route path="/i-servies" element={<Services />} />
           <Route path="/i-profiledetails" element={<Kyc />} />
           <Route path="/i-plans" element={<Plans />} />
           <Route path="/i-myassets" element={<MyAssets />} />
-            <Route path="/i-bookingassets" element={<I_BookingAssets />} />
+          <Route path="/i-bookingassets" element={<I_BookingAssets />} />
           <Route path="/i-assets/:id" element={<PropertyDetails />} />
           <Route path="/i-myassets/edit/:id" element={<I_EditMyAsset />} />
           <Route path="/assets/:id" element={<I_MyAssests />} />
@@ -192,11 +192,11 @@ function App() {
           <Route path="/p-addasset" element={<AssetForm />} />
           <Route path="/p-assets" element={<AssetDashboard />} />
           <Route path="/p-profile" element={<PartnerProfile />} />
-          
+
           <Route path="/p-profiledetails" element={<PartnerKyc />} />
-         
-          
-          <Route path="/editprofile" element={<EditProfile/>} />
+
+
+          <Route path="/editprofile" element={<EditProfile />} />
           <Route path="/p-leads" element={<Leads />} />
           <Route path="/p-addleads" element={<PAddLead />} />
           <Route path="/p-commission" element={<PartnerCommission />} />
@@ -217,20 +217,20 @@ function App() {
           <Route path="/p-payment-form" element={<PaymentForm />} />
           <Route path="/p-transaction-details" element={<TransactionList />} />
           <Route path="/p-pay-commission/:propertyId" element={<PayCommissionForm />} />
-           <Route path="/p-team" element={<Team />} />
-           <Route path="/p-meetings" element={<Meetings />} />
-           <Route path="/p-meetingrequest" element={<MeetingRequestForm />} />
-           <Route path="/p-bookedassets" element={<PartnerBookedAssets />} />
-           <Route path="/p-purchasedassets" element={<PartnerPurchasedAssets />} />
-           <Route path="/p-soldassets" element={<SoldProperties />} />
-           <Route path="/p-listingassets" element={<ListingProperties />} />
-           <Route path="/p-latestProperties" element={<LatestProperties />} />
+          <Route path="/p-team" element={<Team />} />
+          <Route path="/p-meetings" element={<Meetings />} />
+          <Route path="/p-meetingrequest" element={<MeetingRequestForm />} />
+          <Route path="/p-bookedassets" element={<PartnerBookedAssets />} />
+          <Route path="/p-purchasedassets" element={<PartnerPurchasedAssets />} />
+          <Route path="/p-soldassets" element={<SoldProperties />} />
+          <Route path="/p-listingassets" element={<ListingProperties />} />
+          <Route path="/p-latestProperties" element={<LatestProperties />} />
 
 
-           <Route path="/termsandconditions" element={<Termsandconditions />} />
-           <Route path="/privacypolicy" element={<Privacypolicy />} />
-           <Route path="/refundpolicy" element={<Refundpolicy />} />
-           <Route path="/legalnavbar" element={<LegalNavbar />} />
+          <Route path="/termsandconditions" element={<Termsandconditions />} />
+          <Route path="/privacypolicy" element={<Privacypolicy />} />
+          <Route path="/refundpolicy" element={<Refundpolicy />} />
+          <Route path="/legalnavbar" element={<LegalNavbar />} />
 
 
 
