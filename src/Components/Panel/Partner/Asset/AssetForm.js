@@ -102,6 +102,7 @@ const AssetForm = () => {
     videos: [],
     userId: userId,
     agent_commission: "",
+    files: [],
   });
 
   const [showResidentialFields, setShowResidentialFields] = useState(false);
@@ -274,6 +275,13 @@ const AssetForm = () => {
       formData.videos.forEach((vid) => {
         if (vid.file) {
           payload.append('videos', vid.file, vid.name);
+        }
+      });
+
+      // Add this section for files
+      formData.files.forEach((doc) => {
+        if (doc.file) {
+          payload.append('files', doc.file, doc.name);
         }
       });
 
@@ -823,6 +831,36 @@ const AssetForm = () => {
               ))}
             </Box>
           </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant="h6" gutterBottom>Upload Documents</Typography>
+            <Button
+              component="label"
+              variant="contained"
+              startIcon={<UploadFileIcon />}
+              sx={{ mb: 2 }}
+            >
+              Upload Documents
+              <VisuallyHiddenInput
+                type="file"
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.txt" // Specify accepted document types
+                multiple
+                onChange={(e) => handleFileUpload(e, 'files')}
+              />
+            </Button>
+
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+              {formData.files.map((doc, index) => (
+                <Chip
+                  key={index}
+                  label={doc.name}
+                  onDelete={() => removeFile(index, 'files')}
+                  sx={{ m: 0.5 }}
+                />
+              ))}
+            </Box>
+          </Grid>
+          
         </Grid>
       );
 

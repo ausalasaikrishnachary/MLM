@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { baseurl } from '../../../BaseURL/BaseURL';
 
-const EditAsset = () => {
+const EditMyAsset = () => {
   const { state } = useLocation();
   const { property } = state || {}; 
   const { id } = useParams();
@@ -336,4 +336,4 @@ return (
 );
 };
 
-export default EditAsset;
+export default EditMyAsset;

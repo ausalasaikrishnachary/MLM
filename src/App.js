@@ -52,6 +52,7 @@ import LatestAssets from "./Components/Panel/Partner/Asset/LatestAssets";
 import MyAgents from "./Components/Panel/Partner/MyTeam/MyAgents/MyAgents";
 import ActiveUserView from "./Components/Panel/Partner/MyTeam/MyAgents/ViewAgents";
 import EditAsset from "./Components/Panel/Admin/Asset/EditAsset";
+import EditMyAsset from "./Components/Panel/Investor/Asset/EditMyAsset";
 import BookingAssets from "./Components/Panel/Partner/Asset/BookingAssets";
 import PaymentForm from "./Components/Panel/Partner/Transaction/PaymentForm";
 import TransactionList from "./Components/Panel/Partner/Transaction/TransactionDetails";
@@ -208,6 +209,8 @@ function Layout() {
           <Route path="/i-assets/:id" element={<PropertyDetails />} />
           <Route path="/i-myassets/edit/:id" element={<I_EditMyAsset />} />
           <Route path="/assets/:id" element={<I_MyAssests />} />
+          <Route path="/i-addproperty" element={<AddPropertyForm />} />
+          <Route path="/i-assets/edit/:id" element={<EditMyAsset />} />
 
 
 
@@ -224,7 +227,6 @@ function Layout() {
           <Route path="/p-leads" element={<Leads />} />
           <Route path="/p-addleads" element={<PAddLead />} />
           <Route path="/p-commission" element={<PartnerCommission />} />
-          <Route path="/p-addproperty" element={<AddPropertyForm />} />
           <Route path="/p-plans" element={<PartnerPlans />} />
           <Route path="/p-assets/:id" element={<AssetDetail />} />
           <Route path="/p-myassets" element={<PartnerMyAssets />} />
