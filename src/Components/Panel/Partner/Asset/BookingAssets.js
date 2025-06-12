@@ -17,6 +17,9 @@ import { useParams, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { baseurl } from '../../../BaseURL/BaseURL';
 import jsPDF from 'jspdf';
+import { pdf } from '@react-pdf/renderer';
+import { saveAs } from 'file-saver';
+import ReceiptDocument from '../../../ReceiptDocument'; 
 
 function BookingAssets() {  
   const [property, setProperty] = useState({ property_title: '', total_property_value: '' });
@@ -36,6 +39,7 @@ function BookingAssets() {
       .then((res) => {
         const prop = res.data;
         setProperty(prop);
+        console.log("data", prop);
         setLoading(false);
       })
       .catch((err) => {
@@ -56,97 +60,39 @@ function BookingAssets() {
       });
   }, []);
 
-  const generateReceipt = () => {
-  const doc = new jsPDF();
-  
-  // Company Header
-  doc.setFontSize(22);
-  doc.setTextColor(40, 53, 147);  // Dark blue color
-  doc.setFont('helvetica', 'bold');
-  doc.text('PROPERTY BOOKING RECEIPT', 105, 20, null, null, 'center');
-  
-  // Company details
-  doc.setFontSize(10);
-  doc.setTextColor(100);
-  doc.setFont('helvetica', 'normal');
-  doc.text('123 Business Park, City Center', 105, 28, null, null, 'center');
-  doc.text('Mumbai - 400001 | Phone: +91 9876543210', 105, 32, null, null, 'center');
-  
-  // Divider line
-  doc.setDrawColor(200, 200, 200);
-  doc.line(20, 38, 190, 38);
-  
-  // Receipt details
-  doc.setFontSize(10);
-  doc.setTextColor(100);
-  doc.text(`Receipt No: ${Math.floor(100000 + Math.random() * 900000)}`, 20, 45);
-  doc.text(`Date: ${new Date().toLocaleDateString('en-IN')}`, 160, 45);
-  
-  // Property details table
-  doc.setFontSize(12);
-  doc.setTextColor(0, 0, 0);
-  doc.setFont('helvetica', 'bold');
-  doc.text('PROPERTY DETAILS', 20, 55);
-  
-  // Table header
-  doc.setFillColor(245, 245, 245);
-  doc.rect(20, 60, 170, 10, 'F');
-  doc.text('Description', 25, 66);
-  doc.text('Amount (₹)', 150, 66);
-  
-  // Table rows
-  doc.setFont('helvetica', 'normal');
-  doc.text(`Property: ${property.property_title}`, 25, 76);
-  doc.text(property.total_property_value, 150, 76);
-  
-  doc.text('Booking Amount', 25, 86);
-  doc.text(property.booking_amount || '0', 150, 86);
-  
-  // Total row
-  doc.setFont('helvetica', 'bold');
-  doc.text('Total Paid', 25, 96);
-  doc.text(property.booking_amount || '0', 150, 96);
-  
-  // Horizontal line
-  doc.line(20, 100, 190, 100);
-  
-  // Customer details section
-  doc.setFontSize(12);
-  doc.setFont('helvetica', 'bold');
-  doc.text('CUSTOMER DETAILS', 20, 110);
-  
-  doc.setFont('helvetica', 'normal');
-  doc.text(`Name: ${localStorage.getItem('user_name') || 'N/A'}`, 20, 118);
-  doc.text(`Email: ${localStorage.getItem('email') || 'N/A'}`, 20, 126);
-  doc.text(`Phone: ${localStorage.getItem('phone_number') || 'N/A'}`, 20, 134);
-  doc.text(`Referral ID: ${localStorage.getItem('referral_id') || 'N/A'}`, 20, 142);
-  doc.text(`Referred By: ${localStorage.getItem('referred_by') || 'N/A'}`, 20, 150);
-  
-  // Payment method
-  doc.setFont('helvetica', 'bold');
-  doc.text('PAYMENT METHOD', 20, 160);
-  doc.setFont('helvetica', 'normal');
-  doc.text('Cash/Cheque/Online Payment', 20, 168);
-  
-  // Terms and conditions
-  doc.setFontSize(8);
-  doc.setTextColor(100);
-  doc.text('Terms & Conditions:', 20, 180);
-  doc.text('1. This is an official receipt for booking amount only.', 20, 184);
-  doc.text('2. The balance amount must be paid as per the payment schedule.', 20, 188);
-  doc.text('3. For any queries, contact accounts@yourcompany.com', 20, 192);
-  
-  // Footer
-  doc.setFontSize(10);
-  doc.setTextColor(40, 53, 147);
-  doc.text('Thank you for your business!', 105, 200, null, null, 'center');
-  doc.text('www.yourcompany.com | support@yourcompany.com', 105, 205, null, null, 'center');
-  
-  // Save the PDF
-  doc.save(`Booking_Receipt_${property.property_title.replace(/\s+/g, '_')}.pdf`);
+const generateReceipt = async () => {
+  try {
+    // Prepare all the data needed for the InvoiceDocument
+    const invoiceData = {
+      property: {
+        title: property.property_title,
+        value: property.total_property_value,
+        bookingAmount: property.booking_amount || '0',
+        total: property.booking_amount || '0'
+      },
+    };
+
+    // Create PDF using InvoiceDocument component
+    const pdfBlob = await pdf(<ReceiptDocument {...invoiceData} />).toBlob();
+    
+    // Save the PDF
+    const fileName = `Booking_Receipt_${property.property_title.replace(/\s+/g, '_')}.pdf`;
+    saveAs(pdfBlob, fileName);
+    
+    return true;
+  } catch (error) {
+    console.error('Error generating receipt:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Receipt Generation Failed',
+      text: 'There was an error generating the receipt PDF.'
+    });
+    return false;
+  }
 };
 
-  const handleBooking = () => {
+const handleBooking = async () => {
+  try {
     const username = localStorage.getItem('user_name');
     const userId = Number(localStorage.getItem('user_id'));
     const propertyValue = Number(property.total_property_value);
@@ -171,37 +117,38 @@ function BookingAssets() {
       payment_method: "Cash",
     };
 
-    axios.post(`${baseurl}/transactions/`, payload)
-      .then(() => {
-        return axios.put(`${baseurl}/property/${propertyId}/`, {
-          status: 'booked',
-          // mediator_referral_id: selectedReferralId || " "
-        });
-      })
-      .then(() => {
-        // Generate receipt after successful booking
-        generateReceipt();
-        
-        Swal.fire({
-          icon: 'success',
-          title: 'Booking Successful!',
-          text: 'Transaction completed and property status updated.',
-          confirmButtonColor: '#3085d6',
-          timer: 2500,
-          showConfirmButton: false
-        });
-        navigate('/p-transaction');
-      })
-      .catch((err) => {
-        console.error('Error:', err.response?.data || err);
-        Swal.fire({
-          icon: 'error',
-          title: 'Failed!',
-          text: 'Booking or status update failed.',
-          confirmButtonColor: '#d33'
-        });
+    // Step 1: Create transaction
+    await axios.post(`${baseurl}/transactions/`, payload);
+    
+    // Step 2: Update property status
+    await axios.put(`${baseurl}/property/${propertyId}/`, {
+      status: 'booked',
+    });
+
+    // Step 3: Generate receipt
+    const receiptGenerated = await generateReceipt();
+    
+    if (receiptGenerated) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Booking Successful!',
+        text: 'Transaction completed and property status updated.',
+        confirmButtonColor: '#3085d6',
+        timer: 2500,
+        showConfirmButton: false
       });
-  };
+      navigate('/p-transaction');
+    }
+  } catch (err) {
+    console.error('Error:', err.response?.data || err);
+    Swal.fire({
+      icon: 'error',
+      title: 'Booking Failed',
+      text: err.response?.data?.message || 'Booking or status update failed.',
+      confirmButtonColor: '#d33'
+    });
+  }
+};
 
   return (
     <>
