@@ -1,178 +1,6 @@
-// import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
-
-// const styles = StyleSheet.create({
-//   page: {
-//     padding: 20,
-//     fontFamily: 'Helvetica',
-//   },
-//   outerBorder: {
-//     border: '1px solid #000',
-//     padding: 10,
-//   },
-//   headerRow: {
-//     flexDirection: 'row',
-//     justifyContent: 'space-between',
-//     borderBottom: '1px solid #000',
-//     paddingBottom: 5,
-//   },
-//   headerLeft: {
-//     flex: 1,
-//   },
-//   headerRight: {
-//     flex: 1,
-//     justifyContent: 'flex-end',
-//     alignItems: 'flex-end',
-//   },
-//   companyName: {
-//     fontSize: 14,
-//     fontWeight: 'bold',
-//     marginBottom: 5,
-//   },
-//   companyAddress: {
-//     fontSize: 10,
-//     lineHeight: 1.5,
-//     marginBottom: 5,
-//   },
-//   companyContact: {
-//     fontSize: 10,
-//     lineHeight: 1.5,
-//     marginBottom: 5,
-//   },
-//   invoiceTitle: {
-//     fontSize: 18,
-//     fontWeight: '700',
-//   },
-//   invoiceDetailsRow: {
-//     flexDirection: 'row',
-//     borderBottom: '1px solid #000',
-//     paddingVertical: 8,
-//   },
-//   invoiceDetailsLeft: {
-//     flex: 1,
-//     paddingRight: 10,
-//   },
-//   invoiceDetailsRight: {
-//     flex: 1,
-//     paddingLeft: 10,
-//     justifyContent: 'center',
-//   },
-//   detailText: {
-//     fontSize: 10,
-//     marginBottom: 3,
-//   },
-//   boldText: {
-//     fontWeight: 'bold',
-//   },
-//   sectionRow: {
-//     flexDirection: 'row',
-//     borderBottom: '1px solid #000',
-//     backgroundColor: '#f0f0f0',
-//     paddingVertical: 4,
-//     marginTop: 10,
-//   },
-//   sectionTitle: {
-//     flex: 1,
-//     fontSize: 12,
-//     fontWeight: 'bold',
-//     paddingLeft: 5,
-//   },
-//   sectionContentRow: {
-//     flexDirection: 'row',
-//     minHeight: 50,
-//     borderBottom: '1px solid #000',
-//   },
-//   sectionLeft: {
-//     flex: 1,
-//     padding: 5,
-//   },
-//   sectionRight: {
-//     flex: 1,
-//     padding: 5,
-//   },
-// });
-
-// const InvoiceDocument = () => (
-//   <Document>
-//     <Page size="A4" style={styles.page}>
-//       <View style={styles.outerBorder}>
-
-//         {/* Header Row with Company Info and TAX INVOICE */}
-//         <View style={styles.headerRow}>
-//           <View style={styles.headerLeft}>
-//             <Text style={styles.companyName}>INFAB AGRO FOODS PRIVATE LIMITED</Text>
-//             <Text style={styles.companyAddress}>
-//               125/3 Kamminke Village Hejala Circle{"\n"}
-//               South taluk near featherlite Bangalore{"\n"}
-//               Bangalore Karnataka 562109{"\n"}
-//               India
-//             </Text>
-//             <Text style={styles.companyContact}>
-//               GSTN 29AAHCH1372F12K{"\n"}
-//               9743112460 / 6363900869{"\n"}
-//               infabfoods@gmail.com{"\n"}
-//               infabfoods.com
-//             </Text>
-//           </View>
-//           <View style={styles.headerRight}>
-//             <Text style={styles.invoiceTitle}>TAX INVOICE</Text>
-//           </View>
-//         </View>
-
-//         {/* Invoice Details Section */}
-//         <View style={styles.invoiceDetailsRow}>
-//           <View style={styles.invoiceDetailsLeft}>
-//             <Text style={styles.detailText}>
-//               # <Text style={styles.boldText}>: INV-090</Text>
-//             </Text>
-//             <Text style={styles.detailText}>
-//               Invoice Date <Text style={styles.boldText}>: 24/05/2025</Text>
-//             </Text>
-//             <Text style={styles.detailText}>
-//               Terms <Text style={styles.boldText}>: Due on Receipt</Text>
-//             </Text>
-//             <Text style={styles.detailText}>
-//               Due Date <Text style={styles.boldText}>: 24/05/2025</Text>
-//             </Text>
-//           </View>
-//           <View style={styles.invoiceDetailsRight}>
-//             <Text style={styles.detailText}>
-//               Place Of Supply <Text style={styles.boldText}>: Karnataka (29)</Text>
-//             </Text>
-//           </View>
-//         </View>
-
-//         {/* Bill To / Ship To Section Header */}
-//         <View style={styles.sectionRow}>
-//           <Text style={styles.sectionTitle}>Bill To</Text>
-//           <Text style={styles.sectionTitle}>Ship To</Text>
-//         </View>
-
-//         {/* Bill To / Ship To Content */}
-//         <View style={styles.sectionContentRow}>
-//           <View style={styles.sectionLeft}>
-//             <Text style={[styles.detailText, styles.boldText]}>Deepak Stores</Text>
-//             <Text style={styles.detailText}>Gandhi bazar</Text>
-//             <Text style={styles.detailText}>Bangalore</Text>
-//             <Text style={styles.detailText}>562109 Karnataka</Text>
-//             <Text style={styles.detailText}>India</Text>
-//           </View>
-//           <View style={styles.sectionRight}>
-//             <Text style={styles.detailText}>Gandhi bazar</Text>
-//           </View>
-//         </View>
-//       </View>
-//     </Page>
-//   </Document>
-// );
-
-// export default InvoiceDocument;
-
-
-
-
-
 import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import logo from './Images/logo.png';
+
 const styles = StyleSheet.create({
         page: {
                 padding: 20,
@@ -397,6 +225,7 @@ const styles = StyleSheet.create({
 
 const InvoiceDocument = ({ 
   property,
+  invoice_number,
   receiptNumber = `INV-${Math.floor(100 + Math.random() * 900)}`,
   date = new Date().toLocaleDateString('en-IN'),
   user = {
@@ -422,8 +251,10 @@ const InvoiceDocument = ({
     return 'Indian Rupee ' + num + ' Only';
   };
 
+  
+
   const totalAmount = property.booking_amount || 0;
-  const totalInWords = numberToWords(totalAmount);
+  const totalInWords = numberToWords(property.booking_amount);
 
   return (
     <Document>
@@ -470,8 +301,8 @@ const InvoiceDocument = ({
           <View style={styles.invoiceDetailsRow}>
             <View style={styles.invoiceDetailsLeft}>
               <View style={styles.rowItem}>
-                <Text style={styles.label}>#</Text>
-                <Text style={styles.value}>: {receiptNumber}</Text>
+                <Text style={styles.label}>Receipt No</Text>
+                <Text style={styles.value}>: {invoice_number}</Text>
               </View>
               <View style={styles.rowItem}>
                 <Text style={styles.label}>Receipt Date</Text>
@@ -500,14 +331,14 @@ const InvoiceDocument = ({
                 <Text style={styles.label}>Phone</Text>
                 <Text style={styles.value}>: {user.phone}</Text>
               </View>
-              <View style={styles.rowItem}>
+              {/* <View style={styles.rowItem}>
                 <Text style={styles.label}>Referral ID</Text>
                 <Text style={styles.value}>: {user.referralId}</Text>
               </View>
               <View style={styles.rowItem}>
                 <Text style={styles.label}>Referred By</Text>
                 <Text style={styles.value}>: {user.referredBy}</Text>
-              </View>
+              </View> */}
             </View>
 
             {/* Vertical divider */}
@@ -536,23 +367,23 @@ const InvoiceDocument = ({
           <View style={styles.summaryRow}>
             {/* Left Side: Total in Words */}
             <View style={styles.summaryLeft}>
-              <Text style={styles.summaryText}>Total In Words</Text>
-              <Text style={styles.boldSummary}>{totalInWords}</Text>
+              {/* <Text style={styles.summaryText}>Total In Words</Text>
+              <Text style={styles.boldSummary}>{totalInWords}</Text> */}
             </View>
 
             {/* Right Side: Subtotal / Shipping / Grand Total */}
             <View style={styles.summaryRight}>
-              <View style={styles.summaryItem}>
+              {/* <View style={styles.summaryItem}>
                 <Text style={styles.summaryText}>Sub Total</Text>
                 <Text style={styles.summaryText}>{totalAmount}</Text>
               </View>
               <View style={styles.summaryItem}>
                 <Text style={styles.summaryText}>Shipping</Text>
                 <Text style={styles.summaryText}>0</Text>
-              </View>
+              </View> */}
               <View style={styles.summaryItem}>
                 <Text style={styles.boldSummary}>Grand Total</Text>
-                <Text style={styles.boldSummary}>{totalAmount}</Text>
+                <Text style={styles.boldSummary}>{property.bookingAmount || '0'}</Text>
               </View>
             </View>
           </View>
@@ -566,7 +397,7 @@ const InvoiceDocument = ({
             </Text>
 
             <View style={styles.signatureContainer}>
-              <Text style={styles.signatureText}>Authorized Signature</Text>
+              {/* <Text style={styles.signatureText}>Authorized Signature</Text> */}
             </View>
           </View>
 

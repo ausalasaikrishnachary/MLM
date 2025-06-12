@@ -60,25 +60,23 @@ function BookingAssets() {
       });
   }, []);
 
-const generateReceipt = async () => {
+const generateReceipt = async (invoiceNumber) => {
   try {
-    // Prepare all the data needed for the InvoiceDocument
     const invoiceData = {
       property: {
         title: property.property_title,
         value: property.total_property_value,
         bookingAmount: property.booking_amount || '0',
-        total: property.booking_amount || '0'
+        total: property.booking_amount || '0',
       },
+      invoice_number: invoiceNumber
     };
 
-    // Create PDF using InvoiceDocument component
     const pdfBlob = await pdf(<ReceiptDocument {...invoiceData} />).toBlob();
-    
-    // Save the PDF
+
     const fileName = `Booking_Receipt_${property.property_title.replace(/\s+/g, '_')}.pdf`;
     saveAs(pdfBlob, fileName);
-    
+
     return true;
   } catch (error) {
     console.error('Error generating receipt:', error);
@@ -90,6 +88,7 @@ const generateReceipt = async () => {
     return false;
   }
 };
+
 
 const handleBooking = async () => {
   try {
@@ -119,16 +118,21 @@ const handleBooking = async () => {
 
     // Step 1: Create transaction
     await axios.post(`${baseurl}/transactions/`, payload);
-    
-    // Step 2: Update property status
-    await axios.put(`${baseurl}/property/${propertyId}/`, {
-      status: 'booked',
-    });
 
-    // Step 3: Generate receipt
-    const receiptGenerated = await generateReceipt();
-    
+    // Step 2: Fetch document_number (invoice number)
+    const response = await axios.get(`${baseurl}/transactions/user-id/${userId}/property-id/${propertyId}/payment-type/Booking-Amount/`);
+    const latestTransaction = response.data[0]; // Assuming the latest is first
+    const invoiceNumber = latestTransaction?.document_number || 'N/A';
+
+    // Step 3: Generate receipt with invoiceNumber
+    const receiptGenerated = await generateReceipt(invoiceNumber);
+
+    // Step 4: Update property status if receipt was successfully created
     if (receiptGenerated) {
+      await axios.put(`${baseurl}/property/${propertyId}/`, {
+        status: 'booked',
+      });
+
       Swal.fire({
         icon: 'success',
         title: 'Booking Successful!',
@@ -139,6 +143,7 @@ const handleBooking = async () => {
       });
       navigate('/p-transaction');
     }
+
   } catch (err) {
     console.error('Error:', err.response?.data || err);
     Swal.fire({
@@ -149,6 +154,7 @@ const handleBooking = async () => {
     });
   }
 };
+
 
   return (
     <>
