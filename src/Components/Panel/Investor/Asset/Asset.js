@@ -98,8 +98,14 @@ const AssetsUI = () => {
     if (userId) {
       axios.get(`${baseurl}/user-subscriptions/user-id/${userId}/`)
         .then(response => {
-          if (response.data.subscription_status === "paid") {
+          const data = response.data;
+
+          // Check if latest_status === "paid"
+          const latest = data.find(item => item.latest_status !== undefined);
+          if (latest && latest.latest_status === "paid") {
             setSubscriptionPaid(true);
+          } else {
+            setSubscriptionPaid(false);
           }
         })
         .catch(error => {
