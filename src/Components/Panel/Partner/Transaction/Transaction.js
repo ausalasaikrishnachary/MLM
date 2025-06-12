@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Container,
   Typography,
@@ -16,12 +16,18 @@ import {
   TableCell,
   TableBody,
   CircularProgress,
-   ButtonGroup,
+  ButtonGroup,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { baseurl } from '../../../BaseURL/BaseURL';
+import jsPDF from 'jspdf';
+import autoTable from "jspdf-autotable";
 
 const Transaction = () => { 
   const [transactions, setTransactions] = useState([]);
@@ -33,9 +39,15 @@ const Transaction = () => {
   const rowsPerPage = 5;
   const navigate = useNavigate();
 
+  // Filter states
   const [filterDate, setFilterDate] = useState('');
   const [filterAmount, setFilterAmount] = useState('');
   const [filterPaymentType, setFilterPaymentType] = useState('');
+
+  // PDF Report states
+  const [openReportDialog, setOpenReportDialog] = useState(false);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   const cellStyle = {
     fontWeight: 'bold',
@@ -49,7 +61,7 @@ const Transaction = () => {
     border: '1px solid #000',
   };
 
-  const noDataStyle = {
+  const noDataStyle = { 
     textAlign: 'center',
     border: '1px solid #000',
     padding: 2,
@@ -152,6 +164,97 @@ const Transaction = () => {
     (currentPage + 1) * rowsPerPage
   );
 
+  // Generate PDF Report
+const generatePDFReport = () => {
+  // Filter transactions by date range
+  const filteredByDate = transactions.filter(transaction => {
+    const transactionDate = new Date(transaction.transaction_date);
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    
+    // Reset time components to ensure pure date comparison
+    const transDateOnly = new Date(
+      transactionDate.getFullYear(),
+      transactionDate.getMonth(),
+      transactionDate.getDate()
+    );
+    
+    const startDateOnly = new Date(
+      start.getFullYear(),
+      start.getMonth(),
+      start.getDate()
+    );
+    
+    const endDateOnly = new Date(
+      end.getFullYear(),
+      end.getMonth(),
+      end.getDate()
+    );
+    
+    return transDateOnly >= startDateOnly && transDateOnly <= endDateOnly;
+  });
+
+  if (filteredByDate.length === 0) {
+    alert('No transactions found in the selected date range');
+    return;
+  }
+
+  // Create PDF
+  const doc = new jsPDF();
+  
+  // Add title
+  doc.setFontSize(18);
+  doc.text('Transaction Report', 14, 15);
+  doc.setFontSize(12);
+  doc.text(`Date Range: ${new Date(startDate).toLocaleDateString()} to ${new Date(endDate).toLocaleDateString()}`, 14, 22);
+  
+  // Prepare data for the table
+  const headers = [
+    'Property Name',
+    'Property Value',
+    'Payment Type',
+    'Paid Amount',
+    'Remaining Amount',
+    'Transaction Date'
+  ];
+
+  const tableData = filteredByDate.map(transaction => [
+    transaction.property_name,
+    transaction.property_value,
+    transaction.payment_type,
+    transaction.paid_amount,
+    transaction.remaining_amount,
+    new Date(transaction.transaction_date).toLocaleDateString(),
+  ]);
+
+  // Add table to PDF
+  autoTable(doc, {
+    head: [headers],
+    body: tableData,
+    startY: 30,
+    styles: {
+      cellPadding: 5,
+      fontSize: 10,
+      valign: 'middle',
+      halign: 'center',
+    },
+    headStyles: {
+      fillColor: [41, 128, 185],
+      textColor: 255,
+      fontStyle: 'bold'
+    },
+    alternateRowStyles: {
+      fillColor: [245, 245, 245]
+    }
+  });
+
+  // Save the PDF
+  doc.save(`Transaction_Report_${new Date().toISOString().slice(0, 10)}.pdf`);
+  
+  // Close the dialog
+  setOpenReportDialog(false);
+};
+
   return (
     <>
       <PartnerHeader />
@@ -159,6 +262,16 @@ const Transaction = () => {
         <div style={{ textAlign: 'center', marginTop: "12%" }}>
           <h2 style={{ fontWeight: 'bold' }}>Transaction History</h2>
         </div>
+
+        <Box display="flex" justifyContent="flex-end" mb={2}>
+          <Button 
+            variant="contained" 
+            color="primary"
+            onClick={() => setOpenReportDialog(true)}
+          >
+            Generate Report
+          </Button>
+        </Box>
 
         <Grid container spacing={2} mb={3}>
           <Grid item xs={12} sm={4}>
@@ -293,6 +406,52 @@ const Transaction = () => {
           </>
         )}
       </Container>
+
+      {/* Report Generation Dialog */}
+      <Dialog open={openReportDialog} onClose={() => setOpenReportDialog(false)}>
+        <DialogTitle>Generate Transaction Report</DialogTitle>
+        <DialogContent>
+          <Grid container spacing={2} sx={{ mt: 1 }}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                type="date"
+                label="Start Date"
+                InputLabelProps={{ shrink: true }}
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                type="date"
+                label="End Date"
+                InputLabelProps={{ shrink: true }}
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                error={endDate && startDate && new Date(endDate) < new Date(startDate)}
+                helperText={
+                  endDate && startDate && new Date(endDate) < new Date(startDate) 
+                    ? 'End date must be after start date' 
+                    : ''
+                }
+              />
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenReportDialog(false)}>Cancel</Button>
+          <Button 
+            onClick={generatePDFReport} 
+            disabled={!startDate || !endDate || (endDate && startDate && new Date(endDate) < new Date(startDate))}
+            variant="contained"
+            color="primary"
+          >
+            Generate PDF
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };
