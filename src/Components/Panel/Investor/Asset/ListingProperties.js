@@ -415,7 +415,7 @@ import InvestorHeader from "../../../Shared/Investor/InvestorNavbar";
                                                              textTransform: 'none',
                                                              '&:hover': { backgroundColor: '#59ed7c', color: 'rgb(5,5,5)' }
                                                          }}
-                                                         onClick={() => navigate(`/p-assets/${property.property_id}`, { state: { property } })}
+                                                         onClick={() => navigate(`/i-assets/${property.property_id}`, { state: { property } })}
                                                      >
                                                          VIEW DETAILS
                                                      </Button>

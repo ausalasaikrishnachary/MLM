@@ -24,7 +24,7 @@ import { styled } from '@mui/material/styles';
 import axios from 'axios';
 import InvestorHeader from "../../../Shared/Investor/InvestorNavbar"
 import { useNavigate } from "react-router-dom";
-  import Swal from 'sweetalert2';
+import Swal from 'sweetalert2';
 import { baseurl } from '../../../BaseURL/BaseURL';
 
 
@@ -55,6 +55,7 @@ const AddPropertyForm = () => {
   const [amenities, setAmenities] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  const userId = localStorage.getItem('user_id');
 
   // Form State
   const [formData, setFormData] = useState({
@@ -97,7 +98,8 @@ const AddPropertyForm = () => {
     isFeatured: false,
     images: [],
     videos: [],
-    userId: 1 // This should be dynamic in a real app
+    userId: userId, // This should be dynamic in a real app
+    files: [],
   });
 
   const [showResidentialFields, setShowResidentialFields] = useState(false);
@@ -239,7 +241,10 @@ const AddPropertyForm = () => {
         // amenities: JSON.stringify(formData.amenities),
         category: formData.category,
         property_type: formData.propertyType,
-        user_id: userId
+        user_id: userId,
+        number_of_bedrooms: formData.numberOfBedrooms,
+        number_of_balconies: formData.numberOfBalconies,
+        number_of_bathrooms: formData.numberOfBathrooms,
       };
 
       // Log the payload for debugging
@@ -265,6 +270,13 @@ const AddPropertyForm = () => {
         }
       });
 
+      // Add this section for files
+      formData.files.forEach((doc) => {
+        if (doc.file) {
+          payload.append('files', doc.file, doc.name);
+        }
+      });
+
       // Debug: Log FormData contents
       for (let pair of payload.entries()) {
         console.log(pair[0] + ', ' + pair[1]);
@@ -278,7 +290,7 @@ const AddPropertyForm = () => {
       });
 
       console.log('Submission successful:', response.data);
-     Swal.fire('Success', 'Property updated successfully!', 'success');
+      Swal.fire('Success', 'Property updated successfully!', 'success');
       navigate("/i-myassets");
 
       // Optionally reset form or redirect here
@@ -300,7 +312,7 @@ const AddPropertyForm = () => {
       } else {
         errorMessage += `: ${error.message}`;
       }
-  Swal.fire('Error', 'An error occurred while updating.', 'error');
+      Swal.fire('Error', 'An error occurred while updating.', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -822,6 +834,36 @@ const AddPropertyForm = () => {
               ))}
             </Box>
           </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant="h6" gutterBottom>Upload Documents</Typography>
+            <Button
+              component="label"
+              variant="contained"
+              startIcon={<UploadFileIcon />}
+              sx={{ mb: 2 }}
+            >
+              Upload Documents
+              <VisuallyHiddenInput
+                type="file"
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.txt" // Specify accepted document types
+                multiple
+                onChange={(e) => handleFileUpload(e, 'files')}
+              />
+            </Button>
+
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+              {formData.files.map((doc, index) => (
+                <Chip
+                  key={index}
+                  label={doc.name}
+                  onDelete={() => removeFile(index, 'files')}
+                  sx={{ m: 0.5 }}
+                />
+              ))}
+            </Box>
+          </Grid>
+
         </Grid>
       );
 
@@ -838,7 +880,7 @@ const AddPropertyForm = () => {
             />
           </Grid>
 
-          <Grid item xs={12} sm={6}>
+          {/* <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label="Maintenance Charges"
@@ -847,7 +889,7 @@ const AddPropertyForm = () => {
               value={formData.maintenance}
               onChange={handleChange}
             />
-          </Grid>
+          </Grid> */}
 
           <Grid item xs={12} sm={6}>
             <TextField
@@ -869,7 +911,7 @@ const AddPropertyForm = () => {
             />
           </Grid>
 
-          <Grid item xs={12}>
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label="Owner Email"

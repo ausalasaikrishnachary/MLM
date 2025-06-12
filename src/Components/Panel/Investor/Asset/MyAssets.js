@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
+import CallIcon from '@mui/icons-material/Call';
+import EmailIcon from '@mui/icons-material/Email';
 import {
   Container,
   Box,
@@ -578,7 +580,7 @@ const PartnerMyAssets = () => {
                     backgroundColor: '#27AE60'
                   }
                 }}
-                onClick={() => navigate('/p-addasset')}
+                onClick={() => navigate('/i-addproperty')}
               >
                 Add Property
               </Button>
@@ -802,11 +804,54 @@ const PartnerMyAssets = () => {
                           mb: 2
                         }}
                       >
+                        <Grid container>
+                          <Grid item xs={6}>
+                            <Typography variant="body2" color="text.secondary">
+                              Office Email
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography
+                              variant="body2"
+                              fontWeight="bold"
+                              color="#4A90E2"
+                              align="right"
+                              display="flex"
+                              justifyContent="flex-end"
+                              alignItems="center"
+                              gap={1}
+                            >
+                              <EmailIcon fontSize="small" />
+                              {property.owner_email}
+                            </Typography>
+                          </Grid>
+
+                          <Grid item xs={6}>
+                            <Typography variant="body2" color="text.secondary">
+                              Owner Contact
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography
+                              variant="body2"
+                              fontWeight="bold"
+                              color="text.secondary"
+                              align="right"
+                              display="flex"
+                              justifyContent="flex-end"
+                              alignItems="center"
+                              gap={1}
+                            >
+                              <CallIcon fontSize="small" />
+                              {property.owner_contact}
+                            </Typography>
+                          </Grid>
+                        </Grid>
                         <Box
                           display="flex"
                           justifyContent="space-between"
                           alignItems="center"
-                          sx={{ width: '100%', mb: '12px' }}
+                          sx={{ width: '100%',  }}
                         >
                           {/* Left side: Agent Referral Id */}
                           <Box
@@ -815,26 +860,14 @@ const PartnerMyAssets = () => {
                               flexDirection: 'column',
                             }}
                           >
-                            <Typography variant="body2" color="text.secondary">
-                              Agent Referral Id
-                            </Typography>
-                            <Typography
-                              variant="body2"
-                              fontWeight="bold"
-                              color="#4A90E2"
-                              sx={{ mt: 0.5 }}
-                            >
-                              {property.referral_id}
-                            </Typography>
                           </Box>
-
                           {/* Right side: Edit/Delete buttons */}
                           <Box display="flex" alignItems="center">
                             <IconButton
                               aria-label="edit"
                               size="medium"
                               sx={{ color: '#1976d2' }}
-                              onClick={() => navigate(`/p-myassets/edit/${property.property_id}`, { state: { property } })}
+                              onClick={() => navigate(`/i-assets/edit/${property.property_id}`, { state: { property } })}
                             >
                               <EditIcon fontSize="medium" />
                             </IconButton>
@@ -1083,7 +1116,7 @@ const PartnerMyAssets = () => {
                     {reportColumns.filter(col => col.checked).map(column => (
                       <TableCell
                         key={column.id}
-                        sx={{ fontWeight: 'bold', color:"#4A90E2" }} // <-- Add styles here
+                        sx={{ fontWeight: 'bold', color: "#4A90E2" }} // <-- Add styles here
                       >
                         {column.label}
                       </TableCell>
