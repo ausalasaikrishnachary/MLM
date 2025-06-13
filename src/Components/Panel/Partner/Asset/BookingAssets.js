@@ -114,6 +114,7 @@ const handleBooking = async () => {
       remaining_amount: remainingAmount,
       payment_type: "Booking-Amount",
       payment_method: "Cash",
+      role:"agent",
     };
 
     // Step 1: Create transaction

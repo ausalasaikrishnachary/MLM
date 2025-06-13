@@ -20,30 +20,12 @@ const Tmoniter = () => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-   const summaryCardsData = [
-    {
-      title: "Total Transactions",
-      value: "1274",
-      subtext: "Last 7 Days",
-    },
-    {
-      title: "Success Rate",
-      value: "99.5%",
-      subtext: "+2.3% from last week",
-    },
-    {
-      title: "Total Volume",
-      value: "2cr",
-      subtext: "+12% increase",
-    },
-  ];
-
 
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
         const res = await axios.get(
-          `${baseurl}/transactions/payment-type/Full-Amount/`
+          `${baseurl}/transactions/user-role/agent/payment-type/Full-Amount/`
         );
 
         const transactionsWithStatus = await Promise.all(

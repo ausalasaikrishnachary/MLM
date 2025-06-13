@@ -125,6 +125,7 @@ const handleSubmit = async (e) => {
     remaining_amount: 0,
     payment_type: "Full-Amount",
     company_commission: companyCommission,
+    role:"agent",
   };
 
   try {

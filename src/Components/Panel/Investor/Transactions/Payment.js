@@ -162,12 +162,15 @@ const generateInvoice = () => {
 const handleSubmit = async (e) => {
   e.preventDefault();
 
+  const { document_number, document_type, ...cleanFormData } = formData;
+
   const updatedData = {
-    ...formData,
+    ...cleanFormData,
     paid_amount: parseFloat(formData.remaining_amount),
     remaining_amount: 0,
     payment_type: "Full-Amount",
     company_commission: companyCommission,
+    role:"client",
   };
 
   try {
@@ -272,7 +275,10 @@ const handleSubmit = async (e) => {
         "receiver_account_number",
         "ifsc",
         "role",
-        "agent_commission"
+        "agent_commission",
+        "document_type",
+        "document_number",
+        "document_file",
     ];
 
 

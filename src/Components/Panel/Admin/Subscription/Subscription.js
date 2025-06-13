@@ -25,7 +25,7 @@ import { baseurl } from '../../../BaseURL/BaseURL';
 import Swal from 'sweetalert2';
 
 function Subscription() {
-  const [userType, setUserType] = useState('Client');
+  const [userType, setUserType] = useState('client');
   const [variantData, setVariantData] = useState([]);
   const [planDataMap, setPlanDataMap] = useState({});
   const [loading, setLoading] = useState(true);
@@ -143,8 +143,8 @@ const handleDelete = async (variantId) => {
               label="User Type"
               onChange={(e) => setUserType(e.target.value)}
             >
-              <MenuItem value="Client">Client</MenuItem>
-              <MenuItem value="Agent">Agent</MenuItem>
+              <MenuItem value="client">Client</MenuItem>
+              <MenuItem value="agent">Agent</MenuItem>
             </Select>
           </FormControl>
           

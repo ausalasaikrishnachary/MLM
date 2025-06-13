@@ -297,8 +297,8 @@ const handleAddPlan = async () => {
                   label="User Type"
                   variant="outlined"
                 >
-                  <MenuItem value="Agent">Agent</MenuItem>
-                  <MenuItem value="Client">Client</MenuItem>
+                  <MenuItem value="agent">Agent</MenuItem>
+                  <MenuItem value="client">Client</MenuItem>
                 </Select>
               </FormControl>
             </Grid>

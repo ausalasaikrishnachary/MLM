@@ -153,7 +153,7 @@ const SignUp = () => {
                     confirmButtonColor: "#3085d6"
                 }).then(() => {
                     setUsers([...users, responseData]);
-                    navigate("/");
+                    navigate("/login");
                 });
             } else {
                 console.error("Server Error:", responseData);

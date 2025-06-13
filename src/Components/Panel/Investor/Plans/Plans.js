@@ -67,7 +67,7 @@ function PartnerPlans() {
   useEffect(() => {
     const fetchVariantsAndPlans = async () => {
       try {
-        const variantRes = await fetch(`${baseurl}/subscription/plan-variants/Client/`);
+        const variantRes = await fetch(`${baseurl}/subscription/plan-variants/client/`);
         const variants = await variantRes.json();
         setVariantData(variants);
 

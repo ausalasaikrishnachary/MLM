@@ -10,7 +10,7 @@ import {
   InputLabel,
   FormControl
 } from '@mui/material';
-import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
+import InvestorHeader from '../../../Shared/Investor/InvestorNavbar';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useParams, useLocation } from 'react-router-dom';
@@ -114,6 +114,7 @@ const handleBooking = async () => {
       remaining_amount: remainingAmount,
       payment_type: "Booking-Amount",
       payment_method: "Cash",
+      role:"client",
     };
 
     // Step 1: Create transaction
@@ -152,7 +153,7 @@ const handleBooking = async () => {
 
   return (
     <>
-      <PartnerHeader />
+      <InvestorHeader />
       <Container maxWidth="lg" sx={{ p: 4 }}>
         <Typography variant="h5" gutterBottom>
           Buy Property
