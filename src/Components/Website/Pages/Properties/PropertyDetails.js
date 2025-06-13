@@ -134,7 +134,7 @@ const PropertyDetails = () => {
                             <div className="card-body">
                                 <h2 className="mb-4">Property Details</h2>
                                 <p>
-                                    Astra Platina is the first scheme launched by Property Share Investment Trust (PSIT), India’s first registered Small and Medium REIT. We are the first listed SM REIT in India and believe that our first scheme - Astra Platina offers investors an opportunity to invest in six floors of a high-quality Grade A asset, Prestige Tech Platina, located on Outer Ring Road, Bengaluru – one of the largest office markets in the country.
+                                    Shriraj Platina is the first scheme launched by Property Share Investment Trust (PSIT), India’s first registered Small and Medium REIT. We are the first listed SM REIT in India and believe that our first scheme - Shriraj Platina offers investors an opportunity to invest in six floors of a high-quality Grade A asset, Prestige Tech Platina, located on Outer Ring Road, Bengaluru – one of the largest office markets in the country.
                                 </p>
                                 <div className="mb-5">
                                     <h3 className="mb-3">360° Virtual Tour and Drone Video</h3>
@@ -233,13 +233,13 @@ const PropertyDetails = () => {
 
                         <div className="card mt-5">
                             <div className="card-body">
-                                <h3 className="mb-3">Astra Platina Webinar</h3>
+                                <h3 className="mb-3">Shriraj Platina Webinar</h3>
                                 <img src="data:image/jpeg;base64,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" alt="Webinar Image" className="img-fluid w-100 mb-3" />
                                 <div className="video-placeholder position-relative mb-3">
                                     <button className="btn btn-primary">Play Webinar</button>
                                 </div>
                                 <p><strong>15 OCT 2024 | 4:00 PM IST DURATION: 45 MINS</strong></p>
-                                <p><strong>Astra Platina: India’s 1st SM REIT scheme</strong></p>
+                                <p><strong>Shriraj Platina: India’s 1st SM REIT scheme</strong></p>
                                 <p>ICICI Securities, the lead merchant banker to the issue, hosted a live webinar to discuss SM REITs and details of the new scheme together with Kunal Moktan, Co-founder of the Property Share Group.</p>
                             </div>
                         </div>
@@ -277,7 +277,7 @@ const PropertyDetails = () => {
 
                         </div>
                         <div className="col-lg-5">
-                            <h3 className="mb-4">About Astra</h3>
+                            <h3 className="mb-4">About Shriraj</h3>
                             <p>
                                 With over 15 years of experience in real estate development, we've delivered premium residential projects across ASQ. Our focus on transparency, quality, and customer satisfaction has made us one of the most trusted names in the industry.
                             </p>
@@ -285,7 +285,7 @@ const PropertyDetails = () => {
                                 <h5>Contact Info</h5>
                                 <p><FontAwesomeIcon icon={faMapMarkerAlt} className="me-2" /> 123 Developer Lane, ASQ, state 500032</p>
                                 <p><FontAwesomeIcon icon={faPhoneAlt} className="me-2" /> +91 xxxxx xxxxx</p>
-                                <p><FontAwesomeIcon icon={faEnvelope} className="me-2" /> info@Astra.com</p>
+                                <p><FontAwesomeIcon icon={faEnvelope} className="me-2" /> info@Shriraj.com</p>
                             </div>
                         </div>
 
@@ -315,7 +315,7 @@ const PropertyDetails = () => {
                     </div>
                     <hr className="my-4" />
                     <div className="text-center">
-                        <p className="mb-0">&copy; 2025 Astra Residency. All rights reserved.</p>
+                        <p className="mb-0">&copy; 2025 Shriraj Residency. All rights reserved.</p>
                     </div>
                 </div>
             </div>

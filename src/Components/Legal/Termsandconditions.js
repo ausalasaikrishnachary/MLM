@@ -1,6 +1,5 @@
 import React from 'react';
 import { Box, Button, Typography, Paper } from '@mui/material';
-import LegalNavbar from '../Shared/LegalNavbar';
 import { useNavigate } from 'react-router-dom';
 
 const Termsandconditions = () => {
@@ -11,24 +10,16 @@ const Termsandconditions = () => {
     };
     const navigate = useNavigate();
 
-
     return (
-
         <>
-            {/* <LegalNavbar /> */}
             <Box
                 sx={{
                     height: '100vh',
-                    // backgroundColor: '#f0f0f0',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     p: 2,
-                    mt:-15,
-                    
-                    
-                  
-
+                    mt: -15,
                 }}
             >
                 <Paper
@@ -41,10 +32,9 @@ const Termsandconditions = () => {
                         flexDirection: 'column',
                         borderRadius: 2,
                         overflow: 'hidden',
-                        mt:16,
+                        mt: 16,
                     }}
                 >
-                    {/* Fixed Header */}
                     <Box
                         sx={{
                             position: 'sticky',
@@ -58,12 +48,8 @@ const Termsandconditions = () => {
                         <Typography variant="h6" fontWeight="bold">
                             Terms and Conditions
                         </Typography>
-                        <Typography variant="body2">
-                            <strong>Effective Date:</strong> June 9, 2025
-                        </Typography>
                     </Box>
 
-                    {/* Scrollable Content */}
                     <Box
                         sx={{
                             overflowY: 'auto',
@@ -74,84 +60,37 @@ const Termsandconditions = () => {
                             backgroundColor: '#fff',
                         }}
                     >
-                        <Typography style={sectionTitleStyle}>1. Introduction</Typography>
+                        <Typography style={sectionTitleStyle}>1. Acceptance of Terms</Typography>
                         <Typography variant="body2">
-                            Welcome to Shriraj, a real estate platform designed to help users buy, sell, rent, or lease properties such as land, flats, and buildings.
-                            By accessing or using our application, you agree to comply with and be bound by the following terms and conditions.
+                            By accessing our website (www.shrirajteam.com) or using our mobile application (collectively referred to as the "Platform"), you agree to the terms laid out by Shriraj Property Solutions Pvt. Ltd. and its affiliated companies.
                         </Typography>
 
-                        <Typography style={sectionTitleStyle}>2. Terms of Use for Users</Typography>
-                        <ul>
-                            <li>By expressing interest in any property or service, you authorize us and our affiliates to contact you...</li>
-                            <li>You consent to share your personal details and uploaded documents...</li>
-                            <li>We are not responsible for how third parties use your data after it is shared...</li>
-                            <li>Information shared publicly may be viewed globally...</li>
-                            <li>You are responsible for managing your privacy settings...</li>
-                            <li>Signing in via third-party platforms allows us to access basic public information...</li>
-                        </ul>
-
-                        <Typography style={sectionTitleStyle}>3. User Roles</Typography>
-                        <ul>
-                            <li><strong>Client</strong> – Can browse, inquire, and initiate transactions for properties.</li>
-                            <li><strong>Agent</strong> – Can list properties, manage inquiries, and assist clients.</li>
-                            <li><strong>Admin</strong> – Oversees the platform, manages users, and resolves disputes.</li>
-                        </ul>
-
-                        <Typography style={sectionTitleStyle}>4. Services Offered</Typography>
-                        <ul>
-                            <li>Buy properties</li>
-                            <li>Sell properties</li>
-                            <li>Rent properties</li>
-                            <li>Lease properties</li>
-                        </ul>
-
-                        <Typography style={sectionTitleStyle}>5. User Responsibilities</Typography>
-                        <ul>
-                            <li>Provide accurate, complete, and updated information.</li>
-                            <li>Maintain confidentiality of login credentials.</li>
-                            <li>Use the platform only for lawful and intended purposes.</li>
-                        </ul>
-
-                        <Typography style={sectionTitleStyle}>6. Property Listings</Typography>
+                        <Typography style={sectionTitleStyle}>2. Non-Refundable Payments</Typography>
                         <Typography variant="body2">
-                            Agents and admins must ensure all listings are accurate and legal...
+                            The user agrees that the service fee and registration fee deposited through our Platform will not be refunded under any circumstances.
                         </Typography>
 
-                        <Typography style={sectionTitleStyle}>7. Communication & Interaction</Typography>
+                        <Typography style={sectionTitleStyle}>3. Communication Consent</Typography>
                         <Typography variant="body2">
-                            Users agree to receive communications from us... Harassment or abuse is prohibited.
+                            We (or our service providers/partners) may communicate with you via voice calls, SMS, emails, or Platform notifications regarding transactions or promotional content. You may opt out of promotional communications by contacting our grievance officer. Non-promotional messages may still be sent.
                         </Typography>
 
-                        <Typography style={sectionTitleStyle}>8. Payments</Typography>
+                        <Typography style={sectionTitleStyle}>4. Accuracy of Property Information</Typography>
                         <Typography variant="body2">
-                            Fees (if applicable) must be paid promptly. Payment gateways are secure third-party services.
+                            Users must enter correct and clear property details on the Platform. The Company will not be responsible for any incorrect entries made by users.
                         </Typography>
 
-                        <Typography style={sectionTitleStyle}>9. Account Termination</Typography>
+                        <Typography style={sectionTitleStyle}>5. Third-Party Links</Typography>
                         <Typography variant="body2">
-                            We reserve the right to suspend or terminate accounts that violate these terms.
+                            Our Platform may display ads or contain links to third-party websites that may collect personal data. These sites are not governed by our terms, and the Company is not responsible for their practices. Users are advised to review the terms and policies of each linked third-party site.
                         </Typography>
 
-                        <Typography style={sectionTitleStyle}>10. Limitation of Liability</Typography>
+                        <Typography style={sectionTitleStyle}>6. Modifications to Terms</Typography>
                         <Typography variant="body2">
-                            Shriraj is not responsible for disputes between clients and agents... Users must conduct due diligence.
+                            The Platform reserves the right to update, change, or modify these Terms and Conditions at any time. Continued use of the Platform indicates acceptance of such updates.
                         </Typography>
-
-                        <Typography style={sectionTitleStyle}>11. Governing Law</Typography>
-                        <Typography variant="body2">These terms shall be governed by the laws of India.</Typography>
-
-                        <Typography style={sectionTitleStyle}>12. Terms for Dealers, Builders, Banks, and Payment Gateways</Typography>
-                        <ul>
-                            <li>Comply with data protection laws in collecting user data.</li>
-                            <li>Data must only be used for agreed-upon purposes and kept secure.</li>
-                            <li>Respond to user data access/deletion requests per law.</li>
-                            <li>Do not share data with sub-processors unless compliant.</li>
-                            <li>Delete/anonymize data when no longer needed.</li>
-                            <li>Notify us of any data breach immediately.</li>
-                        </ul>
                     </Box>
 
-                    {/* Buttons */}
                     <Box
                         sx={{
                             p: 2,
@@ -161,23 +100,25 @@ const Termsandconditions = () => {
                             backgroundColor: '#fff',
                         }}
                     >
-                     <Button
-        variant="outlined"
-        color="secondary"
-        onClick={() => navigate('/login')}
-      >
-        Cancel
-      </Button>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => navigate('/login')}
-      >
-        I have read and accept the terms of service
-      </Button>
+                        <Button
+                            variant="outlined"
+                            color="secondary"
+                            onClick={() => navigate('/login')}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => navigate('/login')}
+                        >
+                            I have read and accept the terms of service
+                        </Button>
+
                     </Box>
                 </Paper>
             </Box>
+
         </>
     );
 };

@@ -26,9 +26,10 @@ function Footer() {
                 width: 'auto',
                 maxWidth: '150px',
                 transform: 'scale(2.0)',
+                marginLeft:"25px",
               }}
             />
-            <p className="mt-3">Premium commercial real estate investments for discerning investors. Discover exceptional opportunities in prime locations nationwide.</p>
+            <p className="mt-4">Premium commercial real estate investments for discerning investors. Discover exceptional opportunities in prime locations nationwide.</p>
             <div className="social-links mt-3">
               <a href="#"><FontAwesomeIcon icon={faFacebookF} /></a>
               <a href="#"><FontAwesomeIcon icon={faTwitter} /></a>

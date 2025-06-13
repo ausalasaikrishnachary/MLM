@@ -10,22 +10,29 @@ import {
   TableHead,
   TableRow,
   Button,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl
 } from "@mui/material";
 import Header from "../../../Shared/Navbar/Navbar";
 import axios from "axios";
 import { baseurl } from '../../../BaseURL/BaseURL';
-  import Swal from 'sweetalert2';
+import Swal from 'sweetalert2';
 
 const Tmoniter = () => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [selectedRole, setSelectedRole] = useState("agent");
+  const [allTransactions, setAllTransactions] = useState([]);
+
 
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
         const res = await axios.get(
-          `${baseurl}/transactions/user-role/agent/payment-type/Full-Amount/`
+          `${baseurl}/transactions/payment-type/Full-Amount/`
         );
 
         const transactionsWithStatus = await Promise.all(
@@ -49,7 +56,7 @@ const Tmoniter = () => {
           })
         );
 
-        setTransactions(transactionsWithStatus);
+        setAllTransactions(transactionsWithStatus); // Save the complete list
       } catch (error) {
         console.error("Failed to fetch transactions:", error);
       } finally {
@@ -60,28 +67,37 @@ const Tmoniter = () => {
     fetchTransactions();
   }, []);
 
-const handlePayCommission = async (transaction) => {
-  const url = `${baseurl}/commission/distribute/${transaction.transaction_id}/`;
-  try {
-    console.log("Initiating commission payment for:", transaction.transaction_id);
-    const response = await axios.post(url);
-    console.log("Commission distributed:", response.data);
-    Swal.fire({
-      icon: 'success',
-      title: 'Commission Distributed',
-      text: `Commission distributed for Transaction ID ${transaction.transaction_id}`,
-      timer: 2000,
-      showConfirmButton: false
-    });
-  } catch (error) {
-    console.error("Failed to distribute commission:", error);
-    Swal.fire({
-      icon: 'error',
-      title: 'Distribution Failed',
-      text: `Error distributing commission for Transaction ID ${transaction.transaction_id}`
-    });
-  }
-};
+
+  useEffect(() => {
+    const filtered = allTransactions.filter(
+      (tx) => tx.role?.toLowerCase() === selectedRole.toLowerCase()
+    );
+    setTransactions(filtered);
+  }, [selectedRole, allTransactions]);
+
+
+  const handlePayCommission = async (transaction) => {
+    const url = `${baseurl}/commission/distribute/${transaction.transaction_id}/`;
+    try {
+      console.log("Initiating commission payment for:", transaction.transaction_id);
+      const response = await axios.post(url);
+      console.log("Commission distributed:", response.data);
+      Swal.fire({
+        icon: 'success',
+        title: 'Commission Distributed',
+        text: `Commission distributed for Transaction ID ${transaction.transaction_id}`,
+        timer: 2000,
+        showConfirmButton: false
+      });
+    } catch (error) {
+      console.error("Failed to distribute commission:", error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Distribution Failed',
+        text: `Error distributing commission for Transaction ID ${transaction.transaction_id}`
+      });
+    }
+  };
 
 
   const cellStyle = {
@@ -106,7 +122,7 @@ const handlePayCommission = async (transaction) => {
     <>
       <Header />
       <Container sx={{ pt: 3 }}>
-         {/* <Typography
+        {/* <Typography
           variant="h4"
           component="h2"
           sx={{ mb: 3, textAlign: "center" }}
@@ -142,17 +158,34 @@ const handlePayCommission = async (transaction) => {
           Transaction List
         </Typography>
 
+        <FormControl sx={{ minWidth: 200, mb: 3 }}>
+          <InputLabel id="role-filter-label">Filter by Role</InputLabel>
+          <Select
+            labelId="role-filter-label"
+            value={selectedRole}
+            label="Filter by Role"
+            onChange={(e) => setSelectedRole(e.target.value)}
+          >
+            <MenuItem value="agent">Agent</MenuItem>
+            <MenuItem value="Client">Client</MenuItem>
+          </Select>
+        </FormControl>
+
+
         <Table sx={{ border: '1px solid black', width: '100%' }}>
           <TableHead>
             <TableRow>
               <TableCell sx={cellStyle}>Transaction ID</TableCell>
               <TableCell sx={cellStyle}>Property Name</TableCell>
+              <TableCell sx={cellStyle}>Role</TableCell>
               <TableCell sx={cellStyle}>Property Value</TableCell>
               <TableCell sx={cellStyle}>Payment Type</TableCell>
               <TableCell sx={cellStyle}>Company Commission</TableCell>
               <TableCell sx={cellStyle}>Payment Method</TableCell>
               <TableCell sx={cellStyle}>Transaction Date</TableCell>
-              <TableCell sx={cellStyle}>Action</TableCell>
+              {selectedRole.toLowerCase() !== "client" && (
+                <TableCell sx={cellStyle}>Action</TableCell>
+              )}
             </TableRow>
           </TableHead>
 
@@ -166,6 +199,7 @@ const handlePayCommission = async (transaction) => {
                 <TableRow key={transaction.transaction_id}>
                   <TableCell sx={cellBodyStyle}>{transaction.transaction_id}</TableCell>
                   <TableCell sx={cellBodyStyle}>{transaction.property_name}</TableCell>
+                  <TableCell sx={cellBodyStyle}>{transaction.role}</TableCell>
                   <TableCell sx={cellBodyStyle}>{transaction.property_value || "N/A"}</TableCell>
                   <TableCell sx={cellBodyStyle}>{transaction.payment_type || "N/A"}</TableCell>
                   <TableCell sx={cellBodyStyle}>{transaction.company_commission}</TableCell>
@@ -173,28 +207,31 @@ const handlePayCommission = async (transaction) => {
                   <TableCell sx={cellBodyStyle}>
                     {new Date(transaction.transaction_date).toLocaleDateString("en-IN")}
                   </TableCell>
-                  <TableCell sx={cellBodyStyle}>
-                    {transaction.company_commission_status === "paid" ? (
-                      <Button
-                        variant="contained"
-                        size="small"
-                        color="success"
-                        onClick={() => navigate(`/a-commission/${transaction.transaction_id}`)}
-                        sx={{ textTransform: 'none' }}
-                      >
-                        View Commission
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="contained"
-                        size="small"
-                        onClick={() => handlePayCommission(transaction)}
-                        sx={{ textTransform: 'none' }}
-                      >
-                        Distribute Commission
-                      </Button>
-                    )}
-                  </TableCell>
+                  {selectedRole.toLowerCase() !== "client" && (
+                    <TableCell sx={cellBodyStyle}>
+                      {transaction.company_commission_status === "paid" ? (
+                        <Button
+                          variant="contained"
+                          size="small"
+                          color="success"
+                          onClick={() => navigate(`/a-commission/${transaction.transaction_id}`)}
+                          sx={{ textTransform: 'none' }}
+                        >
+                          View Commission
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="contained"
+                          size="small"
+                          onClick={() => handlePayCommission(transaction)}
+                          sx={{ textTransform: 'none' }}
+                        >
+                          Distribute Commission
+                        </Button>
+                      )}
+                    </TableCell>
+                  )}
+
                 </TableRow>
               ))
             ) : (
