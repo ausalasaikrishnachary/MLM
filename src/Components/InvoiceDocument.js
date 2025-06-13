@@ -286,10 +286,10 @@ const InvoiceDocument = ({
               {/* Contact and Invoice Title - Right */}
               <View style={styles.contactColumn}>
                 <Text style={styles.companyContact}>
-                  GSTN 22ABDCS6806R2ZV{"\n"}
-                  9743112460 / 6363900869{"\n"}
-                  shriraj@gmail.com{"\n"}
-                  shriraj.com
+                   GSTN 22ABDCS6806R2ZV{"\n"}
+                  9074307248{"\n"}
+                  shrirajproperty00@gmail.com{"\n"}
+                  shrirajteam.com
                 </Text>
                 <Text style={styles.invoiceTitle}>TAX INVOICE</Text>
               </View>
