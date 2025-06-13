@@ -99,21 +99,21 @@ const ShrirajLandingPage = () => {
   const properties = [
     {
       id: 1,
-      title: "Industrial Warehouse",
-      image: "https://img.freepik.com/free-photo/view-full-warehouse-with-forklift_181624-44643.jpg?ga=GA1.1.718196285.1710491388&semt=ais_hybrid&w=740",
-      details: "32,000 sq ft | ₹ 4.5M | 7.2% Cap Rate"
+      title: "Farmland with Irrigation Facility",
+      image: "https://www.shutterstock.com/image-photo/land-plot-management-real-estate-260nw-2591764263.jpg",
+      details: "32,000 sq ft | ₹ 700000 /-"
     },
     {
       id: 2,
-      title: "Corporate Office",
-      image: "https://img.freepik.com/premium-photo/empty-corridor-building_1048944-12819982.jpg?ga=GA1.1.718196285.1710491388&semt=ais_hybrid&w=740",
-      details: "18,500 sq ft | ₹ 7.2M | 6.8% Cap Rate"
+      title: "Villa Sahi",
+      image: "https://t4.ftcdn.net/jpg/03/70/64/43/360_F_370644357_MDF4UXLAXTyyi2OyuK66tWW9cA2f8svL.jpg",
+      details: "18,500 sq ft | ₹ 800000 /-"
     },
     {
       id: 3,
-      title: "Retail Plaza",
-      image: "https://img.freepik.com/free-photo/large-warehouse-with-bright-light-coming-through-door_123827-23506.jpg?ga=GA1.1.718196285.1710491388&semt=ais_hybrid&w=740",
-      details: "24,000 sq ft | ₹ 5.8M | 7.5% Cap Rate"
+      title: "luxurystays",
+      image: "https://luxurystays.in/villas/AzulD/BD2.jpg",
+      details: "24,000 sq ft | ₹ 1200000 /-"
     }
   ];
 

@@ -13,7 +13,7 @@ const Privacypolicy = () => {
 
   return (
     <>
-      <LegalNavbar />
+      {/* <LegalNavbar /> */}
 
       <Box
         sx={{

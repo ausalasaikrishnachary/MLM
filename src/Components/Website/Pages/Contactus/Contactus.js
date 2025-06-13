@@ -14,14 +14,16 @@ const Contact = () => {
             <Typography variant="h6" color="text.secondary" className="contact-subtitle">
               What Are You Waiting For...
             </Typography>
-            <Typography variant="h4" fontWeight="bold"  color="text.primary" className="contact-title">
+            <Typography variant="h4" fontWeight="bold" color="text.primary" className="contact-title">
               Make an appointment
             </Typography>
             <Typography variant="h6" fontWeight="bold" color="text.primary" mt={4} className="contact-location-title">
               Our Location:
             </Typography>
             <Typography variant="body1" color="text.secondary" className="contact-location">
-              No.866, D Block, Beside Bel St Cafe, Sahakarnagar, Bangalore, India, Karnataka
+              50/4, SHRIRAJ PROPERTY SOLUTIONS PRIVATE LIMITED,
+              Atal Chowk, Main Road Boria Khurd, Near Durga Mandir,
+              Raipur, Chhattisgarh, 492017
             </Typography>
             <Typography variant="h6" fontWeight="bold" color="text.primary" mt={4} className="contact-contact-title">
               Contact:
@@ -29,13 +31,13 @@ const Contact = () => {
             <div className="contact-item">
               <PhoneIcon className="contact-icon" />
               <Typography variant="body1" color="text.secondary" className="contact-text">
-                08042234688
+                9074307248
               </Typography>
             </div>
             <div className="contact-item">
               <EmailIcon className="contact-icon" />
               <Typography variant="body1" color="text.secondary" className="contact-text">
-                contact.shrirajproperty00@gmail.com
+                shrirajproperty00@gmail.com
               </Typography>
             </div>
 
@@ -75,22 +77,22 @@ const Contact = () => {
               <TextField fullWidth label="Contact" variant="outlined" margin="normal" className="contact-input" />
               <TextField fullWidth label="Email ID" variant="outlined" margin="normal" className="contact-input" />
               <TextField fullWidth label="Message" multiline rows={3} variant="outlined" margin="normal" className="contact-input" />
-              <div style={{textAlign:'center'}}>
-              <Button
-                type="submit"
-                variant="contained"
-                sx={{
-                  backgroundColor: "rgb(46, 22, 109)",
-                  color: "white",
-                  fontWeight: "bold",
-                  borderRadius: "20px",
-                  mt: 2,
-                  '&:hover': { backgroundColor: "rgb(30, 10, 80)" },
-                }}
-                className="contact-submit-btn"
-              >
-                Submit
-              </Button>
+              <div style={{ textAlign: 'center' }}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "rgb(46, 22, 109)",
+                    color: "white",
+                    fontWeight: "bold",
+                    borderRadius: "20px",
+                    mt: 2,
+                    '&:hover': { backgroundColor: "rgb(30, 10, 80)" },
+                  }}
+                  className="contact-submit-btn"
+                >
+                  Submit
+                </Button>
               </div>
             </form>
           </Card>
