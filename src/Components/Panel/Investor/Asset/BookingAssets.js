@@ -59,34 +59,23 @@ function I_BookingAssets() {
       });
   }, []);
 
-const generateReceipt = async () => {
+const generateReceipt = async (invoiceNumber) => {
   try {
-    // Prepare all the data needed for the InvoiceDocument
     const invoiceData = {
       property: {
         title: property.property_title,
         value: property.total_property_value,
         bookingAmount: property.booking_amount || '0',
-        total: property.booking_amount || '0'
+        total: property.booking_amount || '0',
       },
+      invoice_number: invoiceNumber
     };
 
-    // Create PDF using InvoiceDocument component
     const pdfBlob = await pdf(<ReceiptDocument {...invoiceData} />).toBlob();
-    
-    // Save the PDF
-    const fileName = `Booking_Receipt_${property.property_title.replace(/\s+/g, '_')}.pdf`;
-    saveAs(pdfBlob, fileName);
-    
-    return true;
+    return pdfBlob;
   } catch (error) {
     console.error('Error generating receipt:', error);
-    Swal.fire({
-      icon: 'error',
-      title: 'Receipt Generation Failed',
-      text: 'There was an error generating the receipt PDF.'
-    });
-    return false;
+    throw error; // Re-throw the error to handle it in the calling function
   }
 };
 
@@ -114,31 +103,51 @@ const handleBooking = async () => {
       remaining_amount: remainingAmount,
       payment_type: "Booking-Amount",
       payment_method: "Cash",
-      role:"client",
+      role: "client",
     };
 
     // Step 1: Create transaction
     await axios.post(`${baseurl}/transactions/`, payload);
 
-    // Step 2: Update property status
+    // Step 2: Fetch document_number (invoice number)
+    const response = await axios.get(`${baseurl}/transactions/user-id/${userId}/property-id/${propertyId}/payment-type/Booking-Amount/`);
+    const latestTransaction = response.data[0]; // Assuming the latest is first
+    const invoiceNumber = latestTransaction?.document_number || 'N/A';
+    const transactionId = latestTransaction?.transaction_id;
+
+    // Step 3: Generate receipt
+    const pdfBlob = await generateReceipt(invoiceNumber);
+    
+    // Step 4: Prepare form data for file upload
+    const formData = new FormData();
+   const fileName = `${latestTransaction.document_number}.pdf`; 
+    formData.append('document_file', pdfBlob, fileName);
+    
+    // Step 5: Update transaction with the PDF file
+    await axios.put(`${baseurl}/transactions/${transactionId}/`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+
+    // Step 6: Update property status
     await axios.put(`${baseurl}/property/${propertyId}/`, {
       status: 'booked',
     });
 
-    // Step 3: Generate receipt
-    const receiptGenerated = await generateReceipt();
+    // Step 7: Download the receipt for the user
+    saveAs(pdfBlob, fileName);
 
-    if (receiptGenerated) {
-      Swal.fire({
-        icon: 'success',
-        title: 'Booking Successful!',
-        text: 'Transaction completed and property status updated.',
-        confirmButtonColor: '#3085d6',
-        timer: 2500,
-        showConfirmButton: false
-      });
-      navigate('/i-transactions');
-    }
+    Swal.fire({
+      icon: 'success',
+      title: 'Booking Successful!',
+      text: 'Transaction completed and property status updated.',
+      confirmButtonColor: '#3085d6',
+      timer: 2500,
+      showConfirmButton: false
+    });
+    navigate('/p-transaction');
+
   } catch (err) {
     console.error('Error:', err.response?.data || err);
     Swal.fire({
@@ -149,7 +158,6 @@ const handleBooking = async () => {
     });
   }
 };
-
 
   return (
     <>
