@@ -10,8 +10,12 @@ import {
 } from '@mui/material';
 import InvestorHeader from '../../../Shared/Investor/InvestorNavbar';
 import { baseurl } from '../../../BaseURL/BaseURL';
- import Swal from 'sweetalert2';
-   import jsPDF from 'jspdf';
+import Swal from 'sweetalert2';
+import jsPDF from 'jspdf';
+import { pdf } from '@react-pdf/renderer';
+import { saveAs } from 'file-saver';
+import ReceiptDocument from '../../../InvoiceDocument';
+import axios from 'axios';
 
 function Payment() {
     const navigate = useNavigate();
@@ -21,6 +25,7 @@ function Payment() {
     const propertyId = queryParams.get('property_id');
     const [agentCommission, setAgentCommission] = useState('');
     const [companyCommission, setCompanyCommission] = useState('');
+    const userId = localStorage.getItem('user_id');
 
     const [formData, setFormData] = useState({});
     const [loading, setLoading] = useState(true);
@@ -55,184 +60,142 @@ function Payment() {
     };
 
     useEffect(() => {
-    if (propertyId) {
-        fetch(`${baseurl}/property/${propertyId}/`)
-            .then((res) => {
-                if (!res.ok) throw new Error('Failed to fetch property data');
-                return res.json();
-            })
-            .then((data) => {
-                if (data && data.agent_commission !== undefined) {
-                    setAgentCommission(data.agent_commission);
-                    setCompanyCommission(data.company_commission);
-                    console.log("agentcommission", data.agent_commission)
-                }
-            })
-            .catch((err) => {
-                console.error('Property fetch error:', err.message);
+        if (propertyId) {
+            fetch(`${baseurl}/property/${propertyId}/`)
+                .then((res) => {
+                    if (!res.ok) throw new Error('Failed to fetch property data');
+                    return res.json();
+                })
+                .then((data) => {
+                    if (data && data.agent_commission !== undefined) {
+                        setAgentCommission(data.agent_commission);
+                        setCompanyCommission(data.company_commission);
+                        console.log("agentcommission", data.agent_commission)
+                    }
+                })
+                .catch((err) => {
+                    console.error('Property fetch error:', err.message);
+                });
+        }
+    }, [propertyId]);
+
+    const generateReceipt = async (invoiceNumber) => {
+        try {
+            const invoiceData = {
+                property: {
+                    title: formData.property_name,
+                    value: formData.property_value,
+                    remainingAmount: formData.remaining_amount || '0',
+                    bookingAmount: formData.paid_amount || '0',
+                    total: (
+                        (parseFloat(formData.remaining_amount || 0) + parseFloat(formData.paid_amount || 0)).toString()
+                    ),
+                },
+                invoice_number: invoiceNumber
+            };
+
+            const pdfBlob = await pdf(<ReceiptDocument {...invoiceData} />).toBlob();
+
+            const fileName = `Invoice_${formData.property_name.replace(/\s+/g, '_')}.pdf`;
+            saveAs(pdfBlob, fileName);
+
+            return true;
+        } catch (error) {
+            console.error('Error generating receipt:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Receipt Generation Failed',
+                text: 'There was an error generating the receipt PDF.'
             });
-    }
-}, [propertyId]);
+            return false;
+        }
+    };
 
-const generateInvoice = () => {
-  const doc = new jsPDF();
-  
-  // Invoice Header
-  doc.setFontSize(22);
-  doc.setTextColor(40, 53, 147); // Dark blue
-  doc.setFont('helvetica', 'bold');
-  doc.text('INVOICE', 105, 20, null, null, 'center');
-  
-  // Company Details
-  doc.setFontSize(10);
-  doc.setTextColor(100);
-  doc.setFont('helvetica', 'normal');
-  doc.text('Your Company Name', 105, 28, null, null, 'center');
-  doc.text('123 Business Street, City - 400001', 105, 32, null, null, 'center');
-  doc.text('GSTIN: 22AAAAA0000A1Z5 | support@company.com', 105, 36, null, null, 'center');
-  
-  // Divider Line
-  doc.setDrawColor(200, 200, 200);
-  doc.line(20, 42, 190, 42);
-  
-  // Invoice Details
-  doc.setFontSize(10);
-  doc.text(`Invoice #: INV-${Date.now().toString().slice(-6)}`, 20, 50);
-  doc.text(`Date: ${new Date().toLocaleDateString('en-IN')}`, 160, 50);
-  
-  // Property Details Table
-  doc.setFontSize(12);
-  doc.setTextColor(0, 0, 0);
-  doc.setFont('helvetica', 'bold');
-  doc.text('PROPERTY TRANSACTION DETAILS', 20, 60);
-  
-  // Table Header
-  doc.setFillColor(245, 245, 245);
-  doc.rect(20, 65, 170, 10, 'F');
-  doc.text('Description', 25, 71);
-  doc.text('Amount (₹)', 150, 71);
-  
-  // Table Rows
-  doc.setFont('helvetica', 'normal');
-  doc.text(`Property: ${formData.property_name || 'N/A'}`, 25, 81);
-  doc.text(formData.property_value || '0', 150, 81);
-  
-  doc.text('Paid Amount', 25, 91);
-  doc.text(formData.paid_amount || '0', 150, 91);
-  
-  doc.text('Remaining Amount', 25, 101);
-  doc.text(formData.remaining_amount || '0', 150, 101);
-  
-  // Total Row
-  doc.setFont('helvetica', 'bold');
-  doc.text('Total Property Value', 25, 111);
-  doc.text(formData.property_value || '0', 150, 111);
-  
-  // Divider Line
-  doc.line(20, 116, 190, 116);
-  
-  // Customer Details Section
-  doc.setFontSize(12);
-  doc.setFont('helvetica', 'bold');
-  doc.text('CUSTOMER INFORMATION', 20, 126);
-  
-  doc.setFont('helvetica', 'normal');
-  doc.text(`Name: ${localStorage.getItem('user_name') || 'N/A'}`, 20, 134);
-  doc.text(`Email: ${localStorage.getItem('email') || 'N/A'}`, 20, 142);
-  doc.text(`Phone: ${localStorage.getItem('phone_number') || 'N/A'}`, 20, 150);
-  doc.text(`Referral ID: ${localStorage.getItem('referral_id') || 'N/A'}`, 20, 158);
-  doc.text(`Referred By: ${localStorage.getItem('referred_by') || 'N/A'}`, 20, 166);
-  
-  // Footer
-  doc.setFontSize(10);
-  doc.setTextColor(100);
-  doc.text('Terms & Conditions:', 20, 180);
-  doc.text('1. This is an official invoice for property transaction.', 20, 184);
-  doc.text('2. Please retain this invoice for your records.', 20, 188);
-  doc.text('3. For any discrepancies, contact within 7 days.', 20, 192);
-  
-  doc.setFontSize(12);
-  doc.setTextColor(40, 53, 147);
-  doc.text('Thank you for your business!', 105, 200, null, null, 'center');
-  
-  // Save PDF
-  doc.save(`Invoice_${formData.property_name || 'property'}.pdf`);
-};
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+        const { document_number, document_type, ...cleanFormData } = formData;
 
-  const { document_number, document_type, ...cleanFormData } = formData;
+        const updatedData = {
+            ...cleanFormData,
+            paid_amount: parseFloat(formData.remaining_amount),
+            remaining_amount: 0,
+            payment_type: "Full-Amount",
+            company_commission: companyCommission,
+            role: "client",
+        };
 
-  const updatedData = {
-    ...cleanFormData,
-    paid_amount: parseFloat(formData.remaining_amount),
-    remaining_amount: 0,
-    payment_type: "Full-Amount",
-    company_commission: companyCommission,
-    role:"client",
-  };
+        try {
+            // Step 1: Submit the transaction
+            const response = await fetch(`${baseurl}/transactions/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedData),
+            });
 
-  try {
-    // Step 1: Submit the transaction
-    const response = await fetch(`${baseurl}/transactions/`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updatedData),
-    });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`API Error: ${JSON.stringify(errorData)}`);
+            }
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`API Error: ${JSON.stringify(errorData)}`);
-    }
+            const result = await response.json();
+            console.log('Transaction stored successfully:', result);
 
-    const result = await response.json();
-    console.log('Transaction stored successfully:', result);
-        generateInvoice();
+            // 3. Fetch document_number (invoice number)
+            const responses = await axios.get(`${baseurl}/transactions/user-id/${userId}/property-id/${formData.property_id}/payment-type/Full-Amount/`);
+            console.log("Fetched transactions:", responses.data);
 
-    
-    // Step 2: Update the property status to "sold"
-    const propertyId = formData.property_id;
-    const statusUpdateResponse = await fetch(`${baseurl}/property/${propertyId}/`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        status: 'sold',
-        agent_commission_balance: agentCommission,
-      }),
-    });
+            const latestTransaction = responses.data[0];
+            const invoiceNumber = latestTransaction?.document_number || 'N/A';
+            console.log("Invoice Number:", invoiceNumber);
 
-    if (!statusUpdateResponse.ok) {
-      const errorData = await statusUpdateResponse.json();
-      throw new Error(`Status Update Error: ${JSON.stringify(errorData)}`);
-    }
+            // 4. Generate receipt
+            await generateReceipt(invoiceNumber);
+            console.log("Invoice generated");
 
-    console.log(`Property ${propertyId} status updated to sold`);
 
-    await Swal.fire({
-      icon: 'success',
-      title: 'Success',
-      text: 'Transaction submitted and property marked as sold!',
-      confirmButtonColor: '#3085d6',
-      timer: 2500,
-      showConfirmButton: false,
-    });
+            // Step 2: Update the property status to "sold"
+            const propertyId = formData.property_id;
+            const statusUpdateResponse = await fetch(`${baseurl}/property/${propertyId}/`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    status: 'sold',
+                    agent_commission_balance: agentCommission,
+                }),
+            });
 
-    navigate('/i-transactions');
+            if (!statusUpdateResponse.ok) {
+                const errorData = await statusUpdateResponse.json();
+                throw new Error(`Status Update Error: ${JSON.stringify(errorData)}`);
+            }
 
-  } catch (error) {
-    console.error('Submit error:', error);
+            console.log(`Property ${propertyId} status updated to sold`);
 
-    Swal.fire({
-      icon: 'error',
-      title: 'Submission Failed',
-      text: error.message,
-      confirmButtonColor: '#d33',
-    });
-  }
-};
+            await Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Transaction submitted and property marked as sold!',
+                confirmButtonColor: '#3085d6',
+                timer: 2500,
+                showConfirmButton: false,
+            });
 
-    
+            navigate('/i-transactions');
+
+        } catch (error) {
+            console.error('Submit error:', error);
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Submission Failed',
+                text: error.message,
+                confirmButtonColor: '#d33',
+            });
+        }
+    };
+
+
 
 
 
