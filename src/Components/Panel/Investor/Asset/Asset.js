@@ -833,7 +833,7 @@ const AssetsUI = () => {
                                   gap={1}
                                 >
                                   <CallIcon fontSize="small" />
-                                  {subscriptionPaid ? property.owner_contact : "+1-123-456-789"}
+                                  {subscriptionPaid ? property.owner_contact : "9074307248"}
                                 </Typography>
                               </Grid>
                             </>

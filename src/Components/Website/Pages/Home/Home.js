@@ -612,25 +612,25 @@ const ShrirajLandingPage = () => {
                 </div>
 
                 <div className=" ipad-off">
-                  <h5>Office Locations</h5>
+                  <h5>Office Location</h5>
                   <p>
                     <FontAwesomeIcon icon={faMapMarkerAlt} className="me-2" style={{ color: 'var(--primary-color)' }} />
-                    New York: 123 Broadway, Suite 300, NY 10001
+                    50/4, SHRIRAJ PROPERTY SOLUTIONS PRIVATE LIMITED, Atal Chowk, Main Road Boria Khurd, Near Durga Mandir, Raipur, Chhattisgarh, 492017
                   </p>
-                  <p>
+                  {/* <p>
                     <FontAwesomeIcon icon={faMapMarkerAlt} className="me-2" style={{ color: 'var(--primary-color)' }} />
-                    Chicago: 456 Michigan Ave, Floor 15, IL 60611
-                  </p>
+                    Atal Chowk, Main Road Boria Khurd, Near Durga Mandir, Raipur, Chhattisgarh, 492017
+                  </p> */}
                 </div>
                 <div className="mt-4">
                   <h5>Contact Information</h5>
                   <p>
                     <FontAwesomeIcon icon={faPhone} className="me-2" style={{ color: 'var(--primary-color)' }} />
-                    (800) 123-4567
+                    9074307248
                   </p>
                   <p>
                     <FontAwesomeIcon icon={faEnvelope} className="me-2" style={{ color: 'var(--primary-color)' }} />
-                    info@Shrirajrealestate.com
+                    shrirajproperty00@gmail.com
                   </p>
                 </div>
               </div>
