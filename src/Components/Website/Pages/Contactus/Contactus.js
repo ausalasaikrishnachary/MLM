@@ -35,7 +35,7 @@ const Contact = () => {
             <div className="contact-item">
               <EmailIcon className="contact-icon" />
               <Typography variant="body1" color="text.secondary" className="contact-text">
-                contact.simpleegood@gmail.com
+                contact.shrirajproperty00@gmail.com
               </Typography>
             </div>
 
