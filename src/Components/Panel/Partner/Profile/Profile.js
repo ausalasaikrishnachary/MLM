@@ -90,7 +90,7 @@ const PartnerProfile = () => {
           </Box>
 
           {/* Footer with Close Button */}
-          <Box sx={{ textAlign: "center", p: "15px" }}>
+          {/* <Box sx={{ textAlign: "center", p: "15px" }}>
             <Button
               variant="contained"
               sx={{
@@ -107,7 +107,7 @@ const PartnerProfile = () => {
             >
               Close
             </Button>
-          </Box>
+          </Box> */}
         </Card>
       </Box>
     </>
