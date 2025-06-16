@@ -113,7 +113,7 @@ function Footer() {
             <p className="mb-0">
               <a href="/privacypolicy" className="text-white me-3">Privacy Policy</a>
               <a href="/termsandconditions" className="text-white me-3">Terms & Conditions</a>
-              <a href="/refundpolicy" className="text-white">Refundpolicy</a>
+              <a href="/refundpolicy" className="text-white">Refund Policy</a>
             </p>
           </Col>
         </Row>

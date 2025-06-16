@@ -284,11 +284,11 @@ const ShrirajLandingPage = () => {
               </div>
             ))}
           </div>
-          <div className="text-center mt-4">
+          {/* <div className="text-center mt-4">
             <a href="#" className="btn btn-primary view-property-btn px-4 py-2" data-aos="fade-up">
               Meet Our Full Team
             </a>
-          </div>
+          </div> */}
         </div>
       </section>
 
@@ -363,9 +363,7 @@ const ShrirajLandingPage = () => {
                   </li>
                 </ul>
                 <div className="text-center text-lg-start mt-4">
-                  <a href="#" className="btn btn-primary view-property-btn px-4 py-2">
-                    Learn More
-                  </a>
+                  <a href="/properties" className="btn view-property-btn mt-3">View Properties</a>
                 </div>
               </div>
             </div>
@@ -398,7 +396,7 @@ const ShrirajLandingPage = () => {
                   </div>
                 ))}
                 <div className="text-center text-lg-start mt-4">
-                  <a href="#" className="btn btn-primary view-property-btn px-4 py-2">
+                  <a href="/properties" className="btn btn-primary view-property-btn px-4 py-2">
                     Get Started
                   </a>
                 </div>
@@ -443,8 +441,8 @@ const ShrirajLandingPage = () => {
             ))}
           </div>
           <div className="text-center mt-3">
-            <a href="#" className="btn btn-primary view-property-btn px-4 py-2">
-              Learn More About Our Advantages
+            <a href="/aboutus" className="btn btn-primary view-property-btn px-4 py-2">
+              How it Works ?
             </a>
           </div>
         </div>
@@ -531,7 +529,7 @@ const ShrirajLandingPage = () => {
                   <p className="news-date">{news.date}</p>
                   <h5>{news.title}</h5>
                   <p>{news.excerpt}</p>
-                  <a href="#" className="text-primary">Read More</a>
+                  {/* <a href="#" className="text-primary">Read More</a> */}
                 </div>
               </div>
             ))}

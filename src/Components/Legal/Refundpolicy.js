@@ -86,8 +86,8 @@ const Refundpolicy = () => {
 
           <Typography style={sectionTitleStyle}>4. Refund Approval and Processing</Typography>
           <ul>
-            <li>Once a refund request is approved, the refund will be processed within 7-10 business days.</li>
-            <li>Refunds will be made through the original mode of payment wherever possible.</li>
+            <li>The approval usually takes one or two days and once approved refund will be credited within 7-10 business days.</li>
+            <li>Refunds will be credited to the original mode of payment wherever possible.</li>
             <li>In cases where original payment method refund is not feasible, alternate arrangements will be communicated.</li>
           </ul>
 
