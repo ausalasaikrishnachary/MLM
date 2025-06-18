@@ -200,6 +200,8 @@ const ShrirajLandingPage = () => {
   ];
 
   const imageUrl = "https://www.developer.com/wp-content/uploads/slider/cache/b6f674e40adb492ce3d3a75127c097a3/Art-Deco-City-1200-x-600.jpg";
+
+
   return (
     <>
       {/* <nav className="navbar navbar-expand-lg navbar-light">
@@ -263,94 +265,95 @@ const ShrirajLandingPage = () => {
 
 
 
-     <div className="container-fluid px-0 my-4">
-  <Card className="shadow rounded-0 border-0">
-    <Carousel
-      fade={false}
-      interval={3000}
-      indicators={true}
-      prevIcon={
-        <span
-          className="custom-arrow left-arrow"
-          style={{
-            position: "absolute",
-            top: "50%",
-            left: "20px",
-            zIndex: 2,
-            fontSize: "2rem",
-            color: "#fff",
-          }}
-        >
-          <FaChevronLeft />
-        </span>
-      }
-      nextIcon={
-        <span
-          className="custom-arrow right-arrow"
-          style={{
-            position: "absolute",
-            top: "50%",
-            right: "20px",
-            zIndex: 2,
-            fontSize: "2rem",
-            color: "#fff",
-          }}
-        >
-          <FaChevronRight />
-        </span>
-      }
-    >
-      {[1, 2, 3].map((i) => (
-       <Carousel.Item key={i} className="position-relative">
-  {/* Image */}
-  <img
-    className="d-block w-100"
-    src={imageUrl}
-    alt={`Slide ${i}`}
-    style={{
-      maxHeight: "500px",
-      objectFit: "cover",
-      width: "100vw",
-    }}
-  />
+      <div className="container-fluid px-0 " style={{ marginTop: "-4px" }}>
+        <Card className="shadow rounded-0 border-0">
+          <Carousel
+            fade={false}
+            interval={3000}
+            indicators={true}
+            prevIcon={
+              <span
+                className="custom-arrow left-arrow"
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "20px",
+                  zIndex: 2,
+                  fontSize: "2rem",
+                  color: "#fff",
+                }}
+              >
+                <FaChevronLeft />
+              </span>
+            }
+            nextIcon={
+              <span
+                className="custom-arrow right-arrow"
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  right: "20px",
+                  zIndex: 2,
+                  fontSize: "2rem",
+                  color: "#fff",
+                }}
+              >
+                <FaChevronRight />
+              </span>
+            }
+          >
+            {[1, 2, 3].map((i) => (
+              <Carousel.Item key={i} className="position-relative">
+                {/* Image */}
+                <img
+                  className="d-block w-100"
+                  src={imageUrl}
+                  alt={`Slide ${i}`}
+                  style={{
+                    maxHeight: "500px",
+                    objectFit: "cover",
+                    width: "100vw",
+                  }}
+                />
 
-  {/* Dark Overlay */}
-  {/* <div
-    style={{
-      position: "absolute",
-      top: 0,
-      left: 0,
-      width: "100%",
-      height: "100%",
-      backgroundColor: "rgba(0, 0, 0, 0.6)", // Adjust opacity here
-      zIndex: 2,
-    }}
-  ></div> */}
+                {/* ✅ Dark Overlay */}
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    backgroundColor: "rgba(0, 0, 0, 0.5)", // You can adjust the opacity here
+                    zIndex: 2,
+                  }}
+                ></div>
 
-  {/* Hero Content Overlay */}
-  <div
-    className="position-absolute top-50 start-50 translate-middle text-white text-center"
-    style={{ zIndex: 3 }}
-  >
-    <div className="hero-content">
-      <h1 className="display-5 fw-bold mb-4">Premium Commercial Real Estate</h1>
-      <p className="lead mb-4">
-        Find the perfect warehouse or commercial building for your business with Shriraj Real Estate
-      </p>
-      <a href="/properties" className="btn view-property-btn px-4 py-2">
-        View Properties
-      </a>
-    </div>
-  </div>
-</Carousel.Item>
+                {/* Hero Content Overlay */}
+                <div
+                  className="position-absolute top-50 start-50 translate-middle text-white text-center"
+                  style={{ zIndex: 3, marginTop:"-40px" }} // Make sure this is above the overlay
+                >
+                  <div className="hero-content">
+                    <h1 className="display-5 fw-bold mb-4">Premium Commercial Real Estate</h1>
+                    <p className="lead mb-4">
+                      Find the perfect warehouse or commercial building for your business with Shriraj Real Estate
+                    </p>
+                    <a href="/properties" className="btn view-property-btn px-4 py-2">
+                      View Properties
+                    </a>
+                  </div>
+                </div>
+              </Carousel.Item>
 
 
-      ))}
-    </Carousel>
-  </Card>
-</div>
 
-   
+            ))}
+          </Carousel>
+        </Card>
+      </div>
+
+
       {/* Search Bar Section */}
       <div className="container search-bar-wrapper">
         <div

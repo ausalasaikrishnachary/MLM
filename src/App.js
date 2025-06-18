@@ -1,4 +1,4 @@
-import React, { Profiler,useEffect, useState } from "react";
+import React, { Profiler,useEffect, useState,  } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import './App.css';
 import AdminDashboard from "./Components/Panel/Admin/Dashboard/Dashboard";
@@ -231,16 +231,12 @@ function Layout() {
           <Route path="/i-assets/edit/:id" element={<EditMyAsset />} />
 
 
-
           <Route path="/p-dashboard" element={<PartnerDashboard />} />
           <Route path="/p-report" element={<Report />} />
           <Route path="/p-addasset" element={<AssetForm />} />
           <Route path="/p-assets" element={<AssetDashboard />} />
           <Route path="/p-profile" element={<PartnerProfile />} />
-
           <Route path="/p-profiledetails" element={<PartnerKyc />} />
-
-
           <Route path="/editprofile" element={<EditProfile />} />
           <Route path="/p-leads" element={<Leads />} />
           <Route path="/p-addleads" element={<PAddLead />} />
@@ -255,7 +251,6 @@ function Layout() {
           <Route path="/p-view-activeagents/:id" element={<ActiveUserView />} />
           <Route path="/p-view-teamdetails/:id" element={<ViewTeamDetails />} />
           <Route path="/p-myassets/edit/:id" element={<EditMyAssets />} />
-
           <Route path="/p-bookingassets" element={<BookingAssets />} />
           <Route path="/p-transaction" element={<Transaction />} />
           <Route path="/p-payment-form" element={<PaymentForm />} />
@@ -275,16 +270,7 @@ function Layout() {
           <Route path="/privacypolicy" element={<Privacypolicy />} />
           <Route path="/refundpolicy" element={<Refundpolicy />} />
           <Route path="/legalnavbar" element={<LegalNavbar />} />
-
-
-
-
-
-
-
-
           <Route path="/login" element={<Login />} />
-
         </Routes>
       </div>
       {footerPaths.includes(location.pathname) && <Footer />}
