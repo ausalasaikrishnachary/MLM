@@ -1,4 +1,4 @@
-import React, { Profiler } from "react";
+import React, { Profiler,useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import './App.css';
 import AdminDashboard from "./Components/Panel/Admin/Dashboard/Dashboard";
@@ -119,14 +119,31 @@ import Properties from "./Components/Website/Pages/Properties/Properties";
 import Header from "./Components/Website/Shared/Navbar/Navbar";
 import Footer from "./Components/Website/Shared/Footer/Footer";
 import PropertyDetail from "./Components/Website/Pages/Properties/PropertyDetails";
+import Popup from "./Components/Popup/Popup";
+
 
 
 function Layout() {
   const location = useLocation();
+   const [showPopup, setShowPopup] = useState(false);
 
   // Define paths where Header and Footer should be visible
   const publicPaths = ["/", "/aboutus", "/FAQ", "/contactus", "/properties", "/propertydetails", "/termsandconditions", "/privacypolicy", "/refundpolicy"];
   const footerPaths = ["/", "/aboutus", "/FAQ", "/contactus", "/properties", "/termsandconditions", "/privacypolicy", "/refundpolicy"]; // Removed '/propertydetails'
+
+ // Trigger popup after 60 seconds on public pages
+  useEffect(() => {
+    let timeoutId;
+
+    if (publicPaths.includes(location.pathname)) {
+      timeoutId = setTimeout(() => {
+        setShowPopup(true);
+      }, 60000); // 60 seconds
+    }
+
+    return () => clearTimeout(timeoutId); // cleanup on route change
+  }, [location.pathname]);
+
 
   return (
 
@@ -137,6 +154,7 @@ function Layout() {
         <Routes>
 
           <Route path="/" element={<Home />} />
+          <Route path="/popup" element={<Popup/>} />
           <Route path="/aboutus" element={<Aboutus />} />
           <Route path="/FAQ" element={<FAQAccordion />} />
           <Route path="/contactus" element={<Contact />} />
@@ -270,6 +288,7 @@ function Layout() {
         </Routes>
       </div>
       {footerPaths.includes(location.pathname) && <Footer />}
+       {showPopup && <Popup onClose={() => setShowPopup(false)} />}
     </>
 
 

@@ -468,3 +468,70 @@ p, .card-body {
         margin-top: 30px;
     }
 }
+
+.search-bar-wrapper {
+  margin-top: -100px; /* pulls it up so it's half in/out of hero section */
+  margin-bottom: 2rem; /* spacing below */
+  position: relative;
+  z-index: 10;
+}
+
+.search-bar-box {
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.search-tabs .nav-link.active {
+  border-bottom: 2px solid #f3c34c;
+  font-weight: 600;
+  color: #0d3c61 !important;
+}
+
+.search-tabs .nav-link {
+  color: #2e3a59;
+}
+
+.custom-search-input {
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.custom-search-input input.form-control {
+  border: none;
+  box-shadow: none;
+}
+
+.custom-search-input .icon-group {
+  background: transparent;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  border: none;
+}
+
+.icon-btn {
+  background: #f1f8ff;
+  padding: 10px;
+  border-radius: 50%;
+  color: #007bff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  background: #e0f0ff;
+}
+
+.search-bar-box {
+  border: 2px solid #E1AD01; /* Mustard gold */
+}
+.carousel-indicators [data-bs-target] {
+  background-color: #ffffff;
+  width: 100px;
+  height: 12px;
+  border-radius: 50%;
+}

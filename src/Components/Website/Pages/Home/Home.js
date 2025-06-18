@@ -1,6 +1,10 @@
 import React from 'react';
 import "./Home.css"
 import { Container, Navbar, Nav, Row, Col, Form, Button } from 'react-bootstrap';
+import { Tabs, InputGroup } from "react-bootstrap";
+import { FaSearch, FaCrosshairs, FaMicrophone } from 'react-icons/fa';
+import { Carousel, Tab, Card } from "react-bootstrap";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
@@ -33,6 +37,29 @@ const ShrirajLandingPage = () => {
     }
   }, []);
 
+
+  const SearchInput = () => {
+    return (
+      <InputGroup className="custom-search-input">
+        <Form.Control
+          placeholder="Search location, e.g., Shankar Nagar"
+          aria-label="search"
+          className="py-2"
+        />
+        <InputGroup.Text className="icon-group">
+          <div className="icon-btn">
+            <FaSearch />
+          </div>
+          <div className="icon-btn">
+            <FaCrosshairs />
+          </div>
+          <div className="icon-btn">
+            <FaMicrophone />
+          </div>
+        </InputGroup.Text>
+      </InputGroup>
+    );
+  };
 
   // Team member data
   const teamMembers = [
@@ -172,7 +199,7 @@ const ShrirajLandingPage = () => {
     }
   ];
 
-
+  const imageUrl = "https://www.developer.com/wp-content/uploads/slider/cache/b6f674e40adb492ce3d3a75127c097a3/Art-Deco-City-1200-x-600.jpg";
   return (
     <>
       {/* <nav className="navbar navbar-expand-lg navbar-light">
@@ -234,27 +261,125 @@ const ShrirajLandingPage = () => {
               </Container>
             </Navbar> */}
 
-      {/* Hero Section */}
-      <section
-        className="hero-section"
-        style={{
-          backgroundImage: "url('https://www.developer.com/wp-content/uploads/slider/cache/b6f674e40adb492ce3d3a75127c097a3/Art-Deco-City-1200-x-600.jpg')",
-          marginTop: "-9px"
-        }}
-        data-aos="fade"
-      >
-        <div className="container">
-          <div className="row">
-            <div className="col-md-6">
-              <div className="hero-content" data-aos="fade-right" data-aos-delay="200">
-                <h1 className="display-4 fw-bold mb-4">Premium Commercial Real Estate</h1>
-                <p className="lead mb-5">Find the perfect warehouse or commercial building for your business with Shriraj Real Estate</p>
-                <a href="/properties" className="btn view-property-btn px-4 py-2">View Properties</a>
+
+
+     <div className="container-fluid px-0 my-4">
+  <Card className="shadow rounded-0 border-0">
+    <Carousel
+      fade={false}
+      interval={3000}
+      indicators={true}
+      prevIcon={
+        <span
+          className="custom-arrow left-arrow"
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "20px",
+            zIndex: 2,
+            fontSize: "2rem",
+            color: "#fff",
+          }}
+        >
+          <FaChevronLeft />
+        </span>
+      }
+      nextIcon={
+        <span
+          className="custom-arrow right-arrow"
+          style={{
+            position: "absolute",
+            top: "50%",
+            right: "20px",
+            zIndex: 2,
+            fontSize: "2rem",
+            color: "#fff",
+          }}
+        >
+          <FaChevronRight />
+        </span>
+      }
+    >
+      {[1, 2, 3].map((i) => (
+       <Carousel.Item key={i} className="position-relative">
+  {/* Image */}
+  <img
+    className="d-block w-100"
+    src={imageUrl}
+    alt={`Slide ${i}`}
+    style={{
+      maxHeight: "500px",
+      objectFit: "cover",
+      width: "100vw",
+    }}
+  />
+
+  {/* Dark Overlay */}
+  {/* <div
+    style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      backgroundColor: "rgba(0, 0, 0, 0.6)", // Adjust opacity here
+      zIndex: 2,
+    }}
+  ></div> */}
+
+  {/* Hero Content Overlay */}
+  <div
+    className="position-absolute top-50 start-50 translate-middle text-white text-center"
+    style={{ zIndex: 3 }}
+  >
+    <div className="hero-content">
+      <h1 className="display-5 fw-bold mb-4">Premium Commercial Real Estate</h1>
+      <p className="lead mb-4">
+        Find the perfect warehouse or commercial building for your business with Shriraj Real Estate
+      </p>
+      <a href="/properties" className="btn view-property-btn px-4 py-2">
+        View Properties
+      </a>
+    </div>
+  </div>
+</Carousel.Item>
+
+
+      ))}
+    </Carousel>
+  </Card>
+</div>
+
+   
+      {/* Search Bar Section */}
+      <div className="container search-bar-wrapper">
+        <div
+          className="search-bar-box bg-white rounded shadow p-3"
+          style={{ border: "2px solid #6f979b" }}
+        >
+          <Tabs defaultActiveKey="buy" id="property-tabs" className="search-tabs">
+            <Tab eventKey="buy" title="Buy">
+              <div className="mt-3">
+                <SearchInput />
               </div>
-            </div>
-          </div>
+            </Tab>
+            <Tab eventKey="rent" title="Rent">
+              <div className="mt-3">
+                <SearchInput />
+              </div>
+            </Tab>
+            <Tab eventKey="sell" title="Sell">
+              <div className="mt-3">
+                <SearchInput />
+              </div>
+            </Tab>
+          </Tabs>
         </div>
-      </section>
+      </div>
+
+
+
+
 
       {/* Team Section */}
       <section className="py-5 bg-light Team-section">
