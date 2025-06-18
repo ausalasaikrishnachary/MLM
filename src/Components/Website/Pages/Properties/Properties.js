@@ -1,115 +1,218 @@
-import React from 'react';
-import { Button, TextField, Grid, Container, Typography } from '@mui/material';
-import './Properties.css'; // Import the CSS file
+import React, { useState, useEffect } from 'react';
+import { 
+  Button, 
+  TextField, 
+  Grid, 
+  Container, 
+  Typography, 
+  Menu, 
+  MenuItem,
+  Box
+} from '@mui/material';
+import './Properties.css';
 import { useNavigate } from 'react-router-dom';
-
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 const Properties = () => {
   const navigate = useNavigate();
+  const [properties, setProperties] = useState([]);
+  const [propertyTypes, setPropertyTypes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedType, setSelectedType] = useState('Property Sub Types');
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch properties
+        const propertiesResponse = await fetch('https://shrirajteam.com:81/property/');
+        if (!propertiesResponse.ok) throw new Error('Failed to fetch properties');
+        const propertiesData = await propertiesResponse.json();
+        setProperties(propertiesData);
+
+        // Fetch property types
+        const typesResponse = await fetch('https://shrirajteam.com:81/property-types/');
+        if (!typesResponse.ok) throw new Error('Failed to fetch property types');
+        const typesData = await typesResponse.json();
+        setPropertyTypes(typesData);
+
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleTypeSelect = (type) => {
+    setSelectedType(type.name || 'Property Sub Types');
+    handleMenuClose();
+  };
+
+  const filteredProperties = properties.filter(property => {
+    const matchesSearch = 
+      property.property_title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      property.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      property.city.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      property.total_property_value.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      property.plot_area_sqft.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      property.builtup_area_sqft.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesType = 
+      selectedType === 'Property Sub Types' || 
+      property.property_type === propertyTypes.find(t => t.name === selectedType)?.property_type_id;
+    
+    return matchesSearch && matchesType;
+  });
+
+  if (loading) {
+    return (
+      <Container className="properties">
+        <Typography variant="h6" align="center">Loading properties...</Typography>
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container className="properties">
+        <Typography variant="h6" color="error" align="center">
+          Error: {error}
+        </Typography>
+      </Container>
+    );
+  }
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0
+    }).format(amount);
+  };
+  
 
   return (
     <Container className="properties">
-      <div className="filters-container">
+     <div className="filters-container">
         <TextField
           className="search-bar"
           label="Search properties here..."
           variant="outlined"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          
         />
 
-        <div className="buttons-container">
-          <Button className="sort-button" sx={{ color: "#2E166D", border: "1px solid #2E166D" }}>
-            Sort by: Latest
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+          <Button
+            sx={{ 
+              color: "#2E166D", 
+              border: "1px solid #2E166D",
+              '&:hover': {
+                backgroundColor: "#2E166D",
+                color: "#FFFFFF"
+              }
+            }}
+            onClick={handleMenuOpen}
+            aria-controls="property-type-menu"
+            aria-haspopup="true"
+            endIcon={<ArrowDropDownIcon />}
+          >
+            {selectedType}
           </Button>
-          <Button sx={{ color: "#2E166D", border: "1px solid #2E166D" }}>Filters</Button>
-        </div>
+          <Menu
+            id="property-type-menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+          >
+            <MenuItem onClick={() => handleTypeSelect({ name: 'Property Sub Types' })}>
+              Property Sub Types
+            </MenuItem>
+            {propertyTypes.map((type) => (
+              <MenuItem 
+                key={type.property_type_id} 
+                onClick={() => handleTypeSelect(type)}
+              >
+                {type.name}
+              </MenuItem>
+            ))}
+          </Menu>
+        </Box>
       </div>
-
       <Typography variant="h4" className="mt-3" gutterBottom>
         Properties:
       </Typography>
-      <Grid container spacing={3}>
-        {[
-          {
-            title: "Farmland with Irrigation Facility",
-            address: "Hyderabad, Telangana.",
-            yield: "8.5%", value: "₹60,00,00,000", irr: "12.8%",
-            image: "https://www.shutterstock.com/image-photo/land-plot-management-real-estate-260nw-2591764263.jpg"
-          },
-          {
-            title: "Villa Sahi",
-            address: "Sector 15, Bangalore, Karnataka.",
-            yield: "9.0%", value: "₹75,00,00,000", irr: "14.2%",
-            image: "https://t4.ftcdn.net/jpg/03/70/64/43/360_F_370644357_MDF4UXLAXTyyi2OyuK66tWW9cA2f8svL.jpg"
-          },
-          {
-            title: "luxurystays",
-            address: "Near National Highway, Mumbai, Maharashtra.",
-            yield: "8.8%", value: "₹50,00,00,000", irr: "13.0%",
-            image: "https://luxurystays.in/villas/AzulD/BD2.jpg"
-          },
-          // {
-          //   title: "DATA CENTER",
-          //   address: "IT Hub, Pune, Maharashtra.",
-          //   yield: "9.2%", value: "₹60,00,00,000", irr: "14.0%",
-          //   image: "https://eu-images.contentstack.com/v3/assets/blt8eb3cdfc1fce5194/blt29d49d9dc2394b9c/66210a507963b40fc4ceec07/google_20data_20center_20cooling_20pipes.jpg?width=1280&auto=webp&quality=95&format=jpg&disable=upscale"
-          // },
-          // {
-          //   title: "Office Space",
-          //   address: "Industrial Zone, Chennai, Tamil Nadu.",
-          //   yield: "9.2%", value: "₹65,00,00,000", irr: "14.0%",
-          //   image: "https://propertyingurugram.in/wp-content/uploads/2022/12/Startup-Investment-in-Office-Spaces-A-Good-Sign-for-Commercial-Real-Estate.jpg"
-          // },
-          // {
-          //   title: "COLD STORAGE FACILITY",
-          //   address: "Refrigeration Park, Ahmedabad, Gujarat.",
-          //   yield: "8.3%", value: "₹48,00,00,000", irr: "12.5%",
-          //   image: "https://mecaluxcom.cdnwm.com/documents/d/global/m41p03-almacenamiento-frio-estanterias?e=jpg&imwidth=1024&imdensity=1"
-          // },
-          // {
-          //   title: "Capital Hub",
-          //   address: "Eco Industrial Zone, Kolkata, West Bengal.",
-          //   yield: "8.0%", value: "₹42,00,00,000", irr: "13.2%",
-          //   image: "https://www.shutterstock.com/image-photo/majestic-industrial-commercial-office-building-600nw-2479144653.jpg"
-          // },
-          // {
-          //   title: "TEXTILE MANUFACTURING",
-          //   address: "Industrial Estate, Surat, Gujarat.",
-          //   yield: "8.9%", value: "₹58,00,00,000", irr: "13.8%",
-          //   image: "https://media.istockphoto.com/id/178631224/photo/multi-colored-yarns-in-the-textile-machine.jpg?s=612x612&w=0&k=20&c=toug9tSwN8sZyX76vomTUyAUt7IxemUIsps0n_ip3i0="
-          // },
-          // {
-          //   title: "Infinity Square",
-          //   address: "Techno Park, Noida, Uttar Pradesh.",
-          //   yield: "9.1%", value: "₹70,00,00,000", irr: "14.5%",
-          //   image: "https://i1.au.reastatic.net/712x480,smart=85,r=33,g=40,b=46,quality=60,progressive/8a8a0000f60807744f7154a903cf55d9bbb58507ba6b99134dcdd648a794e7c6/image0.jpg"
-          // }
-        ].map((property, index) => (
-          <Grid item md={4} xs={12} key={index}>
-            <div className="property-card">
-              <img
-                src={property.image}
-                alt={property.title}
-                className="property-img"
-              />
-              <div className="property-description">
-                <div className="property-title">{property.title}</div>
-                <p>Address: {property.address}</p>
-                <p>
-                  Asset Value: {property.value}
-                </p>
+      
+      {filteredProperties.length === 0 ? (
+        <Typography variant="h6" align="center" sx={{ mt: 4 }}>
+          No properties found matching your search criteria
+        </Typography>
+      ) : (
+        <Grid container spacing={3}>
+          {filteredProperties.map((property) => (
+            <Grid item md={4} xs={12} key={property.property_id}>
+              <div className="property-card">
+                <img
+                  src={
+                    property.images && property.images.length > 0 
+                      ? `https://shrirajteam.com:81${property.images[0].image}` 
+                      : "https://via.placeholder.com/300x200?text=No+Image"
+                  }
+                  alt={property.property_title}
+                  className="property-img"
+                  onError={(e) => {
+                    e.target.src = "https://via.placeholder.com/300x200?text=No+Image";
+                  }}
+                />
+                <div className="property-description">
+                  <div className="property-title">{property.property_title}</div>
+                  <p>
+                    <strong>Address:</strong> {property.address}, {property.city}, {property.state}
+                  </p>
+                  <p>
+                    <strong>Value:</strong> {formatCurrency(property.total_property_value)}
+                  </p>
+                  {/* <p>
+                    <strong>Status:</strong> {property.status} | {property.approval_status}
+                  </p> */}
+                </div>
+                <div className="btn-container single-button">
+                  <Button
+                    sx={{ 
+                      color: "#2E166D", 
+                      border: "1px solid #2E166D", 
+                      width: "100%",
+                      '&:hover': {
+                        backgroundColor: "#2E166D",
+                        color: "#FFFFFF"
+                      }
+                    }}
+                      onClick={() => navigate('/propertydetails')}
+                    // onClick={() => navigate(`/propertydetails/${property.property_id}`)}
+                  >
+                    View Details
+                  </Button>
+                </div>
               </div>
-              <div className="btn-container single-button">
-                <Button
-                  sx={{ color: "#2E166D", border: "1px solid #2E166D", width: "100%" }}
-                  onClick={() => navigate('/propertydetails')}
-                >
-                  View Details
-                </Button>
-              </div>
-            </div>
-          </Grid>
-        ))}
-      </Grid>
+            </Grid>
+          ))}
+        </Grid>
+      )}
     </Container>
   );
 };
