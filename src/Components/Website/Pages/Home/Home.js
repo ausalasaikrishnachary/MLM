@@ -5,6 +5,8 @@ import { Tabs, InputGroup } from "react-bootstrap";
 import { FaSearch, FaCrosshairs, FaMicrophone } from 'react-icons/fa';
 import { Carousel, Tab, Card } from "react-bootstrap";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { Box, Grid, CardContent, Typography, CardMedia, IconButton } from '@mui/material';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
@@ -23,6 +25,29 @@ import {
   faPhone,
   faEnvelope
 } from '@fortawesome/free-solid-svg-icons';
+
+import Slider from "react-slick";
+
+const sliderSettings = {
+  dots: true,
+  arrows: true,
+  infinite: true,
+  speed: 600,
+  slidesToShow: 3,
+  slidesToScroll: 1,
+  autoplay: true,
+  responsive: [
+    {
+      breakpoint: 992,
+      settings: { slidesToShow: 2 },
+    },
+    {
+      breakpoint: 768,
+      settings: { slidesToShow: 1 },
+    },
+  ],
+};
+
 const ShrirajLandingPage = () => {
 
   useEffect(() => {
@@ -122,27 +147,86 @@ const ShrirajLandingPage = () => {
     }
   ];
 
+  const categories = [
+    {
+      title: 'Residential',
+      count: '2437 Properties',
+      image: 'https://img.freepik.com/free-photo/real-estate-agent-holding-house_23-2147761175.jpg',
+    },
+    {
+      title: 'Commercial',
+      count: '521 Properties',
+      image: 'https://img.freepik.com/premium-photo/business-center-buildings-real-estate-cityscape-background_10307-1926.jpg',
+    },
+    {
+      title: 'Agriculture',
+      count: '61 Properties',
+      image: 'https://img.freepik.com/premium-photo/top-view-agriculture-green-fields_31965-27869.jpg',
+    },
+    {
+      title: 'Industrial',
+      count: '11 Properties',
+      image: 'https://img.freepik.com/premium-photo/modern-industrial-building-exterior_1127-3055.jpg',
+    },
+  ];
 
   const properties = [
     {
       id: 1,
-      title: "Farmland with Irrigation Facility",
-      image: "https://www.shutterstock.com/image-photo/land-plot-management-real-estate-260nw-2591764263.jpg",
-      details: "32,000 sq ft | ₹ 700000 /-"
+      title: 'Elegant Villa',
+      details: '3 BHK in a prime location',
+      images: [
+        "https://www.shutterstock.com/image-photo/land-plot-management-real-estate-260nw-2591764263.jpg",
+        "https://www.shutterstock.com/image-photo/land-plot-management-real-estate-260nw-2591764263.jpg",
+        "https://www.shutterstock.com/image-photo/land-plot-management-real-estate-260nw-2591764263.jpg",
+      ]
     },
+
     {
       id: 2,
-      title: "Villa Sahi",
-      image: "https://t4.ftcdn.net/jpg/03/70/64/43/360_F_370644357_MDF4UXLAXTyyi2OyuK66tWW9cA2f8svL.jpg",
-      details: "18,500 sq ft | ₹ 800000 /-"
+      title: 'Villa Sahi',
+      details: '3 BHK in a prime location',
+      images: [
+        'https://t4.ftcdn.net/jpg/03/70/64/43/360_F_370644357_MDF4UXLAXTyyi2OyuK66tWW9cA2f8svL.jpg',
+        'https://t4.ftcdn.net/jpg/03/70/64/43/360_F_370644357_MDF4UXLAXTyyi2OyuK66tWW9cA2f8svL.jpg',
+        'https://t4.ftcdn.net/jpg/03/70/64/43/360_F_370644357_MDF4UXLAXTyyi2OyuK66tWW9cA2f8svL.jpg',
+      ]
     },
+
+
     {
       id: 3,
-      title: "luxurystays",
-      image: "https://luxurystays.in/villas/AzulD/BD2.jpg",
-      details: "24,000 sq ft | ₹ 1200000 /-"
-    }
+      title: 'luxurystays',
+      details: '3 BHK in a prime location',
+      images: [
+        'https://luxurystays.in/villas/AzulD/BD2.jpg',
+        'https://luxurystays.in/villas/AzulD/BD2.jpg',
+        'https://luxurystays.in/villas/AzulD/BD2.jpg',
+      ]
+    },
+
   ];
+
+  // const properties = [
+  //   {
+  //     id: 1,
+  //     title: "Farmland with Irrigation Facility",
+  //     image: "https://www.shutterstock.com/image-photo/land-plot-management-real-estate-260nw-2591764263.jpg",
+  //     details: "32,000 sq ft | ₹ 700000 /-"
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Villa Sahi",
+  //     image: "https://t4.ftcdn.net/jpg/03/70/64/43/360_F_370644357_MDF4UXLAXTyyi2OyuK66tWW9cA2f8svL.jpg",
+  //     details: "18,500 sq ft | ₹ 800000 /-"
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "luxurystays",
+  //     image: "https://luxurystays.in/villas/AzulD/BD2.jpg",
+  //     details: "24,000 sq ft | ₹ 1200000 /-"
+  //   }
+  // ];
 
   const backers = [
     {
@@ -332,7 +416,7 @@ const ShrirajLandingPage = () => {
                 {/* Hero Content Overlay */}
                 <div
                   className="position-absolute top-50 start-50 translate-middle text-white text-center"
-                  style={{ zIndex: 3, marginTop:"-40px" }} // Make sure this is above the overlay
+                  style={{ zIndex: 3, marginTop: "-40px" }} // Make sure this is above the overlay
                 >
                   <div className="hero-content">
                     <h1 className="display-5 fw-bold mb-4">Premium Commercial Real Estate</h1>
@@ -345,7 +429,6 @@ const ShrirajLandingPage = () => {
                   </div>
                 </div>
               </Carousel.Item>
-
 
 
             ))}
@@ -385,7 +468,7 @@ const ShrirajLandingPage = () => {
 
 
       {/* Team Section */}
-      <section className="py-5 bg-light Team-section">
+      {/* <section className="py-5 bg-light Team-section">
         <div className="container">
           <h2 className="section-title text-left" data-aos="fade-up">Our Team</h2>
           <div className="row">
@@ -411,14 +494,80 @@ const ShrirajLandingPage = () => {
                 </div>
               </div>
             ))}
-          </div>
-          {/* <div className="text-center mt-4">
+          </div> */}
+      {/* <div className="text-center mt-4">
             <a href="#" className="btn btn-primary view-property-btn px-4 py-2" data-aos="fade-up">
               Meet Our Full Team
             </a>
           </div> */}
+      {/* </div>
+      </section> */}
+
+
+      {/* Properties Section */}
+      <section className="py-5 bg-light">
+        <div className="container">
+          <h2 className="section-title text-left mb-5" data-aos="fade-up">Featured Property Sale</h2>
+          <div className="row">
+            {properties.map((property, index) => (
+              <div
+                className="col-md-4 mb-4"
+                key={property.id}
+                data-aos="fade-up"
+                data-aos-delay={(index + 1) * 100}
+              >
+                <div className="property-card card">
+                  <Carousel
+                    interval={3000} // Auto-slide every 3 seconds
+                    indicators={false}
+                    controls={true}
+                    pause={false} // Prevent pause on hover
+                    prevLabel=""
+                    nextLabel=""
+                    prevIcon={<span className="carousel-control-prev-icon" aria-hidden="true" />}
+                    nextIcon={<span className="carousel-control-next-icon" aria-hidden="true" />}
+                  >
+                    {property.images.map((imgSrc, i) => (
+                      <Carousel.Item key={i}>
+                        <img
+                          src={imgSrc}
+                          className="d-block w-100"
+                          alt={`slide-${i}`}
+                          style={{ borderRadius: '8px', maxHeight: '200px', objectFit: 'cover' }}
+                        />
+                      </Carousel.Item>
+                    ))}
+                  </Carousel>
+
+                  <div className="card-body">
+
+                    {/* Row 1: Left - Sell/Residential | Right - Sqft/Price */}
+                    <div className="row mb-2 align-items-center">
+                      <div className="col text-start ps-0" style={{ marginLeft: '-5px' }}>
+                        <span className="badge bg-success me-2">Sell</span>
+                        <span className="badge bg-secondary">Residential</span>
+                      </div>
+                    </div>
+                    {/* Row 2: Title, Details, Button */}
+                    <h5 className="card-title">{property.title}</h5>
+                    <p className="card-text">{property.details}</p>
+                    <a href="/properties" className="btn btn-primary view-property-btn px-4 py-2">
+                      View Property
+                    </a>
+
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="text-center mt-3">
+            <a href="/properties" className="btn btn-primary view-property-btn px-4 py-2">
+              Browse All Properties
+            </a>
+          </div>
         </div>
       </section>
+
 
 
 
@@ -442,6 +591,70 @@ const ShrirajLandingPage = () => {
           </div>
         </div>
       </section>
+
+      {/* cards */}
+
+      <Box sx={{ py: 6 }}>
+        <Box textAlign="center" mb={4}>
+          <Typography variant="h4" fontWeight="bold" gutterBottom>
+            Explore Categories
+          </Typography>
+          <Typography variant="subtitle1" color="textSecondary">
+            Find Best Categories in town with Shriraj Team
+          </Typography>
+        </Box>
+
+        <Box sx={{ width: '80%', mx: 'auto' }}>
+          <Grid container spacing={3} justifyContent="center">
+            {categories.map((category, index) => (
+              <Grid item xs={12} sm={6} md={3} key={index}>
+                <Card
+                  sx={{
+                    borderRadius: 4,
+                    overflow: 'hidden',
+                    height: '100%',
+                    border: '1px solid #ddd',
+                  }}
+                >
+                  <CardMedia
+                    component="img"
+                    height="120"
+                    image={category.image}
+                    alt={category.title}
+                    sx={{
+                      objectFit: 'cover',
+                      px: 1,
+                      pt: 1,
+                      borderRadius: 2,
+                    }}
+                  />
+                  <CardContent
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Box>
+                      <Typography variant="subtitle1" fontWeight="bold">
+                        {category.title}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {category.count}
+                      </Typography>
+                    </Box>
+                    <IconButton sx={{ backgroundColor: '#f1f1f1' }} size="small">
+                      <ArrowForwardIosIcon fontSize="small" />
+                    </IconButton>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+      </Box>
+
+
 
       {/* Why Commercial RE Section */}
       <section className="why-Shriraj-section">
@@ -579,7 +792,7 @@ const ShrirajLandingPage = () => {
       {/* Properties Section */}
       <section className="py-5 bg-light">
         <div className="container">
-          <h2 className="section-title text-left mb-5" data-aos="fade-up">Properties</h2>
+          <h2 className="section-title text-left mb-5" data-aos="fade-up"> Properties</h2>
           <div className="row">
             {properties.map((property, index) => (
               <div
@@ -589,17 +802,44 @@ const ShrirajLandingPage = () => {
                 data-aos-delay={(index + 1) * 100}
               >
                 <div className="property-card card">
-                  <img
-                    src={property.image}
-                    alt={property.title}
-                    className="card-img-top"
-                  />
+                  <Carousel
+                    interval={3000} // Auto-slide every 3 seconds
+                    indicators={false}
+                    controls={true}
+                    pause={false} // Prevent pause on hover
+                    prevLabel=""
+                    nextLabel=""
+                    prevIcon={<span className="carousel-control-prev-icon" aria-hidden="true" />}
+                    nextIcon={<span className="carousel-control-next-icon" aria-hidden="true" />}
+                  >
+                    {property.images.map((imgSrc, i) => (
+                      <Carousel.Item key={i}>
+                        <img
+                          src={imgSrc}
+                          className="d-block w-100"
+                          alt={`slide-${i}`}
+                          style={{ borderRadius: '8px', maxHeight: '200px', objectFit: 'cover' }}
+                        />
+                      </Carousel.Item>
+                    ))}
+                  </Carousel>
+
                   <div className="card-body">
+
+                    {/* Row 1: Left - Sell/Residential | Right - Sqft/Price */}
+                    <div className="row mb-2 align-items-center">
+                      <div className="col text-start ps-0" style={{ marginLeft: '-5px' }}>
+                        <span className="badge bg-success me-2">Sell</span>
+                        <span className="badge bg-secondary">Residential</span>
+                      </div>
+                    </div>
+                    {/* Row 2: Title, Details, Button */}
                     <h5 className="card-title">{property.title}</h5>
                     <p className="card-text">{property.details}</p>
                     <a href="/properties" className="btn btn-primary view-property-btn px-4 py-2">
                       View Property
                     </a>
+
                   </div>
                 </div>
               </div>
