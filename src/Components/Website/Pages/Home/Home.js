@@ -25,6 +25,29 @@ import {
   faPhone,
   faEnvelope
 } from '@fortawesome/free-solid-svg-icons';
+
+import Slider from "react-slick";
+
+const sliderSettings = {
+  dots: true,
+  arrows: true,
+  infinite: true,
+  speed: 600,
+  slidesToShow: 3,
+  slidesToScroll: 1,
+  autoplay: true,
+  responsive: [
+    {
+      breakpoint: 992,
+      settings: { slidesToShow: 2 },
+    },
+    {
+      breakpoint: 768,
+      settings: { slidesToShow: 1 },
+    },
+  ],
+};
+
 const ShrirajLandingPage = () => {
 
   useEffect(() => {
@@ -147,27 +170,63 @@ const ShrirajLandingPage = () => {
     },
   ];
 
-
   const properties = [
     {
       id: 1,
-      title: "Farmland with Irrigation Facility",
-      image: "https://www.shutterstock.com/image-photo/land-plot-management-real-estate-260nw-2591764263.jpg",
-      details: "32,000 sq ft | ₹ 700000 /-"
+      title: 'Elegant Villa',
+      details: '3 BHK in a prime location',
+      images: [
+        "https://www.shutterstock.com/image-photo/land-plot-management-real-estate-260nw-2591764263.jpg",
+        "https://www.shutterstock.com/image-photo/land-plot-management-real-estate-260nw-2591764263.jpg",
+        "https://www.shutterstock.com/image-photo/land-plot-management-real-estate-260nw-2591764263.jpg",
+      ]
     },
+
     {
       id: 2,
-      title: "Villa Sahi",
-      image: "https://t4.ftcdn.net/jpg/03/70/64/43/360_F_370644357_MDF4UXLAXTyyi2OyuK66tWW9cA2f8svL.jpg",
-      details: "18,500 sq ft | ₹ 800000 /-"
+      title: 'Villa Sahi',
+      details: '3 BHK in a prime location',
+      images: [
+        'https://t4.ftcdn.net/jpg/03/70/64/43/360_F_370644357_MDF4UXLAXTyyi2OyuK66tWW9cA2f8svL.jpg',
+        'https://t4.ftcdn.net/jpg/03/70/64/43/360_F_370644357_MDF4UXLAXTyyi2OyuK66tWW9cA2f8svL.jpg',
+        'https://t4.ftcdn.net/jpg/03/70/64/43/360_F_370644357_MDF4UXLAXTyyi2OyuK66tWW9cA2f8svL.jpg',
+      ]
     },
+
+
     {
       id: 3,
-      title: "luxurystays",
-      image: "https://luxurystays.in/villas/AzulD/BD2.jpg",
-      details: "24,000 sq ft | ₹ 1200000 /-"
-    }
+      title: 'luxurystays',
+      details: '3 BHK in a prime location',
+      images: [
+        'https://luxurystays.in/villas/AzulD/BD2.jpg',
+        'https://luxurystays.in/villas/AzulD/BD2.jpg',
+        'https://luxurystays.in/villas/AzulD/BD2.jpg',
+      ]
+    },
+
   ];
+
+  // const properties = [
+  //   {
+  //     id: 1,
+  //     title: "Farmland with Irrigation Facility",
+  //     image: "https://www.shutterstock.com/image-photo/land-plot-management-real-estate-260nw-2591764263.jpg",
+  //     details: "32,000 sq ft | ₹ 700000 /-"
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Villa Sahi",
+  //     image: "https://t4.ftcdn.net/jpg/03/70/64/43/360_F_370644357_MDF4UXLAXTyyi2OyuK66tWW9cA2f8svL.jpg",
+  //     details: "18,500 sq ft | ₹ 800000 /-"
+  //   },
+  //   {
+  //     id: 3,
+  //     title: "luxurystays",
+  //     image: "https://luxurystays.in/villas/AzulD/BD2.jpg",
+  //     details: "24,000 sq ft | ₹ 1200000 /-"
+  //   }
+  // ];
 
   const backers = [
     {
@@ -458,11 +517,28 @@ const ShrirajLandingPage = () => {
                 data-aos-delay={(index + 1) * 100}
               >
                 <div className="property-card card">
-                  <img
-                    src={property.image}
-                    alt={property.title}
-                    className="card-img-top"
-                  />
+                  <Carousel
+                    interval={3000} // Auto-slide every 3 seconds
+                    indicators={false}
+                    controls={true}
+                    pause={false} // Prevent pause on hover
+                    prevLabel=""
+                    nextLabel=""
+                    prevIcon={<span className="carousel-control-prev-icon" aria-hidden="true" />}
+                    nextIcon={<span className="carousel-control-next-icon" aria-hidden="true" />}
+                  >
+                    {property.images.map((imgSrc, i) => (
+                      <Carousel.Item key={i}>
+                        <img
+                          src={imgSrc}
+                          className="d-block w-100"
+                          alt={`slide-${i}`}
+                          style={{ borderRadius: '8px', maxHeight: '200px', objectFit: 'cover' }}
+                        />
+                      </Carousel.Item>
+                    ))}
+                  </Carousel>
+
                   <div className="card-body">
 
                     {/* Row 1: Left - Sell/Residential | Right - Sqft/Price */}
@@ -518,65 +594,65 @@ const ShrirajLandingPage = () => {
 
       {/* cards */}
 
-    <Box sx={{ py: 6 }}>
-  <Box textAlign="center" mb={4}>
-    <Typography variant="h4" fontWeight="bold" gutterBottom>
-      Explore Categories
-    </Typography>
-    <Typography variant="subtitle1" color="textSecondary">
-      Find Best Categories in town with Shriraj Team
-    </Typography>
-  </Box>
+      <Box sx={{ py: 6 }}>
+        <Box textAlign="center" mb={4}>
+          <Typography variant="h4" fontWeight="bold" gutterBottom>
+            Explore Categories
+          </Typography>
+          <Typography variant="subtitle1" color="textSecondary">
+            Find Best Categories in town with Shriraj Team
+          </Typography>
+        </Box>
 
-  <Box sx={{ width: '80%', mx: 'auto' }}>
-    <Grid container spacing={3} justifyContent="center">
-      {categories.map((category, index) => (
-        <Grid item xs={12} sm={6} md={3} key={index}>
-          <Card
-            sx={{
-              borderRadius: 4,
-              overflow: 'hidden',
-              height: '100%',
-              border: '1px solid #ddd',
-            }}
-          >
-            <CardMedia
-              component="img"
-              height="120"
-              image={category.image}
-              alt={category.title}
-              sx={{
-                objectFit: 'cover',
-                px: 1,
-                pt: 1,
-                borderRadius: 2,
-              }}
-            />
-            <CardContent
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}
-            >
-              <Box>
-                <Typography variant="subtitle1" fontWeight="bold">
-                  {category.title}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {category.count}
-                </Typography>
-              </Box>
-              <IconButton sx={{ backgroundColor: '#f1f1f1' }} size="small">
-                <ArrowForwardIosIcon fontSize="small" />
-              </IconButton>
-            </CardContent>
-          </Card>
-        </Grid>
-      ))}
-    </Grid>
-  </Box>
-</Box>
+        <Box sx={{ width: '80%', mx: 'auto' }}>
+          <Grid container spacing={3} justifyContent="center">
+            {categories.map((category, index) => (
+              <Grid item xs={12} sm={6} md={3} key={index}>
+                <Card
+                  sx={{
+                    borderRadius: 4,
+                    overflow: 'hidden',
+                    height: '100%',
+                    border: '1px solid #ddd',
+                  }}
+                >
+                  <CardMedia
+                    component="img"
+                    height="120"
+                    image={category.image}
+                    alt={category.title}
+                    sx={{
+                      objectFit: 'cover',
+                      px: 1,
+                      pt: 1,
+                      borderRadius: 2,
+                    }}
+                  />
+                  <CardContent
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Box>
+                      <Typography variant="subtitle1" fontWeight="bold">
+                        {category.title}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {category.count}
+                      </Typography>
+                    </Box>
+                    <IconButton sx={{ backgroundColor: '#f1f1f1' }} size="small">
+                      <ArrowForwardIosIcon fontSize="small" />
+                    </IconButton>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+      </Box>
 
 
 
