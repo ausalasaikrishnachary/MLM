@@ -792,7 +792,7 @@ const ShrirajLandingPage = () => {
       {/* Properties Section */}
       <section className="py-5 bg-light">
         <div className="container">
-          <h2 className="section-title text-left mb-5" data-aos="fade-up">Properties</h2>
+          <h2 className="section-title text-left mb-5" data-aos="fade-up"> Properties</h2>
           <div className="row">
             {properties.map((property, index) => (
               <div
@@ -802,17 +802,44 @@ const ShrirajLandingPage = () => {
                 data-aos-delay={(index + 1) * 100}
               >
                 <div className="property-card card">
-                  <img
-                    src={property.image}
-                    alt={property.title}
-                    className="card-img-top"
-                  />
+                  <Carousel
+                    interval={3000} // Auto-slide every 3 seconds
+                    indicators={false}
+                    controls={true}
+                    pause={false} // Prevent pause on hover
+                    prevLabel=""
+                    nextLabel=""
+                    prevIcon={<span className="carousel-control-prev-icon" aria-hidden="true" />}
+                    nextIcon={<span className="carousel-control-next-icon" aria-hidden="true" />}
+                  >
+                    {property.images.map((imgSrc, i) => (
+                      <Carousel.Item key={i}>
+                        <img
+                          src={imgSrc}
+                          className="d-block w-100"
+                          alt={`slide-${i}`}
+                          style={{ borderRadius: '8px', maxHeight: '200px', objectFit: 'cover' }}
+                        />
+                      </Carousel.Item>
+                    ))}
+                  </Carousel>
+
                   <div className="card-body">
+
+                    {/* Row 1: Left - Sell/Residential | Right - Sqft/Price */}
+                    <div className="row mb-2 align-items-center">
+                      <div className="col text-start ps-0" style={{ marginLeft: '-5px' }}>
+                        <span className="badge bg-success me-2">Sell</span>
+                        <span className="badge bg-secondary">Residential</span>
+                      </div>
+                    </div>
+                    {/* Row 2: Title, Details, Button */}
                     <h5 className="card-title">{property.title}</h5>
                     <p className="card-text">{property.details}</p>
                     <a href="/properties" className="btn btn-primary view-property-btn px-4 py-2">
                       View Property
                     </a>
+
                   </div>
                 </div>
               </div>
