@@ -23,7 +23,7 @@ import {
   ExpandMore,
   ExpandLess,
 } from '@mui/icons-material';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, Link, useNavigate  } from 'react-router-dom';
 
 function Header() {
   const theme = useTheme();
@@ -32,6 +32,8 @@ function Header() {
   const [categories, setCategories] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileSubmenuOpen, setMobileSubmenuOpen] = useState(false);
+  
+const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -61,14 +63,16 @@ function Header() {
   const navItems = [
     { label: 'How it works', path: '/aboutus' },
     { 
-      label: 'Properties',
-      path: '/properties',
-      hasDropdown: true,
-      dropdownItems: categories.map(category => ({
-        label: category.name,
-        path: `/properties?category=${category.property_category_id}`
-      }))
-    },
+    label: 'Properties',
+    path: '/properties',
+    hasDropdown: true,
+    dropdownItems: categories.map(category => ({
+      label: category.name,
+      onClick: () => navigate(`/properties?category=${category.property_category_id}`, {
+        state: { categoryName: category.name }
+      })
+    }))
+  },
     { label: 'Contact us', path: '/contactus' },
     { label: 'FAQs', path: '/FAQ' },
   ];
@@ -301,13 +305,15 @@ function Header() {
                       >
                         {item.dropdownItems.map((dropdownItem) => (
                           <MenuItem
-                            key={dropdownItem.label}
-                            component={NavLink}
-                            to={dropdownItem.path}
-                            onClick={handleMenuClose}
-                          >
-                            {dropdownItem.label}
-                          </MenuItem>
+  key={dropdownItem.label}
+  onClick={() => {
+    dropdownItem.onClick();
+    handleMenuClose();
+  }}
+>
+  {dropdownItem.label}
+</MenuItem>
+
                         ))}
                       </Menu>
                     </Box>

@@ -12,6 +12,7 @@ import {
 import './Properties.css';
 import { useNavigate } from 'react-router-dom';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import { useLocation } from 'react-router-dom';
 
 const Properties = () => {
   const navigate = useNavigate();
@@ -22,6 +23,8 @@ const Properties = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedType, setSelectedType] = useState('Property Sub Types');
+   const location = useLocation();
+  const categoryName = location.state?.categoryName || "All";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -155,7 +158,7 @@ const Properties = () => {
         </Box>
       </div>
       <Typography variant="h4" className="mt-3" gutterBottom>
-        Properties:
+             {categoryName} Properties:
       </Typography>
       
       {filteredProperties.length === 0 ? (
