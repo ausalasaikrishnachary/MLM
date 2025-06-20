@@ -1,9 +1,10 @@
-import React from 'react';
+
 import "./Home.css"
 import { Container, Navbar, Nav, Row, Col, Form, Button } from 'react-bootstrap';
 import { Tabs, InputGroup } from "react-bootstrap";
 import { FaSearch, FaCrosshairs, FaMicrophone } from 'react-icons/fa';
 import { Carousel, Tab, Card } from "react-bootstrap";
+import React, { useState, useEffect } from 'react';
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { Box, Grid, CardContent, Typography, CardMedia, IconButton } from '@mui/material';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
@@ -12,7 +13,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import 'font-awesome/css/font-awesome.min.css';
 import 'aos/dist/aos.css';
-import { useEffect } from 'react';
+import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -50,6 +51,10 @@ const sliderSettings = {
 
 const ShrirajLandingPage = () => {
 
+    const [activeTab, setActiveTab] = useState('buy');
+  const [searchResults, setSearchResults] = useState([]);
+
+
   useEffect(() => {
     // Initialize AOS (Animate On Scroll) if needed
     if (typeof window !== 'undefined') {
@@ -63,13 +68,64 @@ const ShrirajLandingPage = () => {
   }, []);
 
 
-  const SearchInput = () => {
-    return (
+ const SearchInput = ({ activeTab }) => {
+  const [query, setQuery] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      if (query.length < 2) {
+        setSuggestions([]);
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          'https://rahul30.pythonanywhere.com/properties/search/',
+          {
+            params: {
+              q: query,
+              looking_to: activeTab.toUpperCase(),
+            },
+          }
+        );
+        setSuggestions(response.data);
+      } catch (error) {
+        console.error('Search failed:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const timer = setTimeout(() => {
+      fetchSuggestions();
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [query, activeTab]);
+
+  const handleSelectSuggestion = (suggestion) => {
+    setQuery(suggestion.property_title || suggestion.address);
+    setShowSuggestions(false);
+  };
+
+  return (
+    <div className="position-relative">
       <InputGroup className="custom-search-input">
         <Form.Control
-          placeholder="Search location, e.g., Shankar Nagar"
+          placeholder="Search property (e.g. villa, 2 bhk)"
           aria-label="search"
           className="py-2"
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setShowSuggestions(true);
+          }}
+          onFocus={() => setShowSuggestions(true)}
+          onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
         />
         <InputGroup.Text className="icon-group">
           <div className="icon-btn">
@@ -83,8 +139,39 @@ const ShrirajLandingPage = () => {
           </div>
         </InputGroup.Text>
       </InputGroup>
-    );
-  };
+
+      {showSuggestions && query.length > 0 && (
+        <div
+          className="position-absolute w-100 bg-white shadow-sm mt-1 rounded"
+          style={{ zIndex: 1000, maxHeight: '300px', overflowY: 'auto' }}
+        >
+          {loading ? (
+            <div className="p-2 text-muted">Loading...</div>
+          ) : suggestions.length > 0 ? (
+            suggestions.map((item) => (
+              <div
+                key={item.property_id}
+                className="p-2 border-bottom hover-cursor-pointer hover-bg-light"
+                onMouseDown={() => handleSelectSuggestion(item)}
+              >
+                <div className="fw-bold">{item.property_title}</div>
+                <div className="text-muted small">
+                  {item.address}, {item.city}
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="p-2 text-muted">
+              {query.length < 2
+                ? 'Type at least 2 characters'
+                : 'No properties found'}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
 
   // Team member data
   const teamMembers = [
@@ -439,33 +526,58 @@ const ShrirajLandingPage = () => {
 
       {/* Search Bar Section */}
       <div className="container search-bar-wrapper">
-        <div
-          className="search-bar-box bg-white rounded shadow p-3"
-          style={{ border: "2px solid #6f979b" }}
+      <div
+        className="search-bar-box bg-white rounded shadow p-3"
+        style={{ border: '2px solid #6f979b' }}
+      >
+        <Tabs
+          activeKey={activeTab}
+          onSelect={(k) => setActiveTab(k)}
+          id="property-tabs"
+          className="search-tabs"
         >
-          <Tabs defaultActiveKey="buy" id="property-tabs" className="search-tabs">
-            <Tab eventKey="buy" title="Buy">
-              <div className="mt-3">
-                <SearchInput />
-              </div>
-            </Tab>
-            <Tab eventKey="rent" title="Rent">
-              <div className="mt-3">
-                <SearchInput />
-              </div>
-            </Tab>
-            <Tab eventKey="sell" title="Sell">
-              <div className="mt-3">
-                <SearchInput />
-              </div>
-            </Tab>
-          </Tabs>
-        </div>
+          <Tab eventKey="buy" title="Buy">
+            <div className="mt-3">
+              <SearchInput activeTab="buy" />
+            </div>
+          </Tab>
+          <Tab eventKey="rent" title="Rent">
+            <div className="mt-3">
+              <SearchInput activeTab="rent" />
+            </div>
+          </Tab>
+          <Tab eventKey="sell" title="Sell">
+            <div className="mt-3">
+              <SearchInput activeTab="sell" />
+            </div>
+          </Tab>
+        </Tabs>
       </div>
 
-
-
-
+      {/* Display search results */}
+      {searchResults.length > 0 && (
+        <div className="mt-3 p-3 bg-white rounded shadow">
+          <h5>Search Results</h5>
+          <div className="list-group">
+            {searchResults.map((property) => (
+              <div
+                key={property.property_id}
+                className="list-group-item list-group-item-action"
+              >
+                <div className="d-flex w-100 justify-content-between">
+                  <h6 className="mb-1">{property.property_title}</h6>
+                  <small>{property.property_type}</small>
+                </div>
+                <p className="mb-1">
+                  {property.address}, {property.city}, {property.state}
+                </p>
+                <small>₹{property.price}</small>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
 
       {/* Team Section */}
       {/* <section className="py-5 bg-light Team-section">
@@ -792,7 +904,7 @@ const ShrirajLandingPage = () => {
       {/* Properties Section */}
       <section className="py-5 bg-light">
         <div className="container">
-          <h2 className="section-title text-left mb-5" data-aos="fade-up">Properties</h2>
+          <h2 className="section-title text-left mb-5" data-aos="fade-up"> Properties</h2>
           <div className="row">
             {properties.map((property, index) => (
               <div
@@ -802,17 +914,44 @@ const ShrirajLandingPage = () => {
                 data-aos-delay={(index + 1) * 100}
               >
                 <div className="property-card card">
-                  <img
-                    src={property.image}
-                    alt={property.title}
-                    className="card-img-top"
-                  />
+                  <Carousel
+                    interval={3000} // Auto-slide every 3 seconds
+                    indicators={false}
+                    controls={true}
+                    pause={false} // Prevent pause on hover
+                    prevLabel=""
+                    nextLabel=""
+                    prevIcon={<span className="carousel-control-prev-icon" aria-hidden="true" />}
+                    nextIcon={<span className="carousel-control-next-icon" aria-hidden="true" />}
+                  >
+                    {property.images.map((imgSrc, i) => (
+                      <Carousel.Item key={i}>
+                        <img
+                          src={imgSrc}
+                          className="d-block w-100"
+                          alt={`slide-${i}`}
+                          style={{ borderRadius: '8px', maxHeight: '200px', objectFit: 'cover' }}
+                        />
+                      </Carousel.Item>
+                    ))}
+                  </Carousel>
+
                   <div className="card-body">
+
+                    {/* Row 1: Left - Sell/Residential | Right - Sqft/Price */}
+                    <div className="row mb-2 align-items-center">
+                      <div className="col text-start ps-0" style={{ marginLeft: '-5px' }}>
+                        <span className="badge bg-success me-2">Sell</span>
+                        <span className="badge bg-secondary">Residential</span>
+                      </div>
+                    </div>
+                    {/* Row 2: Title, Details, Button */}
                     <h5 className="card-title">{property.title}</h5>
                     <p className="card-text">{property.details}</p>
                     <a href="/properties" className="btn btn-primary view-property-btn px-4 py-2">
                       View Property
                     </a>
+
                   </div>
                 </div>
               </div>

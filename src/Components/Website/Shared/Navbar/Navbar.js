@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Logo from '../../../Images/logo.png';
 import {
   AppBar,
@@ -23,63 +23,59 @@ import {
   ExpandMore,
   ExpandLess,
 } from '@mui/icons-material';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, Link, useNavigate  } from 'react-router-dom';
 
 function Header() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [anchorInvest, setAnchorInvest] = useState(null);
-  const [anchorAbout, setAnchorAbout] = useState(null);
-  const investTimerRef = useRef(null);
-  const aboutTimerRef = useRef(null);
+  const [categories, setCategories] = useState([]);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [mobileSubmenuOpen, setMobileSubmenuOpen] = useState(false);
+  
+const navigate = useNavigate();
 
-  const handleInvestButtonMouseEnter = (event) => {
-    if (investTimerRef.current) clearTimeout(investTimerRef.current);
-    setAnchorInvest(event.currentTarget);
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('https://rahul30.pythonanywhere.com/property-categories/');
+        const data = await response.json();
+        setCategories(data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
   };
 
-  const handleInvestButtonMouseLeave = () => {
-    investTimerRef.current = setTimeout(() => setAnchorInvest(null), 300);
+  const handleMenuClose = () => {
+    setAnchorEl(null);
   };
 
-  const handleInvestMenuMouseEnter = () => {
-    if (investTimerRef.current) clearTimeout(investTimerRef.current);
-  };
-
-  const handleInvestMenuMouseLeave = () => {
-    investTimerRef.current = setTimeout(() => setAnchorInvest(null), 300);
-  };
-
-  const handleAboutButtonMouseEnter = (event) => {
-    if (aboutTimerRef.current) clearTimeout(aboutTimerRef.current);
-    setAnchorAbout(event.currentTarget);
-  };
-
-  const handleAboutButtonMouseLeave = () => {
-    aboutTimerRef.current = setTimeout(() => setAnchorAbout(null), 300);
-  };
-
-  const handleAboutMenuMouseEnter = () => {
-    if (aboutTimerRef.current) clearTimeout(aboutTimerRef.current);
-  };
-
-  const handleAboutMenuMouseLeave = () => {
-    aboutTimerRef.current = setTimeout(() => setAnchorAbout(null), 300);
+  const handleMobileSubmenuToggle = () => {
+    setMobileSubmenuOpen(!mobileSubmenuOpen);
   };
 
   const navItems = [
     { label: 'How it works', path: '/aboutus' },
-    { label: 'Properties', path: '/properties' },
+    { 
+    label: 'Properties',
+    path: '/properties',
+    hasDropdown: true,
+    dropdownItems: categories.map(category => ({
+      label: category.name,
+      onClick: () => navigate(`/properties?category=${category.property_category_id}`, {
+        state: { categoryName: category.name }
+      })
+    }))
+  },
     { label: 'Contact us', path: '/contactus' },
     { label: 'FAQs', path: '/FAQ' },
   ];
-
-  const [mobileSubmenuOpen, setMobileSubmenuOpen] = useState({});
-  const toggleMobileSubmenu = (label) => {
-    setMobileSubmenuOpen((prev) => ({ ...prev, [label]: !prev[label] }));
-  };
 
   const drawer = (
     <Box sx={{ width: 250 }} role="presentation">
@@ -99,29 +95,85 @@ function Header() {
       <List>
         {navItems.map((item) => (
           <Box key={item.label}>
-            <ListItem
-              button
-              component={NavLink}
-              to={item.path}
-              onClick={() => setMobileOpen(false)}
-              sx={{
-                textDecoration: 'none',
-                '&.active .MuiListItemText-primary': {
-                  color: '#2E166D',
-                  textDecoration: 'underline',
-                },
-              }}
-            >
-              <ListItemText
-                primary={item.label}
-                primaryTypographyProps={{
-                  color: '#333333',
-                  fontSize: '16px',
-                  fontFamily: 'Calibre, sans-serif',
-                  fontWeight: 'bold',
+            {item.hasDropdown ? (
+              <>
+                <ListItem
+                  button
+                  onClick={handleMobileSubmenuToggle}
+                  sx={{
+                    textDecoration: 'none',
+                    '&.active .MuiListItemText-primary': {
+                      color: '#2E166D',
+                      textDecoration: 'underline',
+                    },
+                  }}
+                >
+                  <ListItemText
+                    primary={item.label}
+                    primaryTypographyProps={{
+                      color: '#333333',
+                      fontSize: '16px',
+                      fontFamily: 'Calibre, sans-serif',
+                      fontWeight: 'bold',
+                    }}
+                  />
+                  {mobileSubmenuOpen ? <ExpandLess /> : <ExpandMore />}
+                </ListItem>
+                {mobileSubmenuOpen && (
+                  <Box sx={{ pl: 3 }}>
+                    {item.dropdownItems.map((dropdownItem) => (
+                      <ListItem
+                        key={dropdownItem.label}
+                        button
+                        component={NavLink}
+                        to={dropdownItem.path}
+                        onClick={() => setMobileOpen(false)}
+                        sx={{
+                          textDecoration: 'none',
+                          '&.active .MuiListItemText-primary': {
+                            color: '#2E166D',
+                            textDecoration: 'underline',
+                          },
+                        }}
+                      >
+                        <ListItemText
+                          primary={dropdownItem.label}
+                          primaryTypographyProps={{
+                            color: '#333333',
+                            fontSize: '14px',
+                            fontFamily: 'Calibre, sans-serif',
+                          }}
+                        />
+                      </ListItem>
+                    ))}
+                  </Box>
+                )}
+              </>
+            ) : (
+              <ListItem
+                button
+                component={NavLink}
+                to={item.path}
+                onClick={() => setMobileOpen(false)}
+                sx={{
+                  textDecoration: 'none',
+                  '&.active .MuiListItemText-primary': {
+                    color: '#2E166D',
+                    textDecoration: 'underline',
+                  },
                 }}
-              />
-            </ListItem>
+              >
+                <ListItemText
+                  primary={item.label}
+                  primaryTypographyProps={{
+                    color: '#333333',
+                    fontSize: '16px',
+                    fontFamily: 'Calibre, sans-serif',
+                    fontWeight: 'bold',
+                  }}
+                />
+              </ListItem>
+            )}
           </Box>
         ))}
         <Divider />
@@ -147,7 +199,7 @@ function Header() {
               </IconButton>
               <Box display="flex" justifyContent="center" flexGrow={1}>
                 <Link to="/" style={{ textDecoration: 'none', color: '#333333' }}>
-                   <img
+                  <img
                     src={Logo}
                     alt="logo"
                     style={{
@@ -202,7 +254,7 @@ function Header() {
             <>
               <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center' }}>
                 <Link to="/" style={{ textDecoration: 'none', color: '#333333' }}>
-                   <img
+                  <img
                     src={Logo}
                     alt="logo"
                     style={{
@@ -227,24 +279,64 @@ function Header() {
                 }}
               >
                 {navItems.map((item) => (
-                  <Button
-                    key={item.label}
-                    component={NavLink}
-                    to={item.path}
-                    sx={{
-                      fontFamily: 'Calibre, sans-serif',
-                      fontWeight: 'bold',
-                      color: '#333333',
-                      textTransform: 'none',
-                      textDecoration: 'none',
-                      '&.active': {
-                        color: '#0000FF',
-                      },
-                      fontSize: '16px',
-                    }}
-                  >
-                    {item.label}
-                  </Button>
+                  item.hasDropdown ? (
+                    <Box key={item.label}>
+                      <Button
+                        onClick={handleMenuOpen}
+                        sx={{
+                          fontFamily: 'Calibre, sans-serif',
+                          fontWeight: 'bold',
+                          color: '#333333',
+                          textTransform: 'none',
+                          textDecoration: 'none',
+                          '&.active': {
+                            color: '#0000FF',
+                          },
+                          fontSize: '16px',
+                        }}
+                        endIcon={<ExpandMore />}
+                      >
+                        {item.label}
+                      </Button>
+                      <Menu
+                        anchorEl={anchorEl}
+                        open={Boolean(anchorEl)}
+                        onClose={handleMenuClose}
+                      >
+                        {item.dropdownItems.map((dropdownItem) => (
+                          <MenuItem
+  key={dropdownItem.label}
+  onClick={() => {
+    dropdownItem.onClick();
+    handleMenuClose();
+  }}
+>
+  {dropdownItem.label}
+</MenuItem>
+
+                        ))}
+                      </Menu>
+                    </Box>
+                  ) : (
+                    <Button
+                      key={item.label}
+                      component={NavLink}
+                      to={item.path}
+                      sx={{
+                        fontFamily: 'Calibre, sans-serif',
+                        fontWeight: 'bold',
+                        color: '#333333',
+                        textTransform: 'none',
+                        textDecoration: 'none',
+                        '&.active': {
+                          color: '#0000FF',
+                        },
+                        fontSize: '16px',
+                      }}
+                    >
+                      {item.label}
+                    </Button>
+                  )
                 ))}
               </Box>
 
