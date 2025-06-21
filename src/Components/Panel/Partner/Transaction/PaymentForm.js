@@ -14,7 +14,7 @@ import Swal from 'sweetalert2';
 import jsPDF from 'jspdf';
 import { pdf } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
-import ReceiptDocument from '../../../InvoiceDocument'; 
+import ReceiptDocument from '../../../InvoiceDocument';
 import axios from 'axios';
 
 function PaymentForm() {
@@ -113,93 +113,106 @@ function PaymentForm() {
         }
     };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-  // Destructure out unwanted fields
-  const { document_number, document_type, ...cleanFormData } = formData;
+        // Destructure out unwanted fields
+        const { document_number, document_type, ...cleanFormData } = formData;
 
-  const updatedData = {
-    ...cleanFormData,
-    paid_amount: parseFloat(formData.remaining_amount),
-    remaining_amount: 0,
-    payment_type: "Full-Amount",
-    company_commission: companyCommission,
-    role:"agent",
-  };
+        const updatedData = {
+            ...cleanFormData,
+            paid_amount: parseFloat(formData.remaining_amount),
+            remaining_amount: 0,
+            payment_type: "Full-Amount",
+            company_commission: companyCommission,
+            role: "agent",
+        };
 
-  try {
-    console.log("Submitting transaction with data:", updatedData);
+        try {
+            console.log("Submitting transaction with data:", updatedData);
 
-    // 1. Submit the transaction
-    const response = await fetch(`${baseurl}/transactions/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(updatedData),
-    });
+            // 1. Submit the transaction
+            const response = await fetch(`${baseurl}/transactions/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(updatedData),
+            });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Transaction API error response:", errorData);
-      throw new Error(`API Error: ${JSON.stringify(errorData)}`);
-    }
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error("Transaction API error response:", errorData);
+                throw new Error(`API Error: ${JSON.stringify(errorData)}`);
+            }
 
-    const result = await response.json();
-    console.log('Transaction stored successfully:', result);
+            const result = await response.json();
+            console.log('Transaction stored successfully:', result);
 
-    // 2. Update property status to "sold"
-    const propertyId = formData.property_id;
-    console.log(`Updating property ${propertyId} to status "sold"`);
+            // 2. Update property status to "sold"
+            const propertyId = formData.property_id;
+            console.log(`Updating property ${propertyId} to status "sold"`);
 
-    const statusUpdateResponse = await fetch(`${baseurl}/property/${propertyId}/`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ status: 'sold', agent_commission_balance: agentCommission }),
-    });
+            const statusUpdateResponse = await fetch(`${baseurl}/property/${propertyId}/`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ status: 'sold', agent_commission_balance: agentCommission }),
+            });
 
-    if (!statusUpdateResponse.ok) {
-      const errorData = await statusUpdateResponse.json();
-      console.error("Property status update error response:", errorData);
-      throw new Error(`Status Update Error: ${JSON.stringify(errorData)}`);
-    }
+            if (!statusUpdateResponse.ok) {
+                const errorData = await statusUpdateResponse.json();
+                console.error("Property status update error response:", errorData);
+                throw new Error(`Status Update Error: ${JSON.stringify(errorData)}`);
+            }
 
-    console.log(`Property ${propertyId} status updated to sold`);
+            console.log(`Property ${propertyId} status updated to sold`);
 
-    // 3. Fetch document_number (invoice number)
-    const responses = await axios.get(`${baseurl}/transactions/user-id/${userId}/property-id/${propertyId}/payment-type/Full-Amount/`);
-    console.log("Fetched transactions:", responses.data);
+            // 3. Fetch document_number (invoice number)
+            const responses = await axios.get(`${baseurl}/transactions/user-id/${userId}/property-id/${propertyId}/payment-type/Full-Amount/`);
+            console.log("Fetched transactions:", responses.data);
 
-    const latestTransaction = responses.data[0];
-    const invoiceNumber = latestTransaction?.document_number || 'N/A';
-    console.log("Invoice Number:", invoiceNumber);
+            const latestTransaction = responses.data[0];
+            const invoiceNumber = latestTransaction?.document_number || 'N/A';
+            console.log("Invoice Number:", invoiceNumber);
 
-    // 4. Generate receipt
-    await generateReceipt(invoiceNumber);
-    console.log("Invoice generated");
+            // 4. Generate receipt
+            const pdfBlob = await generateReceipt(invoiceNumber);
 
-    // Final success alert
-    Swal.fire({
-      icon: 'success',
-      title: 'Success!',
-      text: 'Transaction submitted and property marked as sold!',
-      timer: 2500,
-      showConfirmButton: false
-    });
+            // Step 4: Prepare form data for file upload
+            const formData = new FormData();
+            const fileName = `${latestTransaction.document_number}.pdf`;
+            formData.append('document_file', pdfBlob, fileName);
+            console.log("Invoice generated");
 
-    navigate('/p-transaction');
-  } catch (error) {
-    console.error('Submit error:', error);
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'Failed to complete operation: ' + error.message,
-    });
-  }
-};
+                
+                // Step 5: Update transaction with the PDF file
+                await axios.put(`${baseurl}/transactions/${transactionId}/`, formData, {
+                  headers: {
+                    'Content-Type': 'multipart/form-data'
+                  }
+                });
+
+            // Final success alert
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'Transaction submitted and property marked as sold!',
+                timer: 2500,
+                showConfirmButton: false
+            });
+
+            navigate('/p-transaction');
+        } catch (error) {
+            console.error('Submit error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to complete operation: ' + error.message,
+            });
+        }
+    };
 
 
 
@@ -249,6 +262,9 @@ const handleSubmit = async (e) => {
         "document_type",
         "document_number",
         "document_file",
+        "phone_pe_merchant_order_id",
+        "phone_pe_order_id",
+        "phone_pe_transaction_id"
     ];
 
 

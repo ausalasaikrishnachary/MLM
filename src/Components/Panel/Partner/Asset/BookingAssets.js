@@ -105,6 +105,8 @@ const handleBooking = async () => {
       payment_type: "Booking-Amount",
       payment_method: "Cash",
       role: "agent",
+      transaction_for:"property",
+      plan_name:"abcd"
     };
 
     // Step 1: Create transaction
