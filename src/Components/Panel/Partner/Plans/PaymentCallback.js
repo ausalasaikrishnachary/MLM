@@ -22,7 +22,7 @@ const PaymentCallback = () => {
       }
 
       try {
-        const res = await fetch(`https://shrirajteam.com:81/payment-status/?merchant_order_id=${merchant_order_id}`);
+        const res = await fetch(`${baseurl}/payment-status/?merchant_order_id=${merchant_order_id}`);
         const data = await res.json();
 
         if (data.status === 'COMPLETED') {

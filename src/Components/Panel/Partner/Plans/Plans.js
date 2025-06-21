@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef  } from 'react';
 import {
   Container,
   Typography,
@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from "../../../Shared/Partner/PartnerNavbar";
 import { baseurl } from '../../../BaseURL/BaseURL';
 import Swal from 'sweetalert2';
+import { useSearchParams } from 'react-router-dom';
 
 function PartnerPlans() {
   const [variantData, setVariantData] = useState([]);
@@ -98,80 +99,91 @@ function PartnerPlans() {
     fetchVariantsAndPlans();
   }, []);
 
-  const handleBuy = async (variant) => {
-    const confirmResult = await Swal.fire({
-      title: "Are you sure?",
-      text: "Do you want to subscribe to this plan?",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Yes, subscribe!",
-      cancelButtonText: "Cancel"
+const handleBuy = async (variant) => {
+  const confirmResult = await Swal.fire({
+    title: "Are you sure?",
+    text: "Do you want to subscribe to this plan?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "Yes, subscribe!",
+    cancelButtonText: "Cancel"
+  });
+
+  if (!confirmResult.isConfirmed) return;
+
+  try {
+    const initiateRes = await fetch(`${baseurl}/subscription/initiate-payment/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        user_id: Number(userId),
+        subscription_variant: variant.variant_id,
+        redirect_url: "http://localhost:3000/p-plans" // redirect back here after payment
+      })
     });
 
-    if (!confirmResult.isConfirmed) return;
+    if (!initiateRes.ok) throw new Error('Failed to initiate payment');
 
-    if (!userId) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'User ID Missing',
-        text: 'User ID not found in localStorage!'
-      });
-      return;
-    }
+    const initiateData = await initiateRes.json();
+    const { payment_url, merchant_order_id } = initiateData;
 
-    try {
-      const response = await fetch(`${baseurl}/subscriptions/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          user_id: parseInt(userId),
-          subscription_variant: variant.variant_id,
-          subscription_status: "paid"
-        }),
-      });
+    // 👉 Save merchant_order_id in localStorage or append in redirect_url
+    localStorage.setItem("merchant_order_id", merchant_order_id);
+    localStorage.setItem("subscription_variant", variant.variant_id);
 
-      if (response.ok) {
-        Swal.fire({
-          icon: 'success',
-          title: 'Subscription Successful!',
-          timer: 2000,
-          showConfirmButton: false
-        });
+    // 👉 Now redirect to payment page
+    window.location.href = payment_url;
 
-        setSubscribedVariants((prev) => [...prev, variant.variant_id]);
+  } catch (error) {
+    console.error('Subscription process failed:', error);
+    Swal.fire("Error", "Something went wrong while processing your subscription.", "error");
+  }
+};
 
-        // Update user status
-        const updateResponse = await fetch(`${baseurl}/users/${userId}/`, {
-          method: 'PUT',
+  const hasPostedStatus = useRef(false); // flag to prevent duplicate calls
+
+  useEffect(() => {
+    const userId = localStorage.getItem("user_id");
+    const merchant_order_id = localStorage.getItem("merchant_order_id");
+    const subscription_variant = localStorage.getItem("subscription_variant");
+
+    const updatePaymentStatus = async () => {
+      if (
+        hasPostedStatus.current || // already posted
+        !userId || !merchant_order_id || !subscription_variant
+      ) return;
+
+      try {
+        hasPostedStatus.current = true; // set flag before making the request
+
+        await fetch(`${baseurl}/subscription/payment-status/`, {
+          method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ status: "active" }),
+          body: JSON.stringify({
+            user_id: Number(userId),
+            subscription_variant: Number(subscription_variant),
+            merchant_order_id
+          })
         });
 
-        if (!updateResponse.ok) {
-          console.warn("Failed to update user status.");
-        }
+        // Clean up storage to avoid future duplicates
+        localStorage.removeItem("merchant_order_id");
+        localStorage.removeItem("subscription_variant");
 
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Subscription Failed',
-          text: 'Please try again.'
-        });
+      } catch (err) {
+        console.error("Error sending payment status:", err);
+        hasPostedStatus.current = false; // allow retry if it failed
       }
+    };
 
-    } catch (error) {
-      console.error("Subscription error:", error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Something went wrong. Please try again.'
-      });
-    }
-  };
+    updatePaymentStatus();
+  }, []);
+
+
 
   return (
     <>

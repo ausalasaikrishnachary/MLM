@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   Container,
   Typography,
@@ -46,11 +46,13 @@ function PartnerPlans() {
   useEffect(() => {
     const fetchUserSubscription = async () => {
       try {
-        const res = await fetch(`${baseurl}/user-subscriptions/${userId}/`);
+        const res = await fetch(`${baseurl}/user-subscriptions/user-id/${userId}/`);
         if (res.ok) {
-          const subscription = await res.json();
-          if (subscription.subscription_status === "paid") {
-            setSubscribedVariants([subscription.subscription_variant]); // store the subscribed variant ID
+          const data = await res.json();
+
+          // data[0] contains latest_status, data[1] contains subscription info
+          if (data[0]?.latest_status === "paid") {
+            setSubscribedVariants([data[1].subscription_variant]);
           }
         }
       } catch (err) {
@@ -101,68 +103,87 @@ function PartnerPlans() {
 
 const handleBuy = async (variant) => {
   const confirmResult = await Swal.fire({
-    title: 'Are you sure?',
-    text: 'Do you want to subscribe to this plan?',
-    icon: 'question',
+    title: "Are you sure?",
+    text: "Do you want to subscribe to this plan?",
+    icon: "question",
     showCancelButton: true,
-    confirmButtonText: 'Yes, Subscribe',
-    cancelButtonText: 'Cancel',
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
+    confirmButtonText: "Yes, subscribe!",
+    cancelButtonText: "Cancel"
   });
 
   if (!confirmResult.isConfirmed) return;
 
-  const userId = localStorage.getItem('user_id');
-  if (!userId) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Missing User ID',
-      text: 'User ID not found in localStorage!',
-    });
-    return;
-  }
-
   try {
-    const response = await fetch(`${baseurl}/subscriptions/`, {
+    const initiateRes = await fetch(`${baseurl}/subscription/initiate-payment/`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        user_id: parseInt(userId),
+        user_id: Number(userId),
         subscription_variant: variant.variant_id,
-        subscription_status: "paid",
-      }),
+        redirect_url: "http://localhost:3000/i-plans" // redirect back here after payment
+      })
     });
 
-    if (response.ok) {
-      setSubscribedVariants((prev) => [...prev, variant.variant_id]);
+    if (!initiateRes.ok) throw new Error('Failed to initiate payment');
 
-      await Swal.fire({
-        icon: 'success',
-        title: 'Subscribed!',
-        text: 'Subscription successful!',
-        timer: 2000,
-        showConfirmButton: false,
-      });
+    const initiateData = await initiateRes.json();
+    const { payment_url, merchant_order_id } = initiateData;
 
-    } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'Subscription Failed',
-        text: 'Please try again.',
-      });
-    }
+    // 👉 Save merchant_order_id in localStorage or append in redirect_url
+    localStorage.setItem("merchant_order_id", merchant_order_id);
+    localStorage.setItem("subscription_variant", variant.variant_id);
+
+    // 👉 Now redirect to payment page
+    window.location.href = payment_url;
+
   } catch (error) {
-    console.error("Subscription error:", error);
-    Swal.fire({
-      icon: 'error',
-      title: 'Something went wrong',
-      text: error.message || 'Unexpected error occurred.',
-    });
+    console.error('Subscription process failed:', error);
+    Swal.fire("Error", "Something went wrong while processing your subscription.", "error");
   }
 };
+
+  const hasPostedStatus = useRef(false); // flag to prevent duplicate calls
+
+  useEffect(() => {
+    const userId = localStorage.getItem("user_id");
+    const merchant_order_id = localStorage.getItem("merchant_order_id");
+    const subscription_variant = localStorage.getItem("subscription_variant");
+
+    const updatePaymentStatus = async () => {
+      if (
+        hasPostedStatus.current || // already posted
+        !userId || !merchant_order_id || !subscription_variant
+      ) return;
+
+      try {
+        hasPostedStatus.current = true; // set flag before making the request
+
+        await fetch(`${baseurl}/subscription/payment-status/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            user_id: Number(userId),
+            subscription_variant: Number(subscription_variant),
+            merchant_order_id
+          })
+        });
+
+        // Clean up storage to avoid future duplicates
+        localStorage.removeItem("merchant_order_id");
+        localStorage.removeItem("subscription_variant");
+
+      } catch (err) {
+        console.error("Error sending payment status:", err);
+        hasPostedStatus.current = false; // allow retry if it failed
+      }
+    };
+
+    updatePaymentStatus();
+  }, []);
 
 
   return (
