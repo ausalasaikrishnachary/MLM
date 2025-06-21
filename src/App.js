@@ -120,6 +120,8 @@ import Header from "./Components/Website/Shared/Navbar/Navbar";
 import Footer from "./Components/Website/Shared/Footer/Footer";
 import PropertyDetail from "./Components/Website/Pages/Properties/PropertyDetails";
 import Popup from "./Components/Popup/Popup";
+import FilteredProperties from "./Components/Website/Pages/Home/FilteredProperties";
+import PaymentCallback from "./Components/Panel/Partner/Plans/PaymentCallback";
 
 
 
@@ -128,8 +130,8 @@ function Layout() {
    const [showPopup, setShowPopup] = useState(false);
 
   // Define paths where Header and Footer should be visible
-  const publicPaths = ["/", "/aboutus", "/FAQ", "/contactus", "/properties", "/propertydetails", "/termsandconditions", "/privacypolicy", "/refundpolicy"];
-  const footerPaths = ["/", "/aboutus", "/FAQ", "/contactus", "/properties", "/termsandconditions", "/privacypolicy", "/refundpolicy"]; // Removed '/propertydetails'
+  const publicPaths = ["/", "/aboutus", "/FAQ", "/contactus", "/properties", "/propertydetails", "/termsandconditions", "/privacypolicy", "/refundpolicy", "/filteredproperties"];
+  const footerPaths = ["/", "/aboutus", "/FAQ", "/contactus", "/properties", "/termsandconditions", "/privacypolicy", "/refundpolicy", "/filteredproperties"]; // Removed '/propertydetails'
 
  // Trigger popup after 60 seconds on public pages
   useEffect(() => {
@@ -271,6 +273,10 @@ function Layout() {
           <Route path="/refundpolicy" element={<Refundpolicy />} />
           <Route path="/legalnavbar" element={<LegalNavbar />} />
           <Route path="/login" element={<Login />} />
+
+          <Route path="/filteredproperties" element={<FilteredProperties />} />
+          <Route path="/payment-callback" element={<PaymentCallback />} />
+
         </Routes>
       </div>
       {footerPaths.includes(location.pathname) && <Footer />}

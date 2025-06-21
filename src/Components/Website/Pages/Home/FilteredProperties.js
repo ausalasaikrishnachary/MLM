@@ -1,3 +1,16 @@
+// import React from 'react'
+
+// function FilteredProperties() {
+//   return (
+//     <div>
+      
+//     </div>
+//   )
+// }
+
+// export default FilteredProperties
+
+
 import React, { useState, useEffect } from 'react';
 import { 
   Button, 
@@ -9,13 +22,13 @@ import {
   MenuItem,
   Box
 } from '@mui/material';
-import './Properties.css';
+import '../Properties/Properties.css';
 import { useNavigate } from 'react-router-dom';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useLocation } from 'react-router-dom';
 import { baseurl } from './../../../BaseURL/BaseURL';
 
-const Properties = () => {
+const FilteredProperties = () => {
   const navigate = useNavigate();
   const [properties, setProperties] = useState([]);
   const [propertyTypes, setPropertyTypes] = useState([]);
@@ -26,12 +39,13 @@ const Properties = () => {
   const [selectedType, setSelectedType] = useState('Property Sub Types');
    const location = useLocation();
   const categoryName = location.state?.categoryName || "All";
+  const { q, looking_to } = location.state || {};
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Fetch properties
-        const propertiesResponse = await fetch(`${baseurl}/property/`);
+        const propertiesResponse = await fetch(`${baseurl}/properties/search/?${looking_to}=SELL&q=${q}/`);
         if (!propertiesResponse.ok) throw new Error('Failed to fetch properties');
         const propertiesData = await propertiesResponse.json();
         setProperties(propertiesData);
@@ -159,7 +173,7 @@ const Properties = () => {
         </Box>
       </div>
       <Typography variant="h4" className="mt-3" gutterBottom>
-             {categoryName} Properties:
+             Properties:
       </Typography>
       
       {filteredProperties.length === 0 ? (
@@ -174,7 +188,7 @@ const Properties = () => {
                 <img
                   src={
                     property.images && property.images.length > 0 
-                      ? `${baseurl}${property.images[0].image}` 
+                      ? `${baseurl}/${property.images[0].image}` 
                       : "https://via.placeholder.com/300x200?text=No+Image"
                   }
                   alt={property.property_title}
@@ -221,4 +235,4 @@ const Properties = () => {
   );
 };
 
-export default Properties;
+export default FilteredProperties;

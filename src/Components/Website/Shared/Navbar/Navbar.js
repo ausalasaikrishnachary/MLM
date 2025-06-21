@@ -24,6 +24,8 @@ import {
   ExpandLess,
 } from '@mui/icons-material';
 import { NavLink, Link, useNavigate  } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import { baseurl } from './../../../BaseURL/BaseURL';
 
 function Header() {
   const theme = useTheme();
@@ -38,7 +40,7 @@ const navigate = useNavigate();
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch('https://rahul30.pythonanywhere.com/property-categories/');
+        const response = await fetch(`${baseurl}/property-categories/`);
         const data = await response.json();
         setCategories(data);
       } catch (error) {

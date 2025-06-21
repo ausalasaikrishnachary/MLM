@@ -8,6 +8,7 @@ import React, { useState, useEffect } from 'react';
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { Box, Grid, CardContent, Typography, CardMedia, IconButton } from '@mui/material';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { useNavigate } from 'react-router-dom';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
@@ -27,7 +28,7 @@ import {
   faEnvelope
 } from '@fortawesome/free-solid-svg-icons';
 
-import Slider from "react-slick";
+import { baseurl } from './../../../BaseURL/BaseURL';
 
 const sliderSettings = {
   dots: true,
@@ -51,8 +52,9 @@ const sliderSettings = {
 
 const ShrirajLandingPage = () => {
 
-    const [activeTab, setActiveTab] = useState('buy');
+  const [activeTab, setActiveTab] = useState('buy');
   const [searchResults, setSearchResults] = useState([]);
+const navigate = useNavigate();
 
 
   useEffect(() => {
@@ -68,110 +70,123 @@ const ShrirajLandingPage = () => {
   }, []);
 
 
- const SearchInput = ({ activeTab }) => {
-  const [query, setQuery] = useState('');
-  const [suggestions, setSuggestions] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  const SearchInput = ({ activeTab }) => {
+    const [query, setQuery] = useState('');
+    const [suggestions, setSuggestions] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [showSuggestions, setShowSuggestions] = useState(false);
 
-  useEffect(() => {
-    const fetchSuggestions = async () => {
-      if (query.length < 2) {
-        setSuggestions([]);
-        return;
-      }
-
-      setLoading(true);
-      try {
-        const response = await axios.get(
-          'https://rahul30.pythonanywhere.com/properties/search/',
-          {
-            params: {
-              q: query,
-              looking_to: activeTab.toUpperCase(),
-            },
-          }
-        );
-        setSuggestions(response.data);
-      } catch (error) {
-        console.error('Search failed:', error);
-      } finally {
-        setLoading(false);
+    const handleSearchClick = () => {
+      if (query.trim().length >= 2) {
+        navigate('/filteredproperties', {
+          state: {
+            q: query,
+            looking_to: activeTab.toUpperCase(),
+          },
+        });
       }
     };
 
-    const timer = setTimeout(() => {
-      fetchSuggestions();
-    }, 300);
 
-    return () => clearTimeout(timer);
-  }, [query, activeTab]);
+    useEffect(() => {
+      const fetchSuggestions = async () => {
+        if (query.length < 2) {
+          setSuggestions([]);
+          return;
+        }
 
-  const handleSelectSuggestion = (suggestion) => {
-    setQuery(suggestion.property_title || suggestion.address);
-    setShowSuggestions(false);
-  };
+        setLoading(true);
+        try {
+          const response = await axios.get(
+            `${baseurl}/properties/search/`,
+            {
+              params: {
+                q: query,
+                looking_to: activeTab.toUpperCase(),
+              },
+            }
+          );
+          setSuggestions(response.data);
+        } catch (error) {
+          console.error('Search failed:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
 
-  return (
-    <div className="position-relative">
-      <InputGroup className="custom-search-input">
-        <Form.Control
-          placeholder="Search property (e.g. villa, 2 bhk)"
-          aria-label="search"
-          className="py-2"
-          value={query}
-          onChange={(e) => {
-            setQuery(e.target.value);
-            setShowSuggestions(true);
-          }}
-          onFocus={() => setShowSuggestions(true)}
-          onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-        />
-        <InputGroup.Text className="icon-group">
-          <div className="icon-btn">
-            <FaSearch />
-          </div>
-          <div className="icon-btn">
-            <FaCrosshairs />
-          </div>
-          <div className="icon-btn">
-            <FaMicrophone />
-          </div>
-        </InputGroup.Text>
-      </InputGroup>
+      const timer = setTimeout(() => {
+        fetchSuggestions();
+      }, 300);
 
-      {showSuggestions && query.length > 0 && (
-        <div
-          className="position-absolute w-100 bg-white shadow-sm mt-1 rounded"
-          style={{ zIndex: 1000, maxHeight: '300px', overflowY: 'auto' }}
-        >
-          {loading ? (
-            <div className="p-2 text-muted">Loading...</div>
-          ) : suggestions.length > 0 ? (
-            suggestions.map((item) => (
-              <div
-                key={item.property_id}
-                className="p-2 border-bottom hover-cursor-pointer hover-bg-light"
-                onMouseDown={() => handleSelectSuggestion(item)}
-              >
-                <div className="fw-bold">{item.property_title}</div>
-                <div className="text-muted small">
-                  {item.address}, {item.city}
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="p-2 text-muted">
-              {query.length < 2
-                ? 'Type at least 2 characters'
-                : 'No properties found'}
+      return () => clearTimeout(timer);
+    }, [query, activeTab]);
+
+    const handleSelectSuggestion = (suggestion) => {
+      setQuery(suggestion.property_title || suggestion.address);
+      setShowSuggestions(false);
+    };
+
+    return (
+      <div className="position-relative">
+        <InputGroup className="custom-search-input">
+          <Form.Control
+            placeholder="Search property (e.g. villa, 2 bhk)"
+            aria-label="search"
+            className="py-2"
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setShowSuggestions(true);
+            }}
+            onFocus={() => setShowSuggestions(true)}
+            onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+          />
+          <InputGroup.Text className="icon-group">
+            <div className="icon-btn" onClick={handleSearchClick} style={{ cursor: 'pointer' }}>
+              <FaSearch />
             </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-};
+
+            <div className="icon-btn">
+              <FaCrosshairs />
+            </div>
+            <div className="icon-btn">
+              <FaMicrophone />
+            </div>
+          </InputGroup.Text>
+        </InputGroup>
+
+        {showSuggestions && query.length > 0 && (
+          <div
+            className="position-absolute w-100 bg-white shadow-sm mt-1 rounded"
+            style={{ zIndex: 1000, maxHeight: '300px', overflowY: 'auto' }}
+          >
+            {loading ? (
+              <div className="p-2 text-muted">Loading...</div>
+            ) : suggestions.length > 0 ? (
+              suggestions.map((item) => (
+                <div
+                  key={item.property_id}
+                  className="p-2 border-bottom hover-cursor-pointer hover-bg-light"
+                  onMouseDown={() => handleSelectSuggestion(item)}
+                >
+                  <div className="fw-bold">{item.property_title}</div>
+                  <div className="text-muted small">
+                    {item.address}, {item.city}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="p-2 text-muted">
+                {query.length < 2
+                  ? 'Type at least 2 characters'
+                  : 'No properties found'}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   // Team member data
   const teamMembers = [
@@ -526,58 +541,58 @@ const ShrirajLandingPage = () => {
 
       {/* Search Bar Section */}
       <div className="container search-bar-wrapper">
-      <div
-        className="search-bar-box bg-white rounded shadow p-3"
-        style={{ border: '2px solid #6f979b' }}
-      >
-        <Tabs
-          activeKey={activeTab}
-          onSelect={(k) => setActiveTab(k)}
-          id="property-tabs"
-          className="search-tabs"
+        <div
+          className="search-bar-box bg-white rounded shadow p-3"
+          style={{ border: '2px solid #6f979b' }}
         >
-          <Tab eventKey="buy" title="Buy">
-            <div className="mt-3">
-              <SearchInput activeTab="buy" />
-            </div>
-          </Tab>
-          <Tab eventKey="rent" title="Rent">
-            <div className="mt-3">
-              <SearchInput activeTab="rent" />
-            </div>
-          </Tab>
-          <Tab eventKey="sell" title="Sell">
-            <div className="mt-3">
-              <SearchInput activeTab="sell" />
-            </div>
-          </Tab>
-        </Tabs>
-      </div>
-
-      {/* Display search results */}
-      {searchResults.length > 0 && (
-        <div className="mt-3 p-3 bg-white rounded shadow">
-          <h5>Search Results</h5>
-          <div className="list-group">
-            {searchResults.map((property) => (
-              <div
-                key={property.property_id}
-                className="list-group-item list-group-item-action"
-              >
-                <div className="d-flex w-100 justify-content-between">
-                  <h6 className="mb-1">{property.property_title}</h6>
-                  <small>{property.property_type}</small>
-                </div>
-                <p className="mb-1">
-                  {property.address}, {property.city}, {property.state}
-                </p>
-                <small>₹{property.price}</small>
+          <Tabs
+            activeKey={activeTab}
+            onSelect={(k) => setActiveTab(k)}
+            id="property-tabs"
+            className="search-tabs"
+          >
+            <Tab eventKey="buy" title="Buy">
+              <div className="mt-3">
+                <SearchInput activeTab="buy" />
               </div>
-            ))}
-          </div>
+            </Tab>
+            <Tab eventKey="rent" title="Rent">
+              <div className="mt-3">
+                <SearchInput activeTab="rent" />
+              </div>
+            </Tab>
+            <Tab eventKey="sell" title="Sell">
+              <div className="mt-3">
+                <SearchInput activeTab="sell" />
+              </div>
+            </Tab>
+          </Tabs>
         </div>
-      )}
-    </div>
+
+        {/* Display search results */}
+        {searchResults.length > 0 && (
+          <div className="mt-3 p-3 bg-white rounded shadow">
+            <h5>Search Results</h5>
+            <div className="list-group">
+              {searchResults.map((property) => (
+                <div
+                  key={property.property_id}
+                  className="list-group-item list-group-item-action"
+                >
+                  <div className="d-flex w-100 justify-content-between">
+                    <h6 className="mb-1">{property.property_title}</h6>
+                    <small>{property.property_type}</small>
+                  </div>
+                  <p className="mb-1">
+                    {property.address}, {property.city}, {property.state}
+                  </p>
+                  <small>₹{property.price}</small>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Team Section */}
       {/* <section className="py-5 bg-light Team-section">
@@ -826,7 +841,7 @@ const ShrirajLandingPage = () => {
 
 
       {/* How It Works Section */}
-      <section className="video-section">
+      {/* <section className="video-section">
         <div className="container">
           <h2 className="section-title text-left" data-aos="fade-up">How It Works</h2>
           <div className="row">
@@ -868,7 +883,7 @@ const ShrirajLandingPage = () => {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
       {/* Shriraj Advantage Section */}
       <section className="py-5">
         <div className="container">
@@ -989,7 +1004,7 @@ const ShrirajLandingPage = () => {
       </section>
 
       {/* In The News Section */}
-      <section className="py-5">
+      {/* <section className="py-5">
         <div className="container">
           <h2 className="section-title text-left" data-aos="fade-up">In The News</h2>
           <div className="row">
@@ -1009,13 +1024,13 @@ const ShrirajLandingPage = () => {
                   <p className="news-date">{news.date}</p>
                   <h5>{news.title}</h5>
                   <p>{news.excerpt}</p>
-                  {/* <a href="#" className="text-primary">Read More</a> */}
+                  
                 </div>
               </div>
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
       {/* Contact Us Section */}
       <section className="py-5" id="contact" style={{ backgroundColor: '#f9f9f9' }}>
         <div className="container">
