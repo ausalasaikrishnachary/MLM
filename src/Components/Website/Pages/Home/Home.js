@@ -55,6 +55,11 @@ const ShrirajLandingPage = () => {
   const [activeTab, setActiveTab] = useState('buy');
   const [searchResults, setSearchResults] = useState([]);
 const navigate = useNavigate();
+ const [carouselItems, setCarouselItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+ 
+  
 
 
   useEffect(() => {
@@ -250,27 +255,27 @@ const navigate = useNavigate();
   ];
 
   const categories = [
-    {
-      title: 'Residential',
-      count: '2437 Properties',
-      image: 'https://img.freepik.com/free-photo/real-estate-agent-holding-house_23-2147761175.jpg',
-    },
-    {
-      title: 'Commercial',
-      count: '521 Properties',
-      image: 'https://img.freepik.com/premium-photo/business-center-buildings-real-estate-cityscape-background_10307-1926.jpg',
-    },
-    {
-      title: 'Agriculture',
-      count: '61 Properties',
-      image: 'https://img.freepik.com/premium-photo/top-view-agriculture-green-fields_31965-27869.jpg',
-    },
-    {
-      title: 'Industrial',
-      count: '11 Properties',
-      image: 'https://img.freepik.com/premium-photo/modern-industrial-building-exterior_1127-3055.jpg',
-    },
-  ];
+  {
+    title: 'Residential',
+    count: '2437 Properties',
+    image: 'https://img.freepik.com/free-psd/modern-farmhouse-meadow-hill-generative-ai_587448-2217.jpg', // High-rise apartments
+  },
+  {
+    title: 'Commercial',
+    count: '521 Properties',
+    image: 'https://img.freepik.com/free-photo/office-skyscrapers-business-district_107420-95733.jpg?ga=GA1.1.944433368.1729337049&semt=ais_hybrid&w=740', // Office buildings
+  },
+  {
+    title: 'Agriculture',
+    count: '61 Properties',
+    image: 'https://img.freepik.com/free-photo/young-plants-growing-very-large-plant-commercial-greenhouse_273609-14259.jpg', // Lush farmland
+  },
+  {
+    title: 'Industrial',
+    count: '11 Properties',
+    image: 'https://img.freepik.com/free-photo/portrait-engineer-job-site-work-hours_23-2151589636.jpg', // Factory building
+  },
+];
 
   const properties = [
     {
@@ -385,8 +390,27 @@ const navigate = useNavigate();
     }
   ];
 
+    useEffect(() => {
+    const fetchCarouselData = async () => {
+      try {
+        const response = await axios.get('https://rahul30.pythonanywhere.com/carousel/');
+        setCarouselItems(response.data);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+        console.error('Error fetching carousel data:', err);
+      }
+    };
+
+    fetchCarouselData();
+  }, []);
+
   const imageUrl = "https://www.developer.com/wp-content/uploads/slider/cache/b6f674e40adb492ce3d3a75127c097a3/Art-Deco-City-1200-x-600.jpg";
 
+    if (loading) return <div className="text-center py-5">Loading carousel...</div>;
+  if (error) return <div className="text-center py-5 text-danger">Error: {error}</div>;
+  if (!carouselItems.length) return <div className="text-center py-5">No carousel items found</div>;
 
   return (
     <>
@@ -488,18 +512,22 @@ const navigate = useNavigate();
               </span>
             }
           >
-            {[1, 2, 3].map((i) => (
-              <Carousel.Item key={i} className="position-relative">
-                {/* Image */}
-                <img
-                  className="d-block w-100"
-                  src={imageUrl}
-                  alt={`Slide ${i}`}
-                  style={{
-                    maxHeight: "500px",
-                    objectFit: "cover",
-                    width: "100vw",
-                  }}
+           {carouselItems.map((item, index) => (
+            <Carousel.Item key={index} className="position-relative">
+              {/* Image */}
+              <img
+                className="d-block w-100"
+                src={`https://rahul30.pythonanywhere.com${item.image}`}
+                alt={item.title || `Slide ${index + 1}`}
+                style={{
+                  maxHeight: "500px",
+                  objectFit: "cover",
+                  width: "100vw",
+                }}
+                onError={(e) => {
+                  e.target.onerror = null; 
+                  e.target.src = "https://via.placeholder.com/1200x500?text=Image+Not+Found";
+                }}
                 />
 
                 {/* ✅ Dark Overlay */}
@@ -520,7 +548,7 @@ const navigate = useNavigate();
                   className="position-absolute top-50 start-50 translate-middle text-white text-center"
                   style={{ zIndex: 3, marginTop: "-40px" }} // Make sure this is above the overlay
                 >
-                  <div className="hero-content">
+                  <div className="hero-content"> 
                     <h1 className="display-5 fw-bold mb-4">Premium Commercial Real Estate</h1>
                     <p className="lead mb-4">
                       Find the perfect warehouse or commercial building for your business with Shriraj Real Estate
@@ -721,6 +749,8 @@ const navigate = useNavigate();
 
       {/* cards */}
 
+         
+
       <Box sx={{ py: 6 }}>
         <Box textAlign="center" mb={4}>
           <Typography variant="h4" fontWeight="bold" gutterBottom>
@@ -731,7 +761,7 @@ const navigate = useNavigate();
           </Typography>
         </Box>
 
-        <Box sx={{ width: '80%', mx: 'auto' }}>
+        <Box sx={{ width: '70%', mx: 'auto' }}>
           <Grid container spacing={3} justifyContent="center">
             {categories.map((category, index) => (
               <Grid item xs={12} sm={6} md={3} key={index}>
@@ -745,7 +775,7 @@ const navigate = useNavigate();
                 >
                   <CardMedia
                     component="img"
-                    height="120"
+                    height="200"
                     image={category.image}
                     alt={category.title}
                     sx={{
