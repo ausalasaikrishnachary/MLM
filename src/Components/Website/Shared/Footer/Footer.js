@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
 import { Box, Typography, TextField, Button, Card, Grid, IconButton } from "@mui/material";
 import { Facebook, Instagram, LinkedIn, YouTube, Twitter } from "@mui/icons-material";
-// import "./Footer.css";
+import "./Footer.css";
 import Logo from '../../../Images/logo.png';
 import Divider from '@mui/material/Divider';
 import { Container, Navbar, Nav, Row, Col, Form, } from 'react-bootstrap';

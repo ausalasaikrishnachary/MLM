@@ -341,6 +341,40 @@ const navigate = useNavigate();
                   )
                 ))}
               </Box>
+<Button
+  variant="outlined"
+  component={NavLink}
+  to="/signup"
+  sx={{
+    mr: 1,
+    fontSize: '16px',
+    fontFamily: 'Calibre, sans-serif',
+    fontWeight: 'bold',
+    borderColor: '#2d1656',
+    color: '#2d1656',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 1,
+    '& .free-label': {
+      backgroundColor: 'green',
+      color: 'white',
+      fontSize: '10px',
+      fontWeight: 'bold',
+      px: 1,
+      py: '2px',
+      borderRadius: '4px',
+    },
+    '&.active': {
+      backgroundColor: '#2d1656',
+      color: '#ffffff',
+    },
+  }}
+>
+  Post Property
+  <Box className="free-label">Free</Box>
+</Button>
+
+
 
               <Button
                 variant="outlined"

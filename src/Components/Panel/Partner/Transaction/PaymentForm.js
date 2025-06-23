@@ -101,7 +101,7 @@ function PaymentForm() {
             const fileName = `Invoice_${formData.property_name.replace(/\s+/g, '_')}.pdf`;
             saveAs(pdfBlob, fileName);
 
-            return true;
+            return pdfBlob; // ✅ Return the blob instead of true
         } catch (error) {
             console.error('Error generating receipt:', error);
             Swal.fire({
@@ -109,9 +109,10 @@ function PaymentForm() {
                 title: 'Receipt Generation Failed',
                 text: 'There was an error generating the receipt PDF.'
             });
-            return false;
+            return null; // ⚠️ Return null so it can be checked before upload
         }
     };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -126,6 +127,8 @@ function PaymentForm() {
             payment_type: "Full-Amount",
             company_commission: companyCommission,
             role: "agent",
+            transaction_for: "property",
+
         };
 
         try {
@@ -179,20 +182,22 @@ function PaymentForm() {
 
             // 4. Generate receipt
             const pdfBlob = await generateReceipt(invoiceNumber);
+            if (!pdfBlob) return;
 
             // Step 4: Prepare form data for file upload
             const formData = new FormData();
             const fileName = `${latestTransaction.document_number}.pdf`;
-            formData.append('document_file', pdfBlob, fileName);
+            formData.append('document_file', new File([pdfBlob], fileName, { type: 'application/pdf' }));
+
             console.log("Invoice generated");
 
-                
-                // Step 5: Update transaction with the PDF file
-                await axios.put(`${baseurl}/transactions/${transactionId}/`, formData, {
-                  headers: {
+
+            // Step 5: Update transaction with the PDF file
+            await axios.put(`${baseurl}/transactions/${transactionId}/`, formData, {
+                headers: {
                     'Content-Type': 'multipart/form-data'
-                  }
-                });
+                }
+            });
 
             // Final success alert
             Swal.fire({

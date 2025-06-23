@@ -45,7 +45,7 @@ const FilteredProperties = () => {
     const fetchData = async () => {
       try {
         // Fetch properties
-        const propertiesResponse = await fetch(`${baseurl}/properties/search/?${looking_to}=SELL&q=${q}/`);
+        const propertiesResponse = await fetch(`${baseurl}/properties/search/?looking_to=${looking_to}&q=${q}`);
         if (!propertiesResponse.ok) throw new Error('Failed to fetch properties');
         const propertiesData = await propertiesResponse.json();
         setProperties(propertiesData);
