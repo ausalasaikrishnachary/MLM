@@ -457,7 +457,7 @@ const ShrirajLandingPage = () => {
     useEffect(() => {
     const fetchCarouselData = async () => {
       try {
-        const response = await axios.get('https://rahul30.pythonanywhere.com/carousel/');
+        const response = await axios.get(`${baseurl}/carousel/`);
         setCarouselItems(response.data);
         setLoading(false);
       } catch (err) {
@@ -581,7 +581,7 @@ const ShrirajLandingPage = () => {
               {/* Image */}
               <img
                 className="d-block w-100"
-                src={`https://rahul30.pythonanywhere.com${item.image}`}
+                src={`${baseurl}${item.image}`}
                 alt={item.title || `Slide ${index + 1}`}
                 style={{
                   maxHeight: "500px",

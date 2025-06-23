@@ -59,7 +59,7 @@ function AddCarousel() {
   }
 
   try {
-    await axios.post('https://rahul30.pythonanywhere.com/carousel/', formDataToSend, {
+    await axios.post(`${baseurl}/carousel/`, formDataToSend, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }

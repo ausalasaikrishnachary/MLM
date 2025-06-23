@@ -37,7 +37,7 @@ import VideocamIcon from '@mui/icons-material/Videocam';
 
 const AssetsUI = () => {
   const [sortBy, setSortBy] = useState('');
-  const [properties, setProperties] = useState([]);
+  const [properties, setProperties] = useState([]); 
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const navigate = useNavigate();
@@ -627,7 +627,7 @@ const AssetsUI = () => {
                               textTransform: 'none',
                               '&:hover': { backgroundColor: '#59ed7c', color: 'rgb(5,5,5)' }
                             }}
-                            disabled={!subscriptionPaid || property.status !== 'available'}
+                            // disabled={!subscriptionPaid || property.status !== 'available'}
                             onClick={() => navigate(`/p-bookingassets?property_id=${property.property_id}`)}
                           >
                             Buy Now

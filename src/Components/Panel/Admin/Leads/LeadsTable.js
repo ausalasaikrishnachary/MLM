@@ -22,6 +22,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import Header from "../../../Shared/Navbar/Navbar";
 import { Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
+import { baseurl } from "../../../BaseURL/BaseURL";
 
 const LeadsTable = () => {
   const navigate = useNavigate();
@@ -53,7 +54,7 @@ const LeadsTable = () => {
     const fetchLeads = async () => {
       try {
         console.log("Fetching leads data from API...");
-        const response = await axios.get("https://rahul30.pythonanywhere.com/leads/");
+        const response = await axios.get(`${baseurl}/leads/`);
         console.log("API response received:", response.data);
         
         if (response.data && Array.isArray(response.data)) {
