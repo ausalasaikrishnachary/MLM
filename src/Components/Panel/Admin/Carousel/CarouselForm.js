@@ -20,7 +20,7 @@ function AddCarousel() {
     image: null
   });
 
-  const [previewImage, setPreviewImage] = useState(null);
+  const [fileName, setFileName] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -38,59 +38,58 @@ function AddCarousel() {
       image: file
     }));
     
-    // Create preview
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreviewImage(reader.result);
-    };
+    // Set the file name
     if (file) {
-      reader.readAsDataURL(file);
+      setFileName(file.name);
+    } else {
+      setFileName('');
     }
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  
-  const formDataToSend = new FormData();
-  formDataToSend.append('title', formData.title);
-  formDataToSend.append('description', formData.description);
-  if (formData.image) {
-    formDataToSend.append('image', formData.image);
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    const formDataToSend = new FormData();
+    formDataToSend.append('title', formData.title);
+    formDataToSend.append('description', formData.description);
+    if (formData.image) {
+      formDataToSend.append('image', formData.image);
+    }
 
-  try {
-    await axios.post(`${baseurl}/carousel/`, formDataToSend, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
+    try {
+      await axios.post(`${baseurl}/carousel/`, formDataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
 
-    // Reset form after successful submission
-    setFormData({
-      title: '',
-      description: '',
-      image: null
-    });
-    setPreviewImage(null);
+      // Reset form after successful submission
+      setFormData({
+        title: '',
+        description: '',
+        image: null
+      });
+      setFileName('');
 
-    Swal.fire({
-      icon: 'success',
-      title: 'Success!',
-      text: 'Carousel added successfully!',
-      timer: 2000,
-      showConfirmButton: false
-    });
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: 'Carousel added successfully!',
+        timer: 2000,
+        showConfirmButton: false
+      });
+      navigate('/a-table-carousel');
 
-  } catch (error) {
-    console.error('Error submitting form:', error);
+    } catch (error) {
+      console.error('Error submitting form:', error);
 
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: error.response?.data?.message || 'Error submitting form'
-    });
-  }
-};
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.response?.data?.message || 'Error submitting form'
+      });
+    }
+  };
 
   return (
     <>
@@ -108,59 +107,62 @@ function AddCarousel() {
           }}
         >
           <Grid container spacing={3} justifyContent="center">
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Title"
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-                variant="outlined"
-                required
-              />
+            {/* First Row - All three fields in one row */}
+            <Grid container item spacing={3} xs={12}>
+              {/* Title Field */}
+              <Grid item xs={12} md={4}>
+                <TextField
+                  fullWidth
+                  label="Title"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleChange}
+                  variant="outlined"
+                  required
+                />
+              </Grid>
+              
+              {/* Description Field */}
+              <Grid item xs={12} md={4}>
+                <TextField
+                  fullWidth
+                  label="Description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  variant="outlined"
+                  required
+                  multiline
+                  rows={1}
+                />
+              </Grid>
+              
+              {/* Image Upload Field */}
+              <Grid item xs={12} md={4}>
+                <Typography variant="h6" gutterBottom>Upload Images</Typography>
+                <input
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  id="carousel-image-upload"
+                  type="file"
+                  onChange={handleImageChange}
+                />
+                <label htmlFor="carousel-image-upload">
+                  <Button variant="contained" component="span" fullWidth>
+                    Upload Image
+                  </Button>
+                </label>
+                {fileName && (
+                  <Box mt={2}>
+                    <Typography variant="body2">
+                      Selected file: {fileName}
+                    </Typography>
+                  </Box>
+                )}
+              </Grid>
             </Grid>
             
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                label="Description"
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                variant="outlined"
-                required
-                multiline
-              />
-            </Grid>
-            
-            <Grid item xs={12} md={6}>
-              <input
-                accept="image/*"
-                style={{ display: 'none' }}
-                id="carousel-image-upload"
-                type="file"
-                onChange={handleImageChange}
-              />
-              <label htmlFor="carousel-image-upload">
-                <Button variant="contained" component="span" fullWidth>
-                  Upload Image
-                </Button>
-              </label>
-              {previewImage && (
-                <Box mt={2}>
-                  <img 
-                    src={previewImage} 
-                    alt="Preview" 
-                    style={{ 
-                      maxWidth: '100%', 
-                      maxHeight: '200px',
-                      marginTop: '10px'
-                    }} 
-                  />
-                </Box>
-              )}
-            </Grid>
-            
+            {/* Submit Button */}
             <Grid container justifyContent="center">
               <Grid item xs="auto">
                 <Button 
@@ -168,7 +170,7 @@ function AddCarousel() {
                   variant="contained" 
                   fullWidth={false}
                   sx={{ 
-                    height: '56px',
+                    height: '46px',
                     fontSize: '1rem',
                     mt: 2,
                     px: 4

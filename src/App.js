@@ -126,6 +126,7 @@ import LeadsTable from "./Components/Panel/Admin/Leads/LeadsTable";
 import AddCarousel from "./Components/Panel/Admin/Carousel/CarouselForm";
 import Viewdetails from "./Components/Website/Pages/Properties/ViewPropertiesDetails";
 import ViewPropertiesDetails from "./Components/Website/Pages/Properties/ViewPropertiesDetails"
+import CarouselList from "./Components/Panel/Admin/Carousel/CarouselTable";
 
 
 
@@ -176,6 +177,7 @@ function Layout() {
           <Route path="/a-investormanagement" element={<Tmanagement />} />
            <Route path="/a-popup-leads" element={<LeadsTable />} />
              <Route path="/a-carousel" element={<AddCarousel />} />
+               <Route path="/a-table-carousel" element={<CarouselList />} />
           <Route path="/View_Tmanagement" element={<View_Tmanagement />} />
           <Route path="/Edit_Tmanagement" element={<Edit_Tmanagement />} />
 

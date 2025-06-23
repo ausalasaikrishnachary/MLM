@@ -482,7 +482,7 @@ const navigate = useNavigate();
         <Card className="shadow rounded-0 border-0">
           <Carousel
             fade={false}
-            interval={3000}
+            interval={2000}
             indicators={true}
             prevIcon={
               <span
