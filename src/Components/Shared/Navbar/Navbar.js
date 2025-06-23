@@ -25,7 +25,7 @@ import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 
-export default function Header() {
+export default function Header() { 
   // Navigation items with Operations dropdown
   const navItems = [
     { label: 'Dashboard', path: '/a-dashboard' },
@@ -42,6 +42,8 @@ export default function Header() {
       ]
     },
         { label: 'Meetings', path: '/a-meetings' },
+        { label: 'Carousel', path: '/a-carousel' },
+        { label: 'Leads', path: '/a-popup-leads' },
     // { label: 'Agents', path: '/a-partners' },
   ];
 

@@ -122,6 +122,8 @@ import PropertyDetail from "./Components/Website/Pages/Properties/PropertyDetail
 import Popup from "./Components/Popup/Popup";
 import FilteredProperties from "./Components/Website/Pages/Home/FilteredProperties";
 import PaymentCallback from "./Components/Panel/Partner/Plans/PaymentCallback";
+import LeadsTable from "./Components/Panel/Admin/Leads/LeadsTable";
+import AddCarousel from "./Components/Panel/Admin/Carousel/CarouselForm";
 
 
 
@@ -170,6 +172,8 @@ function Layout() {
           <Route path="/a-dashboard" element={<AdminDashboard />} />
           <Route path="/a-asset" element={<AdminAsset />} />
           <Route path="/a-investormanagement" element={<Tmanagement />} />
+           <Route path="/a-popup-leads" element={<LeadsTable />} />
+             <Route path="/a-carousel" element={<AddCarousel />} />
           <Route path="/View_Tmanagement" element={<View_Tmanagement />} />
           <Route path="/Edit_Tmanagement" element={<Edit_Tmanagement />} />
 

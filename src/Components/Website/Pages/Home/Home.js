@@ -55,6 +55,9 @@ const ShrirajLandingPage = () => {
   const [activeTab, setActiveTab] = useState('buy');
   const [searchResults, setSearchResults] = useState([]);
 const navigate = useNavigate();
+ const [carouselItems, setCarouselItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
 
   useEffect(() => {
@@ -385,8 +388,27 @@ const navigate = useNavigate();
     }
   ];
 
+    useEffect(() => {
+    const fetchCarouselData = async () => {
+      try {
+        const response = await axios.get('https://rahul30.pythonanywhere.com/carousel/');
+        setCarouselItems(response.data);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+        console.error('Error fetching carousel data:', err);
+      }
+    };
+
+    fetchCarouselData();
+  }, []);
+
   const imageUrl = "https://www.developer.com/wp-content/uploads/slider/cache/b6f674e40adb492ce3d3a75127c097a3/Art-Deco-City-1200-x-600.jpg";
 
+    if (loading) return <div className="text-center py-5">Loading carousel...</div>;
+  if (error) return <div className="text-center py-5 text-danger">Error: {error}</div>;
+  if (!carouselItems.length) return <div className="text-center py-5">No carousel items found</div>;
 
   return (
     <>
@@ -488,18 +510,22 @@ const navigate = useNavigate();
               </span>
             }
           >
-            {[1, 2, 3].map((i) => (
-              <Carousel.Item key={i} className="position-relative">
-                {/* Image */}
-                <img
-                  className="d-block w-100"
-                  src={imageUrl}
-                  alt={`Slide ${i}`}
-                  style={{
-                    maxHeight: "500px",
-                    objectFit: "cover",
-                    width: "100vw",
-                  }}
+           {carouselItems.map((item, index) => (
+            <Carousel.Item key={index} className="position-relative">
+              {/* Image */}
+              <img
+                className="d-block w-100"
+                src={`https://rahul30.pythonanywhere.com${item.image}`}
+                alt={item.title || `Slide ${index + 1}`}
+                style={{
+                  maxHeight: "500px",
+                  objectFit: "cover",
+                  width: "100vw",
+                }}
+                onError={(e) => {
+                  e.target.onerror = null; 
+                  e.target.src = "https://via.placeholder.com/1200x500?text=Image+Not+Found";
+                }}
                 />
 
                 {/* ✅ Dark Overlay */}
@@ -520,7 +546,7 @@ const navigate = useNavigate();
                   className="position-absolute top-50 start-50 translate-middle text-white text-center"
                   style={{ zIndex: 3, marginTop: "-40px" }} // Make sure this is above the overlay
                 >
-                  <div className="hero-content">
+                  <div className="hero-content"> 
                     <h1 className="display-5 fw-bold mb-4">Premium Commercial Real Estate</h1>
                     <p className="lead mb-4">
                       Find the perfect warehouse or commercial building for your business with Shriraj Real Estate
