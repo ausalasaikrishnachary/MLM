@@ -54,15 +54,12 @@ const ShrirajLandingPage = () => {
 
   const [activeTab, setActiveTab] = useState('buy');
   const [searchResults, setSearchResults] = useState([]);
-<<<<<<< HEAD
 const navigate = useNavigate();
-=======
  const [carouselItems, setCarouselItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
-  const [properties, setProperties] = useState([]);
->>>>>>> 2e227497753d41978a03885351470d4239e18d67
+ 
+  
 
 
   useEffect(() => {
