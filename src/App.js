@@ -140,7 +140,7 @@ function Layout() {
     if (publicPaths.includes(location.pathname)) {
       timeoutId = setTimeout(() => {
         setShowPopup(true);
-      }, 60000); // 60 seconds
+      }, 1000); // 60 seconds
     }
 
     return () => clearTimeout(timeoutId); // cleanup on route change
