@@ -14,6 +14,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import 'font-awesome/css/font-awesome.min.css';
 import 'aos/dist/aos.css';
+import AOS from 'aos';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
@@ -54,23 +55,88 @@ const ShrirajLandingPage = () => {
 
   const [activeTab, setActiveTab] = useState('buy');
   const [searchResults, setSearchResults] = useState([]);
-const navigate = useNavigate();
  const [carouselItems, setCarouselItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const [properties, setProperties] = useState([]);
 
 
+  // ✅ Initialize AOS
   useEffect(() => {
-    // Initialize AOS (Animate On Scroll) if needed
     if (typeof window !== 'undefined') {
       const AOS = require('aos');
       AOS.init({
         duration: 800,
         easing: 'ease-in-out',
-        once: true
+        once: true,
       });
     }
   }, []);
+
+  // ✅ Fetch properties from API
+  // ✅ Fetch properties from API
+  useEffect(() => {
+    axios.get('https://shrirajteam.com:81/property/')
+      .then((response) => {
+        const updatedData = response.data.map((item) => {
+          let images = [];
+
+          // ✅ Extract image URLs from image objects
+          if (Array.isArray(item.property_images) && item.property_images.length > 0) {
+            images = item.property_images
+              .filter(imgObj => imgObj.image)
+              .map(imgObj => imgObj.image);
+          } else if (item.image) {
+            // ✅ Fallback to single image
+            images = [item.image];
+          }
+
+          // ✅ Fallback placeholder
+          if (images.length === 0) {
+            images = ['https://via.placeholder.com/400x200?text=No+Image'];
+          }
+
+          return {
+            id: item.id,
+            title: item.property_title,
+            details: item.description,
+            images: images,
+          };
+        });
+
+        setProperties(updatedData);
+      })
+      .catch((error) => {
+        console.error('Error fetching properties:', error);
+      });
+  }, []);
+
+
+
+
+
+
+
+  //   if (Array.isArray(item.property_images) && item.property_images.length > 0) {
+  //     images = item.property_images;
+  //   } else if (item.image) {
+  //     images = [item.image];
+  //   }
+
+  //   // Optional fallback
+  //   if (images.length === 0) {
+  //     images = ['https://via.placeholder.com/400x200?text=No+Image'];
+  //   }
+
+  //   return {
+  //     id: item.id,
+  //     title: item.property_title,
+  //     details: item.description,
+  //     images: images,
+  //   };
+  // });
+
 
 
   const SearchInput = ({ activeTab }) => {
@@ -275,42 +341,42 @@ const navigate = useNavigate();
     },
   ];
 
-  const properties = [
-    {
-      id: 1,
-      title: 'Elegant Villa',
-      details: '3 BHK in a prime location',
-      images: [
-        "https://www.shutterstock.com/image-photo/land-plot-management-real-estate-260nw-2591764263.jpg",
-        "https://www.shutterstock.com/image-photo/land-plot-management-real-estate-260nw-2591764263.jpg",
-        "https://www.shutterstock.com/image-photo/land-plot-management-real-estate-260nw-2591764263.jpg",
-      ]
-    },
+  // const properties = [
+  //   {
+  //     id: 1,
+  //     title: 'Elegant Villa',
+  //     details: '3 BHK in a prime location',
+  //     images: [
+  //       "https://www.shutterstock.com/image-photo/land-plot-management-real-estate-260nw-2591764263.jpg",
+  //       "https://www.shutterstock.com/image-photo/land-plot-management-real-estate-260nw-2591764263.jpg",
+  //       "https://www.shutterstock.com/image-photo/land-plot-management-real-estate-260nw-2591764263.jpg",
+  //     ]
+  //   },
 
-    {
-      id: 2,
-      title: 'Villa Sahi',
-      details: '3 BHK in a prime location',
-      images: [
-        'https://t4.ftcdn.net/jpg/03/70/64/43/360_F_370644357_MDF4UXLAXTyyi2OyuK66tWW9cA2f8svL.jpg',
-        'https://t4.ftcdn.net/jpg/03/70/64/43/360_F_370644357_MDF4UXLAXTyyi2OyuK66tWW9cA2f8svL.jpg',
-        'https://t4.ftcdn.net/jpg/03/70/64/43/360_F_370644357_MDF4UXLAXTyyi2OyuK66tWW9cA2f8svL.jpg',
-      ]
-    },
+  //   {
+  //     id: 2,
+  //     title: 'Villa Sahi',
+  //     details: '3 BHK in a prime location',
+  //     images: [
+  //       'https://t4.ftcdn.net/jpg/03/70/64/43/360_F_370644357_MDF4UXLAXTyyi2OyuK66tWW9cA2f8svL.jpg',
+  //       'https://t4.ftcdn.net/jpg/03/70/64/43/360_F_370644357_MDF4UXLAXTyyi2OyuK66tWW9cA2f8svL.jpg',
+  //       'https://t4.ftcdn.net/jpg/03/70/64/43/360_F_370644357_MDF4UXLAXTyyi2OyuK66tWW9cA2f8svL.jpg',
+  //     ]
+  //   },
 
 
-    {
-      id: 3,
-      title: 'luxurystays',
-      details: '3 BHK in a prime location',
-      images: [
-        'https://luxurystays.in/villas/AzulD/BD2.jpg',
-        'https://luxurystays.in/villas/AzulD/BD2.jpg',
-        'https://luxurystays.in/villas/AzulD/BD2.jpg',
-      ]
-    },
+  //   {
+  //     id: 3,
+  //     title: 'luxurystays',
+  //     details: '3 BHK in a prime location',
+  //     images: [
+  //       'https://luxurystays.in/villas/AzulD/BD2.jpg',
+  //       'https://luxurystays.in/villas/AzulD/BD2.jpg',
+  //       'https://luxurystays.in/villas/AzulD/BD2.jpg',
+  //     ]
+  //   },
 
-  ];
+  // ];
 
   // const properties = [
   //   {
@@ -662,7 +728,7 @@ const navigate = useNavigate();
         <div className="container">
           <h2 className="section-title text-left mb-5" data-aos="fade-up">Featured Property Sale</h2>
           <div className="row">
-            {properties.map((property, index) => (
+            {properties.slice(0, 3).map((property, index) => (
               <div
                 className="col-md-4 mb-4"
                 key={property.id}
@@ -671,48 +737,57 @@ const navigate = useNavigate();
               >
                 <div className="property-card card">
                   <Carousel
-                    interval={3000} // Auto-slide every 3 seconds
+                    interval={3000}
                     indicators={false}
                     controls={true}
-                    pause={false} // Prevent pause on hover
+                    pause={false}
                     prevLabel=""
                     nextLabel=""
                     prevIcon={<span className="carousel-control-prev-icon" aria-hidden="true" />}
                     nextIcon={<span className="carousel-control-next-icon" aria-hidden="true" />}
                   >
-                    {property.images.map((imgSrc, i) => (
-                      <Carousel.Item key={i}>
-                        <img
-                          src={imgSrc}
-                          className="d-block w-100"
-                          alt={`slide-${i}`}
-                          style={{ borderRadius: '8px', maxHeight: '200px', objectFit: 'cover' }}
-                        />
-                      </Carousel.Item>
-                    ))}
+                    {(property.images || [])
+                      .filter(imgPath => typeof imgPath === 'string' && imgPath.trim() !== '')
+                      .map((imgPath, i) => {
+                        const finalSrc = imgPath.startsWith('http')
+                          ? imgPath
+                          : `${baseurl}${imgPath.startsWith('/') ? '' : '/'}${imgPath}`;
+                        return (
+                          <Carousel.Item key={i}>
+                            <img
+                              src={finalSrc}
+                              className="d-block w-100"
+                              alt={`slide-${i}`}
+                              style={{
+                                borderRadius: '8px',
+                                maxHeight: '200px',
+                                objectFit: 'cover',
+                                width: '100%',
+                              }}
+                            />
+                          </Carousel.Item>
+                        );
+                      })}
                   </Carousel>
 
                   <div className="card-body">
-
-                    {/* Row 1: Left - Sell/Residential | Right - Sqft/Price */}
                     <div className="row mb-2 align-items-center">
                       <div className="col text-start ps-0" style={{ marginLeft: '-5px' }}>
                         <span className="badge bg-success me-2">Sell</span>
                         <span className="badge bg-secondary">Residential</span>
                       </div>
                     </div>
-                    {/* Row 2: Title, Details, Button */}
                     <h5 className="card-title">{property.title}</h5>
                     <p className="card-text">{property.details}</p>
                     <a href="/properties" className="btn btn-primary view-property-btn px-4 py-2">
                       View Property
                     </a>
-
                   </div>
                 </div>
               </div>
             ))}
           </div>
+
           <div className="text-center mt-3">
             <a href="/properties" className="btn btn-primary view-property-btn px-4 py-2">
               Browse All Properties
@@ -720,6 +795,7 @@ const navigate = useNavigate();
           </div>
         </div>
       </section>
+
 
 
 
@@ -945,7 +1021,9 @@ const navigate = useNavigate();
       {/* Properties Section */}
       <section className="py-5 bg-light">
         <div className="container">
-          <h2 className="section-title text-left mb-5" data-aos="fade-up"> Properties</h2>
+          <h2 className="section-title text-left mb-5" data-aos="fade-up">
+            Featured Property Sale
+          </h2>
           <div className="row">
             {properties.map((property, index) => (
               <div
@@ -956,14 +1034,24 @@ const navigate = useNavigate();
               >
                 <div className="property-card card">
                   <Carousel
-                    interval={3000} // Auto-slide every 3 seconds
+                    interval={3000}
                     indicators={false}
                     controls={true}
-                    pause={false} // Prevent pause on hover
+                    pause={false}
                     prevLabel=""
                     nextLabel=""
-                    prevIcon={<span className="carousel-control-prev-icon" aria-hidden="true" />}
-                    nextIcon={<span className="carousel-control-next-icon" aria-hidden="true" />}
+                    prevIcon={
+                      <span
+                        className="carousel-control-prev-icon"
+                        aria-hidden="true"
+                      />
+                    }
+                    nextIcon={
+                      <span
+                        className="carousel-control-next-icon"
+                        aria-hidden="true"
+                      />
+                    }
                   >
                     {property.images.map((imgSrc, i) => (
                       <Carousel.Item key={i}>
@@ -971,35 +1059,44 @@ const navigate = useNavigate();
                           src={imgSrc}
                           className="d-block w-100"
                           alt={`slide-${i}`}
-                          style={{ borderRadius: '8px', maxHeight: '200px', objectFit: 'cover' }}
+                          style={{
+                            borderRadius: '8px',
+                            maxHeight: '200px',
+                            objectFit: 'cover',
+                          }}
                         />
                       </Carousel.Item>
                     ))}
                   </Carousel>
 
                   <div className="card-body">
-
-                    {/* Row 1: Left - Sell/Residential | Right - Sqft/Price */}
                     <div className="row mb-2 align-items-center">
-                      <div className="col text-start ps-0" style={{ marginLeft: '-5px' }}>
+                      <div
+                        className="col text-start ps-0"
+                        style={{ marginLeft: '-5px' }}
+                      >
                         <span className="badge bg-success me-2">Sell</span>
                         <span className="badge bg-secondary">Residential</span>
                       </div>
                     </div>
-                    {/* Row 2: Title, Details, Button */}
                     <h5 className="card-title">{property.title}</h5>
                     <p className="card-text">{property.details}</p>
-                    <a href="/properties" className="btn btn-primary view-property-btn px-4 py-2">
+                    <a
+                      href="/properties"
+                      className="btn btn-primary view-property-btn px-4 py-2"
+                    >
                       View Property
                     </a>
-
                   </div>
                 </div>
               </div>
             ))}
           </div>
           <div className="text-center mt-3">
-            <a href="/properties" className="btn btn-primary view-property-btn px-4 py-2">
+            <a
+              href="/properties"
+              className="btn btn-primary view-property-btn px-4 py-2"
+            >
               Browse All Properties
             </a>
           </div>

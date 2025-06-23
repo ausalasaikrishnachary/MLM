@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Button, 
-  TextField, 
-  Grid, 
-  Container, 
-  Typography, 
-  Menu, 
+import {
+  Button,
+  TextField,
+  Grid,
+  Container,
+  Typography,
+  Menu,
   MenuItem,
   Box
 } from '@mui/material';
@@ -24,7 +24,7 @@ const Properties = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedType, setSelectedType] = useState('Property Sub Types');
-   const location = useLocation();
+  const location = useLocation();
   const categoryName = location.state?.categoryName || "All";
 
   useEffect(() => {
@@ -66,18 +66,18 @@ const Properties = () => {
   };
 
   const filteredProperties = properties.filter(property => {
-    const matchesSearch = 
+    const matchesSearch =
       property.property_title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       property.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      property.city.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      property.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
       property.total_property_value.toLowerCase().includes(searchTerm.toLowerCase()) ||
       property.plot_area_sqft.toLowerCase().includes(searchTerm.toLowerCase()) ||
       property.builtup_area_sqft.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesType = 
-      selectedType === 'Property Sub Types' || 
+
+    const matchesType =
+      selectedType === 'Property Sub Types' ||
       property.property_type === propertyTypes.find(t => t.name === selectedType)?.property_type_id;
-    
+
     return matchesSearch && matchesType;
   });
 
@@ -106,24 +106,24 @@ const Properties = () => {
       maximumFractionDigits: 0
     }).format(amount);
   };
-  
+
 
   return (
     <Container className="properties">
-     <div className="filters-container">
+      <div className="filters-container">
         <TextField
           className="search-bar"
           label="Search properties here..."
           variant="outlined"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          
+
         />
 
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
           <Button
-            sx={{ 
-              color: "#2E166D", 
+            sx={{
+              color: "#2E166D",
               border: "1px solid #2E166D",
               '&:hover': {
                 backgroundColor: "#2E166D",
@@ -148,8 +148,8 @@ const Properties = () => {
               Property Sub Types
             </MenuItem>
             {propertyTypes.map((type) => (
-              <MenuItem 
-                key={type.property_type_id} 
+              <MenuItem
+                key={type.property_type_id}
                 onClick={() => handleTypeSelect(type)}
               >
                 {type.name}
@@ -159,9 +159,9 @@ const Properties = () => {
         </Box>
       </div>
       <Typography variant="h4" className="mt-3" gutterBottom>
-             {categoryName} Properties:
+        {categoryName} Properties:
       </Typography>
-      
+
       {filteredProperties.length === 0 ? (
         <Typography variant="h6" align="center" sx={{ mt: 4 }}>
           No properties found matching your search criteria
@@ -173,8 +173,8 @@ const Properties = () => {
               <div className="property-card">
                 <img
                   src={
-                    property.images && property.images.length > 0 
-                      ? `${baseurl}${property.images[0].image}` 
+                    property.images && property.images.length > 0
+                      ? `${baseurl}${property.images[0].image}`
                       : "https://via.placeholder.com/300x200?text=No+Image"
                   }
                   alt={property.property_title}
@@ -197,20 +197,37 @@ const Properties = () => {
                 </div>
                 <div className="btn-container single-button">
                   <Button
-                    sx={{ 
-                      color: "#2E166D", 
-                      border: "1px solid #2E166D", 
+                    sx={{
+                      color: "#2E166D",
+                      border: "1px solid #2E166D",
                       width: "100%",
                       '&:hover': {
                         backgroundColor: "#2E166D",
                         color: "#FFFFFF"
                       }
                     }}
-                      onClick={() => navigate('/propertydetails')}
-                    // onClick={() => navigate(`/propertydetails/${property.property_id}`)}
+                 
+                    onClick={() => navigate(`/viewpropertiesdetails/${property.property_id}`, { state: { property } })}
+
                   >
                     View Details
                   </Button>
+
+                  <Button
+                    sx={{
+                      color: "#2E166D",
+                      border: "1px solid #2E166D",
+                      width: "100%",
+                      '&:hover': {
+                        backgroundColor: "#2E166D",
+                        color: "#FFFFFF"
+                      }
+                    }}
+                    onClick={() => navigate('/login')}
+                  >
+                    Buy now
+                  </Button>
+
                 </div>
               </div>
             </Grid>

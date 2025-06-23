@@ -118,12 +118,14 @@ import Contact from "./Components/Website/Pages/Contactus/Contactus";
 import Properties from "./Components/Website/Pages/Properties/Properties";
 import Header from "./Components/Website/Shared/Navbar/Navbar";
 import Footer from "./Components/Website/Shared/Footer/Footer";
-import PropertyDetail from "./Components/Website/Pages/Properties/PropertyDetails";
+import PropertyDetail from "./Components/Website/Pages/Properties/ViewPropertiesDetails";
 import Popup from "./Components/Popup/Popup";
 import FilteredProperties from "./Components/Website/Pages/Home/FilteredProperties";
 import PaymentCallback from "./Components/Panel/Partner/Plans/PaymentCallback";
 import LeadsTable from "./Components/Panel/Admin/Leads/LeadsTable";
 import AddCarousel from "./Components/Panel/Admin/Carousel/CarouselForm";
+import Viewdetails from "./Components/Website/Pages/Properties/ViewPropertiesDetails";
+import ViewPropertiesDetails from "./Components/Website/Pages/Properties/ViewPropertiesDetails"
 
 
 
@@ -132,8 +134,8 @@ function Layout() {
    const [showPopup, setShowPopup] = useState(false);
 
   // Define paths where Header and Footer should be visible
-  const publicPaths = ["/", "/aboutus", "/FAQ", "/contactus", "/properties", "/propertydetails", "/termsandconditions", "/privacypolicy", "/refundpolicy", "/filteredproperties"];
-  const footerPaths = ["/", "/aboutus", "/FAQ", "/contactus", "/properties", "/termsandconditions", "/privacypolicy", "/refundpolicy", "/filteredproperties"]; // Removed '/propertydetails'
+  const publicPaths = ["/", "/aboutus", "/FAQ", "/contactus", "/properties", "/propertydetails", "/termsandconditions", "/privacypolicy", "/refundpolicy", "/filteredproperties","/viewpropertiesdetails/:id"];
+  const footerPaths = ["/", "/aboutus", "/FAQ", "/contactus", "/properties", "/termsandconditions", "/privacypolicy", "/refundpolicy", "/filteredproperties","/viewpropertiesdetails/:id"]; // Removed '/propertydetails'
 
  // Trigger popup after 60 seconds on public pages
   useEffect(() => {
@@ -194,6 +196,8 @@ function Layout() {
           <Route path="/a-addsubscriptions" element={<AddSubscription />} />
           <Route path="/a-edit-subscription/:id" element={<EditSubscription />} />
           <Route path="/a-assets/:id" element={<AssetDetails />} />
+          <Route path="/viewpropertiesdetails/:id" element={<ViewPropertiesDetails/>} />
+
           <Route path="/a-assets/edit/:id" element={<EditAsset />} />
           <Route path="/a-commission/:transactionId" element={<CommissionView />} />
           <Route path="/a-bookingslab" element={<BookingSlab />} />
