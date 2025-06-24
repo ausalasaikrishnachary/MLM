@@ -535,3 +535,8 @@ p, .card-body {
   height: 12px;
   border-radius: 50%;
 }
+/* in your .css file */
+.extra-bold {
+  font-weight: 900;
+  font-family: 'Roboto', sans-serif;
+}

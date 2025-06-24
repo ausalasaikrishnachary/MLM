@@ -753,9 +753,13 @@ const navigate = useNavigate();
 
       <Box sx={{ py: 6 }}>
         <Box textAlign="center" mb={4}>
-          <Typography variant="h4" fontWeight="bold" gutterBottom>
-            Explore Categories
-          </Typography>
+       <Typography variant="h4" gutterBottom className="extra-bold">
+  Explore Categories
+</Typography>
+
+
+
+
           <Typography variant="subtitle1" color="textSecondary">
             Find Best Categories in town with Shriraj Team
           </Typography>
