@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Popup.css";
 import Logo from "./../Images/logo.png";
 import { baseurl } from "../BaseURL/BaseURL";
+import { Button } from "@mui/material";
 
 const Popup = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -12,7 +13,19 @@ const Popup = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Close when overlay is clicked
+  // Disable background scroll and pointer events on mount
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add("popup-active");
+    } else {
+      document.body.classList.remove("popup-active");
+    }
+
+    return () => {
+      document.body.classList.remove("popup-active");
+    };
+  }, [isOpen]);
+
   const handleOverlayClick = (e) => {
     if (e.target.classList.contains("popup-overlay")) {
       setIsOpen(false);
@@ -30,9 +43,7 @@ const Popup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // setError(null);
-    
-    // Prepare payload according to API requirements
+
     const payload = {
       first_name: formData.name,
       last_name: formData.name,
@@ -40,12 +51,7 @@ const Popup = () => {
       phone_number: formData.phone_number
     };
 
-    console.group("Form Submission Details");
-    console.log("Preparing to submit form with payload:", JSON.stringify(payload, null, 2));
-    
     try {
-      console.log("Making POST request to:", `${baseurl}/leads/`);
-      
       const response = await fetch(`${baseurl}/leads/`, {
         method: "POST",
         headers: {
@@ -54,8 +60,6 @@ const Popup = () => {
         body: JSON.stringify(payload),
       });
 
-      console.log("Received response with status:", response.status);
-      
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
         console.error("Server responded with error details:", errorData);
@@ -64,22 +68,21 @@ const Popup = () => {
 
       const data = await response.json();
       console.log("Successful submission! Response data:", data);
-      
+
       setIsOpen(false);
     } catch (error) {
       console.error("Submission failed:", error.message);
-      // setError("Failed to submit. Please check your details and try again.");
     } finally {
       setIsSubmitting(false);
-      console.groupEnd();
     }
   };
+
   if (!isOpen) return null;
 
   return (
     <div className="popup-overlay" onClick={handleOverlayClick}>
-      <div className="popup-card">
-        <div className="popup-header"> 
+      <div className="popup-card" onClick={(e) => e.stopPropagation()}>
+        <div className="popup-header">
           <img src={Logo} alt="Shriraj Team" className="popup-logo" />
           <div className="popup-title">
             <h2>Shriraj Team</h2>
@@ -90,47 +93,58 @@ const Popup = () => {
         <form onSubmit={handleSubmit}>
           <div className="popup-body">
             <label htmlFor="name" className="popup-label">Name</label>
-            <input 
-              id="name" 
-              type="text" 
-              placeholder="Enter name" 
-              className="popup-input" 
+            <input
+              id="name"
+              type="text"
+              placeholder="Enter name"
+              className="popup-input"
               value={formData.name}
               onChange={handleInputChange}
             />
           </div>
-
           <div className="popup-body">
             <label htmlFor="phone_number" className="popup-label">Phone Number</label>
-            <input 
-              id="phone_number" 
-              type="tel" 
-              placeholder="Enter phone number" 
-              className="popup-input" 
+            <input
+              id="phone_number"
+              type="tel"
+              placeholder="Enter phone number"
+              className="popup-input"
               value={formData.phone_number}
               onChange={handleInputChange}
               required
             />
           </div>
-
           <div className="popup-body">
             <label htmlFor="email" className="popup-label">Email</label>
-            <input 
-              id="email" 
-              type="email" 
-              placeholder="Enter email" 
-              className="popup-input" 
+            <input
+              id="email"
+              type="email"
+              placeholder="Enter email"
+              className="popup-input"
               value={formData.email}
               onChange={handleInputChange}
               required
             />
-            <button 
-              type="submit" 
-              className="popup-submit"
+            <Button
+              type="submit"
+              variant="contained"
+              sx={{
+                backgroundColor: "rgb(46, 22, 109)",
+                color: "white",
+                fontWeight: "bold",
+                borderRadius: "20px",
+                mt: 2,
+                display: "block",
+                mx: "auto",
+                '&:hover': {
+                  backgroundColor: "rgb(30, 10, 80)",
+                },
+              }}
+              className="contact-submit-btn"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Submitting..." : "Submit"}
-            </button>
+            </Button>
           </div>
         </form>
       </div>
