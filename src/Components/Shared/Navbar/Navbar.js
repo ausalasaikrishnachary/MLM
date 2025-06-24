@@ -42,7 +42,7 @@ export default function Header() {
       ]
     },
         { label: 'Meetings', path: '/a-meetings' },
-        { label: 'Carousel', path: '/a-carousel' },
+        { label: 'Carousel', path: '/a-table-carousel' },
         { label: 'Leads', path: '/a-popup-leads' },
     // { label: 'Agents', path: '/a-partners' },
   ];

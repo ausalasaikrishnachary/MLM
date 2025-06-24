@@ -14,6 +14,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import 'font-awesome/css/font-awesome.min.css';
 import 'aos/dist/aos.css';
+
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
@@ -236,6 +237,8 @@ const navigate = useNavigate();
       description: "Complete the transaction with our hassle-free process"
     }
   ];
+
+
   const advantages = [
     {
       icon: faSearch,
@@ -393,7 +396,7 @@ const navigate = useNavigate();
     useEffect(() => {
     const fetchCarouselData = async () => {
       try {
-        const response = await axios.get('https://rahul30.pythonanywhere.com/carousel/');
+        const response = await axios.get(`${baseurl}/carousel/`);
         setCarouselItems(response.data);
         setLoading(false);
       } catch (err) {
@@ -479,7 +482,7 @@ const navigate = useNavigate();
         <Card className="shadow rounded-0 border-0">
           <Carousel
             fade={false}
-            interval={3000}
+            interval={2000}
             indicators={true}
             prevIcon={
               <span
@@ -517,7 +520,7 @@ const navigate = useNavigate();
               {/* Image */}
               <img
                 className="d-block w-100"
-                src={`https://rahul30.pythonanywhere.com${item.image}`}
+                src={`${baseurl}${item.image}`}
                 alt={item.title || `Slide ${index + 1}`}
                 style={{
                   maxHeight: "500px",
@@ -734,7 +737,9 @@ const navigate = useNavigate();
               <h2 className="section-title">Welcome to Shriraj Commercial Real Estate</h2>
               <p>We specialize in connecting investors with premium commercial real estate opportunities across various sectors including warehouses, office buildings, retail spaces, and industrial complexes.</p>
               <p>Our team of experts thoroughly vets each property to ensure it meets our high standards for investment potential, location quality, and long-term value appreciation.</p>
+              <div className="text-center text-lg-start mt-4">
               <a href="/properties" className="btn view-property-btn mt-3">View Properties</a>
+              </div>
             </div>
             <div className="col-lg-6" data-aos="fade-left">
               <img
@@ -765,7 +770,7 @@ const navigate = useNavigate();
           </Typography>
         </Box>
 
-        <Box sx={{ width: '70%', mx: 'auto' }}>
+        <Box sx={{ width: '85%', mx: 'auto' }}>
           <Grid container spacing={3} justifyContent="center">
             {categories.map((category, index) => (
               <Grid item xs={12} sm={6} md={3} key={index}>
@@ -818,7 +823,7 @@ const navigate = useNavigate();
 
 
       {/* Why Commercial RE Section */}
-      <section className="why-Shriraj-section">
+      {/* <section className="why-Shriraj-section">
         <div className="container">
           <h2
             className="section-title text-left"
@@ -871,7 +876,7 @@ const navigate = useNavigate();
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
 
       {/* How It Works Section */}

@@ -37,7 +37,7 @@ import VideocamIcon from '@mui/icons-material/Videocam';
 
 const AssetsUI = () => {
   const [sortBy, setSortBy] = useState('');
-  const [properties, setProperties] = useState([]);
+  const [properties, setProperties] = useState([]); 
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const navigate = useNavigate();

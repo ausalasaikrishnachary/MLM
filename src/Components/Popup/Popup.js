@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./Popup.css";
 import Logo from "./../Images/logo.png";
+import { baseurl } from "../BaseURL/BaseURL";
 
 const Popup = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -43,9 +44,9 @@ const Popup = () => {
     console.log("Preparing to submit form with payload:", JSON.stringify(payload, null, 2));
     
     try {
-      console.log("Making POST request to:", "https://rahul30.pythonanywhere.com/leads/");
+      console.log("Making POST request to:", `${baseurl}/leads/`);
       
-      const response = await fetch("https://rahul30.pythonanywhere.com/leads/", {
+      const response = await fetch(`${baseurl}/leads/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
