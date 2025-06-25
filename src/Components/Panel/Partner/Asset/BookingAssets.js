@@ -172,7 +172,7 @@ const generateReceipt = async (invoiceNumber) => {
 //       user_id: userId,
 //       property_id: property.property_id,
 //       payment_type: "Booking-Amount",
-//       redirect_url: "http://localhost:3000/p-transaction" // ✅ return page
+//       redirect_url: "https://shrirajteam.com/p-transaction" // ✅ return page
 //     };
 
 //     const initiateRes = await fetch(`${baseurl}/property/initiate-payment/`, {
@@ -259,7 +259,7 @@ const generateReceipt = async (invoiceNumber) => {
         user_id: userId,
         property_id: property.property_id,
         payment_type: "Booking-Amount",
-        redirect_url: "http://localhost:3000/p-transaction",
+        redirect_url: "https://shrirajteam.com/p-transaction",
       };
 
       const initiateRes = await fetch(`${baseurl}/property/initiate-payment/`, {

@@ -114,87 +114,88 @@ function Payment() {
         }
     };
 
-const handleSubmit = async (e) => {
-    e.preventDefault();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-    try {
-        const initiatePayload = {
-            user_id: formData.user_id,
-            property_id: formData.property_id,
-            payment_type: "Full-Amount",
-            redirect_url: "http://localhost:3000/p-transaction" // ✅ this should be your return page
-        };
+        try {
+            const initiatePayload = {
+                user_id: formData.user_id,
+                property_id: formData.property_id,
+                payment_type: "Full-Amount",
+                redirect_url: "https://shrirajteam.com/i-transactions" // ✅ this should be your return page
+            };
 
-        const initiateRes = await fetch(`${baseurl}/property/initiate-payment/`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(initiatePayload),
-        });
+            const initiateRes = await fetch(`${baseurl}/property/initiate-payment/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(initiatePayload),
+            });
 
-        if (!initiateRes.ok) {
-            const error = await initiateRes.json();
-            throw new Error(`Initiate Payment Error: ${JSON.stringify(error)}`);
+            if (!initiateRes.ok) {
+                const error = await initiateRes.json();
+                throw new Error(`Initiate Payment Error: ${JSON.stringify(error)}`);
+            }
+
+            const initiateData = await initiateRes.json();
+            localStorage.setItem("merchant_order_id", initiateData.merchant_order_id);
+            localStorage.setItem("user_id", formData.user_id);
+            localStorage.setItem("property_id", formData.property_id);
+            localStorage.setItem("payment_type", "Full-Amount");
+
+            window.location.href = initiateData.payment_url;
+        } catch (error) {
+            console.error("Payment Initiation Failed:", error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.message
+            });
         }
-
-        const initiateData = await initiateRes.json();
-        localStorage.setItem("merchant_order_id", initiateData.merchant_order_id);
-        localStorage.setItem("user_id", formData.user_id);
-        localStorage.setItem("property_id", formData.property_id);
-
-        window.location.href = initiateData.payment_url;
-    } catch (error) {
-        console.error("Payment Initiation Failed:", error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: error.message
-        });
-    }
-};
-
-
-  const hasPostedStatus = useRef(false); // flag to prevent duplicate calls
-
-  useEffect(() => {
-    const userId = localStorage.getItem("user_id");
-    const merchant_order_id = localStorage.getItem("merchant_order_id");
-    const property_id = localStorage.getItem("property_id");
-
-    const confirmAndProceed = async () => {
-      if (
-        hasPostedStatus.current || // already posted
-        !userId || !merchant_order_id || !property_id
-      ) return;
-
-      try {
-        hasPostedStatus.current = true; // set flag before making the request
-
-        await fetch(`${baseurl}/property/confirm-payment/`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            user_id: Number(userId),
-            property_id: Number(property_id),
-            merchant_order_id,
-            document_file:null,
-            payment_type:"Full-Amount"
-          })
-        });
-
-        // Clean up storage to avoid future duplicates
-        localStorage.removeItem("merchant_order_id");
-        localStorage.removeItem("property_id");
-
-      } catch (err) {
-        console.error("Error sending payment status:", err);
-        hasPostedStatus.current = false; // allow retry if it failed
-      }
     };
 
-    confirmAndProceed();
-  }, []);
+
+//   const hasPostedStatus = useRef(false); // flag to prevent duplicate calls
+
+//   useEffect(() => {
+//     const userId = localStorage.getItem("user_id");
+//     const merchant_order_id = localStorage.getItem("merchant_order_id");
+//     const property_id = localStorage.getItem("property_id");
+
+//     const confirmAndProceed = async () => {
+//       if (
+//         hasPostedStatus.current || // already posted
+//         !userId || !merchant_order_id || !property_id
+//       ) return;
+
+//       try {
+//         hasPostedStatus.current = true; // set flag before making the request
+
+//         await fetch(`${baseurl}/property/confirm-payment/`, {
+//           method: 'POST',
+//           headers: {
+//             'Content-Type': 'application/json'
+//           },
+//           body: JSON.stringify({
+//             user_id: Number(userId),
+//             property_id: Number(property_id),
+//             merchant_order_id,
+//             document_file:null,
+//             payment_type:"Full-Amount"
+//           })
+//         });
+
+//         // Clean up storage to avoid future duplicates
+//         localStorage.removeItem("merchant_order_id");
+//         localStorage.removeItem("property_id");
+
+//       } catch (err) {
+//         console.error("Error sending payment status:", err);
+//         hasPostedStatus.current = false; // allow retry if it failed
+//       }
+//     };
+
+//     confirmAndProceed();
+//   }, []);
 
 
 

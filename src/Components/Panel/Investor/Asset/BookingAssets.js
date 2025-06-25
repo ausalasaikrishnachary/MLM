@@ -79,85 +79,51 @@ const generateReceipt = async (invoiceNumber) => {
   }
 };
 
-const handleBooking = async () => {
-  try {
-    const username = localStorage.getItem('user_name');
-    const userId = Number(localStorage.getItem('user_id'));
-    const propertyValue = Number(property.total_property_value);
-    const agentId = property?.user_id || null;
-    const propertyName = property?.property_title || null;
-    const paidAmount = Number(property.booking_amount);
-    const remainingAmount = propertyValue - paidAmount;
+  const handleBooking = async (e) => {
+    e.preventDefault();
 
-    const payload = {
-      property_name: propertyName,
-      purchased_from: 'agent',
-      purchased_type: 'direct',
-      username: username,
-      property_value: propertyValue,
-      transaction_date: new Date().toISOString().split('T')[0],
-      property_id: Number(propertyId),
-      agent_id: agentId,
-      user_id: userId,
-      paid_amount: paidAmount,
-      remaining_amount: remainingAmount,
-      payment_type: "Booking-Amount",
-      payment_method: "Cash",
-      role: "client",
-    };
+    const userId = localStorage.getItem("user_id");
 
-    // Step 1: Create transaction
-    await axios.post(`${baseurl}/transactions/`, payload);
+    try {
+      const initiatePayload = {
+        user_id: userId,
+        property_id: property.property_id,
+        payment_type: "Booking-Amount",
+        redirect_url: "https://shrirajteam.com/i-transactions",
+      };
 
-    // Step 2: Fetch document_number (invoice number)
-    const response = await axios.get(`${baseurl}/transactions/user-id/${userId}/property-id/${propertyId}/payment-type/Booking-Amount/`);
-    const latestTransaction = response.data[0]; // Assuming the latest is first
-    const invoiceNumber = latestTransaction?.document_number || 'N/A';
-    const transactionId = latestTransaction?.transaction_id;
+      const initiateRes = await fetch(`${baseurl}/property/initiate-payment/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(initiatePayload),
+      });
 
-    // Step 3: Generate receipt
-    const pdfBlob = await generateReceipt(invoiceNumber);
-    
-    // Step 4: Prepare form data for file upload
-    const formData = new FormData();
-   const fileName = `${latestTransaction.document_number}.pdf`; 
-    formData.append('document_file', pdfBlob, fileName);
-    
-    // Step 5: Update transaction with the PDF file
-    await axios.put(`${baseurl}/transactions/${transactionId}/`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
+      if (!initiateRes.ok) {
+        const error = await initiateRes.json();
+        throw new Error(`Initiate Payment Error: ${JSON.stringify(error)}`);
       }
-    });
 
-    // Step 6: Update property status
-    await axios.put(`${baseurl}/property/${propertyId}/`, {
-      status: 'booked',
-    });
+      const initiateData = await initiateRes.json();
+      const { merchant_order_id, payment_url } = initiateData;
 
-    // Step 7: Download the receipt for the user
-    saveAs(pdfBlob, fileName);
+      // Save to localStorage
+      localStorage.setItem("merchant_order_id", merchant_order_id);
+      localStorage.setItem("user_id", userId);
+      localStorage.setItem("property_id", property.property_id);
+      localStorage.setItem("payment_type", "Booking-Amount");
 
-    Swal.fire({
-      icon: 'success',
-      title: 'Booking Successful!',
-      text: 'Transaction completed and property status updated.',
-      confirmButtonColor: '#3085d6',
-      timer: 2500,
-      showConfirmButton: false
-    });
-    navigate('/i-transactions');
+      // Redirect to payment gateway
+      window.location.href = payment_url;
 
-  } catch (err) {
-    console.error('Error:', err.response?.data || err);
-    Swal.fire({
-      icon: 'error',
-      title: 'Booking Failed',
-      text: err.response?.data?.message || 'Booking or status update failed.',
-      confirmButtonColor: '#d33'
-    });
-  }
-};
+    } catch (error) {
+      console.error("Payment Initiation Failed:", error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.message,
+      });
+    }
+  };
 
   return (
     <>

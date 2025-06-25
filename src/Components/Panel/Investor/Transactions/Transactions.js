@@ -28,6 +28,7 @@ import axios from 'axios';
 import { baseurl } from '../../../BaseURL/BaseURL';
 import jsPDF from 'jspdf';
 import autoTable from "jspdf-autotable";
+import Swal from 'sweetalert2';
 
 const Transactions = () => { 
   const [transactions, setTransactions] = useState([]);
@@ -154,6 +155,59 @@ const Transactions = () => {
     setOpenReportDialog(false);
   };
 
+    useEffect(() => {
+      const userId = localStorage.getItem("user_id");
+      const propertyId = localStorage.getItem("property_id");
+      const merchantOrderId = localStorage.getItem("merchant_order_id");
+      const paymentType = localStorage.getItem("payment_type");
+  
+      if (userId && propertyId && merchantOrderId && paymentType) {
+        const confirmPayment = async () => {
+          try {
+            const payload = {
+              user_id: parseInt(userId),
+              property_id: parseInt(propertyId),
+              payment_type: paymentType,
+              merchant_order_id: merchantOrderId,
+            };
+  
+            const confirmRes = await fetch(`${baseurl}/property/confirm-payment/`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+  
+            // const confirmData = await confirmRes.json();
+  
+            // if (confirmRes.ok) {
+            //   console.log("Payment Confirmed:", confirmData);
+            //   Swal.fire({
+            //     icon: "success",
+            //     title: "Payment Successful",
+            //     text: "Your transaction is complete.",
+            //   });
+            // } else {
+            //   throw new Error(`Confirmation failed: ${JSON.stringify(confirmData)}`);
+            // }
+            
+          } catch (error) {
+            console.error("Payment Confirmation Failed:", error);
+            Swal.fire({
+              icon: "error",
+              title: "Payment Confirmation Failed",
+              text: error.message,
+            });
+          } finally {
+            localStorage.removeItem("merchant_order_id");
+            localStorage.removeItem("property_id");
+            localStorage.removeItem("payment_type");
+          }
+        };
+  
+        confirmPayment();
+      }
+    }, []);
+
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
@@ -164,7 +218,7 @@ const Transactions = () => {
           return;
         }
 
-        const response = await axios.get(`${baseurl}/transactions/user-id/${userId}/`);
+        const response = await axios.get(`${baseurl}/transactions/user-id/${userId}/property/`);
         let transactionsData = response.data;
 
         if (!Array.isArray(transactionsData)) {

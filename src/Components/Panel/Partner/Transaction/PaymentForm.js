@@ -124,7 +124,7 @@ function PaymentForm() {
                 user_id: formData.user_id,
                 property_id: formData.property_id,
                 payment_type: "Full-Amount",
-                redirect_url: "http://localhost:3000/p-transaction" // ✅ this should be your return page
+                redirect_url: "https://shrirajteam.com/p-transaction" // ✅ this should be your return page
             };
 
             const initiateRes = await fetch(`${baseurl}/property/initiate-payment/`, {
@@ -324,7 +324,8 @@ function PaymentForm() {
         "phone_pe_merchant_order_id",
         "phone_pe_order_id",
         "phone_pe_transaction_id",
-        "subscription_variant"
+        "subscription_variant",
+        "plan_name"
     ];
 
 

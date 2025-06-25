@@ -120,7 +120,7 @@ const handleBuy = async (variant) => {
       body: JSON.stringify({
         user_id: Number(userId),
         variant_id: variant.variant_id,
-        redirect_url: "http://localhost:3000/p-plans" // redirect back here after payment
+        redirect_url: "https://shrirajteam.com/p-plans" // redirect back here after payment
       })
     });
 
