@@ -246,7 +246,8 @@ function Payment() {
         "document_file",
         "phone_pe_merchant_order_id",
         "phone_pe_order_id",
-        "phone_pe_transaction_id"
+        "phone_pe_transaction_id",
+        "plan_name"
     ];
 
 
