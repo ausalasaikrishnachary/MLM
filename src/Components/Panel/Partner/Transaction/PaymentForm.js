@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
     Box,
@@ -40,7 +40,9 @@ function PaymentForm() {
                     return res.json();
                 })
                 .then((data) => {
-                    setFormData(data);
+                    // Remove document_number and document_type
+                    const { document_number, document_type, ...filteredData } = data;
+                    setFormData(filteredData);
                     setLoading(false);
                 })
                 .catch((err) => {
@@ -49,6 +51,7 @@ function PaymentForm() {
                 });
         }
     }, [transactionId]);
+
 
     // Handle form input change
     const handleChange = (e) => {
@@ -113,114 +116,165 @@ function PaymentForm() {
         }
     };
 
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Destructure out unwanted fields
-        const { document_number, document_type, ...cleanFormData } = formData;
-
-        const updatedData = {
-            ...cleanFormData,
-            paid_amount: parseFloat(formData.remaining_amount),
-            remaining_amount: 0,
-            payment_type: "Full-Amount",
-            company_commission: companyCommission,
-            role: "agent",
-            transaction_for: "property",
-
-        };
-
         try {
-            console.log("Submitting transaction with data:", updatedData);
+            const initiatePayload = {
+                user_id: formData.user_id,
+                property_id: formData.property_id,
+                payment_type: "Full-Amount",
+                redirect_url: "http://localhost:3000/p-transaction" // ✅ this should be your return page
+            };
 
-            // 1. Submit the transaction
-            const response = await fetch(`${baseurl}/transactions/`, {
+            const initiateRes = await fetch(`${baseurl}/property/initiate-payment/`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(updatedData),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(initiatePayload),
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error("Transaction API error response:", errorData);
-                throw new Error(`API Error: ${JSON.stringify(errorData)}`);
+            if (!initiateRes.ok) {
+                const error = await initiateRes.json();
+                throw new Error(`Initiate Payment Error: ${JSON.stringify(error)}`);
             }
 
-            const result = await response.json();
-            console.log('Transaction stored successfully:', result);
+            const initiateData = await initiateRes.json();
+            localStorage.setItem("merchant_order_id", initiateData.merchant_order_id);
+            localStorage.setItem("user_id", formData.user_id);
+            localStorage.setItem("property_id", formData.property_id);
+            localStorage.setItem("payment_type", "Full-Amount");
 
-            // 2. Update property status to "sold"
-            const propertyId = formData.property_id;
-            console.log(`Updating property ${propertyId} to status "sold"`);
-
-            const statusUpdateResponse = await fetch(`${baseurl}/property/${propertyId}/`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ status: 'sold', agent_commission_balance: agentCommission }),
-            });
-
-            if (!statusUpdateResponse.ok) {
-                const errorData = await statusUpdateResponse.json();
-                console.error("Property status update error response:", errorData);
-                throw new Error(`Status Update Error: ${JSON.stringify(errorData)}`);
-            }
-
-            console.log(`Property ${propertyId} status updated to sold`);
-
-            // 3. Fetch document_number (invoice number)
-            const responses = await axios.get(`${baseurl}/transactions/user-id/${userId}/property-id/${propertyId}/payment-type/Full-Amount/`);
-            console.log("Fetched transactions:", responses.data);
-
-            const latestTransaction = responses.data[0];
-            const invoiceNumber = latestTransaction?.document_number || 'N/A';
-            console.log("Invoice Number:", invoiceNumber);
-
-            // 4. Generate receipt
-            const pdfBlob = await generateReceipt(invoiceNumber);
-            if (!pdfBlob) return;
-
-            // Step 4: Prepare form data for file upload
-            const formData = new FormData();
-            const fileName = `${latestTransaction.document_number}.pdf`;
-            formData.append('document_file', new File([pdfBlob], fileName, { type: 'application/pdf' }));
-
-            console.log("Invoice generated");
-
-
-            // Step 5: Update transaction with the PDF file
-            await axios.put(`${baseurl}/transactions/${transactionId}/`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
-
-            // Final success alert
-            Swal.fire({
-                icon: 'success',
-                title: 'Success!',
-                text: 'Transaction submitted and property marked as sold!',
-                timer: 2500,
-                showConfirmButton: false
-            });
-
-            navigate('/p-transaction');
+            window.location.href = initiateData.payment_url;
         } catch (error) {
-            console.error('Submit error:', error);
+            console.error("Payment Initiation Failed:", error);
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'Failed to complete operation: ' + error.message,
+                text: error.message
             });
         }
     };
 
+    // const hasPostedStatus = useRef(false); // flag to prevent duplicate calls
 
+    // useEffect(() => {
+    //     const userId = localStorage.getItem("user_id");
+    //     const merchant_order_id = localStorage.getItem("merchant_order_id");
+    //     const property_id = localStorage.getItem("property_id");
 
+    //     const confirmAndProceed = async () => {
+    //         if (
+    //             hasPostedStatus.current || // already posted
+    //             !userId || !merchant_order_id || !property_id
+    //         ) return;
+
+    //         try {
+    //             hasPostedStatus.current = true; // set flag before making the request
+
+    //             await fetch(`${baseurl}/property/confirm-payment/`, {
+    //                 method: 'POST',
+    //                 headers: {
+    //                     'Content-Type': 'application/json'
+    //                 },
+    //                 body: JSON.stringify({
+    //                     user_id: Number(userId),
+    //                     property_id: Number(property_id),
+    //                     merchant_order_id,
+    //                     document_file: null,
+    //                     payment_type: "Full-Amount"
+    //                 })
+    //             });
+
+    //             // Clean up storage to avoid future duplicates
+    //             localStorage.removeItem("merchant_order_id");
+    //             localStorage.removeItem("property_id");
+
+    //         } catch (err) {
+    //             console.error("Error sending payment status:", err);
+    //             hasPostedStatus.current = false; // allow retry if it failed
+    //         }
+    //     };
+
+    //     confirmAndProceed();
+    // }, []);
+
+    // useEffect(() => {
+    //     const confirmAndProceed = async () => {
+    //         try {
+    //             const merchant_order_id = localStorage.getItem("merchant_order_id");
+    //             const user_id = localStorage.getItem("user_id");
+    //             const property_id = localStorage.getItem("property_id");
+
+    //             const confirmPayload = {
+    //                 user_id,
+    //                 property_id,
+    //                 payment_type: "Full-Amount",
+    //                 merchant_order_id,
+    //                 document_file:null
+    //             };
+
+    //             const confirmRes = await fetch(`${baseurl}/property/confirm-payment/`, {
+    //                 method: 'POST',
+    //                 headers: { 'Content-Type': 'application/json' },
+    //                 body: JSON.stringify(confirmPayload),
+    //             });
+
+    //             if (!confirmRes.ok) {
+    //                 const error = await confirmRes.json();
+    //                 throw new Error(`Confirm Payment Error: ${JSON.stringify(error)}`);
+    //             }
+
+    //             const confirmData = await confirmRes.json();
+    //             console.log("Payment confirmed:", confirmData);
+
+    //             // Continue with property status update, transaction fetch, PDF generation...
+    //             const statusUpdateResponse = await fetch(`${baseurl}/property/${property_id}/`, {
+    //                 method: 'PUT',
+    //                 headers: { 'Content-Type': 'application/json' },
+    //                 body: JSON.stringify({ agent_commission_balance: agentCommission }),
+    //             });
+
+    //             if (!statusUpdateResponse.ok) {
+    //                 const errorData = await statusUpdateResponse.json();
+    //                 throw new Error(`Status Update Error: ${JSON.stringify(errorData)}`);
+    //             }
+
+    //             const responses = await axios.get(`${baseurl}/transactions/user-id/${user_id}/property-id/${property_id}/payment-type/Full-Amount/`);
+    //             const latestTransaction = responses.data[0];
+    //             const invoiceNumber = latestTransaction?.document_number || 'N/A';
+    //             const fullPaymentTransactionId = latestTransaction?.transaction_id || 'N/A';
+
+    //             const pdfBlob = await generateReceipt(invoiceNumber);
+    //             if (!pdfBlob) return;
+
+    //             const uploadFormData = new FormData();
+    //             const fileName = `${invoiceNumber}.pdf`;
+    //             uploadFormData.append('document_file', new File([pdfBlob], fileName, { type: 'application/pdf' }));
+
+    //             await axios.put(`${baseurl}/transactions/${fullPaymentTransactionId}/`, uploadFormData, {
+    //                 headers: { 'Content-Type': 'multipart/form-data' }
+    //             });
+
+    //             Swal.fire({
+    //                 icon: 'success',
+    //                 title: 'Success!',
+    //                 text: 'Transaction submitted and property marked as sold!',
+    //                 timer: 2500,
+    //                 showConfirmButton: false
+    //             });
+
+    //         } catch (error) {
+    //             console.error("Error after payment:", error);
+    //             Swal.fire({
+    //                 icon: 'error',
+    //                 title: 'Error',
+    //                 text: 'Failed to complete post-payment operation: ' + error.message,
+    //             });
+    //         }
+    //     };
+
+    //     confirmAndProceed();
+    // }, []);
 
 
 
@@ -269,7 +323,8 @@ function PaymentForm() {
         "document_file",
         "phone_pe_merchant_order_id",
         "phone_pe_order_id",
-        "phone_pe_transaction_id"
+        "phone_pe_transaction_id",
+        "subscription_variant"
     ];
 
 

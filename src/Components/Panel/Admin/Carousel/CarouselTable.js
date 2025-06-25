@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { baseurl } from '../../../BaseURL/BaseURL';
+import { display } from '@mui/system';
 
 function CarouselList() {
   const [carousels, setCarousels] = useState([]);
@@ -19,7 +20,7 @@ function CarouselList() {
   useEffect(() => {
     const fetchCarousels = async () => {
       try {
-        const response = await axios.get('https://rahul30.pythonanywhere.com/carousel/');
+        const response = await axios.get(`${baseurl}/carousel/`);
         setCarousels(response.data);
         setLoading(false);
       } catch (error) {
@@ -33,7 +34,7 @@ function CarouselList() {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`https://rahul30.pythonanywhere.com/carousel/${id}/`);
+      await axios.delete(`${baseurl}/carousel/${id}/`);
       setCarousels(carousels.filter(carousel => carousel.id !== id));
     } catch (error) {
       console.error('Error deleting carousel:', error);
@@ -105,7 +106,7 @@ function CarouselList() {
                   <TableCell sx={cellBodyStyle}>
                     <Avatar 
                       variant="square"
-                      src={`https://rahul30.pythonanywhere.com${carousel.image}`}
+                      src={`${baseurl}/${carousel.image}`}
                       sx={imageStyle}
                       alt={carousel.title}
                     />

@@ -3,6 +3,7 @@ import "./Popup.css";
 import Logo from "./../Images/logo.png";
 import { baseurl } from "../BaseURL/BaseURL";
 import { Button } from "@mui/material";
+import Swal from 'sweetalert2';
 
 const Popup = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -40,42 +41,58 @@ const Popup = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
 
-    const payload = {
-      first_name: formData.name,
-      last_name: formData.name,
-      email: formData.email,
-      phone_number: formData.phone_number
-    };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsSubmitting(true);
 
-    try {
-      const response = await fetch(`${baseurl}/leads/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        console.error("Server responded with error details:", errorData);
-        throw new Error(`Server responded with status ${response.status}`);
-      }
-
-      const data = await response.json();
-      console.log("Successful submission! Response data:", data);
-
-      setIsOpen(false);
-    } catch (error) {
-      console.error("Submission failed:", error.message);
-    } finally {
-      setIsSubmitting(false);
-    }
+  const payload = {
+    first_name: formData.name,
+    last_name: formData.name,
+    email: formData.email,
+    phone_number: formData.phone_number
   };
+
+  try {
+    const response = await fetch(`${baseurl}/leads/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      console.error("Server responded with error details:", errorData);
+      throw new Error(`Server responded with status ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("Successful submission! Response data:", data);
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Submitted!',
+      text: 'Your details have been submitted successfully.',
+      confirmButtonColor: '#3085d6',
+    });
+
+    setIsOpen(false);
+  } catch (error) {
+    console.error("Submission failed:", error.message);
+
+    Swal.fire({
+      icon: 'error',
+      title: 'Submission Failed',
+      text: 'Something went wrong. Please try again later.',
+      confirmButtonColor: '#d33',
+    });
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
 
   if (!isOpen) return null;
 

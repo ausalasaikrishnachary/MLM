@@ -28,6 +28,7 @@ import axios from 'axios';
 import { baseurl } from '../../../BaseURL/BaseURL';
 import jsPDF from 'jspdf';
 import autoTable from "jspdf-autotable";
+import Swal from 'sweetalert2';
 
 const Transaction = () => { 
   const [transactions, setTransactions] = useState([]);
@@ -68,48 +69,107 @@ const Transaction = () => {
   };
 
   useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        const userId = localStorage.getItem("user_id");
-        if (!userId) {
-          setError("User ID not found");
-          setLoading(false);
-          return;
+    const userId = localStorage.getItem("user_id");
+    const propertyId = localStorage.getItem("property_id");
+    const merchantOrderId = localStorage.getItem("merchant_order_id");
+    const paymentType = localStorage.getItem("payment_type");
+
+    if (userId && propertyId && merchantOrderId && paymentType) {
+      const confirmPayment = async () => {
+        try {
+          const payload = {
+            user_id: parseInt(userId),
+            property_id: parseInt(propertyId),
+            payment_type: paymentType,
+            merchant_order_id: merchantOrderId,
+          };
+
+          const confirmRes = await fetch(`${baseurl}/property/confirm-payment/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          // const confirmData = await confirmRes.json();
+
+          // if (confirmRes.ok) {
+          //   console.log("Payment Confirmed:", confirmData);
+          //   Swal.fire({
+          //     icon: "success",
+          //     title: "Payment Successful",
+          //     text: "Your transaction is complete.",
+          //   });
+          // } else {
+          //   throw new Error(`Confirmation failed: ${JSON.stringify(confirmData)}`);
+          // }
+          
+        } catch (error) {
+          console.error("Payment Confirmation Failed:", error);
+          Swal.fire({
+            icon: "error",
+            title: "Payment Confirmation Failed",
+            text: error.message,
+          });
+        } finally {
+          localStorage.removeItem("merchant_order_id");
+          localStorage.removeItem("property_id");
+          localStorage.removeItem("payment_type");
         }
+      };
 
-        const response = await axios.get(`${baseurl}/transactions/user-id/${userId}/`);
-        let transactionsData = response.data;
-
-        if (!Array.isArray(transactionsData)) {
-          throw new Error("Invalid response format");
-        }
-
-        const groupedTransactions = transactionsData.reduce((acc, transaction) => {
-          if (!acc[transaction.property_id]) {
-            acc[transaction.property_id] = [];
-          }
-          acc[transaction.property_id].push(transaction);
-          return acc;
-        }, {});
-
-        const filteredTransactions = Object.values(groupedTransactions).map((transactions) => {
-          const fullPayment = transactions.find((t) => t.payment_type === "Full-Amount");
-          if (fullPayment) {
-            return fullPayment;
-          }
-          return transactions.find((t) => t.payment_type === "Booking-Amount");
-        });
-
-        setTransactions(filteredTransactions);
-      } catch (err) {
-        setError("Failed to fetch transactions");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTransactions();
+      confirmPayment();
+    }
   }, []);
+
+
+useEffect(() => {
+  const fetchTransactions = async () => {
+    try {
+      const userId = localStorage.getItem("user_id");
+      if (!userId) {
+        setError("User ID not found");
+        setLoading(false);
+        return;
+      }
+
+      const response = await axios.get(`${baseurl}/transactions/user-id/${userId}/property/`);
+      let transactionsData = response.data;
+
+      if (!Array.isArray(transactionsData)) {
+        throw new Error("Invalid response format");
+      }
+
+      const groupedTransactions = transactionsData.reduce((acc, transaction) => {
+        if (!acc[transaction.property_id]) {
+          acc[transaction.property_id] = [];
+        }
+        acc[transaction.property_id].push(transaction);
+        return acc;
+      }, {});
+
+      const filteredTransactions = Object.values(groupedTransactions).map((transactions) => {
+        const fullPayment = transactions.find((t) => t.payment_type === "Full-Amount");
+        if (fullPayment) {
+          return fullPayment;
+        }
+        return transactions.find((t) => t.payment_type === "Booking-Amount");
+      });
+
+      setTransactions(filteredTransactions);
+    } catch (err) {
+      setError("Failed to fetch transactions");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchTransactions(); // Initial call
+
+  const intervalId = setInterval(fetchTransactions, 1000); // Poll every 5 seconds
+
+  return () => clearInterval(intervalId); // Cleanup on unmount
+}, []);
+
 
   const handleSortChange = (event) => {
     setSortBy(event.target.value);

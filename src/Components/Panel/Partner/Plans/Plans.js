@@ -52,7 +52,7 @@ function PartnerPlans() {
 
           // data[0] contains latest_status, data[1] contains subscription info
           if (data[0]?.latest_status === "paid") {
-            setSubscribedVariants([data[1].subscription_variant]);
+            setSubscribedVariants([data[1].variant_id]);
           }
         }
       } catch (err) {
@@ -119,7 +119,7 @@ const handleBuy = async (variant) => {
       },
       body: JSON.stringify({
         user_id: Number(userId),
-        subscription_variant: variant.variant_id,
+        variant_id: variant.variant_id,
         redirect_url: "http://localhost:3000/p-plans" // redirect back here after payment
       })
     });
@@ -131,7 +131,7 @@ const handleBuy = async (variant) => {
 
     // 👉 Save merchant_order_id in localStorage or append in redirect_url
     localStorage.setItem("merchant_order_id", merchant_order_id);
-    localStorage.setItem("subscription_variant", variant.variant_id);
+    localStorage.setItem("variant_id", variant.variant_id);
 
     // 👉 Now redirect to payment page
     window.location.href = payment_url;
@@ -147,32 +147,32 @@ const handleBuy = async (variant) => {
   useEffect(() => {
     const userId = localStorage.getItem("user_id");
     const merchant_order_id = localStorage.getItem("merchant_order_id");
-    const subscription_variant = localStorage.getItem("subscription_variant");
+    const variant_id = localStorage.getItem("variant_id");
 
     const updatePaymentStatus = async () => {
       if (
         hasPostedStatus.current || // already posted
-        !userId || !merchant_order_id || !subscription_variant
+        !userId || !merchant_order_id || !variant_id
       ) return;
 
       try {
         hasPostedStatus.current = true; // set flag before making the request
 
-        await fetch(`${baseurl}/subscription/payment-status/`, {
+        await fetch(`${baseurl}/subscription/confirm-payment/`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
             user_id: Number(userId),
-            subscription_variant: Number(subscription_variant),
+            variant_id: Number(variant_id),
             merchant_order_id
           })
         });
 
         // Clean up storage to avoid future duplicates
         localStorage.removeItem("merchant_order_id");
-        localStorage.removeItem("subscription_variant");
+        localStorage.removeItem("variant_id");
 
       } catch (err) {
         console.error("Error sending payment status:", err);

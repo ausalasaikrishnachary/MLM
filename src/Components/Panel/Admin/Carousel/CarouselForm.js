@@ -37,7 +37,7 @@ function AddCarousel() {
       ...prev,
       image: file
     }));
-    
+
     // Set the file name
     if (file) {
       setFileName(file.name);
@@ -48,7 +48,7 @@ function AddCarousel() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     const formDataToSend = new FormData();
     formDataToSend.append('title', formData.title);
     formDataToSend.append('description', formData.description);
@@ -94,13 +94,13 @@ function AddCarousel() {
   return (
     <>
       <Header />
-      <Container maxWidth="xl" sx={{ padding: 4 }}>
+      <Container maxWidth="lg" sx={{ padding: 4 }}>
         <Typography variant="h4" gutterBottom textAlign="center" sx={{ mb: 4 }}>
           Add New Carousel
         </Typography>
-        
-        <Box 
-          component="form" 
+
+        <Box
+          component="form"
           onSubmit={handleSubmit}
           sx={{
             width: '100%'
@@ -121,7 +121,7 @@ function AddCarousel() {
                   required
                 />
               </Grid>
-              
+
               {/* Description Field */}
               <Grid item xs={12} md={4}>
                 <TextField
@@ -136,40 +136,41 @@ function AddCarousel() {
                   rows={1}
                 />
               </Grid>
-              
-              {/* Image Upload Field */}
+
               <Grid item xs={12} md={4}>
-                <Typography variant="h6" gutterBottom>Upload Images</Typography>
-                <input
-                  accept="image/*"
-                  style={{ display: 'none' }}
-                  id="carousel-image-upload"
-                  type="file"
-                  onChange={handleImageChange}
-                />
-                <label htmlFor="carousel-image-upload">
-                  <Button variant="contained" component="span" fullWidth>
-                    Upload Image
-                  </Button>
-                </label>
-                {fileName && (
-                  <Box mt={2}>
-                    <Typography variant="body2">
-                      Selected file: {fileName}
-                    </Typography>
-                  </Box>
-                )}
-              </Grid>
+  <input
+    accept="image/*"
+    style={{ display: 'none' }}
+    id="carousel-image-upload"
+    type="file"
+    onChange={handleImageChange}
+    sx={{ width: '100%' }}
+  />
+  <label htmlFor="carousel-image-upload">
+    <TextField
+      fullWidth
+      label="Image"
+      value={fileName}
+      variant="outlined"
+      sx={{ width: '100%' }} // Optional for emphasis
+      InputProps={{
+        readOnly: true,
+      }}
+      onClick={() => document.getElementById('carousel-image-upload').click()}
+    />
+  </label>
+</Grid>
+
             </Grid>
-            
+
             {/* Submit Button */}
             <Grid container justifyContent="center">
               <Grid item xs="auto">
-                <Button 
-                  type="submit" 
-                  variant="contained" 
+                <Button
+                  type="submit"
+                  variant="contained"
                   fullWidth={false}
-                  sx={{ 
+                  sx={{
                     height: '46px',
                     fontSize: '1rem',
                     mt: 2,

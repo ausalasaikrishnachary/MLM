@@ -146,7 +146,7 @@ const handleBooking = async () => {
       timer: 2500,
       showConfirmButton: false
     });
-    navigate('/p-transaction');
+    navigate('/i-transactions');
 
   } catch (err) {
     console.error('Error:', err.response?.data || err);

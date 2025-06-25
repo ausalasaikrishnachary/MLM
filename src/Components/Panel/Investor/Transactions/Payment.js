@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
     Box,
@@ -32,6 +32,7 @@ function Payment() {
     const [error, setError] = useState('');
 
     // Fetch transaction data
+// Fetch transaction data
     useEffect(() => {
         if (transactionId) {
             fetch(`${baseurl}/transactions/${transactionId}/`)
@@ -40,7 +41,9 @@ function Payment() {
                     return res.json();
                 })
                 .then((data) => {
-                    setFormData(data);
+                    // Remove document_number and document_type
+                    const { document_number, document_type, ...filteredData } = data;
+                    setFormData(filteredData);
                     setLoading(false);
                 })
                 .catch((err) => {
@@ -111,89 +114,87 @@ function Payment() {
         }
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+const handleSubmit = async (e) => {
+    e.preventDefault();
 
-        const { document_number, document_type, ...cleanFormData } = formData;
-
-        const updatedData = {
-            ...cleanFormData,
-            paid_amount: parseFloat(formData.remaining_amount),
-            remaining_amount: 0,
+    try {
+        const initiatePayload = {
+            user_id: formData.user_id,
+            property_id: formData.property_id,
             payment_type: "Full-Amount",
-            company_commission: companyCommission,
-            role: "client",
+            redirect_url: "http://localhost:3000/p-transaction" // ✅ this should be your return page
         };
 
-        try {
-            // Step 1: Submit the transaction
-            const response = await fetch(`${baseurl}/transactions/`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updatedData),
-            });
+        const initiateRes = await fetch(`${baseurl}/property/initiate-payment/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(initiatePayload),
+        });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(`API Error: ${JSON.stringify(errorData)}`);
-            }
-
-            const result = await response.json();
-            console.log('Transaction stored successfully:', result);
-
-            // 3. Fetch document_number (invoice number)
-            const responses = await axios.get(`${baseurl}/transactions/user-id/${userId}/property-id/${formData.property_id}/payment-type/Full-Amount/`);
-            console.log("Fetched transactions:", responses.data);
-
-            const latestTransaction = responses.data[0];
-            const invoiceNumber = latestTransaction?.document_number || 'N/A';
-            console.log("Invoice Number:", invoiceNumber);
-
-            // 4. Generate receipt
-            await generateReceipt(invoiceNumber);
-            console.log("Invoice generated");
-
-
-            // Step 2: Update the property status to "sold"
-            const propertyId = formData.property_id;
-            const statusUpdateResponse = await fetch(`${baseurl}/property/${propertyId}/`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    status: 'sold',
-                    agent_commission_balance: agentCommission,
-                }),
-            });
-
-            if (!statusUpdateResponse.ok) {
-                const errorData = await statusUpdateResponse.json();
-                throw new Error(`Status Update Error: ${JSON.stringify(errorData)}`);
-            }
-
-            console.log(`Property ${propertyId} status updated to sold`);
-
-            await Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: 'Transaction submitted and property marked as sold!',
-                confirmButtonColor: '#3085d6',
-                timer: 2500,
-                showConfirmButton: false,
-            });
-
-            navigate('/i-transactions');
-
-        } catch (error) {
-            console.error('Submit error:', error);
-
-            Swal.fire({
-                icon: 'error',
-                title: 'Submission Failed',
-                text: error.message,
-                confirmButtonColor: '#d33',
-            });
+        if (!initiateRes.ok) {
+            const error = await initiateRes.json();
+            throw new Error(`Initiate Payment Error: ${JSON.stringify(error)}`);
         }
+
+        const initiateData = await initiateRes.json();
+        localStorage.setItem("merchant_order_id", initiateData.merchant_order_id);
+        localStorage.setItem("user_id", formData.user_id);
+        localStorage.setItem("property_id", formData.property_id);
+
+        window.location.href = initiateData.payment_url;
+    } catch (error) {
+        console.error("Payment Initiation Failed:", error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message
+        });
+    }
+};
+
+
+  const hasPostedStatus = useRef(false); // flag to prevent duplicate calls
+
+  useEffect(() => {
+    const userId = localStorage.getItem("user_id");
+    const merchant_order_id = localStorage.getItem("merchant_order_id");
+    const property_id = localStorage.getItem("property_id");
+
+    const confirmAndProceed = async () => {
+      if (
+        hasPostedStatus.current || // already posted
+        !userId || !merchant_order_id || !property_id
+      ) return;
+
+      try {
+        hasPostedStatus.current = true; // set flag before making the request
+
+        await fetch(`${baseurl}/property/confirm-payment/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            user_id: Number(userId),
+            property_id: Number(property_id),
+            merchant_order_id,
+            document_file:null,
+            payment_type:"Full-Amount"
+          })
+        });
+
+        // Clean up storage to avoid future duplicates
+        localStorage.removeItem("merchant_order_id");
+        localStorage.removeItem("property_id");
+
+      } catch (err) {
+        console.error("Error sending payment status:", err);
+        hasPostedStatus.current = false; // allow retry if it failed
+      }
     };
+
+    confirmAndProceed();
+  }, []);
 
 
 
@@ -242,6 +243,9 @@ function Payment() {
         "document_type",
         "document_number",
         "document_file",
+        "phone_pe_merchant_order_id",
+        "phone_pe_order_id",
+        "phone_pe_transaction_id"
     ];
 
 

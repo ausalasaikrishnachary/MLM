@@ -144,17 +144,20 @@ const handleAddPlan = async () => {
       { headers: { 'Content-Type': 'application/json' } }
     );
 
-    await Swal.fire({
-      icon: 'success',
-      title: 'Success',
-      text: 'Plan added successfully!',
-      timer: 2000,
-      showConfirmButton: false,
-    });
-
     setNewPlan({ plan_name: '', description: '', user_type: '' });
-    setOpenModal(false);
-    fetchPlans();
+    setOpenModal(false); // ✅ close the modal first
+    fetchPlans(); // ✅ refresh the list
+
+    // ✅ Show SweetAlert after a short delay
+    setTimeout(() => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: 'Plan added successfully!',
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    }, 300); // small delay to allow modal closing animation
   } catch (error) {
     console.error('Error adding plan:', error);
     await Swal.fire({
@@ -166,6 +169,7 @@ const handleAddPlan = async () => {
     });
   }
 };
+
 
 
   return (
