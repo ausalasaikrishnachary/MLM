@@ -739,7 +739,12 @@ useEffect(() => {
                                 ?.charAt(0)
                                 .toUpperCase() + property.looking_to?.slice(1)}
                             </span>
-                            <span className="badge bg-secondary">Residential</span>
+                            <span className="badge bg-secondary">{property.furnishing_status}</span>
+                            {/* <span className="badge bg-secondary me-2">
+                              {property.furnishing_status
+                                ?.charAt(0)
+                                .toUpperCase() + property.furnishing_status?.slice(1)}
+                            </span> */}
                           </div>
                         </div>
                         <h5 className="card-title">{property.property_title}</h5>
@@ -1049,7 +1054,12 @@ useEffect(() => {
                                 ?.charAt(0)
                                 .toUpperCase() + property.looking_to?.slice(1)}
                             </span>
-                            <span className="badge bg-secondary">Residential</span>
+                            {/* <span className="badge bg-success me-2">
+                              {property.furnishing_status
+                                ?.charAt(0)
+                                .toUpperCase() + property.furnishing_status?.slice(1)}
+                            </span> */}
+                            <span className="badge bg-secondary">{property.furnishing_status}</span>
                           </div>
                         </div>
                         <h5 className="card-title">{property.property_title}</h5>
