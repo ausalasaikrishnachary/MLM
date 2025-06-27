@@ -75,20 +75,26 @@ const ShrirajLandingPage = () => {
     }
   }, []);
 
-  // Fetch Featured Properties
-  useEffect(() => {
-    const fetchProperties = async () => {
-      try {
-        const response = await axios.get(`${baseurl}/property/`);
-        setProperties(response.data);
-      } catch (err) {
-        console.error('Error fetching properties:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProperties();
-  }, []);
+useEffect(() => {
+  const fetchProperties = async () => {
+    try {
+      const response = await axios.get(`${baseurl}/property/`);
+      const allProperties = response.data;
+
+      // Shuffle and pick 3 random properties
+      const shuffled = allProperties.sort(() => 0.5 - Math.random());
+      const selected = shuffled.slice(0, 3);
+
+      setProperties(selected);
+    } catch (err) {
+      console.error('Error fetching properties:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchProperties();
+}, []);
+
 
 
 
@@ -835,9 +841,9 @@ const ShrirajLandingPage = () => {
                       <Typography variant="subtitle1" fontWeight="bold">
                         {category.title}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      {/* <Typography variant="body2" color="text.secondary">
                         {category.count}
-                      </Typography>
+                      </Typography> */}
                     </Box>
                     <IconButton
                       sx={{ backgroundColor: '#f1f1f1' }}

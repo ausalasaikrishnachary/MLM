@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Header from "../../../Shared/Navbar/Navbar";
 import {
-  Table, TableBody, TableCell, TableHead, TableRow, 
+  Table, TableBody, TableCell, TableHead, TableRow,
   Typography, Box, Button, IconButton, Container,
   Avatar
 } from '@mui/material';
@@ -103,14 +103,20 @@ function CarouselList() {
               carousels.map((carousel) => (
                 <TableRow key={carousel.id}>
                   <TableCell sx={cellBodyStyle}>{carousel.id}</TableCell>
-                  <TableCell sx={cellBodyStyle}>
-                    <Avatar 
+                  <TableCell
+                    sx={{
+                      ...cellBodyStyle,
+                      
+                    }}
+                  >
+                    <Avatar
                       variant="square"
                       src={`${baseurl}/${carousel.image}`}
                       sx={imageStyle}
                       alt={carousel.title}
                     />
                   </TableCell>
+
                   <TableCell sx={cellBodyStyle}>{carousel.title}</TableCell>
                   <TableCell sx={cellBodyStyle}>{carousel.description}</TableCell>
                   <TableCell sx={cellBodyStyle}>

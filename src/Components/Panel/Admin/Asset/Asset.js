@@ -888,7 +888,7 @@ const updateApprovalStatus = async (propertyId, newStatus) => {
                             <>
                               <Grid item xs={6}>
                                 <Typography variant="body2" color="text.secondary">
-                                  Office Email
+                                  Owner Email
                                 </Typography>
                               </Grid>
                               <Grid item xs={6}>
@@ -909,7 +909,7 @@ const updateApprovalStatus = async (propertyId, newStatus) => {
 
                               <Grid item xs={6}>
                                 <Typography variant="body2" color="text.secondary">
-                                  Office Contact
+                                  Owner Contact
                                 </Typography>
                               </Grid>
                               <Grid item xs={6}>

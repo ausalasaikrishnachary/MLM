@@ -79,6 +79,8 @@ const AddPropertyForm = () => {
     numberOfBedrooms: '',
     numberOfBalconies: '',
     numberOfBathrooms: '',
+    floor:"",
+    furnishing_status:"",
     openSides: 0,
     builtupArea: '',
     numberOfRoads: 0,
@@ -245,6 +247,8 @@ const AddPropertyForm = () => {
         number_of_bedrooms: formData.numberOfBedrooms,
         number_of_balconies: formData.numberOfBalconies,
         number_of_bathrooms: formData.numberOfBathrooms,
+        floor:formData.floor,
+        furnishing_status:formData.furnishing_status,
       };
 
       // Log the payload for debugging
@@ -561,6 +565,30 @@ const AddPropertyForm = () => {
                   onChange={handleChange}
                 />
               </Grid>
+              <Grid item xs={12} sm={6}>
+                              <TextField
+                                fullWidth
+                                label="floor "
+                                name="floor "
+                                type="number"
+                                value={formData.floor}
+                                onChange={handleChange}
+                              />
+                            </Grid>
+                            <Grid item xs={12} sm={6}>
+                              <FormControl fullWidth>
+                                <InputLabel>Facing Direction</InputLabel>
+                                <Select
+                                  name="furnishing status"
+                                  value={formData.furnishing_status}
+                                  onChange={handleChange}
+                                  label="furnishing status"
+                                >
+                                  <MenuItem value="semi furnished">Semi Furnished</MenuItem>
+                                  <MenuItem value="fully furnished">Fully Furnished</MenuItem>
+                                </Select>
+                              </FormControl>
+                            </Grid>
             </>
           )}
           <Grid item xs={12} sm={6}>

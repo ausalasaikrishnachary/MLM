@@ -167,7 +167,7 @@ const Tmoniter = () => {
             onChange={(e) => setSelectedRole(e.target.value)}
           >
             <MenuItem value="agent">Agent</MenuItem>
-            <MenuItem value="Client">Client</MenuItem>
+            <MenuItem value="client">Client</MenuItem>
           </Select>
         </FormControl>
 

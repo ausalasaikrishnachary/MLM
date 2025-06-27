@@ -153,6 +153,8 @@ const AssetDetails = () => {
               <Grid item xs={6}><Typography><strong>Bedrooms:</strong> {property.number_of_bedrooms || 'N/A'}</Typography></Grid>
               <Grid item xs={6}><Typography><strong>Bathrooms:</strong> {property.number_of_bathrooms || 'N/A'}</Typography></Grid>
               <Grid item xs={6}><Typography><strong>Balconies:</strong> {property.number_of_balconies || 'N/A'}</Typography></Grid>
+              <Grid item xs={6}><Typography><strong>Floor:</strong> {property.floor || 'N/A'}</Typography></Grid>
+              <Grid item xs={6}><Typography><strong>Furnishing Status:</strong> {property.furnishing_status || 'N/A'}</Typography></Grid>
             </Grid>
 
             <Typography variant="h6" mt={3} gutterBottom>Additional Information</Typography>
