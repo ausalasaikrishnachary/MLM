@@ -38,7 +38,7 @@ export default function Header() {
         { label: 'Commission', path: '/a-commission' },
         { label: 'Subscriptions', path: '/a-subscriptions' },
         { label: 'Booking Slab', path: '/a-bookingslab' },
-        { label: 'KYC', path: '/a-profiledetails' },
+        { label: 'Training Material', path: '/a-trainingmaterial' },
       ]
     },
         { label: 'Meetings', path: '/a-meetings' },
@@ -331,7 +331,7 @@ export default function Header() {
         >
           Profile
         </MenuItem>
-        <MenuItem
+        {/* <MenuItem
           onClick={() => {
             handleProfileMenuClose();
             navigate('/a-profiledetails');
@@ -339,7 +339,7 @@ export default function Header() {
           sx={{ fontWeight: 'bold' }}
         >
           KYC
-        </MenuItem>
+        </MenuItem> */}
         <MenuItem
           onClick={() => {
             handleProfileMenuClose();

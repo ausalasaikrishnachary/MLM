@@ -23,20 +23,20 @@ const Properties = () => {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
-  const [selectedType, setSelectedType] = useState('Property Sub Types');
+  const [selectedSort, setSelectedSort] = useState('Sort By');
+  const [selectedTypeId, setSelectedTypeId] = useState(null);
+
   const location = useLocation();
   const categoryName = location.state?.categoryName || "All";
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch properties
         const propertiesResponse = await fetch(`${baseurl}/property/`);
         if (!propertiesResponse.ok) throw new Error('Failed to fetch properties');
         const propertiesData = await propertiesResponse.json();
         setProperties(propertiesData);
 
-        // Fetch property types
         const typesResponse = await fetch(`${baseurl}/property-types/`);
         if (!typesResponse.ok) throw new Error('Failed to fetch property types');
         const typesData = await typesResponse.json();
@@ -60,26 +60,42 @@ const Properties = () => {
     setAnchorEl(null);
   };
 
-  const handleTypeSelect = (type) => {
-    setSelectedType(type.name || 'Property Sub Types');
+  const handleSortSelect = (option) => {
+    if (option.type === 'sort') {
+      setSelectedSort(option.label);
+    } else if (option.type === 'subtype') {
+      setSelectedTypeId(option.id);
+      setSelectedSort(option.label);
+    }
     handleMenuClose();
   };
 
-  const filteredProperties = properties.filter(property => {
-    const matchesSearch =
-      property.property_title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      property.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      property.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      property.total_property_value.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      property.plot_area_sqft.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      property.builtup_area_sqft.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredAndSortedProperties = [...properties]
+    .filter(property => {
+      const matchesSearch =
+        property.property_title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        property.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        property.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        property.total_property_value.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        property.plot_area_sqft.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        property.builtup_area_sqft.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesType =
-      selectedType === 'Property Sub Types' ||
-      property.property_type === propertyTypes.find(t => t.name === selectedType)?.property_type_id;
-
-    return matchesSearch && matchesType;
-  });
+      const matchesType = !selectedTypeId || property.property_type === selectedTypeId;
+      return matchesSearch && matchesType;
+    })
+    .sort((a, b) => {
+      if (selectedSort === 'Latest') {
+        return new Date(b.created_at) - new Date(a.created_at);
+      } else if (selectedSort === 'Oldest') {
+        return new Date(a.created_at) - new Date(b.created_at);
+      } else if (selectedSort === 'Price High to Low') {
+        return parseFloat(b.total_property_value) - parseFloat(a.total_property_value);
+      } else if (selectedSort === 'Price Low to High') {
+        return parseFloat(a.total_property_value) - parseFloat(b.total_property_value);
+      } else {
+        return 0;
+      }
+    });
 
   if (loading) {
     return (
@@ -107,7 +123,6 @@ const Properties = () => {
     }).format(amount);
   };
 
-
   return (
     <Container className="properties">
       <div className="filters-container">
@@ -117,7 +132,6 @@ const Properties = () => {
           variant="outlined"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-
         />
 
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
@@ -131,26 +145,53 @@ const Properties = () => {
               }
             }}
             onClick={handleMenuOpen}
-            aria-controls="property-type-menu"
+            aria-controls="sort-type-menu"
             aria-haspopup="true"
             endIcon={<ArrowDropDownIcon />}
           >
-            {selectedType}
+            {selectedSort}
           </Button>
           <Menu
-            id="property-type-menu"
+            id="sort-type-menu"
             anchorEl={anchorEl}
             keepMounted
             open={Boolean(anchorEl)}
             onClose={handleMenuClose}
           >
-            <MenuItem onClick={() => handleTypeSelect({ name: 'Property Sub Types' })}>
-              Property Sub Types
+            {/* Sorting Options */}
+            <MenuItem onClick={() => handleSortSelect({ type: 'sort', label: 'Sort By' })}>
+              Sort By
+            </MenuItem>
+            <MenuItem onClick={() => handleSortSelect({ type: 'sort', label: 'Latest' })}>
+              Latest
+            </MenuItem>
+            <MenuItem onClick={() => handleSortSelect({ type: 'sort', label: 'Oldest' })}>
+              Oldest
+            </MenuItem>
+            <MenuItem onClick={() => handleSortSelect({ type: 'sort', label: 'Price High to Low' })}>
+              Price High to Low
+            </MenuItem>
+            <MenuItem onClick={() => handleSortSelect({ type: 'sort', label: 'Price Low to High' })}>
+              Price Low to High
+            </MenuItem>
+
+            {/* Divider */}
+            <MenuItem disabled>────────────</MenuItem>
+
+            {/* Property Sub Types */}
+            <MenuItem onClick={() => handleSortSelect({ type: 'subtype', label: 'All Sub Types', id: null })}>
+              All Sub Types
             </MenuItem>
             {propertyTypes.map((type) => (
               <MenuItem
                 key={type.property_type_id}
-                onClick={() => handleTypeSelect(type)}
+                onClick={() =>
+                  handleSortSelect({
+                    type: 'subtype',
+                    label: type.name,
+                    id: type.property_type_id
+                  })
+                }
               >
                 {type.name}
               </MenuItem>
@@ -158,17 +199,18 @@ const Properties = () => {
           </Menu>
         </Box>
       </div>
+
       <Typography variant="h4" className="mt-3" gutterBottom>
         {categoryName} Properties:
       </Typography>
 
-      {filteredProperties.length === 0 ? (
+      {filteredAndSortedProperties.length === 0 ? (
         <Typography variant="h6" align="center" sx={{ mt: 4 }}>
           No properties found matching your search criteria
         </Typography>
       ) : (
         <Grid container spacing={3}>
-          {filteredProperties.map((property) => (
+          {filteredAndSortedProperties.map((property) => (
             <Grid item md={4} xs={12} key={property.property_id}>
               <div className="property-card">
                 <img
@@ -191,9 +233,6 @@ const Properties = () => {
                   <p>
                     <strong>Value:</strong> {formatCurrency(property.total_property_value)}
                   </p>
-                  {/* <p>
-                    <strong>Status:</strong> {property.status} | {property.approval_status}
-                  </p> */}
                 </div>
                 <div className="btn-container single-button">
                   <Button
@@ -206,9 +245,11 @@ const Properties = () => {
                         color: "#FFFFFF"
                       }
                     }}
-                 
-                    onClick={() => navigate(`/viewpropertiesdetails/${property.property_id}`, { state: { property } })}
-
+                    onClick={() =>
+                      navigate(`/viewpropertiesdetails/${property.property_id}`, {
+                        state: { property }
+                      })
+                    }
                   >
                     View Details
                   </Button>
@@ -227,7 +268,6 @@ const Properties = () => {
                   >
                     Buy now
                   </Button>
-
                 </div>
               </div>
             </Grid>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef  } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   Container,
   Typography,
@@ -43,28 +43,43 @@ function PartnerPlans() {
     padding: 2,
   };
 
-  useEffect(() => {
-    const fetchUserSubscription = async () => {
-      try {
-        const res = await fetch(`${baseurl}/user-subscriptions/user-id/${userId}/`);
-        if (res.ok) {
-          const data = await res.json();
+  // useEffect(() => {
+  //   const fetchUserSubscription = async () => {
+  //     try {
+  //       const res = await fetch(`${baseurl}/user-subscriptions/user-id/${userId}/`);
+  //       if (res.ok) {
+  //         const data = await res.json();
 
-          // data[0] contains latest_status, data[1] contains subscription info
-          if (data[0]?.latest_status === "paid") {
-            setSubscribedVariants([data[1].variant_id]);
-          }
-        }
-      } catch (err) {
-        console.error("Error fetching user subscription:", err);
+  //         // If the user has an active (paid) subscription
+  //         if (data[0]?.latest_status === "paid" && data[1]?.subscription_variant) {
+  //           setSubscribedVariants([Number(data[1].subscription_variant)]);
+  //         }
+  //       }
+  //     } catch (err) {
+  //       console.error("Error fetching user subscription:", err);
+  //     }
+  //   };
+
+  //   if (userId) {
+  //     fetchUserSubscription();
+  //   }
+  // }, [userId]);
+
+  const fetchUserSubscription = async () => {
+  try {
+    const res = await fetch(`${baseurl}/user-subscriptions/user-id/${userId}/`);
+    if (res.ok) {
+      const data = await res.json();
+
+      // If the user has an active (paid) subscription
+      if (data[0]?.latest_status === "paid" && data[1]?.subscription_variant) {
+        setSubscribedVariants([Number(data[1].subscription_variant)]);
       }
-    };
-
-    if (userId) {
-      fetchUserSubscription();
     }
-  }, [userId]);
-
+  } catch (err) {
+    console.error("Error fetching user subscription:", err);
+  }
+};
 
 
   useEffect(() => {
@@ -99,48 +114,48 @@ function PartnerPlans() {
     fetchVariantsAndPlans();
   }, []);
 
-const handleBuy = async (variant) => {
-  const confirmResult = await Swal.fire({
-    title: "Are you sure?",
-    text: "Do you want to subscribe to this plan?",
-    icon: "question",
-    showCancelButton: true,
-    confirmButtonText: "Yes, subscribe!",
-    cancelButtonText: "Cancel"
-  });
-
-  if (!confirmResult.isConfirmed) return;
-
-  try {
-    const initiateRes = await fetch(`${baseurl}/subscription/initiate-payment/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        user_id: Number(userId),
-        variant_id: variant.variant_id,
-        redirect_url: "https://shrirajteam.com/p-plans" // redirect back here after payment
-      })
+  const handleBuy = async (variant) => {
+    const confirmResult = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to subscribe to this plan?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes, subscribe!",
+      cancelButtonText: "Cancel"
     });
 
-    if (!initiateRes.ok) throw new Error('Failed to initiate payment');
+    if (!confirmResult.isConfirmed) return;
 
-    const initiateData = await initiateRes.json();
-    const { payment_url, merchant_order_id } = initiateData;
+    try {
+      const initiateRes = await fetch(`${baseurl}/subscription/initiate-payment/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          user_id: Number(userId),
+          variant_id: variant,
+          redirect_url: "https://shrirajteam.com/p-plans" // redirect back here after payment
+        })
+      });
 
-    // 👉 Save merchant_order_id in localStorage or append in redirect_url
-    localStorage.setItem("merchant_order_id", merchant_order_id);
-    localStorage.setItem("variant_id", variant.variant_id);
+      if (!initiateRes.ok) throw new Error('Failed to initiate payment');
 
-    // 👉 Now redirect to payment page
-    window.location.href = payment_url;
+      const initiateData = await initiateRes.json();
+      const { payment_url, merchant_order_id } = initiateData;
 
-  } catch (error) {
-    console.error('Subscription process failed:', error);
-    Swal.fire("Error", "Something went wrong while processing your subscription.", "error");
-  }
-};
+      // 👉 Save merchant_order_id in localStorage or append in redirect_url
+      localStorage.setItem("merchant_order_id", merchant_order_id);
+      localStorage.setItem("variant_id", variant);
+
+      // 👉 Now redirect to payment page
+      window.location.href = payment_url;
+
+    } catch (error) {
+      console.error('Subscription process failed:', error);
+      Swal.fire("Error", "Something went wrong while processing your subscription.", "error");
+    }
+  };
 
   const hasPostedStatus = useRef(false); // flag to prevent duplicate calls
 
@@ -174,6 +189,9 @@ const handleBuy = async (variant) => {
         localStorage.removeItem("merchant_order_id");
         localStorage.removeItem("variant_id");
 
+         // ✅ REFRESH subscription status
+      fetchUserSubscription();
+
       } catch (err) {
         console.error("Error sending payment status:", err);
         hasPostedStatus.current = false; // allow retry if it failed
@@ -183,7 +201,11 @@ const handleBuy = async (variant) => {
     updatePaymentStatus();
   }, []);
 
-
+useEffect(() => {
+  if (userId) {
+    fetchUserSubscription();
+  }
+}, [userId]);
 
   return (
     <>
@@ -212,6 +234,9 @@ const handleBuy = async (variant) => {
               {variantData.length > 0 ? (
                 variantData.map((variant, index) => {
                   const plan = planDataMap[variant.plan_id] || {};
+                  const isSubscribed = subscribedVariants.includes(variant.variant_id);
+                  console.log("id",variant.variant_id)
+
                   return (
                     <TableRow key={index}>
                       <TableCell sx={cellBodyStyle}>{plan.plan_name || '—'}</TableCell>
@@ -222,19 +247,22 @@ const handleBuy = async (variant) => {
                         <Button
                           variant="contained"
                           size="small"
+                          onClick={() => handleBuy(variant.variant_id)}
+                          // disabled={isSubscribed}
                           disabled={subscribedVariants.length > 0}
-                          onClick={() => handleBuy(variant)}
                           sx={{
                             textTransform: 'none',
-                            backgroundColor: subscribedVariants.includes(variant.variant_id) ? '#4caf50' : '#1976d2',
+                            backgroundColor: isSubscribed ? '#4caf50' : '#1976d2',
                             '&:disabled': {
                               backgroundColor: '#e0e0e0',
                               color: '#9e9e9e'
-                            }
+                            },
                           }}
                         >
-                          {subscribedVariants.includes(variant.variant_id) ? "Subscribed" : "Subscribe"}
+                          {isSubscribed ? "Subscribed" : "Subscribe"}
                         </Button>
+
+
 
 
                       </TableCell>

@@ -1,4 +1,4 @@
-import React, { Profiler,useEffect, useState,  } from "react";
+import React, { Profiler, useEffect, useState, } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import './App.css';
 import AdminDashboard from "./Components/Panel/Admin/Dashboard/Dashboard";
@@ -127,18 +127,21 @@ import AddCarousel from "./Components/Panel/Admin/Carousel/CarouselForm";
 import Viewdetails from "./Components/Website/Pages/Properties/ViewPropertiesDetails";
 import ViewPropertiesDetails from "./Components/Website/Pages/Properties/ViewPropertiesDetails"
 import CarouselList from "./Components/Panel/Admin/Carousel/CarouselTable";
+import TrainingMaterial from "./Components/Panel/Admin/TrainingMaterial/TrainingMaterial";
+import AddTrainingMaterial from "./Components/Panel/Admin/TrainingMaterial/AddTrainingMaterial";
+import TrainingVideos from "./Components/Panel/Partner/TraningVideos/TraningVideos";
 
 
 
 function Layout() {
   const location = useLocation();
-   const [showPopup, setShowPopup] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
 
   // Define paths where Header and Footer should be visible
-  const publicPaths = ["/", "/aboutus", "/FAQ", "/contactus", "/properties", "/propertydetails", "/termsandconditions", "/privacypolicy", "/refundpolicy", "/filteredproperties","/viewpropertiesdetails/:id"];
-  const footerPaths = ["/", "/aboutus", "/FAQ", "/contactus", "/properties", "/termsandconditions", "/privacypolicy", "/refundpolicy", "/filteredproperties","/viewpropertiesdetails/:id"]; // Removed '/propertydetails'
+  const publicPaths = ["/", "/aboutus", "/FAQ", "/contactus", "/properties", "/propertydetails", "/termsandconditions", "/privacypolicy", "/refundpolicy", "/filteredproperties", "/viewpropertiesdetails/:id"];
+  const footerPaths = ["/", "/aboutus", "/FAQ", "/contactus", "/properties", "/termsandconditions", "/privacypolicy", "/refundpolicy", "/filteredproperties", "/viewpropertiesdetails/:id"]; // Removed '/propertydetails'
 
- // Trigger popup after 60 seconds on public pages
+  // Trigger popup after 60 seconds on public pages
   useEffect(() => {
     let timeoutId;
 
@@ -161,7 +164,7 @@ function Layout() {
         <Routes>
 
           <Route path="/" element={<Home />} />
-          <Route path="/popup" element={<Popup/>} />
+          <Route path="/popup" element={<Popup />} />
           <Route path="/aboutus" element={<Aboutus />} />
           <Route path="/FAQ" element={<FAQAccordion />} />
           <Route path="/contactus" element={<Contact />} />
@@ -169,14 +172,15 @@ function Layout() {
           <Route path="/propertydetails" element={<PropertyDetail />} />
 
 
-
+          <Route path="/a-trainingmaterial" element={<TrainingMaterial />} />
+          <Route path="/a-addtrainingmaterial" element={<AddTrainingMaterial />} />
           {/* <Route path="/home" element={<LandingPage />} /> */}
           <Route path="/a-dashboard" element={<AdminDashboard />} />
           <Route path="/a-asset" element={<AdminAsset />} />
           <Route path="/a-investormanagement" element={<Tmanagement />} />
-           <Route path="/a-popup-leads" element={<LeadsTable />} />
-             <Route path="/a-carousel" element={<AddCarousel />} />
-               <Route path="/a-table-carousel" element={<CarouselList />} />
+          <Route path="/a-popup-leads" element={<LeadsTable />} />
+          <Route path="/a-carousel" element={<AddCarousel />} />
+          <Route path="/a-table-carousel" element={<CarouselList />} />
           <Route path="/View_Tmanagement" element={<View_Tmanagement />} />
           <Route path="/Edit_Tmanagement" element={<Edit_Tmanagement />} />
 
@@ -197,7 +201,7 @@ function Layout() {
           <Route path="/a-addsubscriptions" element={<AddSubscription />} />
           <Route path="/a-edit-subscription/:id" element={<EditSubscription />} />
           <Route path="/a-assets/:id" element={<AssetDetails />} />
-          <Route path="/viewpropertiesdetails/:id" element={<ViewPropertiesDetails/>} />
+          <Route path="/viewpropertiesdetails/:id" element={<ViewPropertiesDetails />} />
 
           <Route path="/a-assets/edit/:id" element={<EditAsset />} />
           <Route path="/a-commission/:transactionId" element={<CommissionView />} />
@@ -242,6 +246,7 @@ function Layout() {
           <Route path="/i-assets/edit/:id" element={<EditMyAsset />} />
 
 
+<Route path="/p-trainingmaterial" element={<TrainingVideos />} />
           <Route path="/p-dashboard" element={<PartnerDashboard />} />
           <Route path="/p-report" element={<Report />} />
           <Route path="/p-addasset" element={<AssetForm />} />
@@ -289,7 +294,7 @@ function Layout() {
         </Routes>
       </div>
       {footerPaths.includes(location.pathname) && <Footer />}
-       {showPopup && <Popup onClose={() => setShowPopup(false)} />}
+      {showPopup && <Popup onClose={() => setShowPopup(false)} />}
     </>
 
 

@@ -52,6 +52,7 @@ export default function PartnerHeader() {
         { label: 'Transaction', path: '/p-transaction' },
         { label: 'Commission', path: '/p-commission' },
         { label: 'Plans', path: '/p-plans' },
+         { label: 'Training Material', path: '/p-trainingmaterial' },
       ]
     },
     { label: 'Meetings', path: '/p-meetings' },
@@ -321,7 +322,7 @@ export default function PartnerHeader() {
         >
           Profile
         </MenuItem>
-        <MenuItem
+        {/* <MenuItem
           onClick={() => {
             handleProfileMenuClose();
             navigate('/p-profiledetails');
@@ -329,7 +330,7 @@ export default function PartnerHeader() {
           sx={{ fontWeight: 'bold' }}
         >
           KYC
-        </MenuItem>
+        </MenuItem> */}
         <MenuItem
           onClick={() => {
             handleProfileMenuClose();

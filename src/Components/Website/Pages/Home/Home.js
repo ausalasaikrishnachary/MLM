@@ -53,7 +53,7 @@ const sliderSettings = {
 
 const ShrirajLandingPage = () => {
 
-  const [activeTab, setActiveTab] = useState('buy');
+  const [activeTab, setActiveTab] = useState('sell');
   const [searchResults, setSearchResults] = useState([]);
   const navigate = useNavigate();
   const [carouselItems, setCarouselItems] = useState([]);
@@ -604,19 +604,14 @@ useEffect(() => {
             id="property-tabs"
             className="search-tabs"
           >
-            <Tab eventKey="buy" title="Buy">
+            <Tab eventKey="sell" title="Sell">
               <div className="mt-3">
-                <SearchInput activeTab="buy" />
+                <SearchInput activeTab="sell" />
               </div>
             </Tab>
             <Tab eventKey="rent" title="Rent">
               <div className="mt-3">
                 <SearchInput activeTab="rent" />
-              </div>
-            </Tab>
-            <Tab eventKey="sell" title="Sell">
-              <div className="mt-3">
-                <SearchInput activeTab="sell" />
               </div>
             </Tab>
           </Tabs>

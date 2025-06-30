@@ -1,0 +1,86 @@
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { baseurl } from '../../../BaseURL/BaseURL';
+import PartnerHeader from "../../../Shared/Partner/PartnerNavbar";
+import {
+  Box,
+  Typography,
+  Container,
+  Card,
+  CardContent,
+  CardMedia,
+  CircularProgress,
+  Grid,
+  Button
+} from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+
+function TrainingVideos() {
+  const [materials, setMaterials] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetch(`${baseurl}/training-materials/`)
+      .then((res) => res.json())
+      .then((data) => {
+        setMaterials(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error('Error fetching training materials:', error);
+        setLoading(false);
+      });
+  }, []);
+
+  return (
+    <>
+      <PartnerHeader />
+      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+        <Typography variant="h4">Training Materials</Typography>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+          <Typography variant="h4"></Typography>
+          {/* <Button
+            variant="contained"
+            color="primary"
+            startIcon={<AddIcon />}
+            onClick={() => navigate('/a-addtrainingmaterial')}
+          >
+            Add Video
+          </Button> */}
+        </Box>
+
+        {loading ? (
+          <Box display="flex" justifyContent="center" mt={4}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <Grid container spacing={4}>
+            {materials.map((item, index) => (
+              <Grid item xs={12} md={4} key={index}>
+                <Card>
+                  <CardMedia
+                    component="video"
+                    src={`${baseurl}${item.video}`}
+                    controls
+                    height="150"
+                  />
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom>
+                      {item.title}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {item.description}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        )}
+      </Container>
+    </>
+  );
+}
+
+export default TrainingVideos;

@@ -73,6 +73,8 @@ const SignUp = () => {
         "nominee_reference_to",
         "referral_id",
         "referred_by",
+        "phone_number",
+        "email"
     ];
 
 
@@ -90,6 +92,12 @@ const SignUp = () => {
     const togglePasswordVisibility = () => {
         setShowPassword((prev) => !prev);
     };
+
+    const [errors, setErrors] = useState({
+    email: "",
+    phone_number: ""
+});
+
 
 
     useEffect(() => {
@@ -125,55 +133,78 @@ const SignUp = () => {
         setFileName(file.name);
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+const handleSubmit = async (e) => {
+    e.preventDefault();
 
-        const formDataToSend = new FormData();
-        Object.keys(formData).forEach((key) => {
-            formDataToSend.append(key, formData[key]);
+    // Reset previous errors
+    setErrors({ email: "", phone_number: "" });
+
+    const { email, phone_number } = formData;
+    const newErrors = {};
+
+    if (!email.trim()) newErrors.email = "Email is required";
+    if (!phone_number.trim()) newErrors.phone_number = "Phone number is required";
+
+    if (Object.keys(newErrors).length > 0) {
+        setErrors(newErrors);
+        return;
+    }
+
+    // Proceed with submission
+    const formDataToSend = new FormData();
+    Object.keys(formData).forEach((key) => {
+        formDataToSend.append(key, formData[key]);
+    });
+
+    if (pancard) formDataToSend.append("pan", pancard);
+    if (aadhar) formDataToSend.append("aadhaar", aadhar);
+    if (image) formDataToSend.append("image", image);
+
+    try {
+        const response = await fetch(`${baseurl}/users/`, {
+            method: "POST",
+            body: formDataToSend,
         });
 
-        if (pancard) formDataToSend.append("pan", pancard);
-        if (aadhar) formDataToSend.append("aadhaar", aadhar);
-        if (image) formDataToSend.append("image", image);
+        const responseData = await response.json();
 
-        try {
-            const response = await fetch(`${baseurl}/users/`, {
-                method: "POST",
-                body: formDataToSend,
+        if (response.ok) {
+            Swal.fire({
+                icon: "success",
+                title: "User Registered",
+                text: "User registered successfully!",
+                confirmButtonColor: "#3085d6"
+            }).then(() => {
+                setUsers([...users, responseData]);
+                navigate("/login");
             });
-
-            const responseData = await response.json();
-
-            if (response.ok) {
-                Swal.fire({
-                    icon: "success",
-                    title: "User Registered",
-                    text: "User registered successfully!",
-                    confirmButtonColor: "#3085d6"
-                }).then(() => {
-                    setUsers([...users, responseData]);
-                    navigate("/login");
-                });
-            } else {
-                console.error("Server Error:", responseData);
-                Swal.fire({
-                    icon: "error",
-                    title: "Registration Failed",
-                    text: `Failed to register user: ${JSON.stringify(responseData)}`,
-                    confirmButtonColor: "#d33"
-                });
+        } else {
+            // Handle server validation errors
+            if (responseData.email) {
+                setErrors(prev => ({ ...prev, email: "Email already exists" }));
             }
-        } catch (error) {
-            console.error("Error submitting form:", error);
+            if (responseData.phone_number) {
+                setErrors(prev => ({ ...prev, phone_number: "Phone number already exists" }));
+            }
+
             Swal.fire({
                 icon: "error",
-                title: "Submission Error",
-                text: "An error occurred while submitting the form.",
+                title: "Registration Failed",
+                text: "Please check the form for errors.",
                 confirmButtonColor: "#d33"
             });
         }
-    };
+    } catch (error) {
+        console.error("Error submitting form:", error);
+        Swal.fire({
+            icon: "error",
+            title: "Submission Error",
+            text: "An error occurred while submitting the form.",
+            confirmButtonColor: "#d33"
+        });
+    }
+};
+
 
     // Role Dialog States
     const [openRoleDialog, setOpenRoleDialog] = useState(false);
@@ -288,6 +319,28 @@ const SignUp = () => {
                                             </Grid>
                                         )
                                 )}
+<Grid item xs={12} sm={6}>
+<TextField
+    fullWidth
+    label="Email"
+    name="email"
+    value={formData.email}
+    onChange={handleChange}
+    error={Boolean(errors.email)}
+    helperText={errors.email}
+/>
+</Grid>
+<Grid item xs={12} sm={6}>
+<TextField
+    fullWidth
+    label="Phone Number"
+    name="phone_number"
+    value={formData.phone_number}
+    onChange={handleChange}
+    error={Boolean(errors.phone_number)}
+    helperText={errors.phone_number}
+/>
+</Grid>
 
                                 <Grid item xs={12} sm={6}>
                                     <TextField

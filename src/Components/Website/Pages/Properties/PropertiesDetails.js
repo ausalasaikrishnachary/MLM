@@ -109,14 +109,14 @@ const AssetDetails = () => {
     <>
       <Header />
       <Container sx={{ py: 4 }}>
-         <Button variant="outlined" onClick={() => navigate(-1)}>
-        Back
-      </Button>
+        <Button variant="outlined" onClick={() => navigate(-1)}>
+          Back
+        </Button>
         <Box display="flex" alignItems="center" gap={2} mb={3} mt={3}>
           <Typography variant="h4">{property.property_title}</Typography>
-          <Chip 
-            label={property.status.toUpperCase()} 
-            color={property.status === 'booked' ? 'secondary' : 'primary'} 
+          <Chip
+            label={property.status.toUpperCase()}
+            color={property.status === 'booked' ? 'secondary' : 'primary'}
           />
         </Box>
 
@@ -127,8 +127,8 @@ const AssetDetails = () => {
               component="img"
               src={property.images.length > 0 ? `${baseurl}${property.images[0].image}` : 'https://via.placeholder.com/300'}
               alt={property.property_title}
-              sx={{ 
-                width: '100%', 
+              sx={{
+                width: '100%',
                 borderRadius: 2,
                 mb: 2
               }}
@@ -183,7 +183,7 @@ const AssetDetails = () => {
           <Grid item xs={12} md={6}>
             <Typography variant="h6" gutterBottom>Basic Information</Typography>
             <Divider sx={{ mb: 2 }} />
-            
+
             <Grid container spacing={2} mb={3}>
               <Grid item xs={6}>
                 <Typography><strong>Looking to:</strong> {property.looking_to}</Typography>
@@ -233,20 +233,20 @@ const AssetDetails = () => {
               <strong>Contact:</strong> {property.owner_contact}<br />
               <strong>Email:</strong> {property.owner_email}
             </Typography>
-            <Typography variant="h6" gutterBottom>Buyer Details</Typography>
-<Divider sx={{ mb: 2 }} />
-{property.buyer_user ? (
-  <Typography mb={3}>
-    <strong>Username:</strong> {property.buyer_user.username}<br />
-    <strong>Referral ID:</strong> {property.buyer_user.referral_id}<br />
-    <strong>Contact:</strong> {property.buyer_user.phone_number}<br />
-    <strong>Email:</strong> {property.buyer_user.email}<br />
-    <strong>Booking Date:</strong> {property.buyer_user.booking_date}<br />
-    <strong>Purchase Date:</strong> {property.buyer_user.purchase_date}
-  </Typography>
-) : (
-  <Typography mb={3}>No buyer information available</Typography>
-)}
+            {/* <Typography variant="h6" gutterBottom>Buyer Details</Typography>
+            <Divider sx={{ mb: 2 }} />
+            {property.buyer_user ? (
+              <Typography mb={3}>
+                <strong>Username:</strong> {property.buyer_user.username}<br />
+                <strong>Referral ID:</strong> {property.buyer_user.referral_id}<br />
+                <strong>Contact:</strong> {property.buyer_user.phone_number}<br />
+                <strong>Email:</strong> {property.buyer_user.email}<br />
+                <strong>Booking Date:</strong> {property.buyer_user.booking_date}<br />
+                <strong>Purchase Date:</strong> {property.buyer_user.purchase_date}
+              </Typography>
+            ) : (
+              <Typography mb={3}>No buyer information available</Typography>
+            )} */}
 
             {/* <Typography variant="h6" gutterBottom>System Information</Typography>
             <Divider sx={{ mb: 2 }} />

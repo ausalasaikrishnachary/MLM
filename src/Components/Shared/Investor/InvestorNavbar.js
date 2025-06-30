@@ -247,7 +247,7 @@ export default function InvestorHeader() {
         >
           Profile
         </MenuItem>
-        <MenuItem
+        {/* <MenuItem
           onClick={() => {
             handleProfileMenuClose();
             navigate('/i-profiledetails');
@@ -255,7 +255,7 @@ export default function InvestorHeader() {
           sx={{ fontWeight: 'bold', fontSize: '16px' }}
         >
           KYC
-        </MenuItem>
+        </MenuItem> */}
         <MenuItem
           onClick={() => {
             handleProfileMenuClose();

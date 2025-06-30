@@ -194,7 +194,7 @@ const AssetDetails = () => {
             </Grid>
 
             {/* Buyer Details - only if exists */}
-            {property.buyer_user && (
+            {/* {property.buyer_user && (
               <>
                 <Typography variant="h6" gutterBottom>Buyer Details</Typography>
                 <Divider sx={{ mb: 2 }} />
@@ -207,7 +207,7 @@ const AssetDetails = () => {
                   <strong>Purchase Date:</strong> {property.buyer_user.purchase_date}
                 </Typography>
               </>
-            )}
+            )} */}
           </Grid>
         </Grid>
       </Container>
