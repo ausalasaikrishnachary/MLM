@@ -34,11 +34,12 @@ export default function Header() {
     { 
       label: 'Operations', 
       subItems: [
-        { label: 'Transactions', path: '/a-transactionmoniter' },
-        { label: 'Commission', path: '/a-commission' },
+        { label: 'Company Commission', path: '/a-transactionmoniter' },
+        { label: 'Agent Commission', path: '/a-commission' },
         { label: 'Subscriptions', path: '/a-subscriptions' },
         { label: 'Booking Slab', path: '/a-bookingslab' },
         { label: 'Training Material', path: '/a-trainingmaterial' },
+        { label: 'Transaction', path: '/a-transactionsummary' },
       ]
     },
         { label: 'Meetings', path: '/a-meetings' },

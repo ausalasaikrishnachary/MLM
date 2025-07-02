@@ -56,7 +56,7 @@ const LeadsTable = () => {
         console.log("Fetching leads data from API...");
         const response = await axios.get(`${baseurl}/leads/`);
         console.log("API response received:", response.data);
-        
+
         if (response.data && Array.isArray(response.data)) {
           setData(response.data);
           setFilteredData(response.data);
@@ -84,7 +84,7 @@ const LeadsTable = () => {
     if (searchTerm === "") {
       setFilteredData(data);
     } else {
-      const filtered = data.filter(lead => 
+      const filtered = data.filter(lead =>
         (lead.first_name && lead.first_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (lead.last_name && lead.last_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (lead.email && lead.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -110,31 +110,31 @@ const LeadsTable = () => {
           </Box>
         )}
 
-       <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mb: 2 }}>
-  <TextField
-    variant="outlined"
-    placeholder="Search by name, email or phone"
-    value={searchTerm}
-    onChange={(e) => setSearchTerm(e.target.value)}
-    InputProps={{
-      startAdornment: <SearchIcon color="action" sx={{ mr: 1 }} />,
-    }}
-    sx={{
-      minWidth: 300,
-      '& .MuiOutlinedInput-root': {
-        borderRadius: '4px',
-        backgroundColor: '#f5f5f5',
-      },
-    }}
-  />
-</Box>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mb: 2 }}>
+          <TextField
+            variant="outlined"
+            placeholder="Search by name, email or phone"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            InputProps={{
+              startAdornment: <SearchIcon color="action" sx={{ mr: 1 }} />,
+            }}
+            sx={{
+              minWidth: 300,
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '4px',
+                // backgroundColor: '#f5f5f5',
+              },
+            }}
+          />
+        </Box>
 
         <Table sx={{ border: '1px solid black', width: '100%' }}>
           <TableHead>
             <TableRow>
               <TableCell sx={cellStyle}>S.No</TableCell>
-              <TableCell sx={cellStyle}>First Name</TableCell>
-              <TableCell sx={cellStyle}>Last Name</TableCell>
+              <TableCell sx={cellStyle}>Name</TableCell>
+              {/* <TableCell sx={cellStyle}>Last Name</TableCell> */}
               <TableCell sx={cellStyle}>Email</TableCell>
               <TableCell sx={cellStyle}>Phone Number</TableCell>
             </TableRow>
@@ -150,7 +150,7 @@ const LeadsTable = () => {
                 <TableRow key={lead.id || lead.email}>
                   <TableCell sx={cellBodyStyle}>{index + 1}</TableCell>
                   <TableCell sx={cellBodyStyle}>{lead.first_name || '-'}</TableCell>
-                  <TableCell sx={cellBodyStyle}>{lead.last_name || '-'}</TableCell>
+                  {/* <TableCell sx={cellBodyStyle}>{lead.last_name || '-'}</TableCell> */}
                   <TableCell sx={cellBodyStyle}>{lead.email || '-'}</TableCell>
                   <TableCell sx={cellBodyStyle}>{lead.phone_number || '-'}</TableCell>
                 </TableRow>

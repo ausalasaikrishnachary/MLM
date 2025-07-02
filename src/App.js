@@ -130,6 +130,7 @@ import CarouselList from "./Components/Panel/Admin/Carousel/CarouselTable";
 import TrainingMaterial from "./Components/Panel/Admin/TrainingMaterial/TrainingMaterial";
 import AddTrainingMaterial from "./Components/Panel/Admin/TrainingMaterial/AddTrainingMaterial";
 import TrainingVideos from "./Components/Panel/Partner/TraningVideos/TraningVideos";
+import TransactionSummary from "./Components/Panel/Admin/TransactionSummary/TransactionSummary";
 
 
 
@@ -220,6 +221,7 @@ function Layout() {
           <Route path="/a-activeagents" element={<ActiveAgents />} />
           <Route path="/a-Inactiveagents" element={<InactiveAgents />} />
           <Route path="/a-Newproperties" element={<NewProperties />} />
+          <Route path="/a-transactionsummary" element={<TransactionSummary />} />
 
 
           <Route path="/i-dashboard" element={<InvestorDashboard />} />

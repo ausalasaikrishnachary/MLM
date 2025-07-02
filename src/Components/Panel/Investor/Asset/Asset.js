@@ -58,7 +58,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
 
 const AssetsUI = () => {
-  const [sortBy, setSortBy] = useState('');
+  const [sortBy, setSortBy] = useState('latest');
   const [properties, setProperties] = useState([]);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
