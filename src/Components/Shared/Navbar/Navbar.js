@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Logo from '../../Images/logo.png';
 import LogoutIcon from '@mui/icons-material/Logout';
 import {
@@ -24,6 +24,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { baseurl } from '../../BaseURL/BaseURL';
+import { Badge, Menu as MuiMenu } from '@mui/material';
+import axios from 'axios';
 
 export default function Header() { 
   // Navigation items with Operations dropdown
@@ -47,6 +50,35 @@ export default function Header() {
         { label: 'Leads', path: '/a-popup-leads' },
     // { label: 'Agents', path: '/a-partners' },
   ];
+
+    const userId = localStorage.getItem("user_id");
+    const [notifications, setNotifications] = useState([]);
+    const [notificationAnchorEl, setNotificationAnchorEl] = useState(null);
+    const notificationMenuOpen = Boolean(notificationAnchorEl);
+  
+    const handleNotificationClick = (event) => {
+      setNotificationAnchorEl(event.currentTarget);
+    };
+    const handleNotificationClose = () => {
+      setNotificationAnchorEl(null);
+    };
+  
+      useEffect(() => {
+      const fetchNotifications = () => {
+        axios.get(`${baseurl}/notifications/user-id/${userId}/`)
+          .then(response => {
+            const unread = response.data.filter(n => !n.is_read);
+            setNotifications(unread);
+          })
+          .catch(error => {
+            console.error("Error fetching notifications:", error);
+          });
+      };
+  
+      fetchNotifications(); // Initial load
+      const interval = setInterval(fetchNotifications, 10000); // Every 10s
+      return () => clearInterval(interval);
+    }, [userId]);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -194,9 +226,11 @@ export default function Header() {
 
               {/* Right: Notification, Username, Profile Avatar */}
               <Box display="flex" alignItems="center">
-                <IconButton sx={{ color: '#000' }}>
+                <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
+                <Badge badgeContent={notifications.length} color="error">
                   <NotificationsNoneIcon />
-                </IconButton>
+                </Badge>
+              </IconButton>
                 <Typography sx={{ ml: 2, mr: 2, color: '#000', fontWeight: 'bold' }}>
                   {user_name}
                 </Typography>
@@ -262,8 +296,10 @@ export default function Header() {
               </Box>
 
               {/* Right: Notification, Username, Profile Avatar */}
-              <IconButton sx={{ color: '#000' }}>
-                <NotificationsNoneIcon />
+                <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
+                <Badge badgeContent={notifications.length} color="error">
+                  <NotificationsNoneIcon />
+                </Badge>
               </IconButton>
               <Typography sx={{ ml: 2, mr: 2, color: '#000', fontWeight: 'bold' }}>
                 {user_name}
@@ -357,6 +393,41 @@ export default function Header() {
           Logout <LogoutIcon sx={{ ml: 1 }} />
         </MenuItem>
       </Menu>
+
+              <MuiMenu
+        anchorEl={notificationAnchorEl}
+        open={notificationMenuOpen}
+        onClose={handleNotificationClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        {notifications.length > 0 ? (
+          notifications.map((notif) => (
+            <MenuItem
+              key={notif.notification_status_id}
+              onClick={() => {
+                axios.post(`${baseurl}/notifications/mark-as-read/`, {
+                  user_id: parseInt(userId),
+                  notification_id: notif.notification_status_id
+                })
+                  .then(() => {
+                    setNotifications(prev => prev.filter(n => n.notification_status_id !== notif.notification_status_id));
+                    handleNotificationClose();
+                    navigate('/i-asset');
+                  })
+                  .catch(error => {
+                    console.error("Error marking notification as read:", error);
+                  });
+              }}
+            >
+              {notif.message}
+            </MenuItem>
+          ))
+        ) : (
+          <MenuItem disabled>No notifications</MenuItem>
+        )}
+      </MuiMenu>
+      
     </>
   );
 }

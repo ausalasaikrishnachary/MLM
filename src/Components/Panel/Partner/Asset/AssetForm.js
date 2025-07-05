@@ -24,7 +24,7 @@ import { styled } from '@mui/material/styles';
 import axios from 'axios';
 import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
 import { useNavigate } from "react-router-dom";
- import Swal from 'sweetalert2';
+import Swal from 'sweetalert2';
 import { baseurl } from '../../../BaseURL/BaseURL';
 
 
@@ -81,8 +81,8 @@ const AssetForm = () => {
     numberOfBedrooms: '',
     numberOfBalconies: '',
     numberOfBathrooms: '',
-    floor:"",
-    furnishing_status:"",
+    floor: "",
+    furnishing_status: "",
     openSides: 0,
     builtupArea: '',
     numberOfRoads: 0,
@@ -105,6 +105,10 @@ const AssetForm = () => {
     userId: userId,
     agent_commission: "",
     files: [],
+    preferred_tenants: '',
+    rent_amount: '',
+    deposit_amount: '',
+    available_from: '',
   });
 
   const [showResidentialFields, setShowResidentialFields] = useState(false);
@@ -252,11 +256,15 @@ const AssetForm = () => {
         number_of_bedrooms: formData.numberOfBedrooms,
         number_of_balconies: formData.numberOfBalconies,
         number_of_bathrooms: formData.numberOfBathrooms,
-        floor:formData.floor,
-        furnishing_status:formData.furnishing_status,
+        floor: formData.floor,
+        furnishing_status: formData.furnishing_status,
         agent_commission: formData.agent_commission,
-        total_property_value : Number(formData.price) + Number(formData.agent_commission),
-        username:username,
+        total_property_value: Number(formData.price) + Number(formData.agent_commission),
+        username: username,
+        preferred_tenants: formData.preferred_tenants,
+        rent_amount: formData.rent_amount,
+        deposit_amount: formData.deposit_amount,
+        available_from: formData.available_from,
       };
 
       // Log the payload for debugging
@@ -302,7 +310,7 @@ const AssetForm = () => {
       });
 
       console.log('Submission successful:', response.data);
-         Swal.fire('Success', 'Property updated successfully!', 'success');
+      Swal.fire('Success', 'Property updated successfully!', 'success');
       navigate("/p-myassets");
 
       // Optionally reset form or redirect here
@@ -324,7 +332,7 @@ const AssetForm = () => {
       } else {
         errorMessage += `: ${error.message}`;
       }
-   Swal.fire('Error', 'An error occurred while updating.', 'error');
+      Swal.fire('Error', 'An error occurred while updating.', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -345,7 +353,7 @@ const AssetForm = () => {
               >
                 <MenuItem value="sell">Sell</MenuItem>
                 <MenuItem value="rent">Rent</MenuItem>
-                <MenuItem value="lease">Lease</MenuItem>
+                {/* <MenuItem value="lease">Lease</MenuItem> */}
               </Select>
             </FormControl>
           </Grid>
@@ -574,29 +582,29 @@ const AssetForm = () => {
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
-                              <TextField
-                                fullWidth
-                                label="floor "
-                                name="floor "
-                                type="number"
-                                value={formData.floor}
-                                onChange={handleChange}
-                              />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                              <FormControl fullWidth>
-                                <InputLabel>Facing Direction</InputLabel>
-                                <Select
-                                  name="furnishing status"
-                                  value={formData.furnishing_status}
-                                  onChange={handleChange}
-                                  label="furnishing status"
-                                >
-                                  <MenuItem value="semi furnished">Semi Furnished</MenuItem>
-                                  <MenuItem value="fully furnished">Fully Furnished</MenuItem>
-                                </Select>
-                              </FormControl>
-                            </Grid>
+                <TextField
+                  fullWidth
+                  label="floor "
+                  name="floor "
+                  type="number"
+                  value={formData.floor}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Facing Direction</InputLabel>
+                  <Select
+                    name="furnishing status"
+                    value={formData.furnishing_status}
+                    onChange={handleChange}
+                    label="furnishing status"
+                  >
+                    <MenuItem value="semi furnished">Semi Furnished</MenuItem>
+                    <MenuItem value="fully furnished">Fully Furnished</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
             </>
           )}
           <Grid item xs={12} sm={6}>
@@ -888,33 +896,151 @@ const AssetForm = () => {
               ))}
             </Box>
           </Grid>
-          
+
         </Grid>
       );
 
+      // case 4: return (
+      //   <Grid container spacing={3} sx={{ mt: 2 }}>
+      //     <Grid item xs={12} sm={6}>
+      //       <TextField
+      //         fullWidth
+      //         label="Property Value"
+      //         name="price"
+      //         type="number"
+      //         value={formData.price}
+      //         onChange={handleChange}
+      //       />
+      //     </Grid>
+
+      //     <Grid item xs={12} sm={6}>
+      //       <TextField
+      //         fullWidth
+      //         label="Agent Commission"
+      //         name="agent_commission"
+      //         type="number"
+      //         value={formData.agent_commission}
+      //         onChange={handleChange}
+      //       />
+      //     </Grid>
+      //     <Grid item xs={12} sm={6}>
+      //       <TextField
+      //         fullWidth
+      //         label="Owner Name"
+      //         name="ownerName"
+      //         value={formData.ownerName}
+      //         onChange={handleChange}
+      //       />
+      //     </Grid>
+
+      //     <Grid item xs={12} sm={6}>
+      //       <TextField
+      //         fullWidth
+      //         label="Owner Contact"
+      //         name="ownerContact"
+      //         value={formData.ownerContact}
+      //         onChange={handleChange}
+      //       />
+      //     </Grid>
+
+      //     <Grid item xs={12} sm={6}>
+      //       <TextField
+      //         fullWidth
+      //         label="Owner Email"
+      //         name="ownerEmail"
+      //         type="email"
+      //         value={formData.ownerEmail}
+      //         onChange={handleChange}
+      //       />
+      //     </Grid>
+      //   </Grid>
+      // );
+
       case 4: return (
         <Grid container spacing={3} sx={{ mt: 2 }}>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Property Value"
-              name="price"
-              type="number"
-              value={formData.price}
-              onChange={handleChange}
-            />
-          </Grid>
+          {formData.lookingTo === 'sell' ? (
+            <>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Property Value"
+                  name="price"
+                  type="number"
+                  value={formData.price}
+                  onChange={handleChange}
+                />
+              </Grid>
 
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Agent Commission"
-              name="agent_commission"
-              type="number"
-              value={formData.agent_commission}
-              onChange={handleChange}
-            />
-          </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Agent Commission"
+                  name="agent_commission"
+                  type="number"
+                  value={formData.agent_commission}
+                  onChange={handleChange}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Total Property Value"
+                  name="total_property_value"
+                  type="number"
+                  value={formData.total_property_value}
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                />
+              </Grid>
+            </>
+          ) : (
+            <>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Preferred Tenants"
+                  name="preferred_tenants"
+                  value={formData.preferred_tenants || ''}
+                  onChange={handleChange}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Rent Amount"
+                  name="rent_amount"
+                  type="number"
+                  value={formData.rent_amount || ''}
+                  onChange={handleChange}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Deposit Amount"
+                  name="deposit_amount"
+                  type="number"
+                  value={formData.deposit_amount || ''}
+                  onChange={handleChange}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Available From"
+                  name="available_from"
+                  value={formData.available_from || ''}
+                  onChange={handleChange}
+                />
+              </Grid>
+            </>
+          )}
+
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth

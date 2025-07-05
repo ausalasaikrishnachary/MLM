@@ -109,6 +109,10 @@ const AddPropertyForm = () => {
     agent_commission_balance: "",
     total_property_value: "",
     files: [],
+    preferred_tenants: '',
+    rent_amount: '',
+    deposit_amount: '',
+    available_from: '',
   });
 
   useEffect(() => {
@@ -347,6 +351,10 @@ const AddPropertyForm = () => {
         agent_commission_paid: formData.agent_commission_paid,
         agent_commission_balance: formData.agent_commission_balance,
         total_property_value: Number(formData.price) + Number(formData.company_commission),
+          preferred_tenants: formData.preferred_tenants,
+  rent_amount: formData.rent_amount,
+  deposit_amount: formData.deposit_amount,
+  available_from: formData.available_from,
       };
 
       // Log the payload for debugging
@@ -472,7 +480,7 @@ const AddPropertyForm = () => {
               >
                 <MenuItem value="sell">Sell</MenuItem>
                 <MenuItem value="rent">Rent</MenuItem>
-                <MenuItem value="lease">Lease</MenuItem>
+                {/* <MenuItem value="lease">Lease</MenuItem> */}
               </Select>
             </FormControl>
           </Grid>
@@ -1089,110 +1097,123 @@ const AddPropertyForm = () => {
         </Grid>
       );
 
-      case 4: return (
-        <Grid container spacing={3} sx={{ mt: 2 }}>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Property Value"
-              name="price"
-              type="number"
-              value={formData.price}
-              onChange={handleChange}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Company Commission"
-              name="company_commission"
-              type="number"
-              value={formData.company_commission}
-              onChange={handleChange}
-            />
-          </Grid>
-
-
-          {/* <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Agent Commission"
-              name="agent_commission"
-              type="number"
-              value={formData.agent_commission}
-              onChange={handleChange}
-            />
-          </Grid> */}
-
-
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Total Property Value"
-              name="total_property_value"
-              type="number"
-              value={formData.total_property_value}
-              InputProps={{
-                readOnly: true,
-              }}
-            />
-          </Grid>
-
-          {/* <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Agent Commission Paid"
-              name="agent_commission_paid"
-              type="number"
-              value={formData.agent_commission_paid}
-              onChange={handleChange}
-            />
-          </Grid> */}
-
-          {/* <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Agent Commission Balance"
-              name="agent_commission_balance"
-              type="number"
-              value={formData.agent_commission_balance}
-              onChange={handleChange}
-            />
-          </Grid> */}
-
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Owner Name"
-              name="ownerName"
-              value={formData.ownerName}
-              onChange={handleChange}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Owner Contact"
-              name="ownerContact"
-              value={formData.ownerContact}
-              onChange={handleChange}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Owner Email"
-              name="ownerEmail"
-              type="email"
-              value={formData.ownerEmail}
-              onChange={handleChange}
-            />
-          </Grid>
+case 4: return (
+  <Grid container spacing={3} sx={{ mt: 2 }}>
+    {formData.lookingTo === 'sell' ? (
+      <>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth
+            label="Property Value"
+            name="price"
+            type="number"
+            value={formData.price}
+            onChange={handleChange}
+          />
         </Grid>
-      );
+
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth
+            label="Company Commission"
+            name="company_commission"
+            type="number"
+            value={formData.company_commission}
+            onChange={handleChange}
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth
+            label="Total Property Value"
+            name="total_property_value"
+            type="number"
+            value={formData.total_property_value}
+            InputProps={{
+              readOnly: true,
+            }}
+          />
+        </Grid>
+      </>
+    ) : (
+      <>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth
+            label="Preferred Tenants"
+            name="preferred_tenants"
+            value={formData.preferred_tenants || ''}
+            onChange={handleChange}
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth
+            label="Rent Amount"
+            name="rent_amount"
+            type="number"
+            value={formData.rent_amount || ''}
+            onChange={handleChange}
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth
+            label="Deposit Amount"
+            name="deposit_amount"
+            type="number"
+            value={formData.deposit_amount || ''}
+            onChange={handleChange}
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth
+            label="Available From"
+            name="available_from"
+            value={formData.available_from || ''}
+            onChange={handleChange}
+          />
+        </Grid>
+      </>
+    )}
+
+    <Grid item xs={12} sm={6}>
+      <TextField
+        fullWidth
+        label="Owner Name"
+        name="ownerName"
+        value={formData.ownerName}
+        onChange={handleChange}
+      />
+    </Grid>
+
+    <Grid item xs={12} sm={6}>
+      <TextField
+        fullWidth
+        label="Owner Contact"
+        name="ownerContact"
+        value={formData.ownerContact}
+        onChange={handleChange}
+      />
+    </Grid>
+
+    <Grid item xs={12} sm={6}>
+      <TextField
+        fullWidth
+        label="Owner Email"
+        name="ownerEmail"
+        type="email"
+        value={formData.ownerEmail}
+        onChange={handleChange}
+      />
+    </Grid>
+  </Grid>
+);
 
 
       default: return null;

@@ -131,6 +131,7 @@ import TrainingMaterial from "./Components/Panel/Admin/TrainingMaterial/Training
 import AddTrainingMaterial from "./Components/Panel/Admin/TrainingMaterial/AddTrainingMaterial";
 import TrainingVideos from "./Components/Panel/Partner/TraningVideos/TraningVideos";
 import TransactionSummary from "./Components/Panel/Admin/TransactionSummary/TransactionSummary";
+import TermsConditions from "./Components/Legal/TermsConditions";
 
 
 
@@ -292,6 +293,8 @@ function Layout() {
 
           <Route path="/filteredproperties" element={<FilteredProperties />} />
           <Route path="/payment-callback" element={<PaymentCallback />} />
+
+          <Route path="/t&c" element={<TermsConditions />} />
 
         </Routes>
       </div>

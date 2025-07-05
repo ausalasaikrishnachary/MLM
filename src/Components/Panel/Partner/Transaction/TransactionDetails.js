@@ -32,7 +32,7 @@ const TransactionList = () => {
         const fetchTransactions = async () => {
             const userId = localStorage.getItem("user_id");
             try {
-                const response = await axios.get(`${baseurl}//transactions/user-id/${userId}/property-id/${propertyId}/`);
+                const response = await axios.get(`${baseurl}/transactions/user-id/${userId}/property-id/${propertyId}/`);
 
                 if (!response.data || response.data.length === 0) {
                     throw new Error("No transactions found");
@@ -84,6 +84,7 @@ const TransactionList = () => {
                                 <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', border: '1px solid #000' }}>Remaining Amount</TableCell>
                                 <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', border: '1px solid #000' }}>Payment Method</TableCell>
                                 <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', border: '1px solid #000' }}>Transaction Date</TableCell>
+                                <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', border: '1px solid #000' }}>Reciept/Invoice</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -104,6 +105,21 @@ const TransactionList = () => {
                                     <TableCell sx={{ textAlign: 'center', border: '1px solid #000' }}>{transaction.remaining_amount}</TableCell>
                                     <TableCell sx={{ textAlign: 'center', border: '1px solid #000' }}>{transaction.payment_mode}</TableCell>
                                     <TableCell sx={{ textAlign: 'center', border: '1px solid #000' }}> {new Date(transaction.transaction_date).toLocaleDateString('en-IN')}</TableCell>
+                                    <TableCell sx={{ textAlign: 'center', border: '1px solid #000' }}>
+                                        {transaction.document_file && transaction.document_number ? (
+                                            <a
+                                                href={`${baseurl}${transaction.document_file}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                style={{  color: '#1976d2', fontWeight: 'bold' }}
+                                            >
+                                                {transaction.document_number}
+                                            </a>
+                                        ) : (
+                                            'N/A'
+                                        )}
+                                    </TableCell>
+
                                 </TableRow>
                             ))}
                         </TableBody>

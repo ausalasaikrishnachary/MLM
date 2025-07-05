@@ -79,8 +79,8 @@ const AddPropertyForm = () => {
     numberOfBedrooms: '',
     numberOfBalconies: '',
     numberOfBathrooms: '',
-    floor:"",
-    furnishing_status:"",
+    floor: "",
+    furnishing_status: "",
     openSides: 0,
     builtupArea: '',
     numberOfRoads: 0,
@@ -102,6 +102,10 @@ const AddPropertyForm = () => {
     videos: [],
     userId: userId, // This should be dynamic in a real app
     files: [],
+    preferred_tenants: '',
+    rent_amount: '',
+    deposit_amount: '',
+    available_from: '',
   });
 
   const [showResidentialFields, setShowResidentialFields] = useState(false);
@@ -247,8 +251,12 @@ const AddPropertyForm = () => {
         number_of_bedrooms: formData.numberOfBedrooms,
         number_of_balconies: formData.numberOfBalconies,
         number_of_bathrooms: formData.numberOfBathrooms,
-        floor:formData.floor,
-        furnishing_status:formData.furnishing_status,
+        floor: formData.floor,
+        furnishing_status: formData.furnishing_status,
+        preferred_tenants: formData.preferred_tenants,
+        rent_amount: formData.rent_amount,
+        deposit_amount: formData.deposit_amount,
+        available_from: formData.available_from,
       };
 
       // Log the payload for debugging
@@ -337,9 +345,19 @@ const AddPropertyForm = () => {
               >
                 <MenuItem value="sell">Sell</MenuItem>
                 <MenuItem value="rent">Rent</MenuItem>
-                <MenuItem value="lease">Lease</MenuItem>
+                {/* <MenuItem value="lease">Lease</MenuItem> */}
               </Select>
             </FormControl>
+          </Grid>
+
+          <Grid item xs={6}>
+            <TextField
+              fullWidth
+              label="Property Title"
+              name="propertyTitle"
+              value={formData.propertyTitle}
+              onChange={handleChange}
+            />
           </Grid>
 
           <Grid item xs={12} sm={6}>
@@ -413,16 +431,6 @@ const AddPropertyForm = () => {
               </Select>
             </FormControl>
           </Grid> */}
-
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Property Title"
-              name="propertyTitle"
-              value={formData.propertyTitle}
-              onChange={handleChange}
-            />
-          </Grid>
 
           <Grid item xs={12}>
             <TextField
@@ -566,29 +574,29 @@ const AddPropertyForm = () => {
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
-                              <TextField
-                                fullWidth
-                                label="floor "
-                                name="floor "
-                                type="number"
-                                value={formData.floor}
-                                onChange={handleChange}
-                              />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                              <FormControl fullWidth>
-                                <InputLabel>Facing Direction</InputLabel>
-                                <Select
-                                  name="furnishing status"
-                                  value={formData.furnishing_status}
-                                  onChange={handleChange}
-                                  label="furnishing status"
-                                >
-                                  <MenuItem value="semi furnished">Semi Furnished</MenuItem>
-                                  <MenuItem value="fully furnished">Fully Furnished</MenuItem>
-                                </Select>
-                              </FormControl>
-                            </Grid>
+                <TextField
+                  fullWidth
+                  label="floor "
+                  name="floor "
+                  type="number"
+                  value={formData.floor}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Facing Direction</InputLabel>
+                  <Select
+                    name="furnishing status"
+                    value={formData.furnishing_status}
+                    onChange={handleChange}
+                    label="furnishing status"
+                  >
+                    <MenuItem value="semi furnished">Semi Furnished</MenuItem>
+                    <MenuItem value="fully furnished">Fully Furnished</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
             </>
           )}
           <Grid item xs={12} sm={6}>
@@ -895,29 +903,136 @@ const AddPropertyForm = () => {
         </Grid>
       );
 
+      // case 4: return (
+      //   <Grid container spacing={3} sx={{ mt: 2 }}>
+      //     <Grid item xs={12} sm={6}>
+      //       <TextField
+      //         fullWidth
+      //         label="Price"
+      //         name="price"
+      //         type="number"
+      //         value={formData.price}
+      //         onChange={handleChange}
+      //       />
+      //     </Grid>
+
+      //     {/* <Grid item xs={12} sm={6}>
+      //       <TextField
+      //         fullWidth
+      //         label="Maintenance Charges"
+      //         name="maintenance"
+      //         type="number"
+      //         value={formData.maintenance}
+      //         onChange={handleChange}
+      //       />
+      //     </Grid> */}
+
+      //     <Grid item xs={12} sm={6}>
+      //       <TextField
+      //         fullWidth
+      //         label="Owner Name"
+      //         name="ownerName"
+      //         value={formData.ownerName}
+      //         onChange={handleChange}
+      //       />
+      //     </Grid>
+
+      //     <Grid item xs={12} sm={6}>
+      //       <TextField
+      //         fullWidth
+      //         label="Owner Contact"
+      //         name="ownerContact"
+      //         value={formData.ownerContact}
+      //         onChange={handleChange}
+      //       />
+      //     </Grid>
+
+      //     <Grid item xs={12} sm={6}>
+      //       <TextField
+      //         fullWidth
+      //         label="Owner Email"
+      //         name="ownerEmail"
+      //         type="email"
+      //         value={formData.ownerEmail}
+      //         onChange={handleChange}
+      //       />
+      //     </Grid>
+
+      //     {/* <Grid item xs={12}>
+      //       <FormControlLabel
+      //         control={
+      //           <Checkbox
+      //             name="isFeatured"
+      //             checked={formData.isFeatured}
+      //             onChange={handleChange}
+      //           />
+      //         }
+      //         label="Feature this property"
+      //       />
+      //     </Grid> */}
+      //   </Grid>
+      // );
+
       case 4: return (
         <Grid container spacing={3} sx={{ mt: 2 }}>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Price"
-              name="price"
-              type="number"
-              value={formData.price}
-              onChange={handleChange}
-            />
-          </Grid>
+          {formData.lookingTo === 'sell' ? (
+            <>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Price"
+                  name="price"
+                  type="number"
+                  value={formData.price}
+                  onChange={handleChange}
+                />
+              </Grid>
+            </>
+          ) : (
+            <>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Preferred Tenants"
+                  name="preferred_tenants"
+                  value={formData.preferred_tenants || ''}
+                  onChange={handleChange}
+                />
+              </Grid>
 
-          {/* <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Maintenance Charges"
-              name="maintenance"
-              type="number"
-              value={formData.maintenance}
-              onChange={handleChange}
-            />
-          </Grid> */}
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Rent Amount"
+                  name="rent_amount"
+                  type="number"
+                  value={formData.rent_amount || ''}
+                  onChange={handleChange}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Deposit Amount"
+                  name="deposit_amount"
+                  type="number"
+                  value={formData.deposit_amount || ''}
+                  onChange={handleChange}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Available From"
+                  name="available_from"
+                  value={formData.available_from || ''}
+                  onChange={handleChange}
+                />
+              </Grid>
+            </>
+          )}
 
           <Grid item xs={12} sm={6}>
             <TextField
@@ -949,19 +1064,6 @@ const AddPropertyForm = () => {
               onChange={handleChange}
             />
           </Grid>
-
-          {/* <Grid item xs={12}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  name="isFeatured"
-                  checked={formData.isFeatured}
-                  onChange={handleChange}
-                />
-              }
-              label="Feature this property"
-            />
-          </Grid> */}
         </Grid>
       );
 
