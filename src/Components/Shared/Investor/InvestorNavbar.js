@@ -204,7 +204,7 @@ export default function InvestorHeader() {
                   onClick={handleAvatarClick}
                   sx={{ width: 40, height: 40, cursor: 'pointer' }}
                   alt="Profile Avatar"
-                  src={profileImage || "https://via.placeholder.com/40"}
+                  src={profileImage ? `${baseurl}${profileImage}` : "https://via.placeholder.com/40"}
                 />
 
               </Box>
@@ -267,7 +267,7 @@ export default function InvestorHeader() {
                 onClick={handleAvatarClick}
                 sx={{ width: 40, height: 40, cursor: 'pointer' }}
                 alt="Investor"
-                src={profileImage || "https://via.placeholder.com/40"}
+                src={profileImage ? `${baseurl}${profileImage}` : "https://via.placeholder.com/40"}
               />
 
             </>

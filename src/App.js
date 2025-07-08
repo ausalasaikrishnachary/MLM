@@ -132,6 +132,8 @@ import AddTrainingMaterial from "./Components/Panel/Admin/TrainingMaterial/AddTr
 import TrainingVideos from "./Components/Panel/Partner/TraningVideos/TraningVideos";
 import TransactionSummary from "./Components/Panel/Admin/TransactionSummary/TransactionSummary";
 import TermsConditions from "./Components/Legal/TermsConditions";
+import AdminMeetings from "./Components/Panel/Admin/AdminMeetings/AdminMeetings";
+import TableAdminMeetings from "./Components/Panel/Admin/AdminMeetings/TableAdminMeetings";
 
 
 
@@ -179,6 +181,8 @@ function Layout() {
           <Route path="/a-addtrainingmaterial" element={<AddTrainingMaterial />} />
           {/* <Route path="/home" element={<LandingPage />} /> */}
           <Route path="/a-dashboard" element={<AdminDashboard />} />
+          <Route path="/admin-meetings" element={<AdminMeetings/>} />
+          <Route path="/tableadminmeetings" element={<TableAdminMeetings/>} />
           <Route path="/a-asset" element={<AdminAsset />} />
           <Route path="/a-investormanagement" element={<Tmanagement />} />
           <Route path="/a-popup-leads" element={<LeadsTable />} />
