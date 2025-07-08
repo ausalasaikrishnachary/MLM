@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Header from "../../../Shared/Navbar/Navbar";
 import {
-  Table, TableBody, TableCell, TableHead, TableRow, 
-  Typography, Box, Button, IconButton, Container
+  Table, TableBody, TableCell, TableHead, TableRow,
+  Box, Button, IconButton, Container, Pagination
 } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +13,9 @@ import { baseurl } from '../../../BaseURL/BaseURL';
 function BookingSlab() {
   const [slabs, setSlabs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 5;
+
   const navigate = useNavigate();
 
   const cellStyle = {
@@ -38,6 +41,7 @@ function BookingSlab() {
     axios.get(`${baseurl}/booking-slabs/`)
       .then(response => {
         setSlabs(response.data);
+        setPage(1); // reset to first page on data load
         setLoading(false);
       })
       .catch(error => {
@@ -61,6 +65,16 @@ function BookingSlab() {
   useEffect(() => {
     fetchSlabs();
   }, []);
+
+  const handlePageChange = (_, value) => {
+    setPage(value);
+  };
+
+  const totalPages = Math.ceil(slabs.length / itemsPerPage);
+  const paginatedSlabs = slabs.slice(
+    (page - 1) * itemsPerPage,
+    page * itemsPerPage
+  );
 
   return (
     <>
@@ -95,8 +109,8 @@ function BookingSlab() {
               <TableRow>
                 <TableCell colSpan={5} sx={noDataStyle}>Loading...</TableCell>
               </TableRow>
-            ) : slabs.length > 0 ? (
-              slabs.map((slab) => (
+            ) : paginatedSlabs.length > 0 ? (
+              paginatedSlabs.map((slab) => (
                 <TableRow key={slab.id}>
                   <TableCell sx={cellBodyStyle}>{slab.id}</TableCell>
                   <TableCell sx={cellBodyStyle}>₹{parseFloat(slab.min_value).toLocaleString()}</TableCell>
@@ -129,6 +143,24 @@ function BookingSlab() {
             )}
           </TableBody>
         </Table>
+
+        {/* Always show pagination when data is present */}
+        {!loading && slabs.length > 0 && (
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+            <Pagination
+              count={totalPages}
+              page={page}
+              onChange={handlePageChange}
+              color="primary"
+              sx={{
+                '& .MuiPaginationItem-root': {
+                  borderRadius: 0, // Square shape
+                },
+              }}
+            />
+
+          </Box>
+        )}
       </Container>
     </>
   );

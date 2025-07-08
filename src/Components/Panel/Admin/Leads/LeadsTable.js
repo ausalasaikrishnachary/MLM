@@ -7,21 +7,15 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  Button,
-  IconButton,
   Container,
   Typography,
   Box,
   TextField,
-  Grid
+  Pagination,
 } from "@mui/material";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import EditIcon from "@mui/icons-material/Edit";
-import Swal from 'sweetalert2';
-import DeleteIcon from "@mui/icons-material/Delete";
-import Header from "../../../Shared/Navbar/Navbar";
-import { Select, MenuItem, FormControl, InputLabel } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
+import Swal from 'sweetalert2';
+import Header from "../../../Shared/Navbar/Navbar";
 import { baseurl } from "../../../BaseURL/BaseURL";
 
 const LeadsTable = () => {
@@ -31,6 +25,9 @@ const LeadsTable = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 5;
 
   const cellStyle = {
     fontWeight: 'bold',
@@ -92,7 +89,19 @@ const LeadsTable = () => {
       );
       setFilteredData(filtered);
     }
+    setPage(1); // Reset to first page on search change
   }, [searchTerm, data]);
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+
+  const paginatedData = filteredData.slice(
+    (page - 1) * itemsPerPage,
+    page * itemsPerPage
+  );
+
+  const handlePageChange = (_, value) => {
+    setPage(value);
+  };
 
   return (
     <>
@@ -121,10 +130,6 @@ const LeadsTable = () => {
             }}
             sx={{
               minWidth: 300,
-              '& .MuiOutlinedInput-root': {
-                borderRadius: '4px',
-                // backgroundColor: '#f5f5f5',
-              },
             }}
           />
         </Box>
@@ -134,7 +139,6 @@ const LeadsTable = () => {
             <TableRow>
               <TableCell sx={cellStyle}>S.No</TableCell>
               <TableCell sx={cellStyle}>Name</TableCell>
-              {/* <TableCell sx={cellStyle}>Last Name</TableCell> */}
               <TableCell sx={cellStyle}>Email</TableCell>
               <TableCell sx={cellStyle}>Phone Number</TableCell>
             </TableRow>
@@ -143,27 +147,43 @@ const LeadsTable = () => {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={5} sx={noDataStyle}>Loading...</TableCell>
+                <TableCell colSpan={4} sx={noDataStyle}>Loading...</TableCell>
               </TableRow>
-            ) : filteredData.length > 0 ? (
-              filteredData.map((lead, index) => (
+            ) : paginatedData.length > 0 ? (
+              paginatedData.map((lead, index) => (
                 <TableRow key={lead.id || lead.email}>
-                  <TableCell sx={cellBodyStyle}>{index + 1}</TableCell>
+                  <TableCell sx={cellBodyStyle}>
+                    {(page - 1) * itemsPerPage + index + 1}
+                  </TableCell>
                   <TableCell sx={cellBodyStyle}>{lead.first_name || '-'}</TableCell>
-                  {/* <TableCell sx={cellBodyStyle}>{lead.last_name || '-'}</TableCell> */}
                   <TableCell sx={cellBodyStyle}>{lead.email || '-'}</TableCell>
                   <TableCell sx={cellBodyStyle}>{lead.phone_number || '-'}</TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={5} sx={noDataStyle}>
+                <TableCell colSpan={4} sx={noDataStyle}>
                   {searchTerm ? 'No matching leads found' : 'No Leads Found'}
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
+
+        {/* Pagination Controls */}
+        <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
+          <Pagination
+            count={totalPages}
+            page={page}
+            onChange={handlePageChange}
+            color="primary"
+            sx={{
+              "& .MuiPaginationItem-root": {
+                borderRadius: "0px",
+              },
+            }}
+          />
+        </Box>
       </Container>
     </>
   );

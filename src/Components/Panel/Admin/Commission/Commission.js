@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import {
-    Table, TableBody, TableCell, TableHead, TableRow, Button,
+    Table, TableBody, TableCell, TableHead, TableRow, Button, Box, Pagination
 } from '@mui/material';
 import Header from "../../../Shared/Navbar/Navbar";
 import { useNavigate } from 'react-router-dom';
@@ -12,17 +12,18 @@ function Commission() {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
+    const [page, setPage] = useState(1);
+    const itemsPerPage = 5;
+
     useEffect(() => {
         axios
             .get(`${baseurl}/property/`)
             .then((response) => {
-                // Filter sold properties with non-null, positive commission balance
-                 const filteredData = response.data.filter(
-                (item) =>
-                    item.status === 'sold' && item.referral_id !== null
-            );
+                const filteredData = response.data.filter(
+                    (item) =>
+                        item.status === 'sold' && item.referral_id !== null
+                );
 
-                // Remove duplicates based on user_id
                 const uniqueByUserId = [];
                 const userIds = new Set();
 
@@ -42,7 +43,16 @@ function Commission() {
             });
     }, []);
 
+    const totalPages = Math.ceil(propertyData.length / itemsPerPage);
 
+    const paginatedData = propertyData.slice(
+        (page - 1) * itemsPerPage,
+        page * itemsPerPage
+    );
+
+    const handlePageChange = (_, value) => {
+        setPage(value);
+    };
 
     return (
         <>
@@ -56,32 +66,17 @@ function Commission() {
                         <TableRow>
                             <TableCell sx={cellStyle}>Agent Name</TableCell>
                             <TableCell sx={cellStyle}>Agent Referral Id</TableCell>
-                            {/* <TableCell sx={cellStyle}>Property Name</TableCell> */}
-                            {/* <TableCell sx={cellStyle}>City</TableCell>
-              <TableCell sx={cellStyle}>State</TableCell>
-              <TableCell sx={cellStyle}>Country</TableCell>
-              <TableCell sx={cellStyle}>Owner</TableCell> */}
-                            {/* <TableCell sx={cellStyle}>Property Value</TableCell> */}
                             <TableCell sx={cellStyle}>Property Status</TableCell>
-                            {/* <TableCell sx={cellStyle}>Approval</TableCell> */}
-
-
-                            {/* <TableCell sx={cellStyle}>Agent Name</TableCell> */}
-                            {/* <TableCell sx={cellStyle}>Agent commission</TableCell>
-                            <TableCell sx={cellStyle}>paid commission</TableCell>
-                            <TableCell sx={cellStyle}>Balance commission</TableCell> */}
-                            {/* <TableCell sx={cellStyle}>Created</TableCell> */}
-                            {/* <TableCell sx={cellStyle}>Action</TableCell> */}
                         </TableRow>
                     </TableHead>
 
                     <TableBody>
                         {loading ? (
                             <TableRow>
-                                <TableCell colSpan={10} sx={noDataStyle}>Loading...</TableCell>
+                                <TableCell colSpan={3} sx={noDataStyle}>Loading...</TableCell>
                             </TableRow>
-                        ) : propertyData.length > 0 ? (
-                            propertyData.map((property) => (
+                        ) : paginatedData.length > 0 ? (
+                            paginatedData.map((property) => (
                                 <TableRow
                                     key={property.id}
                                     hover
@@ -90,36 +85,31 @@ function Commission() {
                                 >
                                     <TableCell sx={cellBodyStyle}>{property.username}</TableCell>
                                     <TableCell sx={cellBodyStyle}>{property.referral_id}</TableCell>
-                                    {/* <TableCell sx={cellBodyStyle}>{property.property_title}</TableCell> */}
-                                    {/* <TableCell sx={cellBodyStyle}>{property.total_property_value}</TableCell> */}
                                     <TableCell sx={cellBodyStyle}>{property.status}</TableCell>
-                                    {/* <TableCell sx={cellBodyStyle}>{property.agent_commission}</TableCell>
-                                    <TableCell sx={cellBodyStyle}>{property.agent_commission_paid}</TableCell>
-                                    <TableCell sx={cellBodyStyle}>{property.agent_commission_balance}</TableCell> */}
-                                    {/* <TableCell sx={cellBodyStyle}>
-                                        {new Date(property.created_at).toLocaleDateString('en-IN')}
-                                    </TableCell> */}
-                                    {/* <TableCell
-                                        sx={cellBodyStyle}
-                                        onClick={(e) => e.stopPropagation()} // Prevent row click
-                                    >
-                                        <Button
-                                            variant="contained"
-                                            size="small"
-                                            onClick={() => alert(`Property ID: ${property.user_id}`)}
-                                        >
-                                            View
-                                        </Button>
-                                    </TableCell> */}
                                 </TableRow>
                             ))
                         ) : (
                             <TableRow>
-                                <TableCell colSpan={10} sx={noDataStyle}>No Data Found</TableCell>
+                                <TableCell colSpan={3} sx={noDataStyle}>No Data Found</TableCell>
                             </TableRow>
                         )}
                     </TableBody>
                 </Table>
+
+                {/* Pagination bottom right */}
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, mr: "5%" }}>
+                    <Pagination
+                        count={totalPages}
+                        page={page}
+                        onChange={handlePageChange}
+                        color="primary"
+                        sx={{
+                            '& .MuiPaginationItem-root': {
+                                borderRadius: '0px', // makes buttons square
+                            },
+                        }}
+                    />
+                </Box>
             </>
         </>
     );

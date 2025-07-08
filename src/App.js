@@ -135,6 +135,7 @@ import TermsConditions from "./Components/Legal/TermsConditions";
 
 
 
+
 function Layout() {
   const location = useLocation();
   const [showPopup, setShowPopup] = useState(false);
@@ -226,6 +227,8 @@ function Layout() {
 
 
           <Route path="/i-dashboard" element={<InvestorDashboard />} />
+           
+
           <Route path="/i-listingassets" element={<I_ListingProperties />} />
           <Route path="/i-latestProperties" element={<I_LatestProperties />} />
           <Route path="/i-bookedassets" element={<I_BookedAssets />} />

@@ -9,8 +9,8 @@ import {
     InputLabel,
     MenuItem,
     Select,
-    CircularProgress,
-    Typography
+    Typography,
+    Pagination
 } from '@mui/material';
 
 function TransactionSummary() {
@@ -18,6 +18,9 @@ function TransactionSummary() {
     const [filteredTransactions, setFilteredTransactions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('all');
+
+    const [page, setPage] = useState(1);
+    const itemsPerPage = 10;
 
     const headers = [
         { key: 'transaction_id', label: 'Transaction ID' },
@@ -27,8 +30,6 @@ function TransactionSummary() {
         { key: 'transaction_for', label: 'Transaction For' },
         { key: 'paid_amount', label: 'Paid Amount' },
         { key: 'payment_mode', label: 'Payment Mode' },
-        // { key: 'purchased_from', label: 'Purchased From' },
-        // { key: 'purchased_type', label: 'Purchased Type' },
         { key: 'role', label: 'Role' },
         { key: 'username', label: 'Username' },
         { key: 'user_id', label: 'User ID' },
@@ -68,7 +69,18 @@ function TransactionSummary() {
             );
             setFilteredTransactions(filtered);
         }
+        setPage(1); // Reset page to 1 when filter changes
     }, [filter, transactions]);
+
+    const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
+    const paginatedTransactions = filteredTransactions.slice(
+        (page - 1) * itemsPerPage,
+        page * itemsPerPage
+    );
+
+    const handlePageChange = (_, value) => {
+        setPage(value);
+    };
 
     return (
         <>
@@ -83,8 +95,8 @@ function TransactionSummary() {
             >
                 Transaction Summary
             </Typography>
-            <Box maxWidth={1430} sx={{ display: 'flex', justifyContent: 'end',  }}>
 
+            <Box maxWidth={1430} sx={{ display: 'flex', justifyContent: 'end', mb: 2 }}>
                 <FormControl size="medium" sx={{ minWidth: 200 }}>
                     <InputLabel>Filter</InputLabel>
                     <Select
@@ -102,9 +114,23 @@ function TransactionSummary() {
 
             <TableLayout
                 headers={headers}
-                data={filteredTransactions}
+                data={paginatedTransactions}
                 loading={loading}
             />
+
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                <Pagination
+                    count={totalPages}
+                    page={page}
+                    onChange={handlePageChange}
+                    color="primary"
+                    sx={{
+                        "& .MuiPaginationItem-root": {
+                            borderRadius: "0px"
+                        }
+                    }}
+                />
+            </Box>
         </>
     );
 }

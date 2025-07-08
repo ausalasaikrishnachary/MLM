@@ -18,21 +18,19 @@ import {
   MenuItem,
   useTheme,
   useMediaQuery,
+  Badge,
+  Menu as MuiMenu
 } from '@mui/material';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { baseurl } from '../../BaseURL/BaseURL';
-import { Badge, Menu as MuiMenu } from '@mui/material';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import axios from 'axios';
+import { baseurl } from '../../BaseURL/BaseURL';
 
 export default function PartnerHeader() {
-  // Define nav items with navigation paths.
-  // For the "Transactions" item, we add a submenu.
-
   const userId = localStorage.getItem("user_id");
   const [notifications, setNotifications] = useState([]);
   const [notificationAnchorEl, setNotificationAnchorEl] = useState(null);
@@ -45,7 +43,19 @@ export default function PartnerHeader() {
     setNotificationAnchorEl(null);
   };
 
-    useEffect(() => {
+  const [profileImage, setProfileImage] = useState('');
+
+  useEffect(() => {
+    const fetchProfileImage = () => {
+      axios.get(`${baseurl}/users/${userId}/`)
+        .then(res => {
+          setProfileImage(res.data.image || '');
+        })
+        .catch(err => {
+          console.error('Error fetching profile image:', err);
+        });
+    };
+
     const fetchNotifications = () => {
       axios.get(`${baseurl}/notifications/user-id/${userId}/`)
         .then(response => {
@@ -57,29 +67,17 @@ export default function PartnerHeader() {
         });
     };
 
-    fetchNotifications(); // Initial load
-    const interval = setInterval(fetchNotifications, 10000); // Every 10s
+    fetchProfileImage();
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 10000);
     return () => clearInterval(interval);
   }, [userId]);
-
 
   const navItems = [
     { label: 'Dashboard', path: '/p-dashboard' },
     { label: 'My Properties', path: '/p-myassets' },
     { label: 'Properties', path: '/p-assets' },
-    // { label: 'Transaction', path: '/p-transaction' },
-    // {
-    //   label: 'Transactions', path:"/p-transactions",
-    //   path: '/p-transactions',
-    //   submenu: [
-    //     { label: 'Buy Shares', path: '/buy-shares' },
-    //     { label: 'Sell Shares', path: '/sell-shares' },
-    //   ],
-    // },
     { label: 'My Team', path: '/p-myteam' },
-    // { label: 'Report', path: '/p-report' },
-    // { label: 'Commission', path: '/p-commission' },
-    // { label: 'Plans', path: '/p-plans' },
     {
       label: 'Operations',
       subItems: [
@@ -92,20 +90,15 @@ export default function PartnerHeader() {
     { label: 'Meetings', path: '/p-meetings' },
   ];
 
-
-  // Responsive helper.
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const referral_id = localStorage.getItem("referral_id");
   const first_name = localStorage.getItem("user_name");
 
-  // Navigation hooks.
   const navigate = useNavigate();
   const location = useLocation();
 
-  // State for mobile drawer.
   const [mobileOpen, setMobileOpen] = useState(false);
-  // State for Operations dropdown menu
   const [operationsAnchorEl, setOperationsAnchorEl] = useState(null);
   const operationsMenuOpen = Boolean(operationsAnchorEl);
   const handleOperationsClick = (event) => {
@@ -115,15 +108,14 @@ export default function PartnerHeader() {
     setOperationsAnchorEl(null);
   };
 
-  // Check if any sub-item is active for highlighting the Operations button
   const isOperationsActive = navItems
     .find(item => item.label === 'Operations')
     ?.subItems.some(subItem => location.pathname === subItem.path);
+
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
   };
 
-  // State for the Profile Avatar dropdown menu.
   const [profileAnchorEl, setProfileAnchorEl] = useState(null);
   const profileMenuOpen = Boolean(profileAnchorEl);
   const handleAvatarClick = (event) => {
@@ -133,26 +125,13 @@ export default function PartnerHeader() {
     setProfileAnchorEl(null);
   };
 
-  // State for the Transactions dropdown menu in desktop view.
-  const [transAnchorEl, setTransAnchorEl] = useState(null);
-  const transMenuOpen = Boolean(transAnchorEl);
-  const handleTransClick = (event) => {
-    setTransAnchorEl(event.currentTarget);
-  };
-  const handleTransClose = () => {
-    setTransAnchorEl(null);
-  };
-
-  // Drawer content for mobile view with a close (cross) button.
   const drawer = (
     <Box sx={{ width: 250 }}>
-      {/* Drawer header with a close icon */}
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 2 }}>
         <IconButton onClick={handleDrawerToggle}>
           <CloseIcon />
         </IconButton>
       </Box>
-
       <List>
         {navItems.map((item) => (
           <ListItem key={item.label} disablePadding>
@@ -188,9 +167,7 @@ export default function PartnerHeader() {
       >
         <Toolbar>
           {isMobile ? (
-            // Mobile / iPad Layout.
             <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
-              {/* Left: Menu Icon */}
               <IconButton
                 edge="start"
                 color="inherit"
@@ -200,30 +177,17 @@ export default function PartnerHeader() {
               >
                 <MenuIcon />
               </IconButton>
-
-              {/* Center: Logo */}
               <Box display="flex" justifyContent="center" flexGrow={1}>
                 <Link to="/p-dashboard" style={{ textDecoration: 'none', color: '#333333' }}>
-                  <img
-                    src={Logo}
-                    alt="logo"
-                    style={{
-                      height: '50px',
-                      width: 'auto',
-                      maxWidth: '150px',
-                      // transform: 'scale(2.0)',
-                    }}
-                  />
+                  <img src={Logo} alt="logo" style={{ height: '50px', maxWidth: '150px' }} />
                 </Link>
               </Box>
-
-              {/* Right: Notification, Username, Profile Avatar */}
               <Box display="flex" alignItems="center">
                 <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
-                <Badge badgeContent={notifications.length} color="error">
-                  <NotificationsNoneIcon />
-                </Badge>
-              </IconButton>
+                  <Badge badgeContent={notifications.length} color="error">
+                    <NotificationsNoneIcon />
+                  </Badge>
+                </IconButton>
                 <Typography sx={{ ml: 2, mr: 2, color: '#000', fontWeight: 'bold' }}>
                   {first_name} ({referral_id})
                 </Typography>
@@ -231,31 +195,18 @@ export default function PartnerHeader() {
                   onClick={handleAvatarClick}
                   sx={{ width: 40, height: 40, cursor: 'pointer' }}
                   alt="Profile Avatar"
-                  src="https://via.placeholder.com/40" // Replace with your own image.
+                  src={profileImage ? `${baseurl}${profileImage}` : "https://via.placeholder.com/40"}
                 />
               </Box>
+
             </Box>
           ) : (
-            // Desktop Layout.
             <>
-              {/* Left: Logo */}
               <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center' }}>
                 <Link to="/p-dashboard" style={{ textDecoration: 'none', color: '#333333' }}>
-                  <img
-                    src={Logo}
-                    alt="logo"
-                    style={{
-                      height: '75px',
-                      width: 'auto',
-                      maxWidth: '150px',
-                      paddingTop: "8px"
-                      // transform: 'scale(2.0)',
-                    }}
-                  />
+                  <img src={Logo} alt="logo" style={{ height: '75px', maxWidth: '150px', paddingTop: "8px" }} />
                 </Link>
               </Typography>
-
-              {/* Center: Nav Items */}
               <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', gap: 3 }}>
                 {navItems.map((item) => (
                   item.path ? (
@@ -288,27 +239,23 @@ export default function PartnerHeader() {
                   )
                 ))}
               </Box>
-              {/* Right: Notification, Username, Profile Avatar */}
               <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
                 <Badge badgeContent={notifications.length} color="error">
                   <NotificationsNoneIcon />
                 </Badge>
               </IconButton>
-
               <Typography sx={{ ml: 2, mr: 2, color: '#000', fontWeight: 'bold' }}>
                 {first_name} ({referral_id})
               </Typography>
               <Avatar
-                onClick={handleAvatarClick}
-                sx={{ width: 40, height: 40, cursor: 'pointer' }}
-                alt="Partner"
-                src="https://via.placeholder.com/40" // Replace with your own image.
-              />
+                  onClick={handleAvatarClick}
+                  sx={{ width: 40, height: 40, cursor: 'pointer' }}
+                  alt="Profile Avatar"
+                  src={profileImage ? `${baseurl}${profileImage}` : "https://via.placeholder.com/40"}
+                />
             </>
           )}
         </Toolbar>
-
-        {/* Mobile Drawer */}
         <Drawer
           anchor="left"
           open={mobileOpen}
@@ -319,7 +266,6 @@ export default function PartnerHeader() {
         </Drawer>
       </AppBar>
 
-      {/* Operations Dropdown Menu */}
       <Menu
         anchorEl={operationsAnchorEl}
         open={operationsMenuOpen}
@@ -344,7 +290,7 @@ export default function PartnerHeader() {
           </MenuItem>
         ))}
       </Menu>
-      {/* Profile Avatar Dropdown Menu */}
+
       <Menu
         anchorEl={profileAnchorEl}
         open={profileMenuOpen}
@@ -361,15 +307,6 @@ export default function PartnerHeader() {
         >
           Profile
         </MenuItem>
-        {/* <MenuItem
-          onClick={() => {
-            handleProfileMenuClose();
-            navigate('/p-profiledetails');
-          }}
-          sx={{ fontWeight: 'bold' }}
-        >
-          KYC
-        </MenuItem> */}
         <MenuItem
           onClick={() => {
             handleProfileMenuClose();
@@ -406,7 +343,7 @@ export default function PartnerHeader() {
                   .then(() => {
                     setNotifications(prev => prev.filter(n => n.notification_status_id !== notif.notification_status_id));
                     handleNotificationClose();
-                    navigate('/p-assets'); 
+                    navigate('/p-assets');
                   })
                   .catch(error => {
                     console.error("Error marking notification as read:", error);
@@ -420,36 +357,6 @@ export default function PartnerHeader() {
           <MenuItem disabled>No notifications</MenuItem>
         )}
       </MuiMenu>
-
-
-
-      {/* Transactions Dropdown Menu for Desktop */}
-      {/* <Menu
-        anchorEl={transAnchorEl}
-        open={transMenuOpen}
-        onClose={handleTransClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        {navItems
-          .find((item) => item.label === 'Transactions')
-          .submenu.map((subitem) => (
-            <MenuItem
-              key={subitem.label}
-              onClick={() => {
-                handleTransClose();
-                navigate(subitem.path);
-              }}
-              sx={{
-                color: location.pathname === subitem.path ? 'blue' : 'inherit',
-                fontWeight: 'bold',
-                fontSize:"16px"
-              }}
-            >
-              {subitem.label}
-            </MenuItem>
-          ))}
-      </Menu> */}
     </>
   );
 }
