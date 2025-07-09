@@ -337,29 +337,49 @@ const AgentDashboard = () => {
             </Grid>
 
 
-            <Grid item xs={12} sm={6} md={3}>
-              <Card sx={{ borderRadius: "15px", boxShadow: 3 }}>
-                <CardContent sx={{ textAlign: 'center' }}>
-                  <FontAwesomeIcon icon={faMoneyBillWave} size="2x" color="#666" />
-                  <Typography sx={{ mt: 1 }}>Total Agent Commissions Paid</Typography>
-                  <Typography variant="h4">
-                    ₹{commissionSummary.total_agent_commission_paid}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+  <Card
+    sx={{
+      borderRadius: "15px",
+      boxShadow: 3,
+      cursor: 'pointer',
+      transition: 'transform 0.2s',
+      '&:hover': { transform: 'translateY(-4px)' },
+    }}
+    onClick={() => navigate('/p-commission')}
+  >
+    <CardContent sx={{ textAlign: 'center' }}>
+      <FontAwesomeIcon icon={faMoneyBillWave} size="2x" color="#666" />
+      <Typography sx={{ mt: 1 }}>Total Agent Commissions Paid</Typography>
+      <Typography variant="h4">
+        ₹{commissionSummary.total_agent_commission_paid?.toLocaleString('en-IN')}
+      </Typography>
+    </CardContent>
+  </Card>
+</Grid>
 
-            <Grid item xs={12} sm={6} md={3}>
-              <Card sx={{ borderRadius: "15px", boxShadow: 3 }}>
-                <CardContent sx={{ textAlign: 'center' }}>
-                  <FontAwesomeIcon icon={faMoneyBillWave} size="2x" color="#666" />
-                  <Typography sx={{ mt: 1 }}>Total Company Commissions Paid</Typography>
-                  <Typography variant="h4">
-                    ₹{commissionSummary.total_company_commission_paid}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
+<Grid item xs={12} sm={6} md={3}>
+  <Card
+    sx={{
+      borderRadius: "15px",
+      boxShadow: 3,
+      cursor: 'pointer',
+      transition: 'transform 0.2s',
+      '&:hover': { transform: 'translateY(-4px)' },
+    }}
+    onClick={() => navigate('/p-commission')}
+  >
+    <CardContent sx={{ textAlign: 'center' }}>
+      <FontAwesomeIcon icon={faMoneyBillWave} size="2x" color="#666" />
+      <Typography sx={{ mt: 1 }}>Total Company Commissions Paid</Typography>
+      <Typography variant="h4">
+        ₹{commissionSummary.total_company_commission_paid?.toLocaleString('en-IN')}
+      </Typography>
+    </CardContent>
+  </Card>
+</Grid>
+
+
 
             {/* <Grid item xs={12} sm={6} md={3}>
               <Card sx={{ borderRadius: "15px", boxShadow: 3 }}>

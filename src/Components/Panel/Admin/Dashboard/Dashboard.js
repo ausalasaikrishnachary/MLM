@@ -66,18 +66,19 @@ const AdminDashboard = () => {
       icon: <Cancel sx={{ color: "#e74c3c" }} />,
       path: "/a-rejectedassets",
     },
-    {
-      label: "Total Company Commsisions Paid",
-      value: counts.total_company_commission_paid,
-      icon: <Cancel sx={{ color: "#e74c3c" }} />,
-      path: "/a-transactionmoniter",
-    },
-    {
-      label: "Total Agent Commissions Paid",
-      value: counts.total_agent_commission_paid,
-      icon: <Cancel sx={{ color: "#e74c3c" }} />,
-      path: "/a-commission",
-    },
+  {
+  label: "Total Company Commissions Paid",
+  value: `₹${counts.total_company_commission_paid.toLocaleString('en-IN')}`,
+  icon: <Cancel sx={{ color: "#e74c3c" }} />,
+  path: "/a-transactionmoniter",
+},
+{
+  label: "Total Agent Commissions Paid",
+  value: `₹${counts.total_agent_commission_paid.toLocaleString('en-IN')}`,
+  icon: <Cancel sx={{ color: "#e74c3c" }} />,
+  path: "/a-commission",
+},
+
 
   ] : [];
 
