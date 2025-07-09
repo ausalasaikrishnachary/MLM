@@ -88,15 +88,16 @@ const SignUp = () => {
     const [imageName, setImageName] = useState("");
     const [partnerUsers, setPartnerUsers] = useState([]);
     const [showPassword, setShowPassword] = useState(false);
+    const [helplineNumber, setHelplineNumber] = useState("");
 
     const togglePasswordVisibility = () => {
         setShowPassword((prev) => !prev);
     };
 
     const [errors, setErrors] = useState({
-    email: "",
-    phone_number: ""
-});
+        email: "",
+        phone_number: ""
+    });
 
 
 
@@ -118,6 +119,17 @@ const SignUp = () => {
             .catch((err) => console.error("Error fetching partner users:", err));
     }, []);
 
+    useEffect(() => {
+        fetch("https://rahul30.pythonanywhere.com/phonenumbers/")
+            .then((res) => res.json())
+            .then((data) => {
+                if (Array.isArray(data) && data.length > 0 && data[0].phone_number) {
+                    setHelplineNumber(data[0].phone_number);
+                }
+            })
+            .catch((err) => console.error("Error fetching helpline number:", err));
+    }, []);
+
     const handleChange = (e) => {
         if (e.target.name === "role_ids") {
             setFormData({ ...formData, role_ids: [Number(e.target.value)] });
@@ -133,77 +145,77 @@ const SignUp = () => {
         setFileName(file.name);
     };
 
-const handleSubmit = async (e) => {
-    e.preventDefault();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-    // Reset previous errors
-    setErrors({ email: "", phone_number: "" });
+        // Reset previous errors
+        setErrors({ email: "", phone_number: "" });
 
-    const { email, phone_number } = formData;
-    const newErrors = {};
+        const { email, phone_number } = formData;
+        const newErrors = {};
 
-    if (!email.trim()) newErrors.email = "Email is required";
-    if (!phone_number.trim()) newErrors.phone_number = "Phone number is required";
+        if (!email.trim()) newErrors.email = "Email is required";
+        if (!phone_number.trim()) newErrors.phone_number = "Phone number is required";
 
-    if (Object.keys(newErrors).length > 0) {
-        setErrors(newErrors);
-        return;
-    }
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return;
+        }
 
-    // Proceed with submission
-    const formDataToSend = new FormData();
-    Object.keys(formData).forEach((key) => {
-        formDataToSend.append(key, formData[key]);
-    });
-
-    if (pancard) formDataToSend.append("pan", pancard);
-    if (aadhar) formDataToSend.append("aadhaar", aadhar);
-    if (image) formDataToSend.append("image", image);
-
-    try {
-        const response = await fetch(`${baseurl}/users/`, {
-            method: "POST",
-            body: formDataToSend,
+        // Proceed with submission
+        const formDataToSend = new FormData();
+        Object.keys(formData).forEach((key) => {
+            formDataToSend.append(key, formData[key]);
         });
 
-        const responseData = await response.json();
+        if (pancard) formDataToSend.append("pan", pancard);
+        if (aadhar) formDataToSend.append("aadhaar", aadhar);
+        if (image) formDataToSend.append("image", image);
 
-        if (response.ok) {
-            Swal.fire({
-                icon: "success",
-                title: "User Registered",
-                text: "User registered successfully!",
-                confirmButtonColor: "#3085d6"
-            }).then(() => {
-                setUsers([...users, responseData]);
-                navigate("/login");
+        try {
+            const response = await fetch(`${baseurl}/users/`, {
+                method: "POST",
+                body: formDataToSend,
             });
-        } else {
-            // Handle server validation errors
-            if (responseData.email) {
-                setErrors(prev => ({ ...prev, email: "Email already exists" }));
-            }
-            if (responseData.phone_number) {
-                setErrors(prev => ({ ...prev, phone_number: "Phone number already exists" }));
-            }
 
+            const responseData = await response.json();
+
+            if (response.ok) {
+                Swal.fire({
+                    icon: "success",
+                    title: "User Registered",
+                    text: "User registered successfully!",
+                    confirmButtonColor: "#3085d6"
+                }).then(() => {
+                    setUsers([...users, responseData]);
+                    navigate("/login");
+                });
+            } else {
+                // Handle server validation errors
+                if (responseData.email) {
+                    setErrors(prev => ({ ...prev, email: "Email already exists" }));
+                }
+                if (responseData.phone_number) {
+                    setErrors(prev => ({ ...prev, phone_number: "Phone number already exists" }));
+                }
+
+                Swal.fire({
+                    icon: "error",
+                    title: "Registration Failed",
+                    text: "Please check the form for errors.",
+                    confirmButtonColor: "#d33"
+                });
+            }
+        } catch (error) {
+            console.error("Error submitting form:", error);
             Swal.fire({
                 icon: "error",
-                title: "Registration Failed",
-                text: "Please check the form for errors.",
+                title: "Submission Error",
+                text: "An error occurred while submitting the form.",
                 confirmButtonColor: "#d33"
             });
         }
-    } catch (error) {
-        console.error("Error submitting form:", error);
-        Swal.fire({
-            icon: "error",
-            title: "Submission Error",
-            text: "An error occurred while submitting the form.",
-            confirmButtonColor: "#d33"
-        });
-    }
-};
+    };
 
 
     // Role Dialog States
@@ -319,28 +331,28 @@ const handleSubmit = async (e) => {
                                             </Grid>
                                         )
                                 )}
-<Grid item xs={12} sm={6}>
-<TextField
-    fullWidth
-    label="Email"
-    name="email"
-    value={formData.email}
-    onChange={handleChange}
-    error={Boolean(errors.email)}
-    helperText={errors.email}
-/>
-</Grid>
-<Grid item xs={12} sm={6}>
-<TextField
-    fullWidth
-    label="Phone Number"
-    name="phone_number"
-    value={formData.phone_number}
-    onChange={handleChange}
-    error={Boolean(errors.phone_number)}
-    helperText={errors.phone_number}
-/>
-</Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="Email"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        error={Boolean(errors.email)}
+                                        helperText={errors.email}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} sm={6}>
+                                    <TextField
+                                        fullWidth
+                                        label="Phone Number"
+                                        name="phone_number"
+                                        value={formData.phone_number}
+                                        onChange={handleChange}
+                                        error={Boolean(errors.phone_number)}
+                                        helperText={errors.phone_number}
+                                    />
+                                </Grid>
 
                                 <Grid item xs={12} sm={6}>
                                     <TextField
@@ -397,13 +409,20 @@ const handleSubmit = async (e) => {
                                     </Typography>
                                 }
                             />
+
+                            {helplineNumber && (
+                                <Typography align="center" sx={{ mt: 1 }}>
+                                    Helpline Number: {helplineNumber}
+                                </Typography>
+                            )}
+
                             <Button
                                 type="submit"
                                 variant="contained"
                                 fullWidth
                                 disabled={!acceptedTC}
                                 sx={{
-                                    mt: 3,
+                                    mt: 2,
                                     bgcolor: acceptedTC ? "#00cc8f" : "grey.500",
                                     "&:hover": {
                                         bgcolor: acceptedTC ? "#004080" : "grey.600",
@@ -413,6 +432,7 @@ const handleSubmit = async (e) => {
                             >
                                 Register
                             </Button>
+
 
                             <Typography align="center" sx={{ mt: 2 }}>
                                 Already registered?{" "}
