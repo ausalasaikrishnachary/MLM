@@ -105,7 +105,7 @@ const [sponsorError, setSponsorError] = useState('');
 
 const checkSponsorId = async (sponsorId) => {
   try {
-    const response = await fetch(`https://rahul30.pythonanywhere.com/users/role/Agent/`);
+    const response = await fetch(`${baseurl}/users/role/Agent/`);
     if (!response.ok) {
       throw new Error('Failed to fetch agents');
     }
@@ -163,7 +163,7 @@ useEffect(() => {
     }, []);
 
     useEffect(() => {
-        fetch("https://rahul30.pythonanywhere.com/phonenumbers/")
+        fetch(`${baseurl}/phonenumbers/`)
             .then((res) => res.json())
             .then((data) => {
                 if (Array.isArray(data) && data.length > 0 && data[0].phone_number) {

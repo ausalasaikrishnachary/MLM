@@ -78,7 +78,7 @@ function TableAdminMeetings() {
       <Container>
         <div style={{ textAlign: 'center', marginTop: "8%" }}>
           <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-            Admin Meetings
+            Helpline Number
           </Typography>
         </div>
 
