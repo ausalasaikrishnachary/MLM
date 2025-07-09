@@ -39,34 +39,51 @@ export default function InvestorHeader() {
     { label: 'Meetings', path: '/i-meetings' },
   ];
 
-    const userId = localStorage.getItem("user_id");
-    const [notifications, setNotifications] = useState([]);
-    const [notificationAnchorEl, setNotificationAnchorEl] = useState(null);
-    const notificationMenuOpen = Boolean(notificationAnchorEl);
-  
-    const handleNotificationClick = (event) => {
-      setNotificationAnchorEl(event.currentTarget);
+  const userId = localStorage.getItem("user_id");
+  const [notifications, setNotifications] = useState([]);
+  const [notificationAnchorEl, setNotificationAnchorEl] = useState(null);
+  const notificationMenuOpen = Boolean(notificationAnchorEl);
+  const [profileImage, setProfileImage] = useState('');
+
+  const handleNotificationClick = (event) => {
+    setNotificationAnchorEl(event.currentTarget);
+  };
+  const handleNotificationClose = () => {
+    setNotificationAnchorEl(null);
+  };
+
+  useEffect(() => {
+    const fetchNotifications = () => {
+      axios.get(`${baseurl}/notifications/user-id/${userId}/`)
+        .then(response => {
+          const unread = response.data.filter(n => !n.is_read);
+          setNotifications(unread);
+        })
+        .catch(error => {
+          console.error("Error fetching notifications:", error);
+        });
     };
-    const handleNotificationClose = () => {
-      setNotificationAnchorEl(null);
+
+    fetchNotifications(); // Initial load
+    const interval = setInterval(fetchNotifications, 10000); // Every 10s
+    return () => clearInterval(interval);
+  }, [userId]);
+
+  useEffect(() => {
+    const fetchProfileImage = async () => {
+      try {
+        const response = await axios.get(`${baseurl}/users/${userId}/`);
+        setProfileImage(response.data.image);
+      } catch (error) {
+        console.error('Error fetching profile image:', error);
+      }
     };
-  
-      useEffect(() => {
-      const fetchNotifications = () => {
-        axios.get(`${baseurl}/notifications/user-id/${userId}/`)
-          .then(response => {
-            const unread = response.data.filter(n => !n.is_read);
-            setNotifications(unread);
-          })
-          .catch(error => {
-            console.error("Error fetching notifications:", error);
-          });
-      };
-  
-      fetchNotifications(); // Initial load
-      const interval = setInterval(fetchNotifications, 10000); // Every 10s
-      return () => clearInterval(interval);
-    }, [userId]);
+
+    if (userId) {
+      fetchProfileImage();
+    }
+  }, [userId]);
+
 
   // Responsive helper.
   const theme = useTheme();
@@ -169,10 +186,10 @@ export default function InvestorHeader() {
               {/* Right: Notification, Username, Profile Avatar */}
               <Box display="flex" alignItems="center">
                 <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
-                <Badge badgeContent={notifications.length} color="error">
-                  <NotificationsNoneIcon />
-                </Badge>
-              </IconButton>
+                  <Badge badgeContent={notifications.length} color="error">
+                    <NotificationsNoneIcon />
+                  </Badge>
+                </IconButton>
                 <Typography
                   sx={{
                     ml: 2,
@@ -188,8 +205,9 @@ export default function InvestorHeader() {
                   onClick={handleAvatarClick}
                   sx={{ width: 40, height: 40, cursor: 'pointer' }}
                   alt="Profile Avatar"
-                  src="https://via.placeholder.com/40"
+                  src={profileImage ? `${baseurl}${profileImage}` : "https://via.placeholder.com/40"}
                 />
+
               </Box>
             </Box>
           ) : (
@@ -230,7 +248,7 @@ export default function InvestorHeader() {
               </Box>
 
               {/* Right: Notification, Username, Profile Avatar */}
-                <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
+              <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
                 <Badge badgeContent={notifications.length} color="error">
                   <NotificationsNoneIcon />
                 </Badge>
@@ -250,8 +268,9 @@ export default function InvestorHeader() {
                 onClick={handleAvatarClick}
                 sx={{ width: 40, height: 40, cursor: 'pointer' }}
                 alt="Investor"
-                src="https://via.placeholder.com/40"
+                src={profileImage ? `${baseurl}${profileImage}` : "https://via.placeholder.com/40"}
               />
+
             </>
           )}
         </Toolbar>
@@ -310,7 +329,7 @@ export default function InvestorHeader() {
         </MenuItem>
       </Menu>
 
-        <MuiMenu
+      <MuiMenu
         anchorEl={notificationAnchorEl}
         open={notificationMenuOpen}
         onClose={handleNotificationClose}

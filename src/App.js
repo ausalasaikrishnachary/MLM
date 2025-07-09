@@ -134,6 +134,9 @@ import TransactionSummary from "./Components/Panel/Admin/TransactionSummary/Tran
 import TermsConditions from "./Components/Legal/TermsConditions";
 import I_Meetings from "./Components/Panel/Investor/Meetings/Meetings";
 import I_MeetingRequestForm from "./Components/Panel/Investor/Meetings/MeetingRequestForm";
+import AdminMeetings from "./Components/Panel/Admin/AdminMeetings/AdminMeetings";
+import TableAdminMeetings from "./Components/Panel/Admin/AdminMeetings/TableAdminMeetings";
+
 
 
 
@@ -180,6 +183,8 @@ function Layout() {
           <Route path="/a-addtrainingmaterial" element={<AddTrainingMaterial />} />
           {/* <Route path="/home" element={<LandingPage />} /> */}
           <Route path="/a-dashboard" element={<AdminDashboard />} />
+          <Route path="/admin-meetings" element={<AdminMeetings/>} />
+          <Route path="/tableadminmeetings" element={<TableAdminMeetings/>} />
           <Route path="/a-asset" element={<AdminAsset />} />
           <Route path="/a-investormanagement" element={<Tmanagement />} />
           <Route path="/a-popup-leads" element={<LeadsTable />} />
@@ -228,6 +233,8 @@ function Layout() {
 
 
           <Route path="/i-dashboard" element={<InvestorDashboard />} />
+           
+
           <Route path="/i-listingassets" element={<I_ListingProperties />} />
           <Route path="/i-latestProperties" element={<I_LatestProperties />} />
           <Route path="/i-bookedassets" element={<I_BookedAssets />} />

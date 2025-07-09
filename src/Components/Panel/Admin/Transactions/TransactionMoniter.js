@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Container,
-  Box,
   Typography,
   Table,
   TableBody,
@@ -13,12 +12,14 @@ import {
   MenuItem,
   Select,
   InputLabel,
-  FormControl
+  FormControl,
+  Box
 } from "@mui/material";
 import Header from "../../../Shared/Navbar/Navbar";
 import axios from "axios";
-import { baseurl } from '../../../BaseURL/BaseURL';
-import Swal from 'sweetalert2';
+import { baseurl } from "../../../BaseURL/BaseURL";
+import Swal from "sweetalert2";
+import Pagination from "@mui/material/Pagination";
 
 const Tmoniter = () => {
   const [transactions, setTransactions] = useState([]);
@@ -26,7 +27,8 @@ const Tmoniter = () => {
   const navigate = useNavigate();
   const [selectedRole, setSelectedRole] = useState("agent");
   const [allTransactions, setAllTransactions] = useState([]);
-
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 5;
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -56,7 +58,7 @@ const Tmoniter = () => {
           })
         );
 
-        setAllTransactions(transactionsWithStatus); // Save the complete list
+        setAllTransactions(transactionsWithStatus);
       } catch (error) {
         console.error("Failed to fetch transactions:", error);
       } finally {
@@ -67,14 +69,23 @@ const Tmoniter = () => {
     fetchTransactions();
   }, []);
 
-
   useEffect(() => {
     const filtered = allTransactions.filter(
       (tx) => tx.role?.toLowerCase() === selectedRole.toLowerCase()
     );
     setTransactions(filtered);
+    setPage(1); // Reset to first page on filter change
   }, [selectedRole, allTransactions]);
 
+  const totalPages = Math.ceil(transactions.length / itemsPerPage);
+  const paginatedTransactions = transactions.slice(
+    (page - 1) * itemsPerPage,
+    page * itemsPerPage
+  );
+
+  const handlePageChange = (_, value) => {
+    setPage(value);
+  };
 
   const handlePayCommission = async (transaction) => {
     const url = `${baseurl}/commission/distribute/${transaction.transaction_id}/`;
@@ -83,38 +94,37 @@ const Tmoniter = () => {
       const response = await axios.post(url);
       console.log("Commission distributed:", response.data);
       Swal.fire({
-        icon: 'success',
-        title: 'Commission Distributed',
+        icon: "success",
+        title: "Commission Distributed",
         text: `Commission distributed for Transaction ID ${transaction.transaction_id}`,
         timer: 2000,
-        showConfirmButton: false
+        showConfirmButton: false,
       });
     } catch (error) {
       console.error("Failed to distribute commission:", error);
       Swal.fire({
-        icon: 'error',
-        title: 'Distribution Failed',
-        text: `Error distributing commission for Transaction ID ${transaction.transaction_id}`
+        icon: "error",
+        title: "Distribution Failed",
+        text: `Error distributing commission for Transaction ID ${transaction.transaction_id}`,
       });
     }
   };
 
-
   const cellStyle = {
-    fontWeight: 'bold',
-    textAlign: 'center',
-    border: '1px solid #000',
-    backgroundColor: '#f0f0f0',
+    fontWeight: "bold",
+    textAlign: "center",
+    border: "1px solid #000",
+    backgroundColor: "#f0f0f0",
   };
 
   const cellBodyStyle = {
-    textAlign: 'center',
-    border: '1px solid #000',
+    textAlign: "center",
+    border: "1px solid #000",
   };
 
   const noDataStyle = {
-    textAlign: 'center',
-    border: '1px solid #000',
+    textAlign: "center",
+    border: "1px solid #000",
     padding: 2,
   };
 
@@ -122,30 +132,6 @@ const Tmoniter = () => {
     <>
       <Header />
       <Container sx={{ pt: 3 }}>
-        {/* <Typography
-          variant="h4"
-          component="h2"
-          sx={{ mb: 3, textAlign: "center" }}
-        >
-          Transaction Monitor
-        </Typography>
-
-        <Grid container spacing={2}>
-          {summaryCardsData.map((card, index) => (
-            <Grid item xs={12} md={4} key={index}>
-              <Card sx={{ textAlign: "center", p: 2, borderRadius: 2 }}>
-                <CardContent>
-                  <Typography gutterBottom>{card.title}</Typography>
-                  <Typography variant="h4" sx={{ color: "rgb(30,10,80)" }}>
-                    {card.value}
-                  </Typography>
-                  <Typography variant="body2">{card.subtext}</Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid> */}
-
         <Typography
           variant="h5"
           sx={{
@@ -171,8 +157,7 @@ const Tmoniter = () => {
           </Select>
         </FormControl>
 
-
-        <Table sx={{ border: '1px solid black', width: '100%' }}>
+        <Table sx={{ border: "1px solid black", width: "100%" }}>
           <TableHead>
             <TableRow>
               <TableCell sx={cellStyle}>Transaction ID</TableCell>
@@ -192,10 +177,12 @@ const Tmoniter = () => {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={8} sx={noDataStyle}>Loading...</TableCell>
+                <TableCell colSpan={9} sx={noDataStyle}>
+                  Loading...
+                </TableCell>
               </TableRow>
-            ) : transactions.length > 0 ? (
-              transactions.map((transaction) => (
+            ) : paginatedTransactions.length > 0 ? (
+              paginatedTransactions.map((transaction) => (
                 <TableRow key={transaction.transaction_id}>
                   <TableCell sx={cellBodyStyle}>{transaction.transaction_id}</TableCell>
                   <TableCell sx={cellBodyStyle}>{transaction.property_name}</TableCell>
@@ -215,7 +202,7 @@ const Tmoniter = () => {
                           size="small"
                           color="success"
                           onClick={() => navigate(`/a-commission/${transaction.transaction_id}`)}
-                          sx={{ textTransform: 'none' }}
+                          sx={{ textTransform: "none" }}
                         >
                           View Commission
                         </Button>
@@ -224,23 +211,40 @@ const Tmoniter = () => {
                           variant="contained"
                           size="small"
                           onClick={() => handlePayCommission(transaction)}
-                          sx={{ textTransform: 'none' }}
+                          sx={{ textTransform: "none" }}
                         >
                           Distribute Commission
                         </Button>
                       )}
                     </TableCell>
                   )}
-
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={8} sx={noDataStyle}>No transactions found</TableCell>
+                <TableCell colSpan={9} sx={noDataStyle}>
+                  No transactions found
+                </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
+
+        {/* Pagination Controls */}
+        <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
+  <Pagination
+    count={totalPages}
+    page={page}
+    onChange={handlePageChange}
+    color="primary"
+    sx={{
+      "& .MuiPaginationItem-root": {
+        borderRadius: "0px"  // <-- removes the rounded corners, making them square
+      }
+    }}
+  />
+</Box>
+
       </Container>
     </>
   );

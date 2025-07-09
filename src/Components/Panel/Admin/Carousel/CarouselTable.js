@@ -3,18 +3,19 @@ import Header from "../../../Shared/Navbar/Navbar";
 import {
   Table, TableBody, TableCell, TableHead, TableRow,
   Typography, Box, Button, IconButton, Container,
-  Avatar
+  Avatar, Pagination
 } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { baseurl } from '../../../BaseURL/BaseURL';
-import { display } from '@mui/system';
 
 function CarouselList() {
   const [carousels, setCarousels] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 5;
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,11 +36,28 @@ function CarouselList() {
   const handleDelete = async (id) => {
     try {
       await axios.delete(`${baseurl}/carousel/${id}/`);
-      setCarousels(carousels.filter(carousel => carousel.id !== id));
+      const updated = carousels.filter(carousel => carousel.id !== id);
+      setCarousels(updated);
+
+      // Adjust page if current page has no items after deletion
+      const newTotalPages = Math.ceil(updated.length / itemsPerPage);
+      if (page > newTotalPages) {
+        setPage(newTotalPages);
+      }
     } catch (error) {
       console.error('Error deleting carousel:', error);
     }
   };
+
+  const handlePageChange = (_, value) => {
+    setPage(value);
+  };
+
+  const totalPages = Math.ceil(carousels.length / itemsPerPage);
+  const paginatedCarousels = carousels.slice(
+    (page - 1) * itemsPerPage,
+    page * itemsPerPage
+  );
 
   const cellStyle = {
     fontWeight: 'bold',
@@ -99,16 +117,11 @@ function CarouselList() {
               <TableRow>
                 <TableCell colSpan={5} sx={noDataStyle}>Loading...</TableCell>
               </TableRow>
-            ) : carousels.length > 0 ? (
-              carousels.map((carousel) => (
+            ) : paginatedCarousels.length > 0 ? (
+              paginatedCarousels.map((carousel) => (
                 <TableRow key={carousel.id}>
                   <TableCell sx={cellBodyStyle}>{carousel.id}</TableCell>
-                  <TableCell
-                    sx={{
-                      ...cellBodyStyle,
-                      
-                    }}
-                  >
+                  <TableCell sx={cellBodyStyle}>
                     <Avatar
                       variant="square"
                       src={`${baseurl}/${carousel.image}`}
@@ -116,18 +129,10 @@ function CarouselList() {
                       alt={carousel.title}
                     />
                   </TableCell>
-
                   <TableCell sx={cellBodyStyle}>{carousel.title}</TableCell>
                   <TableCell sx={cellBodyStyle}>{carousel.description}</TableCell>
                   <TableCell sx={cellBodyStyle}>
                     <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
-                      {/* <IconButton
-                        color="primary"
-                        size="small"
-                        onClick={() => navigate(`/edit-carousel/${carousel.id}`)}
-                      >
-                        <EditIcon fontSize="small" />
-                      </IconButton> */}
                       <IconButton
                         color="error"
                         size="small"
@@ -146,6 +151,21 @@ function CarouselList() {
             )}
           </TableBody>
         </Table>
+
+        {/* Pagination Controls */}
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+          <Pagination
+            count={totalPages}
+            page={page}
+            onChange={handlePageChange}
+            color="primary"
+            sx={{
+              "& .MuiPaginationItem-root": {
+                borderRadius: "0px",
+              },
+            }}
+          />
+        </Box>
       </Container>
     </>
   );

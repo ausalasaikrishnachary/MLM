@@ -7,33 +7,31 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  Button,
   IconButton,
   Container,
-  Typography,
-  Box
+  Box,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
- import Swal from 'sweetalert2';
 import DeleteIcon from "@mui/icons-material/Delete";
+import Swal from "sweetalert2";
 import Header from "../../../Shared/Navbar/Navbar";
-import { baseurl } from '../../../BaseURL/BaseURL';
-import { Select, MenuItem, FormControl, InputLabel } from "@mui/material";
+import { baseurl } from "../../../BaseURL/BaseURL";
+import PaginationComponent from "../../../Shared/Pagination";
 
 const Tmanagement = () => {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedRole, setSelectedRole] = useState("All");
-const uniqueRoles = ["All", ...new Set(data.map(user => user.role).filter(Boolean))];
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 5;
 
-const filteredData = selectedRole === "All"
-  ? data
-  : data.filter(user => user.role === selectedRole);
-
-
-
+  // Fetch data
   useEffect(() => {
     axios
       .get(`${baseurl}/users/`)
@@ -59,6 +57,27 @@ const filteredData = selectedRole === "All"
       });
   }, []);
 
+  // Unique roles for filter dropdown
+  const uniqueRoles = ["All", ...new Set(data.map((user) => user.role).filter(Boolean))];
+
+  // Filtered data
+  const filteredData =
+    selectedRole === "All"
+      ? data
+      : data.filter((user) => user.role === selectedRole);
+
+  // Paginated data
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const paginatedData = filteredData.slice(
+    (page - 1) * itemsPerPage,
+    page * itemsPerPage
+  );
+
+  // Reset to page 1 when filter changes
+  useEffect(() => {
+    setPage(1);
+  }, [selectedRole]);
+
   const handleView = (user) => {
     navigate("/View_Tmanagement", { state: { user } });
   };
@@ -67,102 +86,107 @@ const filteredData = selectedRole === "All"
     navigate("/Edit_Tmanagement", { state: { user } });
   };
 
-const handleDelete = (user_id) => {
-  Swal.fire({
-    title: 'Are you sure?',
-    text: 'Do you really want to delete this user?',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#3085d6',
-    confirmButtonText: 'Yes, delete it!',
-  }).then((result) => {
-    if (result.isConfirmed) {
-      axios
-        .delete(`${baseurl}/users/${user_id}`)
-        .then((res) => {
-          if (res.status === 200) {
-            setData((prevData) => prevData.filter((user) => user.id !== user_id));
+  const handleDelete = (user_id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to delete this user?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios
+          .delete(`${baseurl}/users/${user_id}`)
+          .then((res) => {
+            if (res.status === 200) {
+              setData((prevData) =>
+                prevData.filter((user) => user.id !== user_id)
+              );
+              Swal.fire({
+                icon: "success",
+                title: "Deleted!",
+                text: "User has been deleted.",
+                timer: 2000,
+                showConfirmButton: false
+              });
+            } else {
+              Swal.fire({
+                icon: "error",
+                title: "Failed",
+                text: "Failed to delete user."
+              });
+            }
+          })
+          .catch((err) => {
+            console.error(
+              "Error deleting user:",
+              err.response ? err.response.data : err
+            );
             Swal.fire({
-              icon: 'success',
-              title: 'Deleted!',
-              text: 'User has been deleted.',
-              timer: 2000,
-              showConfirmButton: false
+              icon: "error",
+              title: "Error",
+              text: "Error deleting user, please try again."
             });
-          } else {
-            Swal.fire({
-              icon: 'error',
-              title: 'Failed',
-              text: 'Failed to delete user.'
-            });
-          }
-        })
-        .catch((err) => {
-          console.error("Error deleting user:", err.response ? err.response.data : err);
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Error deleting user, please try again.'
           });
-        });
-    }
-  });
-};
+      }
+    });
+  };
 
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
 
+  // Styles
   const cellStyle = {
-    fontWeight: 'bold',
-    textAlign: 'center',
-    border: '1px solid #000',
-    backgroundColor: '#f0f0f0',
+    fontWeight: "bold",
+    textAlign: "center",
+    border: "1px solid #000",
+    backgroundColor: "#f0f0f0"
   };
 
   const cellBodyStyle = {
-    textAlign: 'center',
-    border: '1px solid #000',
+    textAlign: "center",
+    border: "1px solid #000"
   };
 
   const noDataStyle = {
-    textAlign: 'center',
-    border: '1px solid #000',
-    padding: 2,
+    textAlign: "center",
+    border: "1px solid #000",
+    padding: 2
   };
 
   return (
     <>
       <Header />
-      <Container>
-        <div style={{ textAlign: 'center', marginTop: "12%" }}>
-          {/* <h2 style={{ fontWeight: 'bold' }}>Leads Management</h2> */}
-        </div>
-        
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-  <FormControl sx={{ minWidth: 200 }}>
-    <InputLabel id="role-filter-label">Filter by Role</InputLabel>
-    <Select
-      labelId="role-filter-label"
-      value={selectedRole}
-      label="Filter by Role"
-      onChange={(e) => setSelectedRole(e.target.value)}
-    >
-      {uniqueRoles.map((role) => (
-        <MenuItem key={role} value={role}>
-          {role || "Unknown"}
-        </MenuItem>
-      ))}
-    </Select>
-  </FormControl>
+      <Container sx={{ mt: 10 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 2
+          }}
+        >
+          <FormControl sx={{ minWidth: 200 , mt:5}}>
+            <InputLabel id="role-filter-label">Filter by Role</InputLabel>
+            <Select
+              labelId="role-filter-label"
+              value={selectedRole}
+              label="Filter by Role"
+              onChange={(e) => setSelectedRole(e.target.value)}
+            >
+              {uniqueRoles.map((role) => (
+                <MenuItem key={role} value={role}>
+                  {role || "Unknown"}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
 
-  {/* <Button variant="contained" color="primary" onClick={() => navigate("/a-add-lead")}>
-    Add Lead
-  </Button> */}
-</Box>
-
-     
-
-
-        <Table sx={{ border: '1px solid black', width: '100%' }}>
+        <Table sx={{ border: "1px solid black", width: "100%" }}>
           <TableHead>
             <TableRow>
               <TableCell sx={cellStyle}>User ID</TableCell>
@@ -179,10 +203,12 @@ const handleDelete = (user_id) => {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={8} sx={noDataStyle}>Loading...</TableCell>
+                <TableCell colSpan={8} sx={noDataStyle}>
+                  Loading...
+                </TableCell>
               </TableRow>
-            ) : data.length > 0 ? (
-              filteredData.map((user) => (
+            ) : filteredData.length > 0 ? (
+              paginatedData.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell sx={cellBodyStyle}>{user.id}</TableCell>
                   <TableCell sx={cellBodyStyle}>{user.name}</TableCell>
@@ -191,13 +217,19 @@ const handleDelete = (user_id) => {
                   <TableCell sx={cellBodyStyle}>{user.role}</TableCell>
                   <TableCell sx={cellBodyStyle}>{user.referralId}</TableCell>
                   <TableCell sx={cellBodyStyle}>
-                    {new Date(user.created_at).toLocaleDateString('en-IN')}
+                    {new Date(user.created_at).toLocaleDateString("en-IN")}
                   </TableCell>
                   <TableCell sx={cellBodyStyle}>
-                    <Box sx={{ display: 'flex', justifyContent: 'center', gap: '5px' }}>
-                      <IconButton 
-                        color="primary" 
-                        size="small" 
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        gap: "5px"
+                      }}
+                    >
+                      <IconButton
+                        color="primary"
+                        size="small"
                         onClick={() => handleView(user.fullData)}
                       >
                         <VisibilityIcon fontSize="small" />
@@ -209,9 +241,9 @@ const handleDelete = (user_id) => {
                       >
                         <EditIcon fontSize="small" />
                       </IconButton>
-                      <IconButton 
-                        color="error" 
-                        size="small" 
+                      <IconButton
+                        color="error"
+                        size="small"
                         onClick={() => handleDelete(user.id)}
                       >
                         <DeleteIcon fontSize="small" />
@@ -222,11 +254,21 @@ const handleDelete = (user_id) => {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={8} sx={noDataStyle}>No Data Found</TableCell>
+                <TableCell colSpan={8} sx={noDataStyle}>
+                  No Data Found
+                </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
+
+        <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
+          <PaginationComponent
+            count={totalPages}
+            page={page}
+            onChange={handlePageChange}
+          />
+        </Box>
       </Container>
     </>
   );

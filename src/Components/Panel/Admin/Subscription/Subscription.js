@@ -16,6 +16,7 @@ import {
   MenuItem,
   IconButton,
   Tooltip,
+  Pagination
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import Header from '../../../Shared/Navbar/Navbar';
@@ -29,6 +30,9 @@ function Subscription() {
   const [variantData, setVariantData] = useState([]);
   const [planDataMap, setPlanDataMap] = useState({});
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 5;
+
   const navigate = useNavigate();
 
   const cellStyle = {
@@ -58,7 +62,7 @@ function Subscription() {
 
       const planIds = [...new Set(variants.map(v => v.plan_id))];
       const plansMap = {};
-      
+
       await Promise.all(
         planIds.map(async (id) => {
           try {
@@ -71,6 +75,7 @@ function Subscription() {
         })
       );
       setPlanDataMap(plansMap);
+      setPage(1); // reset page on filter change
     } catch (error) {
       console.error('Error fetching variant data:', error);
     } finally {
@@ -82,50 +87,59 @@ function Subscription() {
     fetchVariantsAndPlans(userType);
   }, [userType]);
 
-const handleDelete = async (variantId) => {
-  const result = await Swal.fire({
-    title: `Delete Variant ID ${variantId}?`,
-    text: "This action cannot be undone.",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonText: "Yes, delete it!",
-    cancelButtonText: "Cancel",
-  });
-
-  if (!result.isConfirmed) return;
-
-  try {
-    const response = await fetch(`${baseurl}/subscription/plan-variants/${variantId}/`, {
-      method: 'DELETE',
+  const handleDelete = async (variantId) => {
+    const result = await Swal.fire({
+      title: `Delete Variant ID ${variantId}?`,
+      text: "This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
     });
 
-    if (response.ok) {
-      await Swal.fire({
-        icon: "success",
-        title: "Deleted!",
-        text: `Variant ID ${variantId} deleted successfully.`,
-        timer: 2000,
-        showConfirmButton: false,
+    if (!result.isConfirmed) return;
+
+    try {
+      const response = await fetch(`${baseurl}/subscription/plan-variants/${variantId}/`, {
+        method: 'DELETE',
       });
-      fetchVariantsAndPlans(userType);
-    } else {
-      const errorData = await response.json();
+
+      if (response.ok) {
+        await Swal.fire({
+          icon: "success",
+          title: "Deleted!",
+          text: `Variant ID ${variantId} deleted successfully.`,
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        fetchVariantsAndPlans(userType);
+      } else {
+        const errorData = await response.json();
+        await Swal.fire({
+          icon: "error",
+          title: "Failed to delete",
+          text: errorData.detail || 'Unknown error',
+        });
+      }
+    } catch (error) {
+      console.error('Error deleting variant:', error);
       await Swal.fire({
         icon: "error",
-        title: "Failed to delete",
-        text: errorData.detail || 'Unknown error',
+        title: "Error",
+        text: 'An error occurred while trying to delete the variant.',
       });
     }
-  } catch (error) {
-    console.error('Error deleting variant:', error);
-    await Swal.fire({
-      icon: "error",
-      title: "Error",
-      text: 'An error occurred while trying to delete the variant.',
-    });
-  }
-};
+  };
 
+  const handlePageChange = (_, value) => {
+    setPage(value);
+  };
+
+  const totalPages = Math.ceil(variantData.length / itemsPerPage);
+  const paginatedData = variantData.slice(
+    (page - 1) * itemsPerPage,
+    page * itemsPerPage
+  );
 
   return (
     <>
@@ -147,10 +161,10 @@ const handleDelete = async (variantId) => {
               <MenuItem value="agent">Agent</MenuItem>
             </Select>
           </FormControl>
-          
-          <Button 
-            variant="contained" 
-            color="primary" 
+
+          <Button
+            variant="contained"
+            color="primary"
             onClick={() => navigate('/a-addsubscriptions')}
           >
             + Add Subscription
@@ -162,60 +176,77 @@ const handleDelete = async (variantId) => {
             <CircularProgress />
           </Box>
         ) : (
-          <Table sx={{ border: '1px solid black', width: '100%' }}>
-            <TableHead>
-              <TableRow>
-                <TableCell sx={cellStyle}>Plan Name</TableCell>
-                <TableCell sx={cellStyle}>Description</TableCell>
-                <TableCell sx={cellStyle}>Duration (Days)</TableCell>
-                <TableCell sx={cellStyle}>Price</TableCell>
-                <TableCell sx={cellStyle}>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {variantData.length > 0 ? (
-                variantData.map((variant, index) => {
-                  const plan = planDataMap[variant.plan_id] || {};
-                  return (
-                    <TableRow key={index}>
-                      <TableCell sx={cellBodyStyle}>{plan.plan_name || '—'}</TableCell>
-                      <TableCell sx={cellBodyStyle}>{plan.description || '—'}</TableCell>
-                      <TableCell sx={cellBodyStyle}>{variant.duration_in_days}</TableCell>
-                      <TableCell sx={cellBodyStyle}>₹{variant.price}</TableCell>
-                      <TableCell sx={cellBodyStyle}>
-                        <Box display="flex" justifyContent="center" gap={1}>
-                          <Tooltip title="Edit">
-                            <IconButton
-                              size="small"
-                              color="primary"
-                              onClick={() => navigate(`/a-edit-subscription/${variant.variant_id}`, { state: { variant } })}
-                            >
-                              <EditIcon fontSize="small" />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title="Delete">
-                            <IconButton
-                              size="small"
-                              color="error"
-                              onClick={() => handleDelete(variant.variant_id)}
-                            >
-                              <DeleteIcon fontSize="small" />
-                            </IconButton>
-                          </Tooltip>
-                        </Box>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
-              ) : (
+          <>
+            <Table sx={{ border: '1px solid black', width: '100%' }}>
+              <TableHead>
                 <TableRow>
-                  <TableCell colSpan={5} sx={noDataStyle}>
-                    No subscription variants found
-                  </TableCell>
+                  <TableCell sx={cellStyle}>Plan Name</TableCell>
+                  <TableCell sx={cellStyle}>Description</TableCell>
+                  <TableCell sx={cellStyle}>Duration (Days)</TableCell>
+                  <TableCell sx={cellStyle}>Price</TableCell>
+                  <TableCell sx={cellStyle}>Actions</TableCell>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
+              </TableHead>
+              <TableBody>
+                {paginatedData.length > 0 ? (
+                  paginatedData.map((variant, index) => {
+                    const plan = planDataMap[variant.plan_id] || {};
+                    return (
+                      <TableRow key={index}>
+                        <TableCell sx={cellBodyStyle}>{plan.plan_name || '—'}</TableCell>
+                        <TableCell sx={cellBodyStyle}>{plan.description || '—'}</TableCell>
+                        <TableCell sx={cellBodyStyle}>{variant.duration_in_days}</TableCell>
+                        <TableCell sx={cellBodyStyle}>₹{variant.price}</TableCell>
+                        <TableCell sx={cellBodyStyle}>
+                          <Box display="flex" justifyContent="center" gap={1}>
+                            <Tooltip title="Edit">
+                              <IconButton
+                                size="small"
+                                color="primary"
+                                onClick={() => navigate(`/a-edit-subscription/${variant.variant_id}`, { state: { variant } })}
+                              >
+                                <EditIcon fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Delete">
+                              <IconButton
+                                size="small"
+                                color="error"
+                                onClick={() => handleDelete(variant.variant_id)}
+                              >
+                                <DeleteIcon fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={5} sx={noDataStyle}>
+                      No subscription variants found
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+
+            {/* Pagination Bottom Right */}
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+              <Pagination
+                count={totalPages}
+                page={page}
+                onChange={handlePageChange}
+                color="primary"
+                sx={{
+                  '& .MuiPaginationItem-root': {
+                    borderRadius: '0px', // makes buttons square
+                  },
+                }}
+              />
+            </Box>
+          </>
         )}
       </Container>
     </>
