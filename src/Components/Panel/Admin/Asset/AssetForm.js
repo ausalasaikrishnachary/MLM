@@ -752,8 +752,8 @@ const AddPropertyForm = () => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="floor "
-                  name="floor "
+                  label="Floor"
+                  name="floor"
                   type="number"
                   value={formData.floor}
                   onChange={handleChange}
@@ -761,16 +761,25 @@ const AddPropertyForm = () => {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <FormControl fullWidth>
-                  <InputLabel>Facing Direction</InputLabel>
-                  <Select
-                    name="furnishing status"
+                  <InputLabel>Furnishing Status</InputLabel>
+                  {/* <Select
+                    name="furnishing_status"
                     value={formData.furnishing_status}
                     onChange={handleChange}
                     label="furnishing status"
                   >
                     <MenuItem value="semi furnished">Semi Furnished</MenuItem>
                     <MenuItem value="fully furnished">Fully Furnished</MenuItem>
-                  </Select>
+                  </Select> */}
+                  <Select
+                name="furnishing_status"
+                value={formData.furnishing_status}
+                onChange={handleChange}
+                label="Furnishing Status"
+              >
+                <MenuItem value="Semi-Furnished">Semi-Furnished</MenuItem>
+                <MenuItem value="Fully-Furnished">Fully-Furnished</MenuItem>
+              </Select>
                 </FormControl>
               </Grid>
             </>

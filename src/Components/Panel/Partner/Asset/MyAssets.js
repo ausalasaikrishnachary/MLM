@@ -54,6 +54,7 @@ import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import DescriptionIcon from '@mui/icons-material/Description';
 import EventIcon from '@mui/icons-material/Event';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import SubscriptionProtectedButton from './SubscriptionProtectedButton';
 
 const PartnerMyAssets = () => {
   const [sortBy, setSortBy] = useState('latest');
@@ -563,14 +564,14 @@ const handleDelete = async (propertyId) => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} md={3}>
+            {/* <Grid item xs={12} md={3}>
               <Button
                 variant="contained"
                 fullWidth
                 sx={{
                   padding: '12px 24px',
                   borderRadius: '8px',
-                  backgroundColor: '#2ECC71',
+                  backgroundColor: '#2ECC71', 
                   textTransform: 'none',
                   fontWeight: 500,
                   '&:hover': {
@@ -581,7 +582,13 @@ const handleDelete = async (propertyId) => {
               >
                 Add Property
               </Button>
-            </Grid>
+            </Grid> */}
+                   <SubscriptionProtectedButton
+                  userId={userId}
+                  buttonText="Add Property"
+                  navigateTo="/p-addasset"
+                  baseurl={baseurl}
+                />
           </Grid>
         </Box>
 

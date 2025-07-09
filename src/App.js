@@ -132,6 +132,8 @@ import AddTrainingMaterial from "./Components/Panel/Admin/TrainingMaterial/AddTr
 import TrainingVideos from "./Components/Panel/Partner/TraningVideos/TraningVideos";
 import TransactionSummary from "./Components/Panel/Admin/TransactionSummary/TransactionSummary";
 import TermsConditions from "./Components/Legal/TermsConditions";
+import I_Meetings from "./Components/Panel/Investor/Meetings/Meetings";
+import I_MeetingRequestForm from "./Components/Panel/Investor/Meetings/MeetingRequestForm";
 
 
 
@@ -247,6 +249,8 @@ function Layout() {
           <Route path="/assets/:id" element={<I_MyAssests />} />
           <Route path="/i-addproperty" element={<AddPropertyForm />} />
           <Route path="/i-assets/edit/:id" element={<EditMyAsset />} />
+           <Route path="/i-meetings" element={<I_Meetings />} />
+          <Route path="/i-meetingrequest" element={<I_MeetingRequestForm />} />
 
 
 <Route path="/p-trainingmaterial" element={<TrainingVideos />} />

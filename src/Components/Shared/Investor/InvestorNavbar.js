@@ -36,6 +36,7 @@ export default function InvestorHeader() {
     { label: 'Properties', path: '/i-asset' },
     { label: 'Transactions', path: '/i-transactions' }, // Direct link to transactions page
     { label: 'Plans', path: '/i-plans' },
+    { label: 'Meetings', path: '/i-meetings' },
   ];
 
     const userId = localStorage.getItem("user_id");

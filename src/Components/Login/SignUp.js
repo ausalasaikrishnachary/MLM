@@ -98,6 +98,49 @@ const SignUp = () => {
     phone_number: ""
 });
 
+// Inside your component
+const [sponsorInfo, setSponsorInfo] = useState(null);
+const [sponsorError, setSponsorError] = useState('');
+
+const checkSponsorId = async (sponsorId) => {
+  try {
+    const response = await fetch(`https://rahul30.pythonanywhere.com/users/role/Agent/`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch agents');
+    }
+    const agents = await response.json();
+    
+    // Find agent by referral_id
+    const foundAgent = agents.find(agent => agent.referral_id === sponsorId);
+    
+    if (foundAgent) {
+      setSponsorInfo(foundAgent);
+      setSponsorError('');
+    } else {
+      setSponsorInfo(null);
+      setSponsorError('Not Valid Sponsor ID');
+    }
+  } catch (error) {
+    setSponsorInfo(null);
+    setSponsorError('Error checking sponsor ID');
+    console.error('Error checking sponsor ID:', error);
+  }
+};
+
+// Add this effect to check sponsor ID when it changes
+useEffect(() => {
+  if (formData.role_ids[0] === 2 && formData.referred_by) { // Assuming 2 is Agent role_id
+    const timer = setTimeout(() => {
+      checkSponsorId(formData.referred_by);
+    }, 500); // Add debounce to avoid too many API calls
+    
+    return () => clearTimeout(timer);
+  } else {
+    setSponsorInfo(null);
+    setSponsorError('');
+  }
+}, [formData.referred_by, formData.role_ids]);
+
 
 
     useEffect(() => {
@@ -362,17 +405,24 @@ const handleSubmit = async (e) => {
                                     </TextField>
                                 </Grid>
 
-                                {roles.find(role => role.role_id === formData.role_ids[0])?.role_name === "Agent" && (
-                                    <Grid item xs={12} sm={6}>
-                                        <TextField
-                                            fullWidth
-                                            label="Sponsor ID"
-                                            name="referred_by"
-                                            value={formData.referred_by}
-                                            onChange={handleChange}
-                                        />
-                                    </Grid>
-                                )}
+                              {roles.find(role => role.role_id === formData.role_ids[0])?.role_name === "Agent" && (
+  <Grid item xs={12} sm={6}>
+    <TextField
+      fullWidth
+      label="Sponsor ID"
+      name="referred_by"
+      value={formData.referred_by}
+      onChange={handleChange}
+      error={!!sponsorError}
+      helperText={sponsorError}
+    />
+    {sponsorInfo && (
+      <Typography variant="body2" sx={{ mt: 1, color: 'text.secondary' }}>
+        Sponsor: <strong>{sponsorInfo.username}</strong>
+      </Typography>
+    )}
+  </Grid>
+)}
 
                             </Grid>
                             <FormControlLabel
