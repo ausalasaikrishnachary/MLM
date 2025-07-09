@@ -56,6 +56,7 @@ import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import DescriptionIcon from '@mui/icons-material/Description';
 import EventIcon from '@mui/icons-material/Event';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import SubscriptionProtectedButton from './SubscriptionProtectedButton';
 
 const PartnerMyAssets = () => {
   const [sortBy, setSortBy] = useState('latest');
@@ -566,26 +567,14 @@ const PartnerMyAssets = () => {
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={12} md={3}>
-              <Button
-                variant="contained"
-                fullWidth
-                sx={{
-                  padding: '12px 24px',
-                  borderRadius: '8px',
-                  backgroundColor: '#2ECC71',
-                  textTransform: 'none',
-                  fontWeight: 500,
-                  '&:hover': {
-                    backgroundColor: '#27AE60'
-                  }
-                }}
-                onClick={() => navigate('/i-addproperty')}
-              >
-                Add Property
-              </Button>
+             <SubscriptionProtectedButton
+      userId={userId}
+      buttonText="Add Property"
+      navigateTo="/i-addproperty"
+      baseurl={baseurl}
+    />
             </Grid>
-          </Grid>
+         
         </Box>
 
         {/* Cards Section */}

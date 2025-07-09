@@ -1,19 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from "../../../Shared/Partner/PartnerNavbar";
+import InvestorHeader from "../../../Shared/Investor/InvestorNavbar";
 import { Box, Card, CardContent, Typography, Button, Grid, Avatar, Modal } from '@mui/material';
 import TableLayout from '../../../Shared/TableLayout';
 import DisplayRequest from './DisplayRequests';
 import axios from 'axios';
 import { baseurl } from '../../../BaseURL/BaseURL';
 
-const profiles = [
-    {
-        id: 1,
-        label: 'Admin',
-        image: '/images/coach.png',
-        buttonText: 'Request Meeting',
-    },
+const profiles = [ 
     {
         id: 2,
         label: 'Sales & Marketing',
@@ -22,11 +16,11 @@ const profiles = [
     },
 ];
 
-function Meetings() {
+function I_Meetings() { 
     const navigate = useNavigate();
     const [subscriptionPaid, setSubscriptionPaid] = useState(false);
     const [openModal, setOpenModal] = useState(false);
-     const userId = localStorage.getItem("user_id");
+    const userId = localStorage.getItem("user_id");
 
     useEffect(() => {
         if (userId) {
@@ -43,7 +37,7 @@ function Meetings() {
 
     const handleRequestMeeting = (profileType) => {
         if (subscriptionPaid) {
-            navigate("/p-meetingrequest", {
+            navigate("/i-meetingrequest", {
                 state: { profileType },
             });
         } else {
@@ -52,11 +46,11 @@ function Meetings() {
     };
 
     const handleCloseModal = () => setOpenModal(false);
-    const handleSubscribe = () => navigate('/p-plans');
+    const handleSubscribe = () => navigate('/i-plans');
 
     return (
         <>
-            <Header />
+            <InvestorHeader />
             <Box sx={{ p: 3 }}>
                 <Grid container spacing={3} justifyContent="center">
                     {profiles.map((profile) => (
@@ -134,12 +128,12 @@ function Meetings() {
                         p: 4,
                         borderRadius: '8px'
                     }}>
-                                           <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-                              Subscription Required
-                            </Typography>
-                            <Typography variant="body1" sx={{ mb: 3 }}>
-                              You need an active subscription to <Box component="span" sx={{ fontWeight: 'bold' }}>request meetings</Box>.
-                            </Typography>
+                         <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+      Subscription Required
+    </Typography>
+    <Typography variant="body1" sx={{ mb: 3 }}>
+      You need an active subscription to <Box component="span" sx={{ fontWeight: 'bold' }}>request meetings</Box>.
+    </Typography>
                         <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
                             <Button variant="outlined" onClick={handleCloseModal}>
                                 Cancel
@@ -152,7 +146,7 @@ function Meetings() {
                                     '&:hover': { backgroundColor: '#5e35b1' } 
                                 }}
                             >
-                                Subscribe Now 
+                                Subscribe Now
                             </Button>
                         </Box>
                     </Box>
@@ -162,4 +156,4 @@ function Meetings() {
     );
 }
 
-export default Meetings;
+export default I_Meetings;

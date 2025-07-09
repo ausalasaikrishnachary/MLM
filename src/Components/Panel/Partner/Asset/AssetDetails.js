@@ -202,13 +202,13 @@ const AssetDetail = () => {
               </Grid>
             </Grid>
 
-            <Typography variant="h6" gutterBottom>Owner Details</Typography>
+            {/* <Typography variant="h6" gutterBottom>Owner Details</Typography>
             <Divider sx={{ mb: 2 }} />
             <Typography mb={3}>
               <strong>Name:</strong> {property.owner_name}<br />
               <strong>Contact:</strong> {property.owner_contact}<br />
               <strong>Email:</strong> {property.owner_email}
-            </Typography>
+            </Typography> */}
             <Typography variant="h6" gutterBottom>Buyer Details</Typography>
             <Divider sx={{ mb: 2 }} />
             {property.buyer_user ? (
