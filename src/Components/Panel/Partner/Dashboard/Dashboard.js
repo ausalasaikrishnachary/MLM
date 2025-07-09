@@ -72,6 +72,27 @@ const AgentDashboard = () => {
   const navigate = useNavigate();
   const [transactionSummary, setTransactionSummary] = useState(null);
   const userId = localStorage.getItem("user_id");
+  const [commissionSummary, setCommissionSummary] = useState({
+    total_agent_commission_paid: 0,
+    total_company_commission_paid: 0,
+  });
+
+  useEffect(() => {
+    const userId = localStorage.getItem('user_id');
+    if (!userId) return;
+
+    axios.get(`${baseurl}/commission-summary/${userId}/`)
+      .then(response => {
+        setCommissionSummary({
+          total_agent_commission_paid: response.data.total_agent_commission_paid || 0,
+          total_company_commission_paid: response.data.total_company_commission_paid || 0,
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching commission summary:', error);
+      });
+  }, []);
+
 
   useEffect(() => {
     if (!userId) return;
@@ -222,7 +243,7 @@ const AgentDashboard = () => {
       <Container maxWidth="xl" sx={{ py: 4 }}>
         {/* Header */}
         <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" sx={{textAlign:"center"}} gutterBottom>
+          <Typography variant="h4" sx={{ textAlign: "center" }} gutterBottom>
             Dashboard
           </Typography>
         </Box>
@@ -316,19 +337,31 @@ const AgentDashboard = () => {
             </Grid>
 
 
-            {/* <Grid item xs={12} sm={6} md={3}>
+            <Grid item xs={12} sm={6} md={3}>
               <Card sx={{ borderRadius: "15px", boxShadow: 3 }}>
                 <CardContent sx={{ textAlign: 'center' }}>
                   <FontAwesomeIcon icon={faMoneyBillWave} size="2x" color="#666" />
-                  <Typography sx={{ mt: 1 }}>Agent Total Commission</Typography>
+                  <Typography sx={{ mt: 1 }}>Total Agent Commissions Paid</Typography>
                   <Typography variant="h4">
-                    ₹{transactionSummary.totals.total_agent_commission}
+                    ₹{commissionSummary.total_agent_commission_paid}
                   </Typography>
                 </CardContent>
               </Card>
             </Grid>
 
             <Grid item xs={12} sm={6} md={3}>
+              <Card sx={{ borderRadius: "15px", boxShadow: 3 }}>
+                <CardContent sx={{ textAlign: 'center' }}>
+                  <FontAwesomeIcon icon={faMoneyBillWave} size="2x" color="#666" />
+                  <Typography sx={{ mt: 1 }}>Total Company Commissions Paid</Typography>
+                  <Typography variant="h4">
+                    ₹{commissionSummary.total_company_commission_paid}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* <Grid item xs={12} sm={6} md={3}>
               <Card sx={{ borderRadius: "15px", boxShadow: 3 }}>
                 <CardContent sx={{ textAlign: 'center' }}>
                   <FontAwesomeIcon icon={faMoneyBillWave} size="2x" color="#28a745" />
