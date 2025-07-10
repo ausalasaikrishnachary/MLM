@@ -414,7 +414,7 @@ export default function Header() {
                   .then(() => {
                     setNotifications(prev => prev.filter(n => n.notification_status_id !== notif.notification_status_id));
                     handleNotificationClose();
-                    navigate('/i-asset');
+                    navigate('/a-asset');
                   })
                   .catch(error => {
                     console.error("Error marking notification as read:", error);

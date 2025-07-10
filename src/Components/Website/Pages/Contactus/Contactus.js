@@ -1,11 +1,55 @@
-import React from "react";
-import { Box, Typography, TextField, Button, Card, Grid, IconButton } from "@mui/material";
-import { Facebook, Instagram, LinkedIn, YouTube, Twitter } from "@mui/icons-material";
-import "./Contactus.css";
+import React, { useState } from "react";
+import axios from "axios";
+import Swal from "sweetalert2";
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Card,
+  Grid,
+  IconButton,
+} from "@mui/material";
+import {
+  Facebook,
+  Instagram,
+  LinkedIn,
+  YouTube,
+  Twitter,
+} from "@mui/icons-material";
 import PhoneIcon from "@mui/icons-material/Phone";
 import EmailIcon from "@mui/icons-material/Email";
+import "./Contactus.css";
+import { baseurl } from './../../../BaseURL/BaseURL';
 
 const Contact = () => {
+  const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone_number: "",
+    message: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await axios.post(`${baseurl}/leads/`, formData);
+      if (res.status === 201 || res.status === 200) {
+        Swal.fire("Success!", "Your message has been sent!", "success");
+        setFormData({ first_name: "", last_name: "", email: "", phone_number: "", message: "" });
+      }
+    } catch (error) {
+      Swal.fire("Error", "Something went wrong!", "error");
+      console.error(error);
+    }
+  };
   return (
     <Box className="contact-container" sx={{ mt: 5, px: { xs: 2, sm: 5, md: 15 } }}>
       <Grid container spacing={4}>
@@ -67,7 +111,7 @@ const Contact = () => {
           </Box>
         </Grid>
 
-        <Grid item xs={12} md={6}>
+        {/* <Grid item xs={12} md={6}>
           <Typography variant="h4" textAlign="center" fontWeight="bold" color="text.primary" mb={2} className="contact-form-title">
             Contact Us
           </Typography>
@@ -96,7 +140,82 @@ const Contact = () => {
               </div>
             </form>
           </Card>
+        </Grid> */}
+
+        <Grid item xs={12} md={6}>
+          <Typography variant="h4" textAlign="center" fontWeight="bold" color="text.primary" mb={2} className="contact-form-title">
+            Contact Us
+          </Typography>
+          <Card sx={{ p: 4, border: "2px solid black", boxShadow: 3 }} className="contact-card">
+            <form onSubmit={handleSubmit}>
+              <TextField
+                fullWidth
+                label="First Name"
+                name="first_name"
+                value={formData.first_name}
+                onChange={handleChange}
+                variant="outlined"
+                margin="normal"
+              />
+              <TextField
+                fullWidth
+                label="Last Name"
+                name="last_name"
+                value={formData.last_name}
+                onChange={handleChange}
+                variant="outlined"
+                margin="normal"
+              />
+              <TextField
+                fullWidth
+                label="Contact Number"
+                name="phone_number"
+                value={formData.phone_number}
+                onChange={handleChange}
+                variant="outlined"
+                margin="normal"
+              />
+              <TextField
+                fullWidth
+                label="Email ID"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                variant="outlined"
+                margin="normal"
+              />
+              <TextField
+                fullWidth
+                label="Message"
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
+                multiline
+                rows={3}
+                variant="outlined"
+                margin="normal"
+              />
+              <div style={{ textAlign: "center" }}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "rgb(46, 22, 109)",
+                    color: "white",
+                    fontWeight: "bold",
+                    borderRadius: "20px",
+                    mt: 2,
+                    '&:hover': { backgroundColor: "rgb(30, 10, 80)" },
+                  }}
+                >
+                  Submit
+                </Button>
+              </div>
+            </form>
+          </Card>
         </Grid>
+
+
       </Grid>
     </Box>
   );

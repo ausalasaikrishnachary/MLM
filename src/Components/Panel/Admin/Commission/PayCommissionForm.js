@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import {
     Grid, TextField, Typography, CircularProgress, Box, Button
 } from '@mui/material';
 import Header from "../../../Shared/Navbar/Navbar";
 import Swal from 'sweetalert2';
 import { baseurl } from '../../../BaseURL/BaseURL';
-import { useNavigate } from 'react-router-dom';
 
 function PayCommissionForm() {
     const navigate = useNavigate();
@@ -17,6 +16,7 @@ function PayCommissionForm() {
     const [error, setError] = useState('');
     const [payCommissionAmount, setPayCommissionAmount] = useState('');
     const [updating, setUpdating] = useState(false);
+    const [paymentMode, setPaymentMode] = useState('');
 
     useEffect(() => {
         const fetchProperty = async () => {
@@ -33,64 +33,40 @@ function PayCommissionForm() {
         fetchProperty();
     }, [propertyId]);
 
-    const handleUpdateCommission = async () => {
-        const amount = parseFloat(payCommissionAmount);
+const handleUpdateCommission = async () => {
+    if (!payCommissionAmount || !paymentMode) {
+        Swal.fire('Error', 'Please enter amount and select payment mode.', 'error');
+        return;
+    }
 
-        if (!amount || amount <= 0) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Invalid Amount',
-                text: 'Enter a valid commission amount.'
-            });
-            return;
-        }
+    if (!property?.property_id || !property?.user_id) {
+        Swal.fire('Error', 'Missing property or user information.', 'error');
+        return;
+    }
 
-        const agentCommission = parseFloat(property.agent_commission);
-        const paid = parseFloat(property.agent_commission_paid || 0);
-        const balance = parseFloat(property.agent_commission_balance || 0);
-
-        if (amount > balance) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Exceeded Balance',
-                text: 'Amount exceeds remaining commission balance.'
-            });
-            return;
-        }
-
-        const updatedProperty = {
-            ...property,
-            agent_commission_paid: paid + amount,
-            agent_commission_balance: agentCommission - (paid + amount),
-        };
-
-        try {
-            setUpdating(true);
-            await axios.put(`${baseurl}/property/${propertyId}/`, updatedProperty);
-
-            Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: 'Commission updated successfully!',
-                timer: 1500,
-                showConfirmButton: false
-            }).then(() => {
-                navigate('/a-commission');
-            });
-
-
-            setProperty(updatedProperty);
-            setPayCommissionAmount('');
-        } catch (err) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Update Failed',
-                text: 'Failed to update commission.'
-            });
-        } finally {
-            setUpdating(false);
-        }
+    const payload = {
+        property_id: property.property_id,
+        user_id: property.user_id,
+        paid_amount: payCommissionAmount,
+        payment_mode: paymentMode
     };
+
+    console.log("Submitting payload:", payload); // ✅ log for debugging
+
+    setUpdating(true);
+    try {
+        const response = await axios.post(`${baseurl}/pay/agent-commission/`, payload);
+        Swal.fire('Success', 'Commission paid successfully.', 'success').then(() => {
+            navigate(`/a-commissions/${property.user_id}`);
+        });
+    } catch (error) {
+        console.error('Submission Error:', error);
+        const errorMsg = error.response?.data?.error || 'Failed to pay commission.';
+        Swal.fire('Error', errorMsg, 'error');
+    } finally {
+        setUpdating(false);
+    }
+};
 
 
     if (loading) {
@@ -113,7 +89,9 @@ function PayCommissionForm() {
         <>
             <Header />
             <Box sx={{ p: 3 }}>
-                <Typography variant="h5" sx={{ textAlign: "center" }} gutterBottom>Pay Commission Details</Typography>
+                <Typography variant="h5" sx={{ textAlign: "center" }} gutterBottom>
+                    Pay Commission Details
+                </Typography>
                 <Grid container spacing={2}>
                     <Grid item xs={12} lg={4}>
                         <TextField
@@ -166,7 +144,29 @@ function PayCommissionForm() {
                             inputProps={{ min: 0 }}
                         />
                     </Grid>
+
+                    <Grid item xs={12} lg={4}>
+                        <TextField
+                            select
+                            fullWidth
+                            label="Payment Mode"
+                            value={paymentMode}
+                            onChange={(e) => setPaymentMode(e.target.value)}
+                            variant="outlined"
+                            SelectProps={{ native: true }}
+                        >
+                            <option value=""></option>
+                            <option value="Cash">Cash</option>
+                            <option value="UPI">UPI</option>
+                            <option value="Cheque">Cheque</option>
+                            <option value="NEFT">NEFT</option>
+                            <option value="RTGS">RTGS</option>
+                            <option value="Net Banking">Net Banking</option>
+                            <option value="Others">Others</option>
+                        </TextField>
+                    </Grid>
                 </Grid>
+
                 <Grid item xs={12} lg={4} sx={{ display: 'flex', alignItems: 'center', marginTop: "10px" }}>
                     <Button
                         variant="contained"
