@@ -157,6 +157,18 @@ const AssetForm = () => {
     }
   }, [formData.category]);
 
+  useEffect(() => {
+    if (formData.lookingTo === 'sell') {
+      const price = parseFloat(formData.price) || 0;
+      const commission = parseFloat(formData.agent_commission) || 0;
+      const total = price + commission;
+      setFormData(prev => ({
+        ...prev,
+        total_property_value: total
+      }));
+    }
+  }, [formData.price, formData.agent_commission, formData.lookingTo]);
+
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -581,20 +593,20 @@ const AssetForm = () => {
                   onChange={handleChange}
                 />
               </Grid>
-               <Grid item xs={12} sm={6}>
-                              <TextField
-                                fullWidth
-                                label="Floor"
-                                name="floor"
-                                type="number"
-                                value={formData.floor}
-                                onChange={handleChange}
-                              />
-                            </Grid>
-                            <Grid item xs={12} sm={6}>
-                              <FormControl fullWidth>
-                                <InputLabel>Furnishing Status</InputLabel>
-                                {/* <Select
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Floor"
+                  name="floor"
+                  type="number"
+                  value={formData.floor}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Furnishing Status</InputLabel>
+                  {/* <Select
                                   name="furnishing_status"
                                   value={formData.furnishing_status}
                                   onChange={handleChange}
@@ -603,17 +615,17 @@ const AssetForm = () => {
                                   <MenuItem value="semi furnished">Semi Furnished</MenuItem>
                                   <MenuItem value="fully furnished">Fully Furnished</MenuItem>
                                 </Select> */}
-                                <Select
-                              name="furnishing_status"
-                              value={formData.furnishing_status}
-                              onChange={handleChange}
-                              label="Furnishing Status"
-                            >
-                              <MenuItem value="Semi-Furnished">Semi-Furnished</MenuItem>
-                              <MenuItem value="Fully-Furnished">Fully-Furnished</MenuItem>
-                            </Select>
-                              </FormControl>
-                            </Grid>
+                  <Select
+                    name="furnishing_status"
+                    value={formData.furnishing_status}
+                    onChange={handleChange}
+                    label="Furnishing Status"
+                  >
+                    <MenuItem value="Semi-Furnished">Semi-Furnished</MenuItem>
+                    <MenuItem value="Fully-Furnished">Fully-Furnished</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
             </>
           )}
           <Grid item xs={12} sm={6}>
@@ -997,7 +1009,7 @@ const AssetForm = () => {
                   label="Total Property Value"
                   name="total_property_value"
                   type="number"
-                  value={formData.total_property_value}
+                  value={formData.total_property_value || ''}
                   InputProps={{
                     readOnly: true,
                   }}
