@@ -27,15 +27,16 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { baseurl } from '../../BaseURL/BaseURL';
 import { Badge, Menu as MuiMenu } from '@mui/material';
 import axios from 'axios';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-export default function Header() { 
+export default function Header() {
   // Navigation items with Operations dropdown
   const navItems = [
     { label: 'Dashboard', path: '/a-dashboard' },
     { label: 'Properties', path: '/a-asset' },
     { label: 'Users', path: '/a-investormanagement' },
-    { 
-      label: 'Operations', 
+    {
+      label: 'Operations',
       subItems: [
         { label: 'Company Commission', path: '/a-transactionmoniter' },
         { label: 'Agent Commission', path: '/a-commission' },
@@ -45,47 +46,49 @@ export default function Header() {
         { label: 'Transaction', path: '/a-transactionsummary' },
       ]
     },
-        { label: 'Meetings', path: '/a-meetings' },
-        { label: 'Carousel', path: '/a-table-carousel' },
-        { label: 'Leads', path: '/a-popup-leads' },
-        { label: 'Company', path: '/tableadminmeetings' },
+    { label: 'Meetings', path: '/a-meetings' },
+    { label: 'Offer', path: '/a-table-carousel' },
+    { label: 'Leads', path: '/a-popup-leads' },
+    { label: 'Company', path: '/tableadminmeetings' },
     // { label: 'Agents', path: '/a-partners' },
   ];
 
-    const userId = localStorage.getItem("user_id");
-    const [notifications, setNotifications] = useState([]);
-    const [notificationAnchorEl, setNotificationAnchorEl] = useState(null);
-    const notificationMenuOpen = Boolean(notificationAnchorEl);
-  
-    const handleNotificationClick = (event) => {
-      setNotificationAnchorEl(event.currentTarget);
+  const userId = localStorage.getItem("user_id");
+  const [notifications, setNotifications] = useState([]);
+  const [notificationAnchorEl, setNotificationAnchorEl] = useState(null);
+  const notificationMenuOpen = Boolean(notificationAnchorEl);
+  const goBack = () => navigate(-1);
+  const handleNotificationClick = (event) => {
+    setNotificationAnchorEl(event.currentTarget);
+  };
+  const handleNotificationClose = () => {
+    setNotificationAnchorEl(null);
+  };
+
+  useEffect(() => {
+    const fetchNotifications = () => {
+      axios.get(`${baseurl}/notifications/user-id/${userId}/`)
+        .then(response => {
+          const unread = response.data.filter(n => !n.is_read);
+          setNotifications(unread);
+        })
+        .catch(error => {
+          console.error("Error fetching notifications:", error);
+        });
     };
-    const handleNotificationClose = () => {
-      setNotificationAnchorEl(null);
-    };
-  
-      useEffect(() => {
-      const fetchNotifications = () => {
-        axios.get(`${baseurl}/notifications/user-id/${userId}/`)
-          .then(response => {
-            const unread = response.data.filter(n => !n.is_read);
-            setNotifications(unread);
-          })
-          .catch(error => {
-            console.error("Error fetching notifications:", error);
-          });
-      };
-  
-      fetchNotifications(); // Initial load
-      const interval = setInterval(fetchNotifications, 10000); // Every 10s
-      return () => clearInterval(interval);
-    }, [userId]);
+
+    fetchNotifications(); // Initial load
+    const interval = setInterval(fetchNotifications, 10000); // Every 10s
+    return () => clearInterval(interval);
+  }, [userId]);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const user_name = localStorage.getItem("user_name");
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [showOperations, setShowOperations] = useState(false);
 
   // State for mobile drawer
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -127,61 +130,78 @@ export default function Header() {
         </IconButton>
       </Box>
 
-      <List>
-        {navItems.map((item) => (
-          <React.Fragment key={item.label}>
-            {item.path ? (
-              <ListItem disablePadding>
-                <ListItemButton
-                  onClick={() => {
-                    handleDrawerToggle();
-                    navigate(item.path);
+     <List>
+  {navItems.map((item) => (
+    <React.Fragment key={item.label}>
+      {item.path ? (
+        // Main items with direct path
+        <ListItem disablePadding>
+          <ListItemButton
+            onClick={() => {
+              handleDrawerToggle();
+              navigate(item.path);
+            }}
+          >
+            <ListItemText
+              primary={item.label}
+              primaryTypographyProps={{
+                color: location.pathname === item.path ? 'blue' : 'inherit',
+                fontWeight: 'bold',
+              }}
+            />
+          </ListItemButton>
+        </ListItem>
+      ) : (
+        <>
+          {/* For items without path, like Operations */}
+          <ListItem disablePadding>
+            <ListItemButton
+              onClick={() => {
+                if (item.label === 'Operations') {
+                  setShowOperations((prev) => !prev);
+                }
+              }}
+            >
+              <ListItemText
+                primary={item.label}
+                primaryTypographyProps={{ fontWeight: 'bold' }}
+              />
+              {item.label === 'Operations' && (
+                <ArrowDropDownIcon
+                  style={{
+                    transform: showOperations ? 'rotate(180deg)' : 'rotate(0deg)',
+                    transition: 'transform 0.3s ease',
                   }}
-                >
-                  <ListItemText
-                    primary={item.label}
-                    primaryTypographyProps={{
-                      color: location.pathname === item.path ? 'blue' : 'inherit',
-                      fontWeight: 'bold',
-                    }}
-                  />
-                </ListItemButton>
-              </ListItem>
-            ) : (
-              <>
-                <ListItem disablePadding>
-                  <ListItemButton>
-                    <ListItemText
-                      primary={item.label}
-                      primaryTypographyProps={{
-                        fontWeight: 'bold',
-                      }}
-                    />
-                  </ListItemButton>
-                </ListItem>
-                {item.subItems.map((subItem) => (
-                  <ListItem key={subItem.label} disablePadding sx={{ pl: 4 }}>
-                    <ListItemButton
-                      onClick={() => {
-                        handleDrawerToggle();
-                        navigate(subItem.path);
-                      }}
-                    >
-                      <ListItemText
-                        primary={subItem.label}
-                        primaryTypographyProps={{
-                          color: location.pathname === subItem.path ? 'blue' : 'inherit',
-                          fontWeight: 'bold',
-                        }}
-                      />
-                    </ListItemButton>
-                  </ListItem>
-                ))}
-              </>
-            )}
-          </React.Fragment>
-        ))}
-      </List>
+                />
+              )}
+            </ListItemButton>
+          </ListItem>
+
+          {/* Render subItems for expandable sections like Operations */}
+          {item.label === 'Operations' && showOperations && item.subItems?.map((subItem) => (
+            <ListItem key={subItem.label} disablePadding sx={{ pl: 4 }}>
+              <ListItemButton
+                onClick={() => {
+                  handleDrawerToggle();
+                  navigate(subItem.path);
+                }}
+              >
+                <ListItemText
+                  primary={subItem.label}
+                  primaryTypographyProps={{
+                    color: location.pathname === subItem.path ? 'blue' : 'inherit',
+                    fontWeight: 'bold',
+                  }}
+                />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </>
+      )}
+    </React.Fragment>
+  ))}
+</List>
+
     </Box>
   );
 
@@ -228,10 +248,10 @@ export default function Header() {
               {/* Right: Notification, Username, Profile Avatar */}
               <Box display="flex" alignItems="center">
                 <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
-                <Badge badgeContent={notifications.length} color="error">
-                  <NotificationsNoneIcon />
-                </Badge>
-              </IconButton>
+                  <Badge badgeContent={notifications.length} color="error">
+                    <NotificationsNoneIcon />
+                  </Badge>
+                </IconButton>
                 <Typography sx={{ ml: 2, mr: 2, color: '#000', fontWeight: 'bold' }}>
                   {user_name}
                 </Typography>
@@ -247,7 +267,7 @@ export default function Header() {
             // Desktop Layout
             <>
               {/* Left: Logo */}
-                <Box sx={{ display: 'flex', alignItems: 'center', mr: 4 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mr: 4 }}>
                 <Link to="/a-dashboard" style={{ textDecoration: 'none', color: '#333333' }}>
                   <img
                     src={Logo}
@@ -261,6 +281,25 @@ export default function Header() {
                   />
                 </Link>
               </Box>
+
+              <IconButton
+                onClick={goBack}
+                sx={{
+                  backgroundColor: '#f0f0f0',
+                  color: '#000',
+                  borderRadius: '12px',
+                  padding: '8px',
+                  marginLeft: '20px', // left padding from edge of screen
+                  marginRight: '10px', // space between button and logo
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    backgroundColor: '#e0e0e0',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                  },
+                }}
+              >
+                <ArrowBackIcon />
+              </IconButton>
 
               {/* Center: Nav Items */}
               <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', gap: 3 }}>
@@ -297,7 +336,7 @@ export default function Header() {
               </Box>
 
               {/* Right: Notification, Username, Profile Avatar */}
-                <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
+              <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
                 <Badge badgeContent={notifications.length} color="error">
                   <NotificationsNoneIcon />
                 </Badge>
@@ -381,7 +420,7 @@ export default function Header() {
         <MenuItem
           onClick={() => {
             handleProfileMenuClose();
-            navigate('/login');
+            navigate('/');
           }}
           sx={{
             fontSize: '16px',
@@ -395,7 +434,7 @@ export default function Header() {
         </MenuItem>
       </Menu>
 
-              <MuiMenu
+      <MuiMenu
         anchorEl={notificationAnchorEl}
         open={notificationMenuOpen}
         onClose={handleNotificationClose}
@@ -428,7 +467,7 @@ export default function Header() {
           <MenuItem disabled>No notifications</MenuItem>
         )}
       </MuiMenu>
-      
+
     </>
   );
 }

@@ -16,36 +16,40 @@ import {
   TableCell,
   TableBody,
   CircularProgress,
-   ButtonGroup,
-     Dialog,
+  ButtonGroup,
+  Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
 } from '@mui/material';
-import InvestorHeader from '../../../Shared/Investor/InvestorNavbar'; 
+import InvestorHeader from '../../../Shared/Investor/InvestorNavbar';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { baseurl } from '../../../BaseURL/BaseURL';
 import jsPDF from 'jspdf';
 import autoTable from "jspdf-autotable";
 import Swal from 'sweetalert2';
+import PaginationComponent from '../../../Shared/Pagination';
 
-const Transactions = () => { 
+
+const Transactions = () => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sortBy, setSortBy] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [currentPage, setCurrentPage] = useState(0);
+  // const [currentPage, setCurrentPage] = useState(0);
   const rowsPerPage = 5;
   const navigate = useNavigate();
+  const [page, setPage] = useState(1); // 1-based indexing
+  const itemsPerPage = 5;
 
   const [filterDate, setFilterDate] = useState('');
   const [filterAmount, setFilterAmount] = useState('');
   const [filterPaymentType, setFilterPaymentType] = useState('');
-    const [openReportDialog, setOpenReportDialog] = useState(false);
-    const [startDate, setStartDate] = useState('');
-    const [endDate, setEndDate] = useState('');
+  const [openReportDialog, setOpenReportDialog] = useState(false);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   const cellStyle = {
     fontWeight: 'bold',
@@ -71,43 +75,43 @@ const Transactions = () => {
       const transactionDate = new Date(transaction.transaction_date);
       const start = new Date(startDate);
       const end = new Date(endDate);
-      
+
       // Reset time components to ensure pure date comparison
       const transDateOnly = new Date(
         transactionDate.getFullYear(),
         transactionDate.getMonth(),
         transactionDate.getDate()
       );
-      
+
       const startDateOnly = new Date(
         start.getFullYear(),
         start.getMonth(),
         start.getDate()
       );
-      
+
       const endDateOnly = new Date(
         end.getFullYear(),
         end.getMonth(),
         end.getDate()
       );
-      
+
       return transDateOnly >= startDateOnly && transDateOnly <= endDateOnly;
     });
-  
+
     if (filteredByDate.length === 0) {
       alert('No transactions found in the selected date range');
       return;
     }
-  
+
     // Create PDF
     const doc = new jsPDF();
-    
+
     // Add title
     doc.setFontSize(18);
     doc.text('Transaction Report', 14, 15);
     doc.setFontSize(12);
     doc.text(`Date Range: ${new Date(startDate).toLocaleDateString()} to ${new Date(endDate).toLocaleDateString()}`, 14, 22);
-    
+
     // Prepare data for the table
     const headers = [
       'Property Name',
@@ -117,7 +121,7 @@ const Transactions = () => {
       'Remaining Amount',
       'Transaction Date'
     ];
-  
+
     const tableData = filteredByDate.map(transaction => [
       transaction.property_name,
       transaction.property_value,
@@ -126,7 +130,7 @@ const Transactions = () => {
       transaction.remaining_amount,
       new Date(transaction.transaction_date).toLocaleDateString(),
     ]);
-  
+
     // Add table to PDF
     autoTable(doc, {
       head: [headers],
@@ -147,66 +151,66 @@ const Transactions = () => {
         fillColor: [245, 245, 245]
       }
     });
-  
+
     // Save the PDF
     doc.save(`Transaction_Report_${new Date().toISOString().slice(0, 10)}.pdf`);
-    
+
     // Close the dialog
     setOpenReportDialog(false);
   };
 
-    useEffect(() => {
-      const userId = localStorage.getItem("user_id");
-      const propertyId = localStorage.getItem("property_id");
-      const merchantOrderId = localStorage.getItem("merchant_order_id");
-      const paymentType = localStorage.getItem("payment_type");
-  
-      if (userId && propertyId && merchantOrderId && paymentType) {
-        const confirmPayment = async () => {
-          try {
-            const payload = {
-              user_id: parseInt(userId),
-              property_id: parseInt(propertyId),
-              payment_type: paymentType,
-              merchant_order_id: merchantOrderId,
-            };
-  
-            const confirmRes = await fetch(`${baseurl}/property/confirm-payment/`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(payload),
-            });
-  
-            // const confirmData = await confirmRes.json();
-  
-            // if (confirmRes.ok) {
-            //   console.log("Payment Confirmed:", confirmData);
-            //   Swal.fire({
-            //     icon: "success",
-            //     title: "Payment Successful",
-            //     text: "Your transaction is complete.",
-            //   });
-            // } else {
-            //   throw new Error(`Confirmation failed: ${JSON.stringify(confirmData)}`);
-            // }
-            
-          } catch (error) {
-            console.error("Payment Confirmation Failed:", error);
-            Swal.fire({
-              icon: "error",
-              title: "Payment Confirmation Failed",
-              text: error.message,
-            });
-          } finally {
-            localStorage.removeItem("merchant_order_id");
-            localStorage.removeItem("property_id");
-            localStorage.removeItem("payment_type");
-          }
-        };
-  
-        confirmPayment();
-      }
-    }, []);
+  useEffect(() => {
+    const userId = localStorage.getItem("user_id");
+    const propertyId = localStorage.getItem("property_id");
+    const merchantOrderId = localStorage.getItem("merchant_order_id");
+    const paymentType = localStorage.getItem("payment_type");
+
+    if (userId && propertyId && merchantOrderId && paymentType) {
+      const confirmPayment = async () => {
+        try {
+          const payload = {
+            user_id: parseInt(userId),
+            property_id: parseInt(propertyId),
+            payment_type: paymentType,
+            merchant_order_id: merchantOrderId,
+          };
+
+          const confirmRes = await fetch(`${baseurl}/property/confirm-payment/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          // const confirmData = await confirmRes.json();
+
+          // if (confirmRes.ok) {
+          //   console.log("Payment Confirmed:", confirmData);
+          //   Swal.fire({
+          //     icon: "success",
+          //     title: "Payment Successful",
+          //     text: "Your transaction is complete.",
+          //   });
+          // } else {
+          //   throw new Error(`Confirmation failed: ${JSON.stringify(confirmData)}`);
+          // }
+
+        } catch (error) {
+          console.error("Payment Confirmation Failed:", error);
+          Swal.fire({
+            icon: "error",
+            title: "Payment Confirmation Failed",
+            text: error.message,
+          });
+        } finally {
+          localStorage.removeItem("merchant_order_id");
+          localStorage.removeItem("property_id");
+          localStorage.removeItem("payment_type");
+        }
+      };
+
+      confirmPayment();
+    }
+  }, []);
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -254,21 +258,22 @@ const Transactions = () => {
 
   const handleSortChange = (event) => {
     setSortBy(event.target.value);
-    setCurrentPage(0);
+    setPage(1); // ✅ reset to first page on sort
   };
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
-    setCurrentPage(0);
+    setPage(1); // ✅ reset to first page on search
   };
 
   const handlePrevPage = () => {
-    setCurrentPage((prev) => Math.max(prev - 1, 0));
+    setPage((prev) => Math.max(prev - 1, 1)); // Page 1 is the minimum
   };
 
   const handleNextPage = () => {
-    setCurrentPage((prev) => prev + 1);
+    setPage((prev) => (prev < totalPages ? prev + 1 : prev)); // Don't go beyond last page
   };
+
 
   const filteredTransactions = transactions.filter((transaction) => {
     const matchSearch =
@@ -299,11 +304,20 @@ const Transactions = () => {
     return 0;
   });
 
-  const totalPages = Math.ceil(sortedTransactions.length / rowsPerPage);
+  // const totalPages = Math.ceil(sortedTransactions.length / rowsPerPage);
+  // const paginatedTransactions = sortedTransactions.slice(
+  //   currentPage * rowsPerPage,
+  //   (currentPage + 1) * rowsPerPage
+  // );
+  const totalPages = Math.ceil(sortedTransactions.length / itemsPerPage);
   const paginatedTransactions = sortedTransactions.slice(
-    currentPage * rowsPerPage,
-    (currentPage + 1) * rowsPerPage
+    (page - 1) * itemsPerPage,
+    page * itemsPerPage
   );
+
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
 
   return (
     <>
@@ -313,15 +327,15 @@ const Transactions = () => {
           <h2 style={{ fontWeight: 'bold' }}>Transaction History</h2>
         </div>
 
-          <Box display="flex" justifyContent="flex-end" mb={2}>
-                  <Button 
-                    variant="contained" 
-                    color="primary"
-                    onClick={() => setOpenReportDialog(true)}
-                  >
-                    Generate Report
-                  </Button>
-                </Box>
+        <Box display="flex" justifyContent="flex-end" mb={2}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => setOpenReportDialog(true)}
+          >
+            Generate Report
+          </Button>
+        </Box>
 
         <Grid container spacing={2} mb={3}>
           <Grid item xs={12} sm={4}>
@@ -436,71 +450,62 @@ const Transactions = () => {
                 )}
               </TableBody>
             </Table>
-
-            <Box display="flex" justifyContent="center" mt={2}>
-              <ButtonGroup>
-                <Button 
-                  onClick={handlePrevPage} 
-                  disabled={currentPage === 0}
-                >
-                  Previous
-                </Button>
-                <Button 
-                  onClick={handleNextPage} 
-                  disabled={currentPage >= totalPages - 1 || sortedTransactions.length <= rowsPerPage}
-                >
-                  Next
-                </Button>
-              </ButtonGroup>
+            <Box display="flex" justifyContent="flex-end" mt={2}>
+              <PaginationComponent
+                count={totalPages}
+                page={page}
+                onChange={handlePageChange}
+              />
             </Box>
+
           </>
         )}
       </Container>
-       {/* Report Generation Dialog */}
-            <Dialog open={openReportDialog} onClose={() => setOpenReportDialog(false)}>
-              <DialogTitle>Generate Transaction Report</DialogTitle>
-              <DialogContent>
-                <Grid container spacing={2} sx={{ mt: 1 }}>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      type="date"
-                      label="Start Date"
-                      InputLabelProps={{ shrink: true }}
-                      value={startDate}
-                      onChange={(e) => setStartDate(e.target.value)}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      type="date"
-                      label="End Date"
-                      InputLabelProps={{ shrink: true }}
-                      value={endDate}
-                      onChange={(e) => setEndDate(e.target.value)}
-                      error={endDate && startDate && new Date(endDate) < new Date(startDate)}
-                      helperText={
-                        endDate && startDate && new Date(endDate) < new Date(startDate) 
-                          ? 'End date must be after start date' 
-                          : ''
-                      }
-                    />
-                  </Grid>
-                </Grid>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={() => setOpenReportDialog(false)}>Cancel</Button>
-                <Button 
-                  onClick={generatePDFReport} 
-                  disabled={!startDate || !endDate || (endDate && startDate && new Date(endDate) < new Date(startDate))}
-                  variant="contained"
-                  color="primary"
-                >
-                  Generate PDF
-                </Button>
-              </DialogActions>
-            </Dialog>
+      {/* Report Generation Dialog */}
+      <Dialog open={openReportDialog} onClose={() => setOpenReportDialog(false)}>
+        <DialogTitle>Generate Transaction Report</DialogTitle>
+        <DialogContent>
+          <Grid container spacing={2} sx={{ mt: 1 }}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                type="date"
+                label="Start Date"
+                InputLabelProps={{ shrink: true }}
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                type="date"
+                label="End Date"
+                InputLabelProps={{ shrink: true }}
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                error={endDate && startDate && new Date(endDate) < new Date(startDate)}
+                helperText={
+                  endDate && startDate && new Date(endDate) < new Date(startDate)
+                    ? 'End date must be after start date'
+                    : ''
+                }
+              />
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenReportDialog(false)}>Cancel</Button>
+          <Button
+            onClick={generatePDFReport}
+            disabled={!startDate || !endDate || (endDate && startDate && new Date(endDate) < new Date(startDate))}
+            variant="contained"
+            color="primary"
+          >
+            Generate PDF
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

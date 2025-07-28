@@ -3,10 +3,15 @@ import axios from 'axios';
 import TableLayout from '../../../Shared/TableLayout';
 import InvestorHeader from "../../../Shared/Investor/InvestorNavbar";
 import { baseurl } from '../../../BaseURL/BaseURL';
+import { Pagination, Box } from '@mui/material';
 
 function DisplayRequests() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const rowsPerPage = 5;
+   const userId = localStorage.getItem("user_id");
+
 
   const headers = [
     { key: 'request_id', label: 'Request ID' },
@@ -21,7 +26,7 @@ function DisplayRequests() {
     // { key: 'user_id', label: 'User ID' },
   ];
 
-   const userId = localStorage.getItem("user_id");
+ 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,7 +41,13 @@ function DisplayRequests() {
     };
 
     fetchData();
-  }, []);
+  }, [userId]);
+
+   // Paginate the data
+  const paginatedData = data.slice(
+    (page - 1) * rowsPerPage,
+    page * rowsPerPage
+  );
 
   return (
     <>
@@ -48,6 +59,17 @@ function DisplayRequests() {
         loading={loading}
         showActions={false} // set true if you want Edit/Delete
       />
+
+      {/* Pagination Control */}
+      <Box display="flex" justifyContent="flex-end" mt={2} mr={3}>
+        <Pagination
+          count={Math.ceil(data.length / rowsPerPage)}
+          page={page}
+          onChange={(e, value) => setPage(value)}
+          color="primary"
+          shape="rounded"
+        />
+      </Box>
     </>
   );
 }

@@ -29,6 +29,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import axios from 'axios';
 import { baseurl } from '../../BaseURL/BaseURL';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 export default function PartnerHeader() {
   const userId = localStorage.getItem("user_id");
@@ -97,6 +98,7 @@ export default function PartnerHeader() {
 
   const navigate = useNavigate();
   const location = useLocation();
+   const goBack = () => navigate(-1);
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [operationsAnchorEl, setOperationsAnchorEl] = useState(null);
@@ -125,35 +127,77 @@ export default function PartnerHeader() {
     setProfileAnchorEl(null);
   };
 
-  const drawer = (
-    <Box sx={{ width: 250 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 2 }}>
-        <IconButton onClick={handleDrawerToggle}>
-          <CloseIcon />
-        </IconButton>
-      </Box>
-      <List>
-        {navItems.map((item) => (
+ const [openOperationsMobile, setOpenOperationsMobile] = useState(false);
+
+const drawer = (
+  <Box sx={{ width: 250 }}>
+    <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 2 }}>
+      <IconButton onClick={handleDrawerToggle}>
+        <CloseIcon />
+      </IconButton>
+    </Box>
+    <List>
+      {navItems.map((item) => (
+        item.subItems ? (
+          <React.Fragment key={item.label}>
+            <ListItemButton onClick={() => setOpenOperationsMobile(!openOperationsMobile)}>
+              <ListItemText
+                primary={item.label}
+                primaryTypographyProps={{
+                  fontWeight: 'bold',
+                  color: isOperationsActive ? 'blue' : 'inherit',
+                }}
+              />
+              {openOperationsMobile ? <ExpandLess /> : <ExpandMore />}
+            </ListItemButton>
+            {openOperationsMobile && (
+              <Box sx={{ pl: 4 }}>
+                {item.subItems.map((subItem) => (
+                  <ListItemButton
+                    key={subItem.label}
+                    onClick={() => {
+                      navigate(subItem.path);
+                      handleDrawerToggle();
+                    }}
+                    sx={{
+                      backgroundColor: location.pathname === subItem.path ? '#f0f0f0' : 'transparent',
+                      borderRadius: '8px',
+                    }}
+                  >
+                    <ListItemText
+                      primary={subItem.label}
+                      primaryTypographyProps={{
+                        fontWeight: 'Bold',
+                        color: location.pathname === subItem.path ? 'blue' : 'inherit',
+                      }}
+                    />
+                  </ListItemButton>
+                ))}
+              </Box>
+            )}
+          </React.Fragment>
+        ) : (
           <ListItem key={item.label} disablePadding>
             <ListItemButton
               onClick={() => {
-                handleDrawerToggle();
                 navigate(item.path);
+                handleDrawerToggle();
               }}
             >
               <ListItemText
                 primary={item.label}
                 primaryTypographyProps={{
-                  color: location.pathname === item.path ? 'blue' : 'inherit',
                   fontWeight: 'bold',
+                  color: location.pathname === item.path ? 'blue' : 'inherit',
                 }}
               />
             </ListItemButton>
           </ListItem>
-        ))}
-      </List>
-    </Box>
-  );
+        )
+      ))}
+    </List>
+  </Box>
+);
 
   return (
     <>
@@ -207,6 +251,26 @@ export default function PartnerHeader() {
                   <img src={Logo} alt="logo" style={{ height: '75px', maxWidth: '150px', paddingTop: "8px" }} />
                 </Link>
               </Typography>
+
+               <IconButton
+    onClick={goBack}
+    sx={{
+      backgroundColor: '#f0f0f0',
+      color: '#000',
+      borderRadius: '12px',
+      padding: '8px',
+      marginLeft: '20px', // left padding from edge of screen
+      marginRight: '10px', // space between button and logo
+      transition: 'all 0.3s ease',
+      '&:hover': {
+        backgroundColor: '#e0e0e0',
+        boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+      },
+    }}
+  >
+    <ArrowBackIcon />
+  </IconButton>
+
               <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', gap: 3 }}>
                 {navItems.map((item) => (
                   item.path ? (
@@ -310,7 +374,7 @@ export default function PartnerHeader() {
         <MenuItem
           onClick={() => {
             handleProfileMenuClose();
-            navigate('/login');
+            navigate('/');
           }}
           sx={{
             fontSize: '16px',

@@ -41,8 +41,11 @@ const PartnerBookedAssets = () => {
     const [page, setPage] = useState(1);
     const itemsPerPage = 6;
     const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
-    const startIndex = (page - 1) * itemsPerPage;
-    const paginatedProperties = filteredProperties.slice(startIndex, startIndex + itemsPerPage);
+const startIndex = (page - 1) * itemsPerPage;
+const paginatedProperties = filteredProperties.slice(startIndex, startIndex + itemsPerPage);
+
+
+
 
     useEffect(() => {
         const fetchBookedProperties = async () => {
@@ -442,6 +445,8 @@ const PartnerBookedAssets = () => {
                                                     </Button>
                                                 </Grid>
                                             </Grid>
+                                       
+
                                         </CardContent>
                                         {/* Image Carousel Dialog */}
                                         <Dialog open={openCarousel} onClose={handleCloseCarousel} maxWidth="md" fullWidth>

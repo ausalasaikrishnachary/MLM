@@ -13,6 +13,8 @@ import {
   Box,
   CircularProgress,
 } from '@mui/material';
+import { Pagination } from '@mui/material';
+
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import InvestorHeader from "../../../Shared/Investor/InvestorNavbar";
@@ -212,6 +214,15 @@ function PartnerPlans() {
   }, [userId]);
 
 
+  const [page, setPage] = useState(1); // MUI's Pagination is 1-based
+const rowsPerPage = 5;
+
+const paginatedData = variantData.slice(
+  (page - 1) * rowsPerPage,
+  page * rowsPerPage
+);
+
+
   return (
     <>
       <InvestorHeader />
@@ -228,61 +239,72 @@ function PartnerPlans() {
           <Box display="flex" justifyContent="center" mt={5}>
             <CircularProgress />
           </Box>
-        ) : (
-          <Table sx={{ border: '1px solid black', width: '100%', mt: 3 }}>
-            <TableHead>
-              <TableRow>
-                <TableCell sx={cellStyle}>Plan Name</TableCell>
-                <TableCell sx={cellStyle}>Description</TableCell>
-                <TableCell sx={cellStyle}>Duration (Days)</TableCell>
-                <TableCell sx={cellStyle}>Price</TableCell>
-                <TableCell sx={cellStyle}>Action</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {variantData.length > 0 ? (
-                variantData.map((variant, index) => {
-                  const plan = planDataMap[variant.plan_id] || {};
-                  const isSubscribed = subscribedVariants.includes(variant.variant_id);
-                  console.log("id", variant.variant_id)
-                  return (
-                    <TableRow key={index}>
-                      <TableCell sx={cellBodyStyle}>{plan.plan_name || '—'}</TableCell>
-                      <TableCell sx={cellBodyStyle}>{plan.description || '—'}</TableCell>
-                      <TableCell sx={cellBodyStyle}>{variant.duration_in_days}</TableCell>
-                      <TableCell sx={cellBodyStyle}>₹{variant.price}</TableCell>
-                      <TableCell sx={cellBodyStyle}>
-                        <Button
-                          variant="contained"
-                          size="small"
-                          onClick={() => handleBuy(variant.variant_id)}
-                          // disabled={isSubscribed}
-                          disabled={subscribedVariants.length > 0}
-                          sx={{
-                            textTransform: 'none',
-                            backgroundColor: isSubscribed ? '#4caf50' : '#1976d2',
-                            '&:disabled': {
-                              backgroundColor: '#e0e0e0',
-                              color: '#9e9e9e'
-                            },
-                          }}
-                        >
-                          {isSubscribed ? "Subscribed" : "Subscribe"}
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
               ) : (
+          <>
+            <Table sx={{ border: '1px solid black', width: '100%', mt: 3 }}>
+              <TableHead>
                 <TableRow>
-                  <TableCell colSpan={5} sx={noDataStyle}>
-                    No subscription plans available
-                  </TableCell>
+                  <TableCell sx={cellStyle}>Plan Name</TableCell>
+                  <TableCell sx={cellStyle}>Description</TableCell>
+                  <TableCell sx={cellStyle}>Duration (Days)</TableCell>
+                  <TableCell sx={cellStyle}>Price</TableCell>
+                  <TableCell sx={cellStyle}>Action</TableCell>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
+              </TableHead>
+              <TableBody>
+                {variantData.length > 0 ? (
+                  paginatedData.map((variant, index) => {
+                    const plan = planDataMap[variant.plan_id] || {};
+                    const isSubscribed = subscribedVariants.includes(variant.variant_id);
+                    return (
+                      <TableRow key={index}>
+                        <TableCell sx={cellBodyStyle}>{plan.plan_name || '—'}</TableCell>
+                        <TableCell sx={cellBodyStyle}>{plan.description || '—'}</TableCell>
+                        <TableCell sx={cellBodyStyle}>{variant.duration_in_days}</TableCell>
+                        <TableCell sx={cellBodyStyle}>₹{variant.price}</TableCell>
+                        <TableCell sx={cellBodyStyle}>
+                          <Button
+                            variant="contained"
+                            size="small"
+                            onClick={() => handleBuy(variant.variant_id)}
+                            disabled={subscribedVariants.length > 0}
+                            sx={{
+                              textTransform: 'none',
+                              backgroundColor: isSubscribed ? '#4caf50' : '#1976d2',
+                              '&:disabled': {
+                                backgroundColor: '#e0e0e0',
+                                color: '#9e9e9e'
+                              },
+                            }}
+                          >
+                            {isSubscribed ? "Subscribed" : "Subscribe"}
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={5} sx={noDataStyle}>
+                      No subscription plans available
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+
+            <Box display="flex" justifyContent="flex-end" mt={2}>
+              <Pagination
+                count={Math.ceil(variantData.length / rowsPerPage)}
+                page={page}
+                onChange={(event, value) => setPage(value)}
+                color="primary"
+                shape="rounded"
+              />
+            </Box>
+          </>
         )}
+
       </Container>
     </>
   )

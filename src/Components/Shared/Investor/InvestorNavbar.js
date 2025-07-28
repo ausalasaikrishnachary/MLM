@@ -27,6 +27,8 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { baseurl } from '../../BaseURL/BaseURL';
 import { Badge, Menu as MuiMenu } from '@mui/material';
 import axios from 'axios';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+
 
 export default function InvestorHeader() {
   // Define nav items with navigation paths.
@@ -44,6 +46,12 @@ export default function InvestorHeader() {
   const [notificationAnchorEl, setNotificationAnchorEl] = useState(null);
   const notificationMenuOpen = Boolean(notificationAnchorEl);
   const [profileImage, setProfileImage] = useState('');
+  const goBack = () => navigate(-1);
+  // const handlePageChange = (event, value) => {
+  //   setPage(value);
+  // };
+
+
 
   const handleNotificationClick = (event) => {
     setNotificationAnchorEl(event.currentTarget);
@@ -157,16 +165,24 @@ export default function InvestorHeader() {
           {isMobile ? (
             // Mobile / iPad Layout.
             <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
-              {/* Left: Menu Icon */}
-              <IconButton
-                edge="start"
-                color="inherit"
-                aria-label="menu"
-                onClick={handleDrawerToggle}
-                sx={{ mr: 2 }}
-              >
-                <MenuIcon />
-              </IconButton>
+
+              <Box display="flex" alignItems="center">
+
+
+
+                {/* Left: Menu Icon */}
+                <IconButton
+                  edge="start"
+                  color="inherit"
+                  aria-label="menu"
+                  onClick={handleDrawerToggle}
+                  sx={{ mr: 2 }}
+                >
+                  <MenuIcon />
+                </IconButton>
+              </Box>
+
+
 
               {/* Center: Logo */}
               <Box display="flex" justifyContent="center" flexGrow={1}>
@@ -182,6 +198,7 @@ export default function InvestorHeader() {
                   />
                 </Link>
               </Box>
+
 
               {/* Right: Notification, Username, Profile Avatar */}
               <Box display="flex" alignItems="center">
@@ -214,23 +231,73 @@ export default function InvestorHeader() {
             // Desktop Layout.
             <>
               {/* Left: Logo */}
-              <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center' }}>
-                <Link to="/i-dashboard" style={{ textDecoration: 'none', color: '#333333' }}>
-                  <img
-                    src={Logo}
-                    alt="logo"
-                    style={{
-                      height: '75px',
-                      width: 'auto',
-                      maxWidth: '150px',
-                      paddingTop: "8px"
-                    }}
-                  />
-                </Link>
-              </Typography>
+              {/* Left: Back Button + Logo */}
+              <Box display="flex" alignItems="center" gap={2}>
+  {/* Back Button on far left */}
+ 
+
+
+  {/* Logo */}
+  <Link to="/i-dashboard" style={{ textDecoration: 'none', color: '#333333' }}>
+    <img
+      src={Logo}
+      alt="logo"
+      style={{
+        height: '75px',
+        width: 'auto',
+        maxWidth: '150px',
+        paddingTop: '8px',
+      }}
+    />
+  </Link>
+</Box>
+
+  <IconButton
+    onClick={goBack}
+    sx={{
+      backgroundColor: '#f0f0f0',
+      color: '#000',
+      borderRadius: '12px',
+      padding: '8px',
+      marginLeft: '20px', // left padding from edge of screen
+      marginRight: '10px', // space between button and logo
+      transition: 'all 0.3s ease',
+      '&:hover': {
+        backgroundColor: '#e0e0e0',
+        boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+      },
+    }}
+  >
+    <ArrowBackIcon />
+  </IconButton>
+
+
 
               {/* Center: Nav Items */}
               <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', gap: 3 }}>
+                {/* <IconButton
+                  onClick={goBack}
+                  sx={{
+                    ml: 1,
+                    mr: 2,
+                    backgroundColor: '#f0f0f0',
+                    color: '#000',
+                    borderRadius: '12px',
+                    padding: '8px 12px',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      backgroundColor: '#e0e0e0',
+                      boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                    },
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                  }}
+                >
+                  <ArrowBackIcon />
+                  <Typography sx={{ fontWeight: 'bold', fontSize: '14px' }}>Back</Typography>
+                </IconButton> */}
+
                 {navItems.map((item) => (
                   <Button
                     key={item.label}
@@ -315,7 +382,7 @@ export default function InvestorHeader() {
         <MenuItem
           onClick={() => {
             handleProfileMenuClose();
-            navigate('/login');
+            navigate('/');
           }}
           sx={{
             fontSize: '16px',

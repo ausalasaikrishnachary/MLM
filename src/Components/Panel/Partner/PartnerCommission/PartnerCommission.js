@@ -7,6 +7,8 @@ import {
 } from '@mui/material';
 import Header from "../../../Shared/Partner/PartnerNavbar";
 import { baseurl } from '../../../BaseURL/BaseURL';
+import { Pagination } from '@mui/material';
+
 
 function PartnerCommission() {
     const [propertyData, setPropertyData] = useState([]);
@@ -53,6 +55,17 @@ function PartnerCommission() {
         setTabIndex(newValue);
     };
 
+    const [page, setPage] = useState(1);
+const itemsPerPage = 5;
+
+const totalPages = Math.ceil(propertyData.length / itemsPerPage);
+
+const paginatedData = propertyData.slice(
+  (page - 1) * itemsPerPage,
+  page * itemsPerPage
+);
+
+
     return (
         <>
             <Header />
@@ -69,7 +82,6 @@ function PartnerCommission() {
                 {/* Agent Commission Tab */}
                 {tabIndex === 0 && (
                     <Box mt={4}>
-                        {/* <Typography variant="h6" gutterBottom align="center">Agent Commission</Typography> */}
                         <Table sx={{ border: '1px solid black' }}>
                             <TableHead>
                                 <TableRow>
@@ -86,8 +98,8 @@ function PartnerCommission() {
                                     <TableRow>
                                         <TableCell colSpan={6} sx={noDataStyle}>Loading...</TableCell>
                                     </TableRow>
-                                ) : propertyData.length > 0 ? (
-                                    propertyData.map((property) => (
+                                ) : paginatedData.length > 0 ? (
+                                    paginatedData.map((property) => (
                                         <TableRow key={property.id}>
                                             <TableCell sx={cellBodyStyle}>{property.property_title}</TableCell>
                                             <TableCell sx={cellBodyStyle}>{property.total_property_value}</TableCell>
@@ -104,8 +116,24 @@ function PartnerCommission() {
                                 )}
                             </TableBody>
                         </Table>
+
+                        {/* Pagination Bottom Right */}
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                            <Pagination
+                                count={totalPages}
+                                page={page}
+                                onChange={(_, value) => setPage(value)}
+                                color="primary"
+                                sx={{
+                                    '& .MuiPaginationItem-root': {
+                                        borderRadius: '0px',
+                                    },
+                                }}
+                            />
+                        </Box>
                     </Box>
                 )}
+
 
 
                 {/* Company Commission Tab */}

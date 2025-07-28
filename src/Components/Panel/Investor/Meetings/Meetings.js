@@ -6,8 +6,10 @@ import TableLayout from '../../../Shared/TableLayout';
 import DisplayRequest from './DisplayRequests';
 import axios from 'axios';
 import { baseurl } from '../../../BaseURL/BaseURL';
+import { Pagination } from '@mui/material';
 
-const profiles = [ 
+
+const profiles = [
     {
         id: 2,
         label: 'Sales & Marketing',
@@ -16,11 +18,12 @@ const profiles = [
     },
 ];
 
-function I_Meetings() { 
+function I_Meetings() {
     const navigate = useNavigate();
     const [subscriptionPaid, setSubscriptionPaid] = useState(false);
     const [openModal, setOpenModal] = useState(false);
     const userId = localStorage.getItem("user_id");
+
 
     useEffect(() => {
         if (userId) {
@@ -113,7 +116,8 @@ function I_Meetings() {
                         </Grid>
                     ))}
                 </Grid>
-                <DisplayRequest/>
+
+                <DisplayRequest />
 
                 {/* Subscription Required Modal */}
                 <Modal open={openModal} onClose={handleCloseModal}>
@@ -128,22 +132,22 @@ function I_Meetings() {
                         p: 4,
                         borderRadius: '8px'
                     }}>
-                         <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-      Subscription Required
-    </Typography>
-    <Typography variant="body1" sx={{ mb: 3 }}>
-      You need an active subscription to <Box component="span" sx={{ fontWeight: 'bold' }}>request meetings</Box>.
-    </Typography>
+                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+                            Subscription Required
+                        </Typography>
+                        <Typography variant="body1" sx={{ mb: 3 }}>
+                            You need an active subscription to <Box component="span" sx={{ fontWeight: 'bold' }}>request meetings</Box>.
+                        </Typography>
                         <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
                             <Button variant="outlined" onClick={handleCloseModal}>
                                 Cancel
                             </Button>
-                            <Button 
-                                variant="contained" 
+                            <Button
+                                variant="contained"
                                 onClick={handleSubscribe}
-                                sx={{ 
-                                    backgroundColor: '#673ab7', 
-                                    '&:hover': { backgroundColor: '#5e35b1' } 
+                                sx={{
+                                    backgroundColor: '#673ab7',
+                                    '&:hover': { backgroundColor: '#5e35b1' }
                                 }}
                             >
                                 Subscribe Now

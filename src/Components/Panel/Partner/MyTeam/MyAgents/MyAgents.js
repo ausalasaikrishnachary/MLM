@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
   Container,
-  Typography,
   Box,
   Table,
   TableBody,
@@ -18,10 +17,14 @@ import { baseurl } from '../../../../BaseURL/BaseURL';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import PaginationComponent from '../../../../Shared/Pagination'; // ✅ added
 
 const MyAgents = () => {
   const [agents, setAgents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1); // ✅ added
+  const itemsPerPage = 5; // ✅ added
+
   const navigate = useNavigate();
   const referral_id = localStorage.getItem("referral_id");
 
@@ -58,6 +61,13 @@ const MyAgents = () => {
     fetchAgents();
   }, [referral_id]);
 
+  const totalPages = Math.ceil(agents.length / itemsPerPage); // ✅ added
+  const paginatedAgents = agents.slice((page - 1) * itemsPerPage, page * itemsPerPage); // ✅ added
+
+  const handlePageChange = (event, value) => {
+    setPage(value); // ✅ added
+  };
+
   return (
     <>
       <PartnerHeader />
@@ -71,54 +81,64 @@ const MyAgents = () => {
             <CircularProgress />
           </Box>
         ) : (
-          <Table sx={{ border: '1px solid black', width: '100%', mt: 3 }}>
-            <TableHead>
-              <TableRow>
-                <TableCell sx={cellStyle}>User Name</TableCell>
-                <TableCell sx={cellStyle}>Email</TableCell>
-                <TableCell sx={cellStyle}>Phone Number</TableCell>
-                <TableCell sx={cellStyle}>Referral ID</TableCell>
-                <TableCell sx={cellStyle}>Status</TableCell>
-                <TableCell sx={cellStyle}>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {agents.length > 0 ? (
-                agents.map((agent, index) => (
-                  <TableRow key={index}>
-                    <TableCell sx={cellBodyStyle}>{agent.username}</TableCell>
-                    <TableCell sx={cellBodyStyle}>{agent.email}</TableCell>
-                    <TableCell sx={cellBodyStyle}>{agent.phone_number}</TableCell>
-                    <TableCell sx={cellBodyStyle}>{agent.referral_id || '—'}</TableCell>
-                    <TableCell sx={cellBodyStyle}>{agent.status || '—'}</TableCell>
-                    <TableCell sx={cellBodyStyle}>
-                      <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
-                        <IconButton
-                          size="small"
-                          color="primary"
-                          onClick={() => navigate(`/p-view-activeagents/${agent.user_id}`)}
-                        >
-                          <VisibilityIcon fontSize="small" />
-                        </IconButton>
-                        <IconButton size="small" color="primary">
-                          <EditIcon fontSize="small" />
-                        </IconButton>
-                        <IconButton size="small" color="error">
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
-                      </Box>
+          <>
+            <Table sx={{ border: '1px solid black', width: '100%', mt: 3 }}>
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={cellStyle}>User Name</TableCell>
+                  <TableCell sx={cellStyle}>Email</TableCell>
+                  <TableCell sx={cellStyle}>Phone Number</TableCell>
+                  <TableCell sx={cellStyle}>Referral ID</TableCell>
+                  <TableCell sx={cellStyle}>Status</TableCell>
+                  <TableCell sx={cellStyle}>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {paginatedAgents.length > 0 ? (
+                  paginatedAgents.map((agent, index) => (
+                    <TableRow key={index}>
+                      <TableCell sx={cellBodyStyle}>{agent.username}</TableCell>
+                      <TableCell sx={cellBodyStyle}>{agent.email}</TableCell>
+                      <TableCell sx={cellBodyStyle}>{agent.phone_number}</TableCell>
+                      <TableCell sx={cellBodyStyle}>{agent.referral_id || '—'}</TableCell>
+                      <TableCell sx={cellBodyStyle}>{agent.status || '—'}</TableCell>
+                      <TableCell sx={cellBodyStyle}>
+                        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
+                          <IconButton
+                            size="small"
+                            color="primary"
+                            onClick={() => navigate(`/p-view-activeagents/${agent.user_id}`)}
+                          >
+                            <VisibilityIcon fontSize="small" />
+                          </IconButton>
+                          <IconButton size="small" color="primary">
+                            <EditIcon fontSize="small" />
+                          </IconButton>
+                          <IconButton size="small" color="error">
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={6} sx={noDataStyle}>
+                      No active agents found
                     </TableCell>
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={6} sx={noDataStyle}>
-                    No active agents found
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                )}
+              </TableBody>
+            </Table>
+
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+              <PaginationComponent
+                count={totalPages}
+                page={page}
+                onChange={handlePageChange}
+              />
+            </Box>
+          </>
         )}
       </Container>
     </>
