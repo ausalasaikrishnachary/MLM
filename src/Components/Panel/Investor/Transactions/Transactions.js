@@ -394,62 +394,67 @@ const Transactions = () => {
           </Box>
         ) : (
           <>
-            <Table sx={{ border: '1px solid black', width: '100%' }}>
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={cellStyle}>Property Name</TableCell>
-                  <TableCell sx={cellStyle}>Property Value</TableCell>
-                  <TableCell sx={cellStyle}>Payment Type</TableCell>
-                  <TableCell sx={cellStyle}>Paid Amount</TableCell>
-                  <TableCell sx={cellStyle}>Remaining Amount</TableCell>
-                  <TableCell sx={cellStyle}>Transaction Date</TableCell>
-                  <TableCell sx={cellStyle}>Action</TableCell>
-                </TableRow>
-              </TableHead>
+            <Box sx={{ overflowX: 'auto' }}>
+  <Table sx={{ minWidth: 800, border: '1px solid black' }}>
+    <TableHead>
+      <TableRow>
+        <TableCell sx={cellStyle}>Property Name</TableCell>
+        <TableCell sx={cellStyle}>Property Value</TableCell>
+        <TableCell sx={cellStyle}>Payment Type</TableCell>
+        <TableCell sx={cellStyle}>Paid Amount</TableCell>
+        <TableCell sx={cellStyle}>Remaining Amount</TableCell>
+        <TableCell sx={cellStyle}>Transaction Date</TableCell>
+        <TableCell sx={cellStyle}>Action</TableCell>
+      </TableRow>
+    </TableHead>
 
-              <TableBody>
-                {paginatedTransactions.length > 0 ? (
-                  paginatedTransactions.map((transaction) => (
-                    <TableRow
-                      key={transaction.property_id}
-                      sx={{ cursor: 'pointer', '&:hover': { backgroundColor: '#f5f5f5' } }}
-                      onClick={() => navigate(`/i-transaction-details?property_id=${transaction.property_id}`)}
-                    >
-                      <TableCell sx={cellBodyStyle}>{transaction.property_name}</TableCell>
-                      <TableCell sx={cellBodyStyle}>{transaction.property_value}</TableCell>
-                      <TableCell sx={cellBodyStyle}>{transaction.payment_type}</TableCell>
-                      <TableCell sx={cellBodyStyle}>{transaction.paid_amount}</TableCell>
-                      <TableCell sx={cellBodyStyle}>{transaction.remaining_amount}</TableCell>
-                      <TableCell sx={cellBodyStyle}>
-                        {new Date(transaction.transaction_date).toLocaleDateString('en-IN')}
-                      </TableCell>
-                      <TableCell sx={cellBodyStyle}>
-                        <Button
-                          variant="contained"
-                          size="small"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(
-                              `/i-payment-form?property_id=${transaction.property_id}&transaction_id=${transaction.transaction_id}`
-                            );
-                          }}
-                          disabled={transaction.remaining_amount <= 0}
-                          sx={{ textTransform: 'none' }}
-                        >
-                          Pay Remaining
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={7} sx={noDataStyle}>
-                      No transactions found
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
+    <TableBody>
+      {paginatedTransactions.length > 0 ? (
+        paginatedTransactions.map((transaction) => (
+          <TableRow
+            key={transaction.property_id}
+            sx={{ cursor: 'pointer', '&:hover': { backgroundColor: '#f5f5f5' } }}
+            onClick={() =>
+              navigate(`/i-transaction-details?property_id=${transaction.property_id}`)
+            }
+          >
+            <TableCell sx={cellBodyStyle}>{transaction.property_name}</TableCell>
+            <TableCell sx={cellBodyStyle}>{transaction.property_value}</TableCell>
+            <TableCell sx={cellBodyStyle}>{transaction.payment_type}</TableCell>
+            <TableCell sx={cellBodyStyle}>{transaction.paid_amount}</TableCell>
+            <TableCell sx={cellBodyStyle}>{transaction.remaining_amount}</TableCell>
+            <TableCell sx={cellBodyStyle}>
+              {new Date(transaction.transaction_date).toLocaleDateString('en-IN')}
+            </TableCell>
+            <TableCell sx={cellBodyStyle}>
+              <Button
+                variant="contained"
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(
+                    `/i-payment-form?property_id=${transaction.property_id}&transaction_id=${transaction.transaction_id}`
+                  );
+                }}
+                disabled={transaction.remaining_amount <= 0}
+                sx={{ textTransform: 'none' }}
+              >
+                Pay Remaining
+              </Button>
+            </TableCell>
+          </TableRow>
+        ))
+      ) : (
+        <TableRow>
+          <TableCell colSpan={7} sx={noDataStyle}>
+            No transactions found
+          </TableCell>
+        </TableRow>
+      )}
+    </TableBody>
+  </Table>
+</Box>
+
             <Box display="flex" justifyContent="flex-end" mt={2}>
               <PaginationComponent
                 count={totalPages}

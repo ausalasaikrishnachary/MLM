@@ -241,57 +241,60 @@ const paginatedData = variantData.slice(
           </Box>
               ) : (
           <>
-            <Table sx={{ border: '1px solid black', width: '100%', mt: 3 }}>
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={cellStyle}>Plan Name</TableCell>
-                  <TableCell sx={cellStyle}>Description</TableCell>
-                  <TableCell sx={cellStyle}>Duration (Days)</TableCell>
-                  <TableCell sx={cellStyle}>Price</TableCell>
-                  <TableCell sx={cellStyle}>Action</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {variantData.length > 0 ? (
-                  paginatedData.map((variant, index) => {
-                    const plan = planDataMap[variant.plan_id] || {};
-                    const isSubscribed = subscribedVariants.includes(variant.variant_id);
-                    return (
-                      <TableRow key={index}>
-                        <TableCell sx={cellBodyStyle}>{plan.plan_name || '—'}</TableCell>
-                        <TableCell sx={cellBodyStyle}>{plan.description || '—'}</TableCell>
-                        <TableCell sx={cellBodyStyle}>{variant.duration_in_days}</TableCell>
-                        <TableCell sx={cellBodyStyle}>₹{variant.price}</TableCell>
-                        <TableCell sx={cellBodyStyle}>
-                          <Button
-                            variant="contained"
-                            size="small"
-                            onClick={() => handleBuy(variant.variant_id)}
-                            disabled={subscribedVariants.length > 0}
-                            sx={{
-                              textTransform: 'none',
-                              backgroundColor: isSubscribed ? '#4caf50' : '#1976d2',
-                              '&:disabled': {
-                                backgroundColor: '#e0e0e0',
-                                color: '#9e9e9e'
-                              },
-                            }}
-                          >
-                            {isSubscribed ? "Subscribed" : "Subscribe"}
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={5} sx={noDataStyle}>
-                      No subscription plans available
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
+           <Box sx={{ overflowX: 'auto', mt: 3 }}>
+  <Table sx={{ minWidth: 800, border: '1px solid black' }}>
+    <TableHead>
+      <TableRow>
+        <TableCell sx={cellStyle}>Plan Name</TableCell>
+        <TableCell sx={cellStyle}>Description</TableCell>
+        <TableCell sx={cellStyle}>Duration (Days)</TableCell>
+        <TableCell sx={cellStyle}>Price</TableCell>
+        <TableCell sx={cellStyle}>Action</TableCell>
+      </TableRow>
+    </TableHead>
+    <TableBody>
+      {variantData.length > 0 ? (
+        paginatedData.map((variant, index) => {
+          const plan = planDataMap[variant.plan_id] || {};
+          const isSubscribed = subscribedVariants.includes(variant.variant_id);
+          return (
+            <TableRow key={index}>
+              <TableCell sx={cellBodyStyle}>{plan.plan_name || '—'}</TableCell>
+              <TableCell sx={cellBodyStyle}>{plan.description || '—'}</TableCell>
+              <TableCell sx={cellBodyStyle}>{variant.duration_in_days}</TableCell>
+              <TableCell sx={cellBodyStyle}>₹{variant.price}</TableCell>
+              <TableCell sx={cellBodyStyle}>
+                <Button
+                  variant="contained"
+                  size="small"
+                  onClick={() => handleBuy(variant.variant_id)}
+                  disabled={subscribedVariants.length > 0}
+                  sx={{
+                    textTransform: 'none',
+                    backgroundColor: isSubscribed ? '#4caf50' : '#1976d2',
+                    '&:disabled': {
+                      backgroundColor: '#e0e0e0',
+                      color: '#9e9e9e'
+                    },
+                  }}
+                >
+                  {isSubscribed ? "Subscribed" : "Subscribe"}
+                </Button>
+              </TableCell>
+            </TableRow>
+          );
+        })
+      ) : (
+        <TableRow>
+          <TableCell colSpan={5} sx={noDataStyle}>
+            No subscription plans available
+          </TableCell>
+        </TableRow>
+      )}
+    </TableBody>
+  </Table>
+</Box>
+
 
             <Box display="flex" justifyContent="flex-end" mt={2}>
               <Pagination

@@ -53,7 +53,9 @@ function TableLayout({
       </div>
 
       {/* Horizontal scroll container */}
-      <Box sx={{ overflowX: 'auto', mt: 2, width:"1350px",marginLeft:"-9%" }}>
+      {/* <Box sx={{ overflowX: 'auto', mt: 2, width:"1350px",marginLeft:"-9%" }}> */}
+
+      <Box sx={{ overflowX: 'auto', mt: 2 }}>
         <Table sx={{ border: '1px solid black', minWidth: 800 }}>
           <TableHead>
             <TableRow>

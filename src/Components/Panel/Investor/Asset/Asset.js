@@ -74,7 +74,7 @@ const AssetsUI = () => {
   const startIndex = (page - 1) * itemsPerPage;
   const paginatedProperties = filteredProperties.slice(startIndex, startIndex + itemsPerPage);
 
-    // Report generation states
+  // Report generation states
   const [openReportDialog, setOpenReportDialog] = useState(false);
   const [openReportConfigDialog, setOpenReportConfigDialog] = useState(false);
   const [startDate, setStartDate] = useState(new Date(new Date().setMonth(new Date().getMonth() - 1)));
@@ -285,7 +285,7 @@ const AssetsUI = () => {
     return media[currentIndex]?.type === 'video';
   };
 
-    // Report generation functions
+  // Report generation functions
   const openReportConfiguration = () => {
     setOpenReportConfigDialog(true);
   };
@@ -296,7 +296,7 @@ const AssetsUI = () => {
 
   const generateReport = () => {
     let filtered = [...properties];
-    
+
     filtered = filtered.filter(property => {
       const propertyDate = new Date(property.created_at);
       return propertyDate >= startDate && propertyDate <= endDate;
@@ -306,7 +306,7 @@ const AssetsUI = () => {
       const grouped = filtered.reduce((acc, property) => {
         const date = new Date(property.created_at);
         const monthYear = `${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
-        
+
         if (!acc[monthYear]) {
           acc[monthYear] = [];
         }
@@ -326,7 +326,7 @@ const AssetsUI = () => {
       const grouped = filtered.reduce((acc, property) => {
         const date = new Date(property.created_at);
         const year = date.getFullYear().toString();
-        
+
         if (!acc[year]) {
           acc[year] = [];
         }
@@ -357,11 +357,11 @@ const AssetsUI = () => {
 
   const exportToCSV = () => {
     const activeColumns = reportColumns.filter(col => col.checked).map(col => col.id);
-    
-    let csv = activeColumns.map(col => 
+
+    let csv = activeColumns.map(col =>
       reportColumns.find(rc => rc.id === col)?.label || col
     ).join(',') + '\n';
-    
+
     reportData.forEach(group => {
       group.properties.forEach(property => {
         const row = activeColumns.map(col => {
@@ -373,13 +373,13 @@ const AssetsUI = () => {
         csv += row + '\n';
       });
     });
-    
+
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.setAttribute('hidden', '');
     a.setAttribute('href', url);
-    a.setAttribute('download', `property_report_${new Date().toISOString().slice(0,10)}.csv`);
+    a.setAttribute('download', `property_report_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -393,17 +393,17 @@ const AssetsUI = () => {
       Total Properties: ${reportData.reduce((sum, group) => sum + group.count, 0)}\n
       Total Value: ₹${reportData.reduce((sum, group) => sum + group.totalValue, 0).toLocaleString()}\n\n
       ${reportColumns.filter(col => col.checked).map(col => col.label).join(' | ')}\n
-      ${reportData.flatMap(group => 
-        group.properties.map(property => 
-          reportColumns.filter(col => col.checked).map(col => 
-            col.id === 'created_at' 
-              ? new Date(property[col.id]).toLocaleDateString() 
-              : property[col.id] || ''
-          ).join(' | ')
-        ).join('\n')
-      ).join('\n')}
+      ${reportData.flatMap(group =>
+      group.properties.map(property =>
+        reportColumns.filter(col => col.checked).map(col =>
+          col.id === 'created_at'
+            ? new Date(property[col.id]).toLocaleDateString()
+            : property[col.id] || ''
+        ).join(' | ')
+      ).join('\n')
+    ).join('\n')}
     `;
-    
+
     alert('In a real implementation, this would generate a PDF with the following content:\n\n' + pdfContent);
   };
 
@@ -442,19 +442,18 @@ const AssetsUI = () => {
               </tr>
             </thead>
             <tbody>
-              ${reportData.flatMap(group => 
-                group.properties.map(property => 
-                  `<tr>
-                    ${reportColumns.filter(col => col.checked).map(col => 
-                      `<td>${
-                        col.id === 'created_at' 
-                          ? new Date(property[col.id]).toLocaleDateString() 
-                          : property[col.id] || ''
-                      }</td>`
-                    ).join('')}
+              ${reportData.flatMap(group =>
+      group.properties.map(property =>
+        `<tr>
+                    ${reportColumns.filter(col => col.checked).map(col =>
+          `<td>${col.id === 'created_at'
+            ? new Date(property[col.id]).toLocaleDateString()
+            : property[col.id] || ''
+          }</td>`
+        ).join('')}
                   </tr>`
-                ).join('')
-              ).join('')}
+      ).join('')
+    ).join('')}
             </tbody>
           </table>
           <script>
@@ -466,30 +465,40 @@ const AssetsUI = () => {
         </body>
       </html>
     `;
-    
+
     const printWindow = window.open('', '_blank');
     printWindow.document.write(printContent);
     printWindow.document.close();
   };
 
   return (
- <>
+    <>
       <InvestorHeader />
       <Container sx={{ py: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Typography variant="h4" sx={{ textAlign: "center" }}>
+        <Box sx={{ mb: 4 }}>
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{
+              textAlign: 'center',
+            }}
+          >
             Properties
           </Typography>
-          {/* <Button 
-            variant="contained" 
-            color="secondary"
-            onClick={openReportConfiguration}
-            startIcon={<DescriptionIcon />}
-            sx={{ ml: 2 }}
-          >
-            Generate Report
-          </Button> */}
+
+          {/* Optional Button */}
+          {/* <Button
+    variant="contained"
+    color="secondary"
+    onClick={openReportConfiguration}
+    startIcon={<DescriptionIcon />}
+    sx={{ position: 'absolute', right: 0 }}
+  >
+    Generate Report
+  </Button> */}
         </Box>
+
+
 
         <Box
           sx={{
@@ -1019,7 +1028,7 @@ const AssetsUI = () => {
                         <Checkbox
                           checked={column.checked}
                           onChange={(e) => {
-                            const updatedColumns = reportColumns.map(col => 
+                            const updatedColumns = reportColumns.map(col =>
                               col.id === column.id ? { ...col, checked: e.target.checked } : col
                             );
                             setReportColumns(updatedColumns);
@@ -1081,13 +1090,13 @@ const AssetsUI = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {reportData.flatMap(group => 
+                  {reportData.flatMap(group =>
                     group.properties.map((property, idx) => (
                       <TableRow key={`${group.period}-${idx}`}>
                         {reportColumns.filter(col => col.checked).map(column => (
                           <TableCell key={`${property.id}-${column.id}`}>
-                            {column.id === 'created_at' 
-                              ? new Date(property[column.id]).toLocaleDateString() 
+                            {column.id === 'created_at'
+                              ? new Date(property[column.id]).toLocaleDateString()
                               : column.id === 'property_value'
                                 ? `₹${property[column.id]?.toLocaleString() || '-'}`
                                 : property[column.id] || '-'}

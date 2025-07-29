@@ -52,13 +52,15 @@ function DisplayRequests() {
   return (
     <>
       <InvestorHeader />
-      <TableLayout
-        title="Meeting Requests"
-        headers={headers}
-        data={data}
-        loading={loading}
-        showActions={false} // set true if you want Edit/Delete
-      />
+      <Box sx={{ mt: 4 }}>
+  <TableLayout
+    title="Meeting Requests"
+    headers={headers}
+    data={data}
+    loading={loading}
+    showActions={false}
+  />
+</Box>
 
       {/* Pagination Control */}
       <Box display="flex" justifyContent="flex-end" mt={2} mr={3}>

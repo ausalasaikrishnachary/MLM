@@ -173,7 +173,7 @@ const I_SoldProperties = () => {
             <Container sx={{ py: 4 }}>
                 <Box position="relative" mb={3} height="56px">
                     {/* Back Button aligned left */}
-                    <Box position="absolute" left={0} top={0}>
+                    {/* <Box position="absolute" left={0} top={0}>
                         <Button
                             variant="outlined"
                             startIcon={<ArrowBackIcon />}
@@ -181,7 +181,7 @@ const I_SoldProperties = () => {
                         >
                             Back
                         </Button>
-                    </Box>
+                    </Box> */}
 
                     {/* Centered Heading */}
                     <Typography variant="h4" align="center" sx={{ lineHeight: '46px' }}>
