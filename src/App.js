@@ -136,6 +136,9 @@ import I_Meetings from "./Components/Panel/Investor/Meetings/Meetings";
 import I_MeetingRequestForm from "./Components/Panel/Investor/Meetings/MeetingRequestForm";
 import AdminMeetings from "./Components/Panel/Admin/AdminMeetings/AdminMeetings";
 import TableAdminMeetings from "./Components/Panel/Admin/AdminMeetings/TableAdminMeetings";
+import CommissionLevels from "./Components/Panel/Admin/CommissionLevels/CommissionLevels";
+import AddCommissionLevels from "./Components/Panel/Admin/CommissionLevels/AddCommissionLevels";
+import EditCommissionLevels from "./Components/Panel/Admin/CommissionLevels/EditCommissionLevels";
 
 
 
@@ -230,6 +233,9 @@ function Layout() {
           <Route path="/a-Inactiveagents" element={<InactiveAgents />} />
           <Route path="/a-Newproperties" element={<NewProperties />} />
           <Route path="/a-transactionsummary" element={<TransactionSummary />} />
+          <Route path="/a-commissionmaster" element={<CommissionLevels />} />
+          <Route path="/a-add-commissionmaster" element={<AddCommissionLevels />} />
+          <Route path="/a-edit-commissionmaster/:id" element={<EditCommissionLevels />} />
 
 
           <Route path="/i-dashboard" element={<InvestorDashboard />} />

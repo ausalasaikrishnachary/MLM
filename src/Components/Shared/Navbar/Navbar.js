@@ -44,6 +44,7 @@ export default function Header() {
         { label: 'Booking Slab', path: '/a-bookingslab' },
         { label: 'Training Material', path: '/a-trainingmaterial' },
         { label: 'Transaction', path: '/a-transactionsummary' },
+        { label: 'Commission Master', path: '/a-commissionmaster' },
       ]
     },
     { label: 'Meetings', path: '/a-meetings' },
