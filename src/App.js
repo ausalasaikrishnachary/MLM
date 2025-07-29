@@ -139,6 +139,7 @@ import TableAdminMeetings from "./Components/Panel/Admin/AdminMeetings/TableAdmi
 import CommissionLevels from "./Components/Panel/Admin/CommissionLevels/CommissionLevels";
 import AddCommissionLevels from "./Components/Panel/Admin/CommissionLevels/AddCommissionLevels";
 import EditCommissionLevels from "./Components/Panel/Admin/CommissionLevels/EditCommissionLevels";
+import Category from "./Components/Panel/Admin/Category/Category";
 
 
 
@@ -236,6 +237,7 @@ function Layout() {
           <Route path="/a-commissionmaster" element={<CommissionLevels />} />
           <Route path="/a-add-commissionmaster" element={<AddCommissionLevels />} />
           <Route path="/a-edit-commissionmaster/:id" element={<EditCommissionLevels />} />
+          <Route path="/a-category" element={<Category />} />
 
 
           <Route path="/i-dashboard" element={<InvestorDashboard />} />

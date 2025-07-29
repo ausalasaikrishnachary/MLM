@@ -495,7 +495,7 @@ const AddPropertyForm = () => {
             />
           </Grid>
 
-          <Grid item xs={12} md={5} sm={6}>
+          <Grid item xs={12} md={6} sm={6}>
             <FormControl fullWidth>
               <InputLabel>Property Category</InputLabel>
               <Select
@@ -519,11 +519,6 @@ const AddPropertyForm = () => {
               </Select>
             </FormControl>
           </Grid>
-          <MenuItem>
-            <IconButton md={1} onClick={handleAddCategory} color="primary">
-              <AddIcon />
-            </IconButton>
-          </MenuItem>
 
           {/* Dialog for adding a new category */}
           <Dialog open={openDialogs} onClose={handleDialogClose}>
@@ -549,7 +544,7 @@ const AddPropertyForm = () => {
             </DialogActions>
           </Dialog>
 
-          <Grid item xs={12} md={5} sm={6}>
+          <Grid item xs={12} md={6} sm={6}>
             <FormControl fullWidth>
               <InputLabel>Property Type</InputLabel>
               <Select
@@ -564,7 +559,7 @@ const AddPropertyForm = () => {
                 }}
                 label="Property Type"
                 disabled={!formData.category}
-                displayEmpty
+                
               >
                 <MenuItem value="" disabled></MenuItem>
                 {propertyTypes.map((type) => (
@@ -575,14 +570,7 @@ const AddPropertyForm = () => {
               </Select>
             </FormControl>
           </Grid>
-          {/* Add Icon Button for opening the dialog */}
-          <IconButton
-            onClick={() => setOpenDialog(true)}
-            color="primary"
-            sx={{ marginLeft: 2 }}
-          >
-            <AddIcon />
-          </IconButton>
+
 
           <Dialog open={openDialog} onClose={handleDialogClose}>
             <DialogTitle>Add Property Type</DialogTitle>

@@ -8,7 +8,7 @@ import Logo from '../../../Images/logo.png';
 import Divider from '@mui/material/Divider';
 import { Container, Navbar, Nav, Row, Col, Form, } from 'react-bootstrap';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFacebookF, faTwitter, faLinkedinIn, faInstagram } from '@fortawesome/free-brands-svg-icons';
+import { faFacebookF, faTwitter, faLinkedinIn, faInstagram, faYoutube } from '@fortawesome/free-brands-svg-icons';
 
 function Footer() {
   return (
@@ -26,15 +26,15 @@ function Footer() {
                 width: 'auto',
                 maxWidth: '150px',
                 transform: 'scale(2.0)',
-                marginLeft:"25px",
+                marginLeft: "25px",
               }}
             />
             <p className="mt-4">Premium commercial real estate investments for discerning investors. Discover exceptional opportunities in prime locations nationwide.</p>
             <div className="social-links mt-3">
-              <a href="#"><FontAwesomeIcon icon={faFacebookF} /></a>
-              <a href="#"><FontAwesomeIcon icon={faTwitter} /></a>
-              <a href="#"><FontAwesomeIcon icon={faLinkedinIn} /></a>
-              <a href="#"><FontAwesomeIcon icon={faInstagram} /></a>
+              <a href="https://www.facebook.com/shrirajteam/"><FontAwesomeIcon icon={faFacebookF} /></a>
+              <a href="https://x.com/shrirajteam"><FontAwesomeIcon icon={faTwitter} /></a>
+              <a href="https://www.youtube.com/@Shrirajteam"><FontAwesomeIcon icon={faYoutube} /></a>
+              <a href="https://www.instagram.com/shrirajteam?igsh=YzhjcjVuMGIxZzJq"><FontAwesomeIcon icon={faInstagram} /></a>
             </div>
           </Col>
           <Col md={2} className="mb-4 mb-md-0">
@@ -61,7 +61,7 @@ function Footer() {
               </ul>
             </div>
           </Col>
-          <Col md={4}>
+          {/* <Col md={4}>
             <div className="footer-links">
               <h5>Newsletter</h5>
               <p>Subscribe to our newsletter for the latest property listings and market insights.</p>
@@ -102,7 +102,14 @@ function Footer() {
                 </table>
               </Form>
             </div>
+          </Col> */}
+          <Col md={4}>
+            <div className="footer-links">
+              <h5>Why Choose Us</h5>
+              <p>Trusted by thousands, we offer verified listings, expert advice, and end-to-end property solutions.</p>
+            </div>
           </Col>
+
         </Row>
         <hr className="mt-4 mb-4 footer-divider" />
         <Row>

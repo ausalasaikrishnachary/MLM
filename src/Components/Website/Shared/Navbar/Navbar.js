@@ -63,6 +63,7 @@ const navigate = useNavigate();
   };
 
   const navItems = [
+    { label: 'Home', path: '/' },
     { label: 'How it works', path: '/aboutus' },
     { 
     label: 'Properties',
