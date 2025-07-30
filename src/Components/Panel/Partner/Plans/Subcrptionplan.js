@@ -14,6 +14,7 @@ import {
 import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
 
 const Subcrptionplan = () => {
+  const [selectedValue, setSelectedValue] = useState('Advanced_1 Month');
   const [selectedPlan, setSelectedPlan] = useState({
     name: 'Advanced',
     duration: '1 Month',
@@ -21,6 +22,7 @@ const Subcrptionplan = () => {
   });
 
   const handleSelection = (name, duration, price) => {
+    setSelectedValue(`${name}_${duration}`);
     setSelectedPlan({ name, duration, price });
   };
 
@@ -95,21 +97,26 @@ const Subcrptionplan = () => {
                     {plan.description}
                   </Typography>
 
-                  <RadioGroup>
-                    {plan.options.map((opt) => (
-                      <FormControlLabel
-                        key={opt.duration}
-                        value={opt.duration}
-                        control={<Radio />}
-                        onClick={() => handleSelection(plan.name, opt.duration, opt.price)}
-                        label={
-                          <Box>
-                            <Typography variant="body2">{opt.duration}</Typography>
-                            <Typography variant="caption">{opt.perMonth}</Typography>
-                          </Box>
-                        }
-                      />
-                    ))}
+                  <RadioGroup value={selectedValue}>
+                    {plan.options.map((opt) => {
+                      const optionValue = `${plan.name}_${opt.duration}`;
+                      return (
+                        <FormControlLabel
+                          key={opt.duration}
+                          value={optionValue}
+                          control={<Radio />}
+                          onClick={() =>
+                            handleSelection(plan.name, opt.duration, opt.price)
+                          }
+                          label={
+                            <Box>
+                              <Typography variant="body2">{opt.duration}</Typography>
+                              <Typography variant="caption">{opt.perMonth}</Typography>
+                            </Box>
+                          }
+                        />
+                      );
+                    })}
                   </RadioGroup>
                 </CardContent>
               </Card>

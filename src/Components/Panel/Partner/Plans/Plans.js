@@ -3,61 +3,44 @@ import {
   Container,
   Typography,
   Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
   Box,
   CircularProgress,
+  Grid,
+  Card,
+  CardContent,
+  Divider,
+  Radio,
+  RadioGroup,
+  FormControlLabel
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import Header from "../../../Shared/Partner/PartnerNavbar";
 import { baseurl } from '../../../BaseURL/BaseURL';
 import Swal from 'sweetalert2';
-import { useSearchParams } from 'react-router-dom';
 
 function PartnerPlans() {
   const [variantData, setVariantData] = useState([]);
   const [planDataMap, setPlanDataMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [subscribedVariants, setSubscribedVariants] = useState([]);
-  const navigate = useNavigate();
+  const [selectedVariantId, setSelectedVariantId] = useState(null);
+
   const userId = localStorage.getItem("user_id");
-
-  const cellStyle = {
-    fontWeight: 'bold',
-    textAlign: 'center',
-    border: '1px solid #000',
-    backgroundColor: '#f0f0f0',
-  };
-
-  const cellBodyStyle = {
-    textAlign: 'center',
-    border: '1px solid #000',
-  };
-
-  const noDataStyle = {
-    textAlign: 'center',
-    border: '1px solid #000',
-    padding: 2,
-  };
+  const hasPostedStatus = useRef(false);
 
   const fetchUserSubscription = async () => {
-  try {
-    const res = await fetch(`${baseurl}/user-subscriptions/user-id/${userId}/`);
-    if (res.ok) {
-      const data = await res.json();
-
-      // If the user has an active (paid) subscription
-      if (data[0]?.latest_status === "paid" && data[1]?.subscription_variant) {
-        setSubscribedVariants([Number(data[1].subscription_variant)]);
+    try {
+      const res = await fetch(`${baseurl}/user-subscriptions/user-id/${userId}/`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data[0]?.latest_status === "paid" && data[1]?.subscription_variant) {
+          setSubscribedVariants([Number(data[1].subscription_variant)]);
+        }
       }
+    } catch (err) {
+      console.error("Error fetching user subscription:", err);
     }
-  } catch (err) {
-    console.error("Error fetching user subscription:", err);
-  }
-};
+  };
 
   useEffect(() => {
     const fetchVariantsAndPlans = async () => {
@@ -80,6 +63,7 @@ function PartnerPlans() {
             }
           })
         );
+
         setPlanDataMap(plansMap);
       } catch (error) {
         console.error('Error fetching variant data:', error);
@@ -91,7 +75,50 @@ function PartnerPlans() {
     fetchVariantsAndPlans();
   }, []);
 
-  const handleBuy = async (variant) => {
+  useEffect(() => {
+    const merchant_order_id = localStorage.getItem("merchant_order_id");
+    const variant_id = localStorage.getItem("variant_id");
+
+    const updatePaymentStatus = async () => {
+      if (hasPostedStatus.current || !userId || !merchant_order_id || !variant_id) return;
+
+      try {
+        hasPostedStatus.current = true;
+
+        await fetch(`${baseurl}/subscription/confirm-payment/`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id: Number(userId),
+            variant_id: Number(variant_id),
+            merchant_order_id
+          })
+        });
+
+        localStorage.removeItem("merchant_order_id");
+        localStorage.removeItem("variant_id");
+        fetchUserSubscription();
+      } catch (err) {
+        console.error("Error sending payment status:", err);
+        hasPostedStatus.current = false;
+      }
+    };
+
+    updatePaymentStatus();
+  }, [userId]);
+
+  useEffect(() => {
+    if (userId) {
+      fetchUserSubscription();
+    }
+  }, [userId]);
+
+  const handleBuy = async () => {
+    if (!selectedVariantId) {
+      Swal.fire("Please select a plan", "Choose a subscription variant to continue.", "warning");
+      return;
+    }
+
     const confirmResult = await Swal.fire({
       title: "Are you sure?",
       text: "Do you want to subscribe to this plan?",
@@ -106,13 +133,11 @@ function PartnerPlans() {
     try {
       const initiateRes = await fetch(`${baseurl}/subscription/initiate-payment/`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           user_id: Number(userId),
-          variant_id: variant,
-          redirect_url: "https://shrirajteam.com/p-plans" // redirect back here after payment
+          variant_id: selectedVariantId,
+          redirect_url: "https://shrirajteam.com/p-plans"
         })
       });
 
@@ -121,137 +146,95 @@ function PartnerPlans() {
       const initiateData = await initiateRes.json();
       const { payment_url, merchant_order_id } = initiateData;
 
-      // 👉 Save merchant_order_id in localStorage or append in redirect_url
       localStorage.setItem("merchant_order_id", merchant_order_id);
-      localStorage.setItem("variant_id", variant);
+      localStorage.setItem("variant_id", selectedVariantId);
 
-      // 👉 Now redirect to payment page
       window.location.href = payment_url;
-
     } catch (error) {
       console.error('Subscription process failed:', error);
       Swal.fire("Error", "Something went wrong while processing your subscription.", "error");
     }
   };
 
-  const hasPostedStatus = useRef(false); // flag to prevent duplicate calls
-
-  useEffect(() => {
-    const userId = localStorage.getItem("user_id");
-    const merchant_order_id = localStorage.getItem("merchant_order_id");
-    const variant_id = localStorage.getItem("variant_id");
-
-    const updatePaymentStatus = async () => {
-      if (
-        hasPostedStatus.current || // already posted
-        !userId || !merchant_order_id || !variant_id
-      ) return;
-
-      try {
-        hasPostedStatus.current = true; // set flag before making the request
-
-        await fetch(`${baseurl}/subscription/confirm-payment/`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            user_id: Number(userId),
-            variant_id: Number(variant_id),
-            merchant_order_id
-          })
-        });
-
-        // Clean up storage to avoid future duplicates
-        localStorage.removeItem("merchant_order_id");
-        localStorage.removeItem("variant_id");
-
-         // ✅ REFRESH subscription status
-      fetchUserSubscription();
-
-      } catch (err) {
-        console.error("Error sending payment status:", err);
-        hasPostedStatus.current = false; // allow retry if it failed
-      }
-    };
-
-    updatePaymentStatus();
-  }, []);
-
-useEffect(() => {
-  if (userId) {
-    fetchUserSubscription();
-  }
-}, [userId]);
+  const groupedVariants = variantData.reduce((acc, variant) => {
+    const planId = variant.plan_id;
+    if (!acc[planId]) acc[planId] = [];
+    acc[planId].push(variant);
+    return acc;
+  }, {});
 
   return (
     <>
       <Header />
-      <Container>
-        <div style={{ textAlign: 'center', marginTop: "12%" }}>
-          <h2 style={{ fontWeight: 'bold' }}>Subscription Plan Variants</h2>
-        </div>
+      <Grid container spacing={3} mt={2}>
+  {Object.entries(groupedVariants).map(([planId, variants], index) => {
+    const plan = planDataMap[planId];
+    const cardHasRadio = index === 0 || index === 1;
 
-        {loading ? (
-          <Box display="flex" justifyContent="center" mt={5}>
-            <CircularProgress />
-          </Box>
-        ) : (
-          <Table sx={{ border: '1px solid black', width: '100%', mt: 3 }}>
-            <TableHead>
-              <TableRow>
-                <TableCell sx={cellStyle}>Plan Name</TableCell>
-                <TableCell sx={cellStyle}>Description</TableCell>
-                <TableCell sx={cellStyle}>Duration (Days)</TableCell>
-                <TableCell sx={cellStyle}>Price</TableCell>
-                <TableCell sx={cellStyle}>Action</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {variantData.length > 0 ? (
-                variantData.map((variant, index) => {
-                  const plan = planDataMap[variant.plan_id] || {};
-                  const isSubscribed = subscribedVariants.includes(variant.variant_id);
-                  console.log("id",variant.variant_id)
-                  return (
-                    <TableRow key={index}>
-                      <TableCell sx={cellBodyStyle}>{plan.plan_name || '—'}</TableCell>
-                      <TableCell sx={cellBodyStyle}>{plan.description || '—'}</TableCell>
-                      <TableCell sx={cellBodyStyle}>{variant.duration_in_days}</TableCell>
-                      <TableCell sx={cellBodyStyle}>₹{variant.price}</TableCell>
-                      <TableCell sx={cellBodyStyle}>
-                        <Button
-                          variant="contained"
-                          size="small"
-                          onClick={() => handleBuy(variant.variant_id)}
-                          // disabled={isSubscribed}
-                          disabled={subscribedVariants.length > 0}
-                          sx={{
-                            textTransform: 'none',
-                            backgroundColor: isSubscribed ? '#4caf50' : '#1976d2',
-                            '&:disabled': {
-                              backgroundColor: '#e0e0e0',
-                              color: '#9e9e9e'
-                            },
-                          }}
-                        >
-                          {isSubscribed ? "Subscribed" : "Subscribe"}
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={5} sx={noDataStyle}>
-                    No subscription plans available
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        )}
-      </Container>
+    return (
+      <Grid item xs={12} md={6} lg={4} key={planId}>
+        <Card elevation={4} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <CardContent sx={{ flexGrow: 1 }}>
+            <Typography variant="h6" gutterBottom>{plan?.plan_name || "Unnamed Plan"}</Typography>
+            <Typography variant="body2" gutterBottom>{plan?.description || "No description"}</Typography>
+            <Divider sx={{ my: 2 }} />
+
+            {cardHasRadio ? (
+              <RadioGroup
+                value={selectedVariantId}
+                onChange={(e) => setSelectedVariantId(Number(e.target.value))}
+              >
+                {variants.map((variant) => (
+                  <FormControlLabel
+                    key={variant.variant_id}
+                    value={variant.variant_id}
+                    control={<Radio />}
+                    label={`₹${variant.price} for ${variant.duration_in_days} days`}
+                    disabled={subscribedVariants.includes(variant.variant_id)}
+                  />
+                ))}
+              </RadioGroup>
+            ) : (
+              variants.map((variant) => (
+                <Box key={variant.variant_id} mb={1}>
+                  <Typography variant="body2">
+                    <strong>₹{variant.price}</strong> for {variant.duration_in_days} days
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    color={subscribedVariants.includes(variant.variant_id) ? "success.main" : "text.secondary"}
+                  >
+                    {subscribedVariants.includes(variant.variant_id) ? "Already Subscribed" : ""}
+                  </Typography>
+                </Box>
+              ))
+            )}
+          </CardContent>
+
+          {cardHasRadio && (
+            <Box px={2} pb={2}>
+              <Button
+                fullWidth
+                variant="contained"
+                size="small"
+                disabled={
+                  !selectedVariantId ||
+                  !variants.find(v => v.variant_id === selectedVariantId) ||
+                  subscribedVariants.includes(selectedVariantId)
+                }
+                onClick={() => handleBuy(selectedVariantId)}
+                sx={{ textTransform: 'none', borderRadius: 2 }}
+              >
+                Subscribe
+              </Button>
+            </Box>
+          )}
+        </Card>
+      </Grid>
+    );
+  })}
+</Grid>
+
     </>
   );
 }
