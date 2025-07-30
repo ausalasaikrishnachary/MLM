@@ -140,6 +140,7 @@ import CommissionLevels from "./Components/Panel/Admin/CommissionLevels/Commissi
 import AddCommissionLevels from "./Components/Panel/Admin/CommissionLevels/AddCommissionLevels";
 import EditCommissionLevels from "./Components/Panel/Admin/CommissionLevels/EditCommissionLevels";
 import Category from "./Components/Panel/Admin/Category/Category";
+import Subcrptionplan from "./Components/Panel/Partner/Plans/Subcrptionplan";
 
 
 
@@ -302,6 +303,7 @@ function Layout() {
           <Route path="/p-soldassets" element={<SoldProperties />} />
           <Route path="/p-listingassets" element={<ListingProperties />} />
           <Route path="/p-latestProperties" element={<LatestProperties />} />
+          <Route path="/subscriptionplans" element={<Subcrptionplan/>} />
 
 
           <Route path="/termsandconditions" element={<Termsandconditions />} />
