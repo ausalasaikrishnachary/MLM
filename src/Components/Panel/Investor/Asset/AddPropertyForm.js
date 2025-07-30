@@ -50,12 +50,16 @@ const VisuallyHiddenInput = styled('input')({
 
 const AddPropertyForm = () => {
   const [activeStep, setActiveStep] = useState(0);
-  const [propertyCategories, setPropertyCategories] = useState([]);
+  const [propertyCategories, setPropertyCategories] = useState([]); 
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [amenities, setAmenities] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const userId = localStorage.getItem('user_id');
+    const [errors, setErrors] = useState({
+      description: false,
+      // ...other error states if needed
+    });
 
   // Form State
   const [formData, setFormData] = useState({
@@ -154,6 +158,11 @@ const AddPropertyForm = () => {
     }
   }, [formData.category]);
 
+    const validateDescription = (value) => {
+  // Regex: Must contain at least one letter and one number
+  const regex = /^(?=.*[a-zA-Z])(?=.*[0-9])/;
+  return regex.test(value);
+};
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -161,6 +170,13 @@ const AddPropertyForm = () => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
+
+     if (name === "description") {
+    setErrors(prev => ({
+      ...prev,
+      description: !validateDescription(value),
+    }));
+  }
   };
 
   const handleFileUpload = async (e, type) => {
@@ -330,6 +346,84 @@ const AddPropertyForm = () => {
     }
   };
 
+   const validateStep = (step) => {
+  switch (step) {
+    case 0: // Basic Details
+      return (
+        formData.lookingTo &&
+        formData.propertyTitle?.trim() &&
+        formData.category &&
+        formData.propertyType &&
+         formData.description?.trim() &&
+        !errors.description // Ensure description is valid
+      );
+
+    case 1: // Location Details
+      return (
+        formData.address?.trim() &&
+        formData.city?.trim() &&
+        formData.state?.trim() &&
+        formData.country?.trim() &&
+        formData.pinCode?.trim() &&
+        formData.latitude !== undefined &&
+        formData.longitude !== undefined
+      );
+
+    case 2: // Property Details
+      const basicPropertyValid = (
+        formData.plotArea &&
+        formData.areaUnit &&
+        formData.length &&
+        formData.breadth &&
+        formData.builtupArea &&
+        formData.facing &&
+        formData.ownershipType
+      );
+
+      // Additional validation for residential properties if shown
+      const residentialValid = !showResidentialFields || (
+        formData.numberOfFloors &&
+        formData.numberOfBedrooms &&
+        formData.numberOfBathrooms &&
+        formData.furnishing_status
+      );
+
+      // Road width validation based on number of roads
+      const roadsValid = (
+        formData.numberOfRoads === 0 || (
+          (formData.numberOfRoads >= 1 && formData.roadWidth1) &&
+          (formData.numberOfRoads < 2 || formData.roadWidth2)
+        )
+      );
+
+      return basicPropertyValid && residentialValid && roadsValid;
+
+    case 3: // Media Upload
+      // At least one image is required
+      return formData.images.length > 0;
+
+    case 4: // Pricing & Contact
+      if (formData.lookingTo === 'sell') {
+        return (
+          formData.price !== undefined &&
+          formData.company_commission !== undefined &&
+          formData.ownerName?.trim() &&
+          formData.ownerContact?.trim()
+        );
+      } else { // rent
+        return (
+          formData.rent_amount !== undefined &&
+          formData.deposit_amount !== undefined &&
+          formData.ownerName?.trim() &&
+          formData.ownerContact?.trim()
+        );
+      }
+
+    default:
+      return false;
+  }
+};
+
   const renderStepContent = () => {
     switch (activeStep) {
       case 0: return (
@@ -431,18 +525,23 @@ const AddPropertyForm = () => {
               </Select>
             </FormControl>
           </Grid> */}
-
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              multiline
-              rows={4}
-              label="Description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-            />
-          </Grid>
+ <Grid item xs={12}>
+           <TextField
+             fullWidth
+             multiline
+             rows={4}
+             label="Description"
+             name="description"
+             value={formData.description}
+             onChange={handleChange}
+             error={errors.description}
+             helperText={
+               errors.description 
+                 ? "Description must contain both letters and numbers." 
+                 : ""
+             }
+           />
+         </Grid>
         </Grid>
       );
 
@@ -1117,8 +1216,9 @@ const AddPropertyForm = () => {
             ) : (
               <Button
                 variant="contained"
-                onClick={() => setActiveStep(prev => prev + 1)}
-              >
+                                           onClick={() => setActiveStep(prev => prev + 1)}
+  disabled={!validateStep(activeStep)}
+>
                 Next
               </Button>
             )}

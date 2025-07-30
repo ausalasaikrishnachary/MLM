@@ -516,9 +516,9 @@ const AddPropertyForm = () => {
 
       // Additional validation for residential properties if shown
       const residentialValid = !showResidentialFields || (
-        formData.numberOfFloors !== undefined &&
-        formData.numberOfBedrooms !== undefined &&
-        formData.numberOfBathrooms !== undefined &&
+        formData.numberOfFloors &&
+        formData.numberOfBedrooms &&
+        formData.numberOfBathrooms &&
         formData.furnishing_status
       );
 
