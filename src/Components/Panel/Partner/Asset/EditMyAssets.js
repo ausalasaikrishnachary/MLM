@@ -33,7 +33,8 @@ const EditAsset = () => {
     owner_contact: '',
     owner_email: '',
     images: [],
-    amenities: [],
+    // amenities: [],
+    facing: '',
   });
 
   const [existingImages, setExistingImages] = useState([]);
@@ -179,7 +180,7 @@ const EditAsset = () => {
     { name: 'owner_contact', label: 'Owner Contact' },
     { name: 'owner_email', label: 'Owner Email' },
     { name: 'address', label: 'Address', multiline: true},
-    { name: 'amenities', label: 'Amenities', multiline: true},
+    { name: 'facing', label: 'facing', multiline: true},
      { name: 'property_value', label: 'Property Value' },
     { name: 'agent_commission', label: 'Agent Commission' },
     { name: 'company_commission', label: 'Company Commission' },

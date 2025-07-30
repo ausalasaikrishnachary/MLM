@@ -43,28 +43,6 @@ function PartnerPlans() {
     padding: 2,
   };
 
-  // useEffect(() => {
-  //   const fetchUserSubscription = async () => {
-  //     try {
-  //       const res = await fetch(`${baseurl}/user-subscriptions/user-id/${userId}/`);
-  //       if (res.ok) {
-  //         const data = await res.json();
-
-  //         // If the user has an active (paid) subscription
-  //         if (data[0]?.latest_status === "paid" && data[1]?.subscription_variant) {
-  //           setSubscribedVariants([Number(data[1].subscription_variant)]);
-  //         }
-  //       }
-  //     } catch (err) {
-  //       console.error("Error fetching user subscription:", err);
-  //     }
-  //   };
-
-  //   if (userId) {
-  //     fetchUserSubscription();
-  //   }
-  // }, [userId]);
-
   const fetchUserSubscription = async () => {
   try {
     const res = await fetch(`${baseurl}/user-subscriptions/user-id/${userId}/`);
@@ -80,7 +58,6 @@ function PartnerPlans() {
     console.error("Error fetching user subscription:", err);
   }
 };
-
 
   useEffect(() => {
     const fetchVariantsAndPlans = async () => {
@@ -236,7 +213,6 @@ useEffect(() => {
                   const plan = planDataMap[variant.plan_id] || {};
                   const isSubscribed = subscribedVariants.includes(variant.variant_id);
                   console.log("id",variant.variant_id)
-
                   return (
                     <TableRow key={index}>
                       <TableCell sx={cellBodyStyle}>{plan.plan_name || '—'}</TableCell>
@@ -261,10 +237,6 @@ useEffect(() => {
                         >
                           {isSubscribed ? "Subscribed" : "Subscribe"}
                         </Button>
-
-
-
-
                       </TableCell>
                     </TableRow>
                   );
