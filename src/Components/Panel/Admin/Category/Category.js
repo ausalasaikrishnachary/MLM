@@ -11,6 +11,7 @@ import {
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import Header from "../../../Shared/Navbar/Navbar";
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 function Category() {
   const [categoryName, setCategoryName] = useState('');
@@ -18,8 +19,8 @@ function Category() {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [allCategories, setAllCategories] = useState([]);
 
-  const CATEGORY_URL = 'https://shrirajteam.com:81/property-categories/';
-  const TYPE_URL = 'https://shrirajteam.com:81/property-types/';
+  const CATEGORY_URL = `${baseurl}/property-categories/`;
+  const TYPE_URL = `${baseurl}/property-types/`;
 
   // Fetch all categories on mount
   useEffect(() => {
