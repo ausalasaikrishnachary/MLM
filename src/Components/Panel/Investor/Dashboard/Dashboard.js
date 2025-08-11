@@ -80,7 +80,7 @@
 //     <>
 //       <InvestorHeader />
 //       <Box
-        
+
 //       >
 //         <Container>
 //           {/* Page Title */}
@@ -301,6 +301,7 @@ import InvestorHeader from '../../../Shared/Investor/InvestorNavbar';
 import { baseurl } from '../../../BaseURL/BaseURL';
 import { useNavigate } from "react-router-dom";
 
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -463,26 +464,49 @@ const AgentDashboard = () => {
       <InvestorHeader />
       <Container maxWidth="xl" sx={{ py: 4 }}>
         {/* Header */}
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" gutterBottom sx={{textAlign:"center"}}>
-           Dashboard
+        <Box sx={{ mb: 4, display: "flex", justifyContent: "center" }}>
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{
+              fontWeight: "bold",
+              color: "primary.main",
+              letterSpacing: 1,
+              position: "relative",
+              display: "inline-block",
+              '&::after': {
+                content: '""',
+                display: 'block',
+                width: '60%',
+                height: '4px',
+                backgroundColor: 'primary.main',
+                margin: '8px auto 0',
+                borderRadius: '2px',
+              },
+            }}
+          >
+            Dashboard
           </Typography>
         </Box>
 
-        {/* First Row - 4 Cards */}
-        <Grid container spacing={3} sx={{ mb: 3 }}>
+        {/* Summary Cards with Gradient UI */}
+        <Grid container spacing={3} sx={{ mb: 4 }}>
           {/* Listing Properties */}
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid item xs={12} sm={6} md={4} lg={2.4}>
             <Link to="/i-listingassets" style={{ textDecoration: 'none' }}>
-              <Card sx={{
-                borderRadius: "15px",
-                boxShadow: 3,
-                transition: 'transform 0.3s',
-                '&:hover': { transform: 'translateY(-5px)' },
-                cursor: 'pointer'
-              }}>
+              <Card
+                sx={{
+                  borderRadius: 3,
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  color: '#fff',
+                  boxShadow: 4,
+                  transition: 'transform 0.3s',
+                  '&:hover': { transform: 'translateY(-5px)' },
+                  cursor: 'pointer',
+                }}
+              >
                 <CardContent sx={{ textAlign: 'center' }}>
-                  <FontAwesomeIcon icon={faBuilding} size="2x" color="#666" />
+                  <FontAwesomeIcon icon={faBuilding} size="2x" color="#fff" />
                   <Typography sx={{ mt: 1 }}>Listing Properties</Typography>
                   <Typography variant="h4" sx={{ my: 1 }}>{property?.total_properties ?? 0}</Typography>
                 </CardContent>
@@ -491,17 +515,21 @@ const AgentDashboard = () => {
           </Grid>
 
           {/* Latest Properties */}
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid item xs={12} sm={6} md={4} lg={2.4}>
             <Link to="/i-latestProperties" style={{ textDecoration: 'none' }}>
-              <Card sx={{
-                borderRadius: "15px",
-                boxShadow: 3,
-                transition: 'transform 0.3s',
-                '&:hover': { transform: 'translateY(-5px)' },
-                cursor: 'pointer'
-              }}>
+              <Card
+                sx={{
+                  borderRadius: 3,
+                  background: 'linear-gradient(135deg, #d8e943ff 0%, #38f6f9ff 100%)',
+                  color: '#fff',
+                  boxShadow: 4,
+                  transition: 'transform 0.3s',
+                  '&:hover': { transform: 'translateY(-5px)' },
+                  cursor: 'pointer',
+                }}
+              >
                 <CardContent sx={{ textAlign: 'center' }}>
-                  <FontAwesomeIcon icon={faHome} size="2x" color="#666" />
+                  <FontAwesomeIcon icon={faHome} size="2x" color="#fff" />
                   <Typography sx={{ mt: 1 }}>Latest Properties</Typography>
                   <Typography variant="h4" sx={{ my: 1 }}>{property?.total_latest_properties ?? 0}</Typography>
                 </CardContent>
@@ -510,31 +538,35 @@ const AgentDashboard = () => {
           </Grid>
 
           {/* Bookings */}
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid item xs={12} sm={6} md={4} lg={2.4}>
             <Card
               sx={{
-                borderRadius: "15px",
-                boxShadow: 3,
+                borderRadius: 3,
+                background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+                color: '#fff',
+                boxShadow: 4,
                 cursor: 'pointer',
                 transition: 'transform 0.2s',
                 '&:hover': { transform: 'translateY(-4px)' },
               }}
               onClick={() => navigate('/i-bookedassets')}
             >
-              <CardContent sx={{ textAlign: 'center' }}> 
-                <FontAwesomeIcon icon={faUserPlus} size="2x" color="#666" />
+              <CardContent sx={{ textAlign: 'center' }}>
+                <FontAwesomeIcon icon={faUserPlus} size="2x" color="#fff" />
                 <Typography sx={{ mt: 1 }}>Bookings</Typography>
-                <Typography variant="h4" sx={{ my: 1 }} >{transactionSummary?.bookings?.properties?.count ?? 0}</Typography>
+                <Typography variant="h4" sx={{ my: 1 }}>{transactionSummary?.bookings?.properties?.count ?? 0}</Typography>
               </CardContent>
             </Card>
           </Grid>
 
           {/* Purchased */}
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid item xs={12} sm={6} md={4} lg={2.4}>
             <Card
               sx={{
-                borderRadius: "15px",
-                boxShadow: 3,
+                borderRadius: 3,
+                background: 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
+                color: '#fff',
+                boxShadow: 4,
                 cursor: 'pointer',
                 transition: 'transform 0.2s',
                 '&:hover': { transform: 'translateY(-4px)' },
@@ -542,21 +574,21 @@ const AgentDashboard = () => {
               onClick={() => navigate('/i-purchasedassets')}
             >
               <CardContent sx={{ textAlign: 'center' }}>
-                <FontAwesomeIcon icon={faTags} size="2x" color="#666" />
+                <FontAwesomeIcon icon={faTags} size="2x" color="#fff" />
                 <Typography sx={{ mt: 1 }}>Purchased</Typography>
-                <Typography variant="h4" sx={{ my: 1 }} >{transactionSummary?.purchased?.properties?.count ?? 0}</Typography>
+                <Typography variant="h4" sx={{ my: 1 }}>{transactionSummary?.purchased?.properties?.count ?? 0}</Typography>
               </CardContent>
             </Card>
           </Grid>
-        </Grid>
 
-        {/* Second Row - Sold Card */}
-        <Grid container spacing={3} sx={{ mb: 3 }}>
-          <Grid item xs={12} sm={6} md={3}>
+          {/* Sold */}
+          <Grid item xs={12} sm={6} md={4} lg={2.4}>
             <Card
               sx={{
-                borderRadius: "15px",
-                boxShadow: 3,
+                borderRadius: 3,
+                background: 'linear-gradient(135deg, #f6d365 0%, #fda085 100%)',
+                color: '#fff',
+                boxShadow: 4,
                 cursor: 'pointer',
                 transition: 'transform 0.2s',
                 '&:hover': { transform: 'translateY(-4px)' },
@@ -564,18 +596,49 @@ const AgentDashboard = () => {
               onClick={() => navigate('/i-soldassets')}
             >
               <CardContent sx={{ textAlign: 'center' }}>
-                <FontAwesomeIcon icon={faCheckCircle} size="2x" color="#666" />
+                <FontAwesomeIcon icon={faCheckCircle} size="2x" color="#fff" />
                 <Typography sx={{ mt: 1 }}>Sold</Typography>
-                <Typography variant="h4" sx={{ my: 1 }} >{property?.total_sold_properties ?? 0}</Typography>
+                <Typography variant="h4" sx={{ my: 1 }}>{property?.total_sold_properties ?? 0}</Typography>
               </CardContent>
             </Card>
           </Grid>
         </Grid>
 
+        {/* Graphs */}
+        <Box sx={{ mb: 4, display: "flex", justifyContent: "center" }}>
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{
+              fontWeight: "bold",
+              color: "primary.main",
+              letterSpacing: 1,
+              position: "relative",
+              display: "inline-block",
+              '&::after': {
+                content: '""',
+                display: 'block',
+                width: '60%',
+                height: '4px',
+                backgroundColor: 'primary.main',
+                margin: '8px auto 0',
+                borderRadius: '2px',
+              },
+            }}
+          >
+            Overview
+          </Typography>
+        </Box>
         <Grid container spacing={3} sx={{ mb: 3 }}>
-          <Grid item xs={12} lg={6}>
-            <Card sx={{ boxShadow: 3 }}>
-              <CardContent sx={{ height: 335 }}>
+          {/* Property Statistics */}
+          <Grid item xs={12} lg={6} sx={{ height: '100%' }}>
+            <Card sx={{ height: 500, boxShadow: 3 }}>
+              <CardContent sx={{ textAlign: 'center' }}>
+                <Typography variant="h6" fontWeight="bold">
+                  Property Statistics
+                </Typography>
+              </CardContent>
+              <CardContent sx={{ height: 400, pt: 0 }}>
                 {chartData ? (
                   <Bar
                     data={chartData}
@@ -595,27 +658,53 @@ const AgentDashboard = () => {
               </CardContent>
             </Card>
           </Grid>
-          <Grid item xs={12} md={6}>
-            <Card>
-              <CardContent sx={{ display: "flex", justifyContent: "space-between" }}>
-                <Typography>Latest Property Listings</Typography>
+
+          {/* Latest Property Listings */}
+          <Grid item xs={12} lg={6} sx={{ height: '100%' }}>
+            <Card sx={{ height: 500, boxShadow: 3, display: 'flex', flexDirection: 'column' }}>
+              <CardContent sx={{ textAlign: "center", pb: 1 }}>
+                <Typography variant="h6" fontWeight="bold">
+                  Latest Property Listings
+                </Typography>
+              </CardContent>
+
+              <CardContent sx={{ display: "flex", justifyContent: "flex-end", pt: 0, pb: 1 }}>
                 <Button variant="outlined" size="small" onClick={() => navigate('/i-latestProperties')}>
                   View All
                 </Button>
               </CardContent>
-              <CardContent sx={{ p: 0 }}>
-                <Grid container spacing={2} justifyContent="center">
+
+
+              {/* Scrollable property list */}
+              <CardContent sx={{ p: 2, pt: 0, overflowY: 'auto', flexGrow: 1 }}>
+                <Grid container spacing={2}>
                   {properties.map((property, index) => (
                     <Grid item xs={12} sm={6} key={index}>
-                      <Card sx={{ m: 1 }}>
-                        <CardMedia
-                          component="img"
-                          height="160"
-                          image={property.img}
-                          alt={property.title}
-                        />
+                      <Card
+                        sx={{
+                          height: '100%',
+                          backgroundColor: '#f9f9f9', // subtle grey
+                          border: '1px solid #ddd',
+                          transition: '0.3s',
+                          boxShadow: 1,
+                          '&:hover': {
+                            boxShadow: 6,
+                            backgroundColor: '#f1f1f1',
+                            transform: 'scale(1.02)',
+                          },
+                        }}
+                      >
+                        <Box sx={{ px: 1, pt: 1 }}>
+                          <CardMedia
+                            component="img"
+                            height="120"
+                            image={property.img}
+                            alt={property.title}
+                            sx={{ borderRadius: 1, objectFit: 'cover' }}
+                          />
+                        </Box>
                         <CardContent>
-                          <Typography>{property.title}</Typography>
+                          <Typography fontWeight="bold">{property.title}</Typography>
                           <Typography variant="body2" color="text.secondary">
                             {property.price}
                           </Typography>
@@ -632,6 +721,8 @@ const AgentDashboard = () => {
                           </Box>
                         </CardContent>
                       </Card>
+
+
                     </Grid>
                   ))}
                 </Grid>
@@ -641,18 +732,44 @@ const AgentDashboard = () => {
         </Grid>
 
         {/* Social Links */}
-        <Box sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: 3,
-          mt: 4,
-          '& svg': { fontSize: 28, color: 'primary.main' }
-        }}>
-          <FontAwesomeIcon icon={faInstagram} />
-          <FontAwesomeIcon icon={faFacebook} />
-          <FontAwesomeIcon icon={faTwitter} />
-          <FontAwesomeIcon icon={faLinkedin} />
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: 3,
+            mt: 4,
+          }}
+        >
+          {[faInstagram, faFacebook, faTwitter, faLinkedin].map((icon, i) => (
+            <Box
+              key={i}
+              sx={{
+                width: 48,
+                height: 48,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '50%',
+                backgroundColor: '#000', // black background
+                boxShadow: 2,
+                transition: 'all 0.3s ease',
+                cursor: 'pointer',
+                '&:hover': {
+                  backgroundColor: 'primary.main', // change to your theme primary color on hover
+                  transform: 'scale(1.1)',
+                },
+                '& svg': {
+                  fontSize: 24,
+                  color: '#fff', // white icon color
+                  transition: 'transform 0.3s ease',
+                },
+              }}
+            >
+              <FontAwesomeIcon icon={icon} />
+            </Box>
+          ))}
         </Box>
+
       </Container>
     </>
   );
