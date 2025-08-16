@@ -150,17 +150,37 @@ const gradients = [
           </Box>
 
           {/* Title + Status */}
-          <Box display="flex" flexDirection="column" alignItems="center" mb={4}>
-            <Typography variant="h4" fontWeight={700} color="primary" align="center" gutterBottom>
-              {property.property_title}
-            </Typography>
-            <Chip
-              label={property.status.toUpperCase()}
-              color={property.status === 'booked' ? 'secondary' : 'primary'}
-              sx={{ fontWeight: 600 }}
-            />
-          </Box>
-
+         {/* Title + Status */}
+         <Box 
+           display="flex" 
+           justifyContent="center" 
+           alignItems="center" 
+           mb={4}
+           position="relative"
+           width="100%"
+         >
+           <Typography 
+             variant="h4" 
+             fontWeight={700} 
+             color="primary" 
+             align="center"
+             gutterBottom
+           >
+             {property.property_title}
+           </Typography>
+           <Chip
+             label={property.status.toUpperCase()}
+             color={property.status === 'booked' ? 'secondary' : 'primary'}
+             sx={{ 
+               fontWeight: 600,
+               position: 'absolute',
+               right: 0,
+               top: '50%',
+               transform: 'translateY(-50%)'
+             }}
+           />
+         </Box>
+         
           {/* Single Card for all content */}
           <Card sx={{ borderRadius: 3, boxShadow: 3, p: 2 }}>
             <CardContent>
