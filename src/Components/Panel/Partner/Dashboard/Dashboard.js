@@ -173,7 +173,7 @@ const AgentDashboard = () => {
             {
               label: 'Listing Properties',
               data: [listingCount],
-              backgroundColor: 'rgba(40, 167, 69, 0.6)',
+              backgroundColor: 'rgba(0, 51, 12, 0.6)',
             },
             {
               label: 'Latest Properties',
@@ -268,121 +268,139 @@ const AgentDashboard = () => {
         </Box>
 
         {/* Top Metrics Row */}
-        <Grid container spacing={3} sx={{ mb: 3 }}>
-          {[
-            {
-              title: 'Listing Properties',
-              value: property?.total_properties ?? 0,
-              icon: faBuilding,
-              path: '/p-listingassets',
-              gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' // Purple-Blue
-            },
-            {
-              title: 'Team',
-              value: totalAgents.toString(),
-              icon: faUsers,
-              path: '/p-team',
-              gradient: 'linear-gradient(135deg, #ff6a00 0%, #ee0979 100%)' // Orange-Pink
-            },
-            {
-              title: 'Active Agents',
-              value: totalActiveAgents,
-              icon: faUserCheck,
-              path: '/p-activeagents',
-              gradient: 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)' // Aqua-Purple
-            },
-            {
-              title: 'Latest Properties',
-              value: property?.total_latest_properties ?? 0,
-              icon: faHome,
-              path: '/p-latestProperties',
-              gradient: 'linear-gradient(135deg, #f7971e 0%, #ffd200 100%)' // Orange-Yellow
-            },
-          ].map((metric, index) => (
-            <Grid item xs={12} sm={6} md={3} key={index}>
-              <Link to={metric.path} style={{ textDecoration: 'none' }}>
-                <Card
-                  sx={{
-                    borderRadius: 3,
-                    background: metric.gradient,
-                    color: '#fff',
-                    boxShadow: 4,
-                    transition: 'transform 0.3s',
-                    '&:hover': { transform: 'translateY(-5px)' },
-                    cursor: 'pointer',
-                  }}
-                >
-                  <CardContent sx={{ textAlign: 'center' }}>
-                    <FontAwesomeIcon icon={metric.icon} size="2x" color="#fff" />
-                    <Typography sx={{ mt: 1 }}>{metric.title}</Typography>
-                    <Typography variant="h4" sx={{ my: 1 }}>{metric.value}</Typography>
-                  </CardContent>
-                </Card>
-              </Link>
-            </Grid>
-          ))}
-        </Grid>
+<Grid container spacing={3} sx={{ mb: 3, display: 'flex', flexWrap: 'wrap' }}>
+  {[
+    {
+      title: 'Listing Properties',
+      value: property?.total_properties ?? 0,
+      icon: faBuilding,
+      path: '/p-listingassets',
+      bgColor: '#054ea2ff'
+    },
+    {
+      title: 'Team',
+      value: totalAgents.toString(),
+      icon: faUsers,
+      path: '/p-team',
+      bgColor: '#aa280bff'
+    },
+    {
+      title: 'Active Agents',
+      value: totalActiveAgents,
+      icon: faUserCheck,
+      path: '/p-activeagents',
+      bgColor: '#274f05ff'
+    },
+    {
+      title: 'Latest Properties',
+      value: property?.total_latest_properties ?? 0,
+      icon: faHome,
+      path: '/p-latestProperties',
+      bgColor: '#5a4400ff'
+    },
+   {
+        title: 'Bookings',
+        value: transactionSummary.bookings.properties.count,
+        icon: faUserPlus,
+        onClick: () => navigate('/p-bookedassets'),
+        bgColor: '#E74C3C' // Red
+      },
+  ].map((metric, index) => (
+    <Grid
+      key={index}
+      item
+      xs={12}
+      sm={6}
+      md={2.4} // ✅ 5 cards per row at md+
+      sx={{ flex: '1 1 20%' }} // force 5 cards per row
+    >
+      <Link to={metric.path} style={{ textDecoration: 'none' }}>
+        <Card
+          sx={{
+            borderRadius: 3,
+            background: metric.bgColor,
+            color: '#fff',
+            boxShadow: 4,
+            transition: 'transform 0.3s',
+            '&:hover': { transform: 'translateY(-5px)' },
+            cursor: 'pointer',
+          }}
+        >
+          <CardContent sx={{ textAlign: 'center' }}>
+            <FontAwesomeIcon icon={metric.icon} size="2x" color="#fff" />
+            <Typography variant="h4" sx={{ my: 1, color: '#fff' }}>{metric.value}</Typography>
+            <Typography sx={{ mt: 1, color: '#fff' }}>{metric.title}</Typography>
+          </CardContent>
+        </Card>
+      </Link>
+    </Grid>
+  ))}
+</Grid>
 
-        {transactionSummary && (
-          <Grid container spacing={3} sx={{ mb: 3 }}>
-            {[
-              {
-                title: 'Bookings',
-                value: transactionSummary.bookings.properties.count,
-                icon: faUserPlus,
-                onClick: () => navigate('/p-bookedassets'),
-                gradient: 'linear-gradient(135deg, #ff0844 0%, #ffb199 100%)' // Red-Peach
-              },
-              {
-                title: 'Purchased',
-                value: transactionSummary.purchased.properties.count,
-                icon: faTags,
-                onClick: () => navigate('/p-purchasedassets'),
-                gradient: 'linear-gradient(135deg, #1f4037 0%, #99f2c8 100%)' // Dark Green-Mint
-              },
-              {
-                title: 'Sold',
-                value: property?.total_sold_properties ?? 0,
-                icon: faCheckCircle,
-                onClick: () => navigate('/p-soldassets'),
-                gradient: 'linear-gradient(135deg, #fc4a1a 0%, #f7b733 100%)' // Orange-Gold
-              },
-              {
-                title: 'Total Agent Commissions Paid',
-                value: `₹${commissionSummary.total_agent_commission_paid?.toLocaleString('en-IN')}`,
-                icon: faMoneyBillWave,
-                onClick: () => navigate('/p-commission'),
-                gradient: 'linear-gradient(135deg, #36d1dc 0%, #5b86e5 100%)' // Cyan-Blue
-              },
-              {
-                title: 'Total Company Commissions Paid',
-                value: `₹${commissionSummary.total_company_commission_paid?.toLocaleString('en-IN')}`,
-                icon: faMoneyBillWave,
-                onClick: () => navigate('/p-commission'),
-                gradient: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%)' // Pink-Pastel
-              },
-            ].map((card, index) => (
-              <Grid item xs={12} sm={6} md={3} key={index}>
-                <Card
-                  sx={{
-                    borderRadius: 3,
-                    background: card.gradient,
-                    color: '#fff',
-                    boxShadow: 4,
-                    cursor: 'pointer',
-                    transition: 'transform 0.2s',
-                    '&:hover': { transform: 'translateY(-4px)' },
-                  }}
-                  onClick={card.onClick}
-                >
-                  <CardContent sx={{ textAlign: 'center' }}>
-                    <FontAwesomeIcon icon={card.icon} size="2x" color="#fff" />
-                    <Typography sx={{ mt: 1 }}>{card.title}</Typography>
-                    <Typography variant="h4" sx={{ my: 1 }}>{card.value}</Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
+
+{transactionSummary && (
+  <Grid container spacing={3} sx={{ mb: 3, display: 'flex', flexWrap: 'wrap' }}>
+    {[
+      {
+        title: 'Purchased',
+        value: transactionSummary.purchased.properties.count,
+        icon: faTags,
+        onClick: () => navigate('/p-purchasedassets'),
+        bgColor: '#37288eff'
+      },
+      {
+        title: 'Sold',
+        value: property?.total_sold_properties ?? 0,
+        icon: faCheckCircle,
+        onClick: () => navigate('/p-soldassets'),
+        bgColor: '#bd7500ff'
+      },
+      {
+        title: ' Agent Commissions Paid',
+        value: `₹${commissionSummary.total_agent_commission_paid?.toLocaleString('en-IN')}`,
+        icon: faMoneyBillWave,
+        onClick: () => navigate('/p-commission'),
+        bgColor: '#005893ff'
+      },
+      {
+        title: 'Company Commissions Paid',
+        value: `₹${commissionSummary.total_company_commission_paid?.toLocaleString('en-IN')}`,
+        icon: faMoneyBillWave,
+        onClick: () => navigate('/p-commission'),
+        bgColor: '#9B59B6'
+      },
+    ].map((card, index) => (
+      <Grid
+        key={index}
+        item
+        xs={12}
+        sm={6}
+        md={2.4} // ✅ match first row (5 per row)
+        sx={{ flex: '1 1 20%' }}
+      >
+        <Card
+          sx={{
+            borderRadius: 3,
+            background: card.bgColor,
+            color: '#fff',
+            boxShadow: 4,
+            cursor: 'pointer',
+            minHeight: 160, // ✅ force equal height
+            transition: 'transform 0.2s',
+            '&:hover': { transform: 'translateY(-4px)' },
+          }}
+          onClick={card.onClick}
+        >
+          <CardContent sx={{ textAlign: 'center' }}>
+            <FontAwesomeIcon icon={card.icon} size="2x" color="#fff" />
+            <Typography variant="h4" sx={{ my: 1, color: '#fff' }}>{card.value}</Typography>
+            <Typography sx={{ mt: 1, color: '#fff' }}>{card.title}</Typography>
+          </CardContent>
+        </Card>
+      </Grid>
+    ))}
+  
+
 
 
 
