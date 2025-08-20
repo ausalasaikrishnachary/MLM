@@ -3,14 +3,19 @@ import axios from "axios";
 import { Box, Grid, Card, Typography, Stack, CardContent, Container } from "@mui/material";
 import { Business, People, Home } from "@mui/icons-material";
 import { faInstagram, faFacebook, faTwitter, faYoutube } from "@fortawesome/free-brands-svg-icons";
-import {
+
+import { 
   CheckCircle,
   EventAvailable,
   HomeWork,
   HourglassEmpty,
   Verified,
-  Cancel
+  Cancel,
+  AccountBalance,
+  Payments
 } from "@mui/icons-material";
+
+
 import { Bar } from 'react-chartjs-2';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Header from "../../../Shared/Navbar/Navbar";
@@ -49,8 +54,13 @@ const AdminDashboard = () => {
     { label: "Pending Properties", value: counts.total_pending_properties, icon: <HourglassEmpty sx={{ color: "white" }} />, path: "/a-pendingassets" },
     { label: "Approved Properties", value: counts.total_approved_properties, icon: <Verified sx={{ color: "white" }} />, path: "/a-approvedassets" },
     { label: "Rejected Properties", value: counts.total_rejected_properties, icon: <Cancel sx={{ color: "white" }} />, path: "/a-rejectedassets" },
-    { label: "Company Commissions", value: `₹${counts.total_company_commission_paid.toLocaleString('en-IN')}`, icon: <Cancel sx={{ color: "white" }} />, path: "/a-transactionmoniter" },
-    { label: "Agent Commissions", value: `₹${counts.total_agent_commission_paid.toLocaleString('en-IN')}`, icon: <Cancel sx={{ color: "white" }} />, path: "/a-commission" },
+   { label: "Company Commissions", value: `₹${counts.total_company_commission_paid.toLocaleString('en-IN')}`, icon: <AccountBalance sx={{ color: "white" }} />, path: "/a-transactionmoniter" },
+{ 
+  label: "Agent Commissions", 
+  value: `₹${counts.total_agent_commission_paid.toLocaleString('en-IN')}`, 
+  icon: <Payments sx={{ color: "white" }} />, 
+  path: "/a-commission" 
+},
   ] : [];
 
 

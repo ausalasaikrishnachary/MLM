@@ -276,9 +276,10 @@ import {
   Legend,
 } from 'chart.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInstagram, faFacebook, faTwitter, faLinkedin } from '@fortawesome/free-brands-svg-icons';
+
 import InvestorHeader from '../../../Shared/Investor/InvestorNavbar';
 import { baseurl } from '../../../BaseURL/BaseURL';
+import { faInstagram, faFacebook, faTwitter, faYoutube } from "@fortawesome/free-brands-svg-icons";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -503,13 +504,49 @@ const AgentDashboard = () => {
         </Grid>
 
         {/* Social Links */}
-        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, mt: 4 }}>
-          {[faInstagram, faFacebook, faTwitter, faLinkedin].map((icon, i) => (
-            <Box key={i} sx={{ width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', backgroundColor: '#000', boxShadow: 2, transition: 'all 0.3s ease', cursor: 'pointer', '&:hover': { backgroundColor: 'primary.main', transform: 'scale(1.1)' }, '& svg': { fontSize: 24, color: '#fff', transition: 'transform 0.3s ease' } }}>
-              <FontAwesomeIcon icon={icon} />
-            </Box>
-          ))}
-        </Box>
+          {/* Social Links */}
+               <Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, mt: 4 }}>
+                 {[
+                   { icon: faInstagram, url: "https://www.instagram.com/shrirajteam/?igsh=YzhjcjVuMGIxZzJq#" },
+                   { icon: faFacebook, url: "https://www.facebook.com/shrirajteam/" },
+                   { icon: faTwitter, url: "https://x.com/shrirajteam" },
+                   { icon: faYoutube, url: "https://www.youtube.com/@Shrirajteam" },
+                 ].map((item, i) => (
+                   <a
+                     key={i}
+                     href={item.url}
+                     target="_blank"
+                     rel="noopener noreferrer"
+                     style={{ textDecoration: "none" }}
+                   >
+                     <Box
+                       sx={{
+                         width: 48,
+                         height: 48,
+                         display: 'flex',
+                         alignItems: 'center',
+                         justifyContent: 'center',
+                         borderRadius: '50%',
+                         backgroundColor: '#000',
+                         boxShadow: 2,
+                         transition: 'all 0.3s ease',
+                         cursor: 'pointer',
+                         '&:hover': {
+                           backgroundColor: 'primary.main',
+                           transform: 'scale(1.1)',
+                         },
+                         '& svg': {
+                           fontSize: 24,
+                           color: '#fff',
+                           transition: 'transform 0.3s ease',
+                         },
+                       }}
+                     >
+                       <FontAwesomeIcon icon={item.icon} />
+                     </Box>
+                   </a>
+                 ))}
+               </Box>
       </Container>
     </>
   );
