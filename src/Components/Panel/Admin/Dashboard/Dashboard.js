@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Box, Grid, Card, Typography, Stack, CardContent, Container } from "@mui/material";
 import { Business, People, Home } from "@mui/icons-material";
-import { faInstagram, faFacebook, faTwitter, faLinkedin } from '@fortawesome/free-brands-svg-icons';
+import { faInstagram, faFacebook, faTwitter, faYoutube } from "@fortawesome/free-brands-svg-icons";
 import {
   CheckCircle,
   EventAvailable,
@@ -42,16 +42,16 @@ const AdminDashboard = () => {
   const [counts, setCounts] = useState(null);
   const navigate = useNavigate();
 
- const propertyStatusCards = counts ? [
-  { label: "Sold Properties", value: counts.total_sold_properties, icon: <CheckCircle sx={{ color: "white" }} />, path: "/a-soldassets" },
-  { label: "Booked Properties", value: counts.total_booked_properties, icon: <EventAvailable sx={{ color: "white" }} />, path: "/a-bookedassets" },
-  { label: "Available Properties", value: counts.total_available_properties, icon: <HomeWork sx={{ color: "white" }} />, path: "/a-availableassets" },
-  { label: "Pending Properties", value: counts.total_pending_properties, icon: <HourglassEmpty sx={{ color: "white"}} />, path: "/a-pendingassets" },
-  { label: "Approved Properties", value: counts.total_approved_properties, icon: <Verified sx={{ color: "white" }} />, path: "/a-approvedassets" },
-  { label: "Rejected Properties", value: counts.total_rejected_properties, icon: <Cancel sx={{ color: "white" }} />, path: "/a-rejectedassets" },
-  { label: "Company Commissions", value: `₹${counts.total_company_commission_paid.toLocaleString('en-IN')}`, icon: <Cancel sx={{ color: "white" }} />, path: "/a-transactionmoniter" },
-  { label: "Agent Commissions", value: `₹${counts.total_agent_commission_paid.toLocaleString('en-IN')}`, icon: <Cancel sx={{ color: "white" }} />, path: "/a-commission" },
-] : [];
+  const propertyStatusCards = counts ? [
+    { label: "Sold Properties", value: counts.total_sold_properties, icon: <CheckCircle sx={{ color: "white" }} />, path: "/a-soldassets" },
+    { label: "Booked Properties", value: counts.total_booked_properties, icon: <EventAvailable sx={{ color: "white" }} />, path: "/a-bookedassets" },
+    { label: "Available Properties", value: counts.total_available_properties, icon: <HomeWork sx={{ color: "white" }} />, path: "/a-availableassets" },
+    { label: "Pending Properties", value: counts.total_pending_properties, icon: <HourglassEmpty sx={{ color: "white" }} />, path: "/a-pendingassets" },
+    { label: "Approved Properties", value: counts.total_approved_properties, icon: <Verified sx={{ color: "white" }} />, path: "/a-approvedassets" },
+    { label: "Rejected Properties", value: counts.total_rejected_properties, icon: <Cancel sx={{ color: "white" }} />, path: "/a-rejectedassets" },
+    { label: "Company Commissions", value: `₹${counts.total_company_commission_paid.toLocaleString('en-IN')}`, icon: <Cancel sx={{ color: "white" }} />, path: "/a-transactionmoniter" },
+    { label: "Agent Commissions", value: `₹${counts.total_agent_commission_paid.toLocaleString('en-IN')}`, icon: <Cancel sx={{ color: "white" }} />, path: "/a-commission" },
+  ] : [];
 
 
   useEffect(() => {
@@ -146,30 +146,30 @@ const AdminDashboard = () => {
                   "&:hover": {
                     transform: "translateY(-6px)",
                     boxShadow: 6,
-                    
+
                   },
                 }}
               >
-              <Stack alignItems="center">   {/* reduce spacing */}
-  <Box
-    sx={{
-      width: 70,
-      height: 70,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-    }}
-  >
-    {React.cloneElement(metric.icon, { sx: { fontSize: 50, color: "white" } })}
-  </Box>
+                <Stack alignItems="center">   {/* reduce spacing */}
+                  <Box
+                    sx={{
+                      width: 70,
+                      height: 70,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {React.cloneElement(metric.icon, { sx: { fontSize: 50, color: "white" } })}
+                  </Box>
 
-  <Typography variant="h4" fontWeight={700}>
-    {metric.value}
-  </Typography>
-  <Typography variant="body2" fontWeight={500}>
-    {metric.label}
-  </Typography>
-</Stack>
+                  <Typography variant="h4" fontWeight={700}>
+                    {metric.value}
+                  </Typography>
+                  <Typography variant="body2" fontWeight={500}>
+                    {metric.label}
+                  </Typography>
+                </Stack>
 
               </Card>
             </Grid>
@@ -222,37 +222,52 @@ const AdminDashboard = () => {
           </Grid>
         </Container>
 
+
+
         {/* Social Links */}
         <Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, mt: 4 }}>
-          {[faInstagram, faFacebook, faTwitter, faLinkedin].map((icon, i) => (
-            <Box
+          {[
+            { icon: faInstagram, url: "https://www.instagram.com/shrirajteam/?igsh=YzhjcjVuMGIxZzJq#" },
+            { icon: faFacebook, url: "https://www.facebook.com/shrirajteam/" },
+            { icon: faTwitter, url: "https://x.com/shrirajteam" },
+            { icon: faYoutube, url: "https://www.youtube.com/@Shrirajteam" },
+          ].map((item, i) => (
+            <a
               key={i}
-              sx={{
-                width: 48,
-                height: 48,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: '50%',
-                backgroundColor: '#000',
-                boxShadow: 2,
-                transition: 'all 0.3s ease',
-                cursor: 'pointer',
-                '&:hover': {
-                  backgroundColor: 'primary.main',
-                  transform: 'scale(1.1)',
-                },
-                '& svg': {
-                  fontSize: 24,
-                  color: '#fff',
-                  transition: 'transform 0.3s ease',
-                },
-              }}
+              href={item.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ textDecoration: "none" }}
             >
-              <FontAwesomeIcon icon={icon} />
-            </Box>
+              <Box
+                sx={{
+                  width: 48,
+                  height: 48,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: '50%',
+                  backgroundColor: '#000',
+                  boxShadow: 2,
+                  transition: 'all 0.3s ease',
+                  cursor: 'pointer',
+                  '&:hover': {
+                    backgroundColor: 'primary.main',
+                    transform: 'scale(1.1)',
+                  },
+                  '& svg': {
+                    fontSize: 24,
+                    color: '#fff',
+                    transition: 'transform 0.3s ease',
+                  },
+                }}
+              >
+                <FontAwesomeIcon icon={item.icon} />
+              </Box>
+            </a>
           ))}
         </Box>
+
       </Box>
     </>
   );
