@@ -39,7 +39,7 @@ export default function Header() {
       label: 'Operations',
       subItems: [
         { label: 'Company Commission', path: '/a-transactionmoniter' },
-        { label: 'Agent Commission', path: '/a-commission' },
+        { label: 'Team Commission', path: '/a-commission' },
         { label: 'Subscriptions', path: '/a-subscriptions' },
         { label: 'Booking Slab', path: '/a-bookingslab' },
         { label: 'Training Material', path: '/a-trainingmaterial' },

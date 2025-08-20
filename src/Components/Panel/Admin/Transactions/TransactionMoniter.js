@@ -152,7 +152,7 @@ const Tmoniter = () => {
             label="Filter by Role"
             onChange={(e) => setSelectedRole(e.target.value)}
           >
-            <MenuItem value="agent">Agent</MenuItem>
+            <MenuItem value="agent">Team</MenuItem>
             <MenuItem value="client">Client</MenuItem>
           </Select>
         </FormControl>
@@ -186,7 +186,10 @@ const Tmoniter = () => {
                 <TableRow key={transaction.transaction_id}>
                   <TableCell sx={cellBodyStyle}>{transaction.transaction_id}</TableCell>
                   <TableCell sx={cellBodyStyle}>{transaction.property_name}</TableCell>
-                  <TableCell sx={cellBodyStyle}>{transaction.role}</TableCell>
+                  <TableCell sx={cellBodyStyle}>
+                    {transaction.role === "Agent" ? "Team" : transaction.role}
+                  </TableCell>
+
                   <TableCell sx={cellBodyStyle}>{transaction.property_value || "N/A"}</TableCell>
                   <TableCell sx={cellBodyStyle}>{transaction.payment_type || "N/A"}</TableCell>
                   <TableCell sx={cellBodyStyle}>{transaction.company_commission}</TableCell>
@@ -232,18 +235,18 @@ const Tmoniter = () => {
 
         {/* Pagination Controls */}
         <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
-  <Pagination
-    count={totalPages}
-    page={page}
-    onChange={handlePageChange}
-    color="primary"
-    sx={{
-      "& .MuiPaginationItem-root": {
-        borderRadius: "0px"  // <-- removes the rounded corners, making them square
-      }
-    }}
-  />
-</Box>
+          <Pagination
+            count={totalPages}
+            page={page}
+            onChange={handlePageChange}
+            color="primary"
+            sx={{
+              "& .MuiPaginationItem-root": {
+                borderRadius: "0px"  // <-- removes the rounded corners, making them square
+              }
+            }}
+          />
+        </Box>
 
       </Container>
     </>

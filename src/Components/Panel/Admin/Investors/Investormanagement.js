@@ -169,7 +169,7 @@ const Tmanagement = () => {
             mb: 2
           }}
         >
-          <FormControl sx={{ minWidth: 200 , mt:5}}>
+          <FormControl sx={{ minWidth: 200, mt: 5 }}>
             <InputLabel id="role-filter-label">Filter by Role</InputLabel>
             <Select
               labelId="role-filter-label"
@@ -214,7 +214,9 @@ const Tmanagement = () => {
                   <TableCell sx={cellBodyStyle}>{user.name}</TableCell>
                   <TableCell sx={cellBodyStyle}>{user.email}</TableCell>
                   <TableCell sx={cellBodyStyle}>{user.phone}</TableCell>
-                  <TableCell sx={cellBodyStyle}>{user.role}</TableCell>
+                  <TableCell sx={cellBodyStyle}>
+                    {user.role === "Agent" ? "Team" : user.role}
+                  </TableCell>
                   <TableCell sx={cellBodyStyle}>{user.referralId}</TableCell>
                   <TableCell sx={cellBodyStyle}>
                     {new Date(user.created_at).toLocaleDateString("en-IN")}

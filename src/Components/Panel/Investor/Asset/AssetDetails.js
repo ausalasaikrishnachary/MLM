@@ -51,7 +51,7 @@
 // export default PropertyDetails;
 
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import {
   Typography, Grid, Box, Button, Divider, Chip, Card, CardContent, Paper
@@ -66,9 +66,41 @@ const PropertyDetails = () => {
   const { property } = location.state || {};
   const { id } = useParams();
 
+  const [propertyTypes, setPropertyTypes] = useState([]);
+  const [isPlot, setIsPlot] = useState(false);
+  const [propertyTypeName, setPropertyTypeName] = useState("");
+
+  useEffect(() => {
+    const fetchPropertyTypes = async () => {
+      try {
+        const res = await fetch("https://shrirajteam.com:81/property-types/");
+        const data = await res.json();
+        setPropertyTypes(data);
+
+        if (property) {
+          const matchedType = data.find(
+            (t) => t.property_type_id === property.property_type
+          );
+          if (matchedType) {
+            setPropertyTypeName(matchedType.name);
+            if (matchedType.name.toLowerCase() === "plot") {
+              setIsPlot(true);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching property types:", err);
+      }
+    };
+
+    fetchPropertyTypes();
+  }, [property]);
+
   if (!property) {
     return <Typography>Loading property details...</Typography>;
   }
+
+
 
   // Format currency
   const formatCurrency = (value) => {
@@ -116,12 +148,10 @@ const PropertyDetails = () => {
                     <Typography variant="body2" mb={2}>🎥 Videos available: {property.videos.length}</Typography>
                   )}
 
-                  <Typography variant="h5" color="secondary" fontWeight={700} gutterBottom>
+                  {/* <Typography variant="h5" color="secondary" fontWeight={700} gutterBottom>
                     🏷️ Features
                   </Typography>
                   <Divider sx={{ mb: 2 }} />
-
-
                   <Grid container spacing={2}>
                     {[
                       ['Floors', property.number_of_floors],
@@ -141,7 +171,36 @@ const PropertyDetails = () => {
                         <Typography><strong>{label}:</strong> {value}</Typography>
                       </Grid>
                     ))}
-                  </Grid>
+                  </Grid> */}
+
+                  {!isPlot && (
+                    <>
+                      <Typography variant="h5" color="secondary" fontWeight={700} gutterBottom>
+                        🏷️ Features
+                      </Typography>
+                      <Divider sx={{ mb: 2 }} />
+                      <Grid container spacing={2}>
+                        {[
+                          ['Floors', property.number_of_floors],
+                          ['Facing', property.facing],
+                          ['Open Sides', property.number_of_open_sides],
+                          ['Roads', property.number_of_roads],
+                          ['Road Width 1', `${property.road_width_1_ft} ft`],
+                          ['Road Width 2', `${property.road_width_2_ft} ft`],
+                          ['Floor', property.floor || 'N/A'],
+                          ['Furnishing Status', property.furnishing_status || 'N/A'],
+                          ['Ownership', property.ownership_type],
+                          ['Bedrooms', property.number_of_bedrooms || 'N/A'],
+                          ['Bathrooms', property.number_of_bathrooms || 'N/A'],
+                          ['Balconies', property.number_of_balconies || 'N/A'],
+                        ].map(([label, value], index) => (
+                          <Grid item xs={6} key={index}>
+                            <Typography><strong>{label}:</strong> {value}</Typography>
+                          </Grid>
+                        ))}
+                      </Grid>
+                    </>
+                  )}
 
                   <Typography variant="h5" mt={3} color="secondary" fontWeight={700} gutterBottom>
                     ℹ️ Additional Information

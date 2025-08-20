@@ -188,8 +188,8 @@ function Layout() {
           <Route path="/a-addtrainingmaterial" element={<AddTrainingMaterial />} />
           {/* <Route path="/home" element={<LandingPage />} /> */}
           <Route path="/a-dashboard" element={<AdminDashboard />} />
-          <Route path="/admin-meetings" element={<AdminMeetings/>} />
-          <Route path="/tableadminmeetings" element={<TableAdminMeetings/>} />
+          <Route path="/admin-meetings" element={<AdminMeetings />} />
+          <Route path="/tableadminmeetings" element={<TableAdminMeetings />} />
           <Route path="/a-asset" element={<AdminAsset />} />
           <Route path="/a-investormanagement" element={<Tmanagement />} />
           <Route path="/a-popup-leads" element={<LeadsTable />} />
@@ -242,7 +242,7 @@ function Layout() {
 
 
           <Route path="/i-dashboard" element={<InvestorDashboard />} />
-           
+
 
           <Route path="/i-listingassets" element={<I_ListingProperties />} />
           <Route path="/i-latestProperties" element={<I_LatestProperties />} />
@@ -265,11 +265,11 @@ function Layout() {
           <Route path="/assets/:id" element={<I_MyAssests />} />
           <Route path="/i-addproperty" element={<AddPropertyForm />} />
           <Route path="/i-assets/edit/:id" element={<EditMyAsset />} />
-           <Route path="/i-meetings" element={<I_Meetings />} />
+          <Route path="/i-meetings" element={<I_Meetings />} />
           <Route path="/i-meetingrequest" element={<I_MeetingRequestForm />} />
 
 
-<Route path="/p-trainingmaterial" element={<TrainingVideos />} />
+          <Route path="/p-trainingmaterial" element={<TrainingVideos />} />
           <Route path="/p-dashboard" element={<PartnerDashboard />} />
           <Route path="/p-report" element={<Report />} />
           <Route path="/p-addasset" element={<AssetForm />} />
@@ -303,7 +303,7 @@ function Layout() {
           <Route path="/p-soldassets" element={<SoldProperties />} />
           <Route path="/p-listingassets" element={<ListingProperties />} />
           <Route path="/p-latestProperties" element={<LatestProperties />} />
-          <Route path="/subscriptionplans" element={<Subcrptionplan/>} />
+          <Route path="/subscriptionplans" element={<Subcrptionplan />} />
 
 
           <Route path="/termsandconditions" element={<Termsandconditions />} />

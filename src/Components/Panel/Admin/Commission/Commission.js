@@ -59,13 +59,13 @@ function Commission() {
             <Header />
             <>
                 <div style={{ textAlign: 'center', marginTop: "8%" }}>
-                    <h2 style={{ fontWeight: 'bold' }}>Agent Commission</h2>
+                    <h2 style={{ fontWeight: 'bold' }}>Team Commission</h2>
                 </div>
                 <Table sx={{ border: '1px solid black', width: '90%', marginLeft: "5%", }}>
                     <TableHead>
                         <TableRow>
-                            <TableCell sx={cellStyle}>Agent Name</TableCell>
-                            <TableCell sx={cellStyle}>Agent Referral Id</TableCell>
+                            <TableCell sx={cellStyle}>Team Name</TableCell>
+                            <TableCell sx={cellStyle}>Team Referral Id</TableCell>
                             <TableCell sx={cellStyle}>Property Status</TableCell>
                         </TableRow>
                     </TableHead>
