@@ -186,23 +186,24 @@ const handleAddPlan = async () => {
             <Grid item xs={12} md={4}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <FormControl fullWidth required>
-                  <InputLabel id="plan-name-label">Plan</InputLabel>
-                  <Select
-                    labelId="plan-name-label"
-                    id="plan-name"
-                    name="plan_name"
-                    value={formData.plan_name}
-                    onChange={handleChange}
-                    label="Plan"
-                    variant="outlined"
-                  >
-                    {planOptions.map((plan) => (
-                      <MenuItem key={plan.id} value={plan.plan_name}>
-                        {`${plan.plan_name} (${plan.user_type})`}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+  <InputLabel id="plan-name-label">Plan</InputLabel>
+  <Select
+    labelId="plan-name-label"
+    id="plan-name"
+    name="plan_name"
+    value={formData.plan_name}
+    onChange={handleChange}
+    label="Plan"
+    variant="outlined"
+  >
+    {planOptions.map((plan) => (
+      <MenuItem key={plan.id} value={plan.plan_name}>
+        {`${plan.plan_name} (${plan.user_type === "agent" ? "Team" : plan.user_type})`}
+      </MenuItem>
+    ))}
+  </Select>
+</FormControl>
+
                 <IconButton 
                   color="primary" 
                   onClick={() => setOpenModal(true)}
@@ -301,7 +302,7 @@ const handleAddPlan = async () => {
                   label="User Type"
                   variant="outlined"
                 >
-                  <MenuItem value="agent">Agent</MenuItem>
+                  <MenuItem value="agent">Team</MenuItem>
                   <MenuItem value="client">Client</MenuItem>
                 </Select>
               </FormControl>

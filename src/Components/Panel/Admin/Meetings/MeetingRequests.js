@@ -94,8 +94,8 @@ function MeetingRequests() {
   const headers = [
     ...(tabValue === 0 ? [{ label: 'RequestId', key: 'id' }] : []),
     { label: 'UserId', key: 'user_id' },
-    { label: 'Agent Name', key: 'name' },
-    { label: 'Agent Referral ID', key: 'referral_id' },
+    { label: 'Team Name', key: 'name' },
+    { label: 'Team Referral ID', key: 'referral_id' },
     { label: 'Email', key: 'email' },
     { label: 'Profile Type', key: 'profile_type' },
     { label: tabValue === 0 ? 'Requested Date' : 'Scheduled Date', key: 'date' },

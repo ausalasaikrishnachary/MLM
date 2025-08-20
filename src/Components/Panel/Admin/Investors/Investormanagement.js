@@ -179,11 +179,12 @@ const Tmanagement = () => {
             >
               {uniqueRoles.map((role) => (
                 <MenuItem key={role} value={role}>
-                  {role || "Unknown"}
+                  {role === "Agent" ? "Team" : role || "Unknown"}
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
+
         </Box>
 
         <Table sx={{ border: "1px solid black", width: "100%" }}>

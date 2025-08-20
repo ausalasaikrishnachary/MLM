@@ -88,7 +88,7 @@ const paginatedData = propertyData.slice(
                                     <TableCell sx={cellStyle}>Property Name</TableCell>
                                     <TableCell sx={cellStyle}>Property Value</TableCell>
                                     <TableCell sx={cellStyle}>Property Status</TableCell>
-                                    <TableCell sx={cellStyle}>Agent Commission</TableCell>
+                                    <TableCell sx={cellStyle}>Team Commission</TableCell>
                                     <TableCell sx={cellStyle}>Received Commission</TableCell>
                                     <TableCell sx={cellStyle}>Balance Commission</TableCell>
                                 </TableRow>

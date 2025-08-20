@@ -158,7 +158,7 @@ function Subscription() {
               onChange={(e) => setUserType(e.target.value)}
             >
               <MenuItem value="client">Client</MenuItem>
-              <MenuItem value="agent">Agent</MenuItem>
+              <MenuItem value="agent">Team</MenuItem>
             </Select>
           </FormControl>
 

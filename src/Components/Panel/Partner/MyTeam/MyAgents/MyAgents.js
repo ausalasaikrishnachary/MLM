@@ -73,7 +73,7 @@ const MyAgents = () => {
       <PartnerHeader />
       <Container>
         <div style={{ textAlign: 'center', marginTop: "12%" }}>
-          <h2 style={{ fontWeight: 'bold' }}>Active Agents</h2>
+          <h2 style={{ fontWeight: 'bold' }}>Active Team</h2>
         </div>
 
         {loading ? (

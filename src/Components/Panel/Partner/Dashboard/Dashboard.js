@@ -286,7 +286,7 @@ const AgentDashboard = () => {
               bgColor: '#aa280bff'
             },
             {
-              title: 'Active Agents',
+              title: 'Active Team',
               value: totalActiveAgents,
               icon: faUserCheck,
               path: '/p-activeagents',
@@ -357,7 +357,7 @@ const AgentDashboard = () => {
                 bgColor: '#bd7500ff'
               },
               {
-                title: ' Agent Commissions Paid',
+                title: ' Team Commissions Paid',
                 value: `₹${commissionSummary.total_agent_commission_paid?.toLocaleString('en-IN')}`,
                 icon: faMoneyBillWave,
                 onClick: () => navigate('/p-commission'),
