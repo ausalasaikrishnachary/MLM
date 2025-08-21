@@ -303,7 +303,7 @@ const SignUp = () => {
     return (
         <Box
             sx={{
-                height: "100vh",
+                minHeight: "100vh",          // instead of fixed height
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "center",
@@ -312,9 +312,10 @@ const SignUp = () => {
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 marginTop: "-85px",
+                // overflowY: { xs: "auto", md: "hidden" }          // ✅ enable vertical scroll
             }}
         >
-            <Paper elevation={4} sx={{ display: "flex", width: "90%", maxWidth: 1000, borderRadius: 2, overflow: "hidden" }}>
+            <Paper elevation={4} sx={{ display: "flex", width: "90%", maxWidth: 1000, borderRadius: 2, height: { xs: "110vh", md: "auto" } }}>
                 <Grid container>
                     <Grid
                         item xs={12} md={5}

@@ -374,8 +374,8 @@ const AssetForm = () => {
         formData.propertyTitle?.trim() &&
         formData.category &&
         formData.propertyType &&
-         formData.description?.trim() &&
-        !errors.description // Ensure description is valid
+         formData.description?.trim()
+        // !errors.description
       );
 
     case 1: // Location Details
@@ -555,12 +555,12 @@ const AssetForm = () => {
              name="description"
              value={formData.description}
              onChange={handleChange}
-             error={errors.description}
-             helperText={
-               errors.description 
-                 ? "Description must contain both letters and numbers." 
-                 : ""
-             }
+            //  error={errors.description}
+            //  helperText={
+            //    errors.description 
+            //      ? "Description must contain both letters and numbers." 
+            //      : ""
+            //  }
            />
          </Grid>
         </Grid>

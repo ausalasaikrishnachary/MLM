@@ -59,9 +59,9 @@ const AddPropertyForm = () => {
   const navigate = useNavigate();
   const userId = localStorage.getItem("user_id");
   const [errors, setErrors] = useState({
-  description: false,
-  // ...other error states if needed
-});
+    description: false,
+    // ...other error states if needed
+  });
 
   // Form State
   const [formData, setFormData] = useState({
@@ -237,10 +237,10 @@ const AddPropertyForm = () => {
   };
 
   const validateDescription = (value) => {
-  // Regex: Must contain at least one letter and one number
-  const regex = /^(?=.*[a-zA-Z])(?=.*[0-9])/;
-  return regex.test(value);
-};
+    // Regex: Must contain at least one letter and one number
+    const regex = /^(?=.*[a-zA-Z])(?=.*[0-9])/;
+    return regex.test(value);
+  };
 
 
 
@@ -259,13 +259,13 @@ const AddPropertyForm = () => {
       const commission = parseFloat(name === 'company_commission' ? newValue : updated.company_commission) || 0;
 
       updated.total_property_value = price + commission;
-       // Validate description if the field is "description"
-  if (name === "description") {
-    setErrors(prev => ({
-      ...prev,
-      description: !validateDescription(value),
-    }));
-  }
+      // Validate description if the field is "description"
+      if (name === "description") {
+        setErrors(prev => ({
+          ...prev,
+          description: !validateDescription(value),
+        }));
+      }
 
       return updated;
     });
@@ -368,10 +368,10 @@ const AddPropertyForm = () => {
         agent_commission_paid: formData.agent_commission_paid,
         agent_commission_balance: formData.agent_commission_balance,
         total_property_value: Number(formData.price) + Number(formData.company_commission),
-          preferred_tenants: formData.preferred_tenants,
-  rent_amount: formData.rent_amount,
-  deposit_amount: formData.deposit_amount,
-  available_from: formData.available_from,
+        preferred_tenants: formData.preferred_tenants,
+        rent_amount: formData.rent_amount,
+        deposit_amount: formData.deposit_amount,
+        available_from: formData.available_from,
       };
 
       // Log the payload for debugging
@@ -481,82 +481,82 @@ const AddPropertyForm = () => {
   };
 
   const validateStep = (step) => {
-  switch (step) {
-    case 0: // Basic Details
-      return (
-        formData.lookingTo &&
-        formData.propertyTitle?.trim() &&
-        formData.category &&
-        formData.propertyType &&
-         formData.description?.trim() &&
-        !errors.description // Ensure description is valid
-      );
-
-    case 1: // Location Details
-      return (
-        formData.address?.trim() &&
-        formData.city?.trim() &&
-        formData.state?.trim() &&
-        formData.country?.trim() &&
-        formData.pinCode?.trim() &&
-        formData.latitude !== undefined &&
-        formData.longitude !== undefined
-      );
-
-    case 2: // Property Details
-      const basicPropertyValid = (
-        formData.plotArea &&
-        formData.areaUnit &&
-        formData.length &&
-        formData.breadth &&
-        formData.builtupArea &&
-        formData.facing &&
-        formData.ownershipType
-      );
-
-      // Additional validation for residential properties if shown
-      const residentialValid = !showResidentialFields || (
-        formData.numberOfFloors &&
-        formData.numberOfBedrooms &&
-        formData.numberOfBathrooms &&
-        formData.furnishing_status
-      );
-
-      // Road width validation based on number of roads
-      const roadsValid = (
-        formData.numberOfRoads === 0 || (
-          (formData.numberOfRoads >= 1 && formData.roadWidth1) &&
-          (formData.numberOfRoads < 2 || formData.roadWidth2)
-        )
-      );
-
-      return basicPropertyValid && residentialValid && roadsValid;
-
-    case 3: // Media Upload
-      // At least one image is required
-      return formData.images.length > 0;
-
-    case 4: // Pricing & Contact
-      if (formData.lookingTo === 'sell') {
+    switch (step) {
+      case 0: // Basic Details
         return (
-          formData.price !== undefined &&
-          formData.company_commission !== undefined &&
-          formData.ownerName?.trim() &&
-          formData.ownerContact?.trim()
-        );
-      } else { // rent
-        return (
-          formData.rent_amount !== undefined &&
-          formData.deposit_amount !== undefined &&
-          formData.ownerName?.trim() &&
-          formData.ownerContact?.trim()
-        );
-      }
+          formData.lookingTo &&
+          formData.propertyTitle?.trim() &&
+          formData.category &&
+          formData.propertyType &&
+          formData.description?.trim()
 
-    default:
-      return false;
-  }
-};
+        );
+
+      case 1: // Location Details
+        return (
+          formData.address?.trim() &&
+          formData.city?.trim() &&
+          formData.state?.trim() &&
+          formData.country?.trim() &&
+          formData.pinCode?.trim() &&
+          formData.latitude !== undefined &&
+          formData.longitude !== undefined
+        );
+
+      case 2: // Property Details
+        const basicPropertyValid = (
+          formData.plotArea &&
+          formData.areaUnit &&
+          formData.length &&
+          formData.breadth &&
+          formData.builtupArea &&
+          formData.facing &&
+          formData.ownershipType
+        );
+
+        // Additional validation for residential properties if shown
+        const residentialValid = !showResidentialFields || (
+          formData.numberOfFloors &&
+          formData.numberOfBedrooms &&
+          formData.numberOfBathrooms &&
+          formData.furnishing_status
+        );
+
+        // Road width validation based on number of roads
+        const roadsValid = (
+          formData.numberOfRoads === 0 || (
+            (formData.numberOfRoads >= 1 && formData.roadWidth1) &&
+            (formData.numberOfRoads < 2 || formData.roadWidth2)
+          )
+        );
+
+        return basicPropertyValid && residentialValid && roadsValid;
+
+      case 3: // Media Upload
+        // At least one image is required
+        return formData.images.length > 0;
+
+      case 4: // Pricing & Contact
+        if (formData.lookingTo === 'sell') {
+          return (
+            formData.price !== undefined &&
+            formData.company_commission !== undefined &&
+            formData.ownerName?.trim() &&
+            formData.ownerContact?.trim()
+          );
+        } else { // rent
+          return (
+            formData.rent_amount !== undefined &&
+            formData.deposit_amount !== undefined &&
+            formData.ownerName?.trim() &&
+            formData.ownerContact?.trim()
+          );
+        }
+
+      default:
+        return false;
+    }
+  };
 
 
   const renderStepContent = () => {
@@ -653,7 +653,7 @@ const AddPropertyForm = () => {
                 }}
                 label="Property Type"
                 disabled={!formData.category}
-                
+
               >
                 <MenuItem value="" disabled></MenuItem>
                 {propertyTypes.map((type) => (
@@ -690,23 +690,18 @@ const AddPropertyForm = () => {
           </Dialog>
 
 
-         <Grid item xs={12}>
-  <TextField
-    fullWidth
-    multiline
-    rows={4}
-    label="Description"
-    name="description"
-    value={formData.description}
-    onChange={handleChange}
-    error={errors.description}
-    helperText={
-      errors.description 
-        ? "Description must contain both letters and numbers." 
-        : ""
-    }
-  />
-</Grid>
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              multiline
+              rows={4}
+              label="Description"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+
+            />
+          </Grid>
         </Grid>
       );
 
@@ -860,14 +855,14 @@ const AddPropertyForm = () => {
                     <MenuItem value="fully furnished">Fully Furnished</MenuItem>
                   </Select> */}
                   <Select
-                name="furnishing_status"
-                value={formData.furnishing_status}
-                onChange={handleChange}
-                label="Furnishing Status"
-              >
-                <MenuItem value="Semi-Furnished">Semi-Furnished</MenuItem>
-                <MenuItem value="Fully-Furnished">Fully-Furnished</MenuItem>
-              </Select>
+                    name="furnishing_status"
+                    value={formData.furnishing_status}
+                    onChange={handleChange}
+                    label="Furnishing Status"
+                  >
+                    <MenuItem value="Semi-Furnished">Semi-Furnished</MenuItem>
+                    <MenuItem value="Fully-Furnished">Fully-Furnished</MenuItem>
+                  </Select>
                 </FormControl>
               </Grid>
             </>
@@ -1194,123 +1189,123 @@ const AddPropertyForm = () => {
         </Grid>
       );
 
-case 4: return (
-  <Grid container spacing={3} sx={{ mt: 2 }}>
-    {formData.lookingTo === 'sell' ? (
-      <>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            fullWidth
-            label="Property Value"
-            name="price"
-            type="number"
-            value={formData.price}
-            onChange={handleChange}
-          />
+      case 4: return (
+        <Grid container spacing={3} sx={{ mt: 2 }}>
+          {formData.lookingTo === 'sell' ? (
+            <>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Property Value"
+                  name="price"
+                  type="number"
+                  value={formData.price}
+                  onChange={handleChange}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Company Commission"
+                  name="company_commission"
+                  type="number"
+                  value={formData.company_commission}
+                  onChange={handleChange}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Total Property Value"
+                  name="total_property_value"
+                  type="number"
+                  value={formData.total_property_value}
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                />
+              </Grid>
+            </>
+          ) : (
+            <>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Preferred Tenants"
+                  name="preferred_tenants"
+                  value={formData.preferred_tenants || ''}
+                  onChange={handleChange}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Rent Amount"
+                  name="rent_amount"
+                  type="number"
+                  value={formData.rent_amount || ''}
+                  onChange={handleChange}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Deposit Amount"
+                  name="deposit_amount"
+                  type="number"
+                  value={formData.deposit_amount || ''}
+                  onChange={handleChange}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Available From"
+                  name="available_from"
+                  value={formData.available_from || ''}
+                  onChange={handleChange}
+                />
+              </Grid>
+            </>
+          )}
+
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Owner Name"
+              name="ownerName"
+              value={formData.ownerName}
+              onChange={handleChange}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Owner Contact"
+              name="ownerContact"
+              value={formData.ownerContact}
+              onChange={handleChange}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Owner Email"
+              name="ownerEmail"
+              type="email"
+              value={formData.ownerEmail}
+              onChange={handleChange}
+            />
+          </Grid>
         </Grid>
-
-        <Grid item xs={12} sm={6}>
-          <TextField
-            fullWidth
-            label="Company Commission"
-            name="company_commission"
-            type="number"
-            value={formData.company_commission}
-            onChange={handleChange}
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6}>
-          <TextField
-            fullWidth
-            label="Total Property Value"
-            name="total_property_value"
-            type="number"
-            value={formData.total_property_value}
-            InputProps={{
-              readOnly: true,
-            }}
-          />
-        </Grid>
-      </>
-    ) : (
-      <>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            fullWidth
-            label="Preferred Tenants"
-            name="preferred_tenants"
-            value={formData.preferred_tenants || ''}
-            onChange={handleChange}
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6}>
-          <TextField
-            fullWidth
-            label="Rent Amount"
-            name="rent_amount"
-            type="number"
-            value={formData.rent_amount || ''}
-            onChange={handleChange}
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6}>
-          <TextField
-            fullWidth
-            label="Deposit Amount"
-            name="deposit_amount"
-            type="number"
-            value={formData.deposit_amount || ''}
-            onChange={handleChange}
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6}>
-          <TextField
-            fullWidth
-            label="Available From"
-            name="available_from"
-            value={formData.available_from || ''}
-            onChange={handleChange}
-          />
-        </Grid>
-      </>
-    )}
-
-    <Grid item xs={12} sm={6}>
-      <TextField
-        fullWidth
-        label="Owner Name"
-        name="ownerName"
-        value={formData.ownerName}
-        onChange={handleChange}
-      />
-    </Grid>
-
-    <Grid item xs={12} sm={6}>
-      <TextField
-        fullWidth
-        label="Owner Contact"
-        name="ownerContact"
-        value={formData.ownerContact}
-        onChange={handleChange}
-      />
-    </Grid>
-
-    <Grid item xs={12} sm={6}>
-      <TextField
-        fullWidth
-        label="Owner Email"
-        name="ownerEmail"
-        type="email"
-        value={formData.ownerEmail}
-        onChange={handleChange}
-      />
-    </Grid>
-  </Grid>
-);
+      );
       default: return null;
     }
   };
@@ -1352,9 +1347,9 @@ case 4: return (
             ) : (
               <Button
                 variant="contained"
-               onClick={() => setActiveStep(prev => prev + 1)}
-  disabled={!validateStep(activeStep)}
->
+                onClick={() => setActiveStep(prev => prev + 1)}
+                disabled={!validateStep(activeStep)}
+              >
                 Next
               </Button>
             )}
