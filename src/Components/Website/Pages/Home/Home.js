@@ -499,276 +499,272 @@ useEffect(() => {
             </Navbar> */}
 
 
-
-      <div className="container-fluid px-0 " style={{ marginTop: "-4px" }}>
-        <Card className="shadow rounded-0 border-0">
-          <Carousel
-            fade={false}
-            interval={2000}
-            indicators={true}
-            prevIcon={
-              <span
-                className="custom-arrow left-arrow"
-                style={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "20px",
-                  zIndex: 2,
-                  fontSize: "2rem",
-                  color: "#fff",
-                }}
-              >
-                <FaChevronLeft />
-              </span>
-            }
-            nextIcon={
-              <span
-                className="custom-arrow right-arrow"
-                style={{
-                  position: "absolute",
-                  top: "50%",
-                  right: "20px",
-                  zIndex: 2,
-                  fontSize: "2rem",
-                  color: "#fff",
-                }}
-              >
-                <FaChevronRight />
-              </span>
-            }
-          >
-            {carouselItems.map((item, index) => (
-              <Carousel.Item key={index} className="position-relative">
-                {/* Image */}
-                <img
-                  className="d-block w-100"
-                  src={`${baseurl}${item.image}`}
-                  alt={item.title || `Slide ${index + 1}`}
-                  style={{
-                    maxHeight: "500px",
-                    objectFit: "cover",
-                    width: "100vw",
-                  }}
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = "https://via.placeholder.com/1200x500?text=Image+Not+Found";
-                  }}
-                />
-
-                {/* ✅ Dark Overlay */}
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    height: "100%",
-                    backgroundColor: "rgba(0, 0, 0, 0.5)", // You can adjust the opacity here
-                    zIndex: 2,
-                  }}
-                ></div>
-
-                {/* Hero Content Overlay */}
-                <div
-                  className="position-absolute top-50 start-50 translate-middle text-white text-center"
-                  style={{ zIndex: 3, marginTop: "-40px" }} // Make sure this is above the overlay
-                >
-                  <div className="hero-content">
-                    <h1 className="display-5 fw-bold mb-4">Premium Commercial Real Estate</h1>
-                    <p className="lead mb-4">
-                      Find the perfect warehouse or commercial building for your business with Shriraj Real Estate
-                    </p>
-                    <a href="/properties" className="btn view-property-btn px-4 py-2">
-                      View Properties
-                    </a>
-                  </div>
-                </div>
-              </Carousel.Item>
-
-
-            ))}
-          </Carousel>
-        </Card>
-      </div>
-
-
-      {/* Search Bar Section */}
-      <div className="container search-bar-wrapper">
-        <div
-          className="search-bar-box bg-white rounded shadow p-3"
-          style={{ border: '2px solid #6f979b' }}
+<div className="container-fluid px-0" style={{ marginTop: "-4px" }}>
+  <Card className="shadow rounded-0 border-0">
+    <Carousel
+      fade={false}
+      interval={2000}
+      indicators={true}
+      prevIcon={
+        <span
+          className="custom-arrow left-arrow"
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "10px",
+            zIndex: 2,
+            fontSize: "1.5rem",
+            color: "#fff",
+          }}
         >
-          <Tabs
-            activeKey={activeTab}
-            onSelect={(k) => setActiveTab(k)}
-            id="property-tabs"
-            className="search-tabs"
-          >
-            <Tab eventKey="sell" title="Sell">
-              <div className="mt-3">
-                <SearchInput activeTab="sell" />
-              </div>
-            </Tab>
-            <Tab eventKey="rent" title="Rent">
-              <div className="mt-3">
-                <SearchInput activeTab="rent" />
-              </div>
-            </Tab>
-          </Tabs>
-        </div>
+          <FaChevronLeft />
+        </span>
+      }
+      nextIcon={
+        <span
+          className="custom-arrow right-arrow"
+          style={{
+            position: "absolute",
+            top: "50%",
+            right: "10px",
+            zIndex: 2,
+            fontSize: "1.5rem",
+            color: "#fff",
+          }}
+        >
+          <FaChevronRight />
+        </span>
+      }
+    >
+      {carouselItems.map((item, index) => (
+        <Carousel.Item key={index} className="position-relative">
+          <img
+            className="d-block w-100"
+            src={`${baseurl}${item.image}`}
+            alt={item.title || `Slide ${index + 1}`}
+            style={{
+              maxHeight: "500px",
+              objectFit: "cover",
+              width: "100%",
+            }}
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src =
+                "https://via.placeholder.com/1200x500?text=Image+Not+Found";
+            }}
+          />
 
-        {/* Display search results */}
-        {searchResults.length > 0 && (
-          <div className="mt-3 p-3 bg-white rounded shadow">
-            <h5>Search Results</h5>
-            <div className="list-group">
-              {searchResults.map((property) => (
-                <div
-                  key={property.property_id}
-                  className="list-group-item list-group-item-action"
-                >
-                  <div className="d-flex w-100 justify-content-between">
-                    <h6 className="mb-1">{property.property_title}</h6>
-                    <small>{property.property_type}</small>
-                  </div>
-                  <p className="mb-1">
-                    {property.address}, {property.city}, {property.state}
-                  </p>
-                  <small>₹{property.price}</small>
-                </div>
-              ))}
+          {/* Dark Overlay */}
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              zIndex: 2,
+            }}
+          ></div>
+
+          {/* Hero Content */}
+          <div
+            className="position-absolute top-50 start-50 translate-middle text-white text-center px-3"
+            style={{ zIndex: 3 }}
+          >
+            <div className="hero-content">
+              <h1 className="display-6 fw-bold mb-2">
+                Premium Commercial Real Estate
+              </h1>
+              <p className="lead mb-3 fs-6">
+                Find the perfect warehouse or commercial building for your
+                business with Shriraj Real Estate
+              </p>
+              <a href="/properties" className="btn view-property-btn px-3 py-2">
+                View Properties
+              </a>
             </div>
           </div>
-        )}
-      </div>
+        </Carousel.Item>
+      ))}
+    </Carousel>
+  </Card>
+</div>
 
-      {/* Team Section */}
-      {/* <section className="py-5 bg-light Team-section">
-        <div className="container">
-          <h2 className="section-title text-left" data-aos="fade-up">Our Team</h2>
-          <div className="row">
-            {teamMembers.map((member, index) => (
-              <div
-                key={index}
-                className="col-lg-3 col-md-6 mb-4"
-                data-aos="fade-up"
-                data-aos-delay={(index + 1) * 100}
-              >
-                <div className="property-card text-center">
-                  <img
-                    src={member.imgSrc}
-                    alt={member.name}
-                    className="img-fluid rounded-circle mb-3 mt-3 mx-auto"
-                    style={{ width: '180px', height: '180px', objectFit: 'cover' }}
-                  />
-                  <div className="p-3">
-                    <h5>{member.name}</h5>
-                    <p className="text-muted">{member.position}</p>
-                    <p>{member.description}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div> */}
-      {/* <div className="text-center mt-4">
-            <a href="#" className="btn btn-primary view-property-btn px-4 py-2" data-aos="fade-up">
-              Meet Our Full Team
-            </a>
-          </div> */}
-      {/* </div>
-      </section> */}
+
+
+{/* Search Bar Section */}
+<div className="container search-bar-wrapper">
+  <div
+    className="search-bar-box bg-white rounded shadow p-3"
+    style={{ border: '2px solid #6f979b' }}
+  >
+    <Tabs
+      activeKey={activeTab}
+      onSelect={(k) => setActiveTab(k)}
+      id="property-tabs"
+      className="search-tabs"
+    >
+      <Tab eventKey="sell" title="Sell">
+        <div className="mt-3">
+          <SearchInput activeTab="sell" />
+        </div>
+      </Tab>
+      <Tab eventKey="rent" title="Rent">
+        <div className="mt-3">
+          <SearchInput activeTab="rent" />
+        </div>
+      </Tab>
+    </Tabs>
+  </div>
+
+  {/* Display search results */}
+  {searchResults.length > 0 && (
+    <div className="mt-3 p-3 bg-white rounded shadow">
+      <h5>Search Results</h5>
+      <div className="list-group">
+        {searchResults.map((property) => (
+          <div
+            key={property.property_id}
+            className="list-group-item list-group-item-action"
+          >
+            <div className="d-flex w-100 justify-content-between">
+              <h6 className="mb-1">{property.property_title}</h6>
+              <small>{property.property_type}</small>
+            </div>
+            <p className="mb-1">
+              {property.address}, {property.city}, {property.state}
+            </p>
+            <small>₹{property.price}</small>
+          </div>
+        ))}
+      </div>
+    </div>
+  )}
+</div>
+
+      
 
 
       {/* Featured Properties Section */}
-      <section className="py-5 bg-light">
-        <div className="container">
-          <h2 className="section-title text-left mb-5" data-aos="fade-up">
-            Featured Properties Section
-          </h2>
-          <div className="row">
-            {loading ? (
-              <div className="text-center">Loading properties...</div>
-            ) : (
-              properties.map((property, index) => (
-                <div
-                  className="col-md-4 mb-4"
-                  key={property.property_id}
-                  data-aos="fade-up"
-                  data-aos-delay={(index + 1) * 100}
-                >
-                  <div
-                    className="property-card card d-flex flex-column"
-                    style={{ height: '100%' }}
-                  >
-                    <Carousel
-                      interval={3000}
-                      indicators={false}
-                      controls={true}
-                      pause={false}
-                    >
-                      {(property.images || []).map((imgObj, i) => (
-                        <Carousel.Item key={i}>
-                          <img
-                            src={`${baseurl}${imgObj.image}`}
-                            className="d-block w-100"
-                            alt={`slide-${i}`}
-                            style={{
-                              borderRadius: '8px',
-                              maxHeight: '200px',
-                              objectFit: 'cover',
-                            }}
-                          />
-                        </Carousel.Item>
-                      ))}
-                    </Carousel>
+ <section className="py-5 bg-light">
+      <div className="container">
+        <h2 className="section-title text-left mb-5" data-aos="fade-up">
+          Featured Properties Section
+        </h2>
 
-                    <div
-                      className="card-body d-flex flex-column justify-content-between"
-                      style={{ flexGrow: 1 }}
-                    >
-                      <div>
-                        <div className="row mb-2 align-items-center">
-                          <div className="col text-start ps-0">
-                            <span className="badge bg-success me-2">
-                              {property.looking_to
-                                ?.charAt(0)
-                                .toUpperCase() + property.looking_to?.slice(1)}
-                            </span>
-                            <span className="badge bg-secondary">{property.furnishing_status}</span>
-                            {/* <span className="badge bg-secondary me-2">
-                              {property.furnishing_status
-                                ?.charAt(0)
-                                .toUpperCase() + property.furnishing_status?.slice(1)}
-                            </span> */}
-                          </div>
+        <div className="row">
+          {loading ? (
+            <div className="text-center">Loading properties...</div>
+          ) : (
+            properties.map((property, index) => (
+              <div
+                className="col-md-4 mb-4"
+                key={property.property_id}
+                data-aos="fade-up"
+                data-aos-delay={(index + 1) * 100}
+              >
+                <div
+                  className="property-card card d-flex flex-column"
+                  style={{ height: "100%" }}
+                >
+                  {/* Carousel */}
+                  <Carousel
+                    interval={3000}
+                    indicators={false}
+                    controls={true}
+                    pause={false}
+                  >
+                    {(property.images || []).map((imgObj, i) => (
+                      <Carousel.Item key={i}>
+                        <img
+                          src={`${baseurl}${imgObj.image}`}
+                          className="d-block w-100"
+                          alt={`slide-${i}`}
+                          style={{
+                            borderRadius: "8px",
+                            maxHeight: "200px",
+                            objectFit: "cover",
+                          }}
+                        />
+                      </Carousel.Item>
+                    ))}
+                  </Carousel>
+
+                  {/* Card Body */}
+                  <div
+                    className="card-body d-flex flex-column justify-content-between"
+                    style={{ flexGrow: 1 }}
+                  >
+                    <div>
+                      <div className="row mb-2 align-items-center">
+                        <div className="col text-start ps-0">
+                          <span className="badge bg-success me-2">
+                            {property.looking_to?.charAt(0).toUpperCase() +
+                              property.looking_to?.slice(1)}
+                          </span>
+                          <span className="badge bg-secondary">
+                            {property.furnishing_status}
+                          </span>
                         </div>
-                        <h5 className="card-title">{property.property_title}</h5>
-                        <p className="card-text">{property.description}</p>
                       </div>
 
-                      <a
-                        href="/properties"
-                        className="btn btn-primary view-property-btn mt-auto px-4 py-2"
-                        style={{ alignSelf: 'center', width: 'fit-content' }}
-                      >
-                        View Property
-                      </a>
-
-
+                      <h5 className="card-title">{property.property_title}</h5>
+                      <p className="card-text">{property.description}</p>
                     </div>
+
+                    
+{/* Buttons Row */}
+<div className="d-flex justify-content-between gap-2 mt-auto w-100">
+  {/* View Property Button */}
+  <Button
+    component="a"
+    href="/properties"
+    sx={{
+      color: "#fff",
+      backgroundColor: "#0d6efd",   // Bootstrap primary color
+      flex: 1,                      // equal width
+      "&:hover": {
+        backgroundColor: "#0b5ed7", // Bootstrap primary hover color
+      },
+    }}
+  >
+    View Property
+  </Button>
+
+  {/* Buy Now Button */}
+  <Button
+    sx={{
+      color: "#2E166D",
+      border: "1px solid #2E166D",
+      flex: 1,  // equal width
+      "&:hover": {
+        backgroundColor: "#2E166D",
+        color: "#FFFFFF",
+      },
+    }}
+    onClick={() => navigate("/login")}
+  >
+    Buy Now
+  </Button>
+</div>
+
+
                   </div>
                 </div>
-              ))
-            )}
-          </div>
-          <div className="text-center mt-3">
-            <a href="/properties" className="btn btn-primary px-4 py-2">
-              Browse All Properties
-            </a>
-          </div>
+              </div>
+            ))
+          )}
         </div>
-      </section>
 
+        {/* Browse All */}
+        <div className="text-center mt-3">
+          <a href="/properties" className="btn btn-primary px-4 py-2">
+            Browse All Properties
+          </a>
+        </div>
+      </div>
+    </section>
 
 
 
@@ -861,107 +857,7 @@ useEffect(() => {
       </Box>
 
 
-      {/* Why Commercial RE Section */}
-      {/* <section className="why-Shriraj-section">
-        <div className="container">
-          <h2
-            className="section-title text-left"
-            data-aos="fade-up"
-            style={{ marginTop: '30px', paddingTop: '20px' }}
-          >
-            Why Commercial Real Estate
-          </h2>
-          <div className="row">
-            <div className="col-lg-6" data-aos="fade-right">
-              <div className="video-container mb-4">
-                <video width="100%" height="300" controls>
-                  <source
-                    src="https://media.gettyimages.com/id/1356847933/video/drone-view-of-warehouse-in-milton-keynes-uk.mp4?s=mp4-640x640-gi&k=20&c=z4Nixp-V5djCUdvjQ8f8GNWee8BRU6VW9q5du4wKzwU="
-                    type="video/mp4"
-                  />
-                  Your browser does not support the video tag.
-                </video>
-              </div>
-            </div>
-            <div className="col-lg-6" data-aos="fade-left">
-              <div className="p-4">
-                <h3 className="mb-4">Investment Benefits</h3>
-                <ul className="list-unstyled">
-                  <li className="mb-3">
-                    <FontAwesomeIcon icon={faCheckCircle} className="text-success me-2" />
-                    Higher returns compared to residential properties
-                  </li>
-                  <li className="mb-3">
-                    <FontAwesomeIcon icon={faCheckCircle} className="text-success me-2" />
-                    Longer lease terms providing stable income
-                  </li>
-                  <li className="mb-3">
-                    <FontAwesomeIcon icon={faCheckCircle} className="text-success me-2" />
-                    Triple-net leases reducing ownership costs
-                  </li>
-                  <li className="mb-3">
-                    <FontAwesomeIcon icon={faCheckCircle} className="text-success me-2" />
-                    Opportunity for portfolio diversification
-                  </li>
-                  <li className="mb-3">
-                    <FontAwesomeIcon icon={faCheckCircle} className="text-success me-2" />
-                    Potential tax benefits through depreciation
-                  </li>
-                </ul>
-                <div className="text-center text-lg-start mt-4">
-                  <a href="/properties" className="btn view-property-btn mt-3">View Properties</a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section> */}
-
-
-      {/* How It Works Section */}
-      {/* <section className="video-section">
-        <div className="container">
-          <h2 className="section-title text-left" data-aos="fade-up">How It Works</h2>
-          <div className="row">
-            <div className="col-lg-6" data-aos="fade-right">
-              <div className="p-4">
-                <h3 className="mb-4">Our Process</h3>
-                {processSteps.map((step, index) => (
-                  <div className="d-flex mb-4" key={index}>
-                    <div className="me-3">
-                      <FontAwesomeIcon
-                        icon={faCheckCircle}
-                        className="text-success"
-                        style={{ width: '20px', height: '20px' }}
-                      />
-                    </div>
-                    <div>
-                      <h5>{step.title}</h5>
-                      <p>{step.description}</p>
-                    </div>
-                  </div>
-                ))}
-                <div className="text-center text-lg-start mt-4">
-                  <a href="/properties" className="btn btn-primary view-property-btn px-4 py-2">
-                    Get Started
-                  </a>
-                </div>
-              </div>
-            </div>
-            <div className="col-lg-6" data-aos="fade-left">
-              <div className="video-container">
-                <video width="100%" height="300" controls>
-                  <source
-                    src="https://media.gettyimages.com/id/1005428552/video/loading-docks.mp4?s=mp4-640x640-gi&k=20&c=pvbOZeOzq8K9p1_soQvYu-PIsZyaxRbltKDFACLVqEk="
-                    type="video/mp4"
-                  />
-                  Your browser does not support the video tag.
-                </video>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section> */}
+    
       {/* Shriraj Advantage Section */}
       <section className="py-5">
         <div className="container">
@@ -996,93 +892,111 @@ useEffect(() => {
 
       {/* Properties Section */}
       <section className="py-5 bg-light">
-        <div className="container">
-          <h2 className="section-title text-left mb-5" data-aos="fade-up">
-            Properties
-          </h2>
-          <div className="row">
-            {loading ? (
-              <div className="text-center">Loading properties...</div>
-            ) : (
-              properties.map((property, index) => (
-                <div
-                  className="col-md-4 mb-4"
-                  key={property.property_id}
-                  data-aos="fade-up"
-                  data-aos-delay={(index + 1) * 100}
-                >
-                  <div
-                    className="property-card card d-flex flex-column"
-                    style={{ height: '100%' }}
-                  >
-                    <Carousel
-                      interval={3000}
-                      indicators={false}
-                      controls={true}
-                      pause={false}
-                    >
-                      {(property.images || []).map((imgObj, i) => (
-                        <Carousel.Item key={i}>
-                          <img
-                            src={`${baseurl}${imgObj.image}`}
-                            className="d-block w-100"
-                            alt={`slide-${i}`}
-                            style={{
-                              borderRadius: '8px',
-                              maxHeight: '200px',
-                              objectFit: 'cover',
-                            }}
-                          />
-                        </Carousel.Item>
-                      ))}
-                    </Carousel>
+  <div className="container">
+    <h2 className="section-title text-left mb-5" data-aos="fade-up">
+      Properties
+    </h2>
+    <div className="row">
+      {loading ? (
+        <div className="text-center">Loading properties...</div>
+      ) : (
+        properties.map((property, index) => (
+          <div
+            className="col-md-4 mb-4"
+            key={property.property_id}
+            data-aos="fade-up"
+            data-aos-delay={(index + 1) * 100}
+          >
+            <div
+              className="property-card card d-flex flex-column"
+              style={{ height: '100%' }}
+            >
+              <Carousel
+                interval={3000}
+                indicators={false}
+                controls={true}
+                pause={false}
+              >
+                {(property.images || []).map((imgObj, i) => (
+                  <Carousel.Item key={i}>
+                    <img
+                      src={`${baseurl}${imgObj.image}`}
+                      className="d-block w-100"
+                      alt={`slide-${i}`}
+                      style={{
+                        borderRadius: '8px',
+                        maxHeight: '200px',
+                        objectFit: 'cover',
+                      }}
+                    />
+                  </Carousel.Item>
+                ))}
+              </Carousel>
 
-                    <div
-                      className="card-body d-flex flex-column justify-content-between"
-                      style={{ flexGrow: 1 }}
-                    >
-                      <div>
-                        <div className="row mb-2 align-items-center">
-                          <div className="col text-start ps-0">
-                            <span className="badge bg-success me-2">
-                              {property.looking_to
-                                ?.charAt(0)
-                                .toUpperCase() + property.looking_to?.slice(1)}
-                            </span>
-                            {/* <span className="badge bg-success me-2">
-                              {property.furnishing_status
-                                ?.charAt(0)
-                                .toUpperCase() + property.furnishing_status?.slice(1)}
-                            </span> */}
-                            <span className="badge bg-secondary">{property.furnishing_status}</span>
-                          </div>
-                        </div>
-                        <h5 className="card-title">{property.property_title}</h5>
-                        <p className="card-text">{property.description}</p>
-                      </div>
-
-                      <a
-                        href="/properties"
-                        className="btn btn-primary view-property-btn mt-auto px-4 py-2"
-                        style={{ alignSelf: 'center', width: 'fit-content' }}
-                      >
-                        View Property
-                      </a>
-
-
+              <div
+                className="card-body d-flex flex-column justify-content-between"
+                style={{ flexGrow: 1 }}
+              >
+                <div>
+                  <div className="row mb-2 align-items-center">
+                    <div className="col text-start ps-0">
+                      <span className="badge bg-success me-2">
+                        {property.looking_to?.charAt(0).toUpperCase() + property.looking_to?.slice(1)}
+                      </span>
+                      <span className="badge bg-secondary">{property.furnishing_status}</span>
                     </div>
                   </div>
+                  <h5 className="card-title">{property.property_title}</h5>
+                  <p className="card-text">{property.description}</p>
                 </div>
-              ))
-            )}
+
+                {/* Buttons Section */}
+                <div className="btn-container single-button mt-3">
+                  <Button
+                    sx={{
+                      color: "#2E166D",
+                      border: "1px solid #2E166D",
+                      width: "100%",
+                      '&:hover': {
+                        backgroundColor: "#2E166D",
+                        color: "#FFFFFF"
+                      }
+                    }}
+                    onClick={() => navigate(`/viewpropertiesdetails/${property.property_id}`)}
+                  >
+                    View Property
+                  </Button>
+
+                  <Button
+                    sx={{
+                      color: "#2E166D",
+                      border: "1px solid #2E166D",
+                      width: "100%",
+                      mt: 1,
+                      '&:hover': {
+                        backgroundColor: "#2E166D",
+                        color: "#FFFFFF"
+                      }
+                    }}
+                    onClick={() => navigate('/login')}
+                  >
+                    Buy Now
+                  </Button>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="text-center mt-3">
-            <a href="/properties" className="btn btn-primary px-4 py-2">
-              Browse All Properties
-            </a>
-          </div>
-        </div>
-      </section>
+        ))
+      )}
+    </div>
+
+    <div className="text-center mt-3">
+      <a href="/properties" className="btn btn-primary px-4 py-2">
+        Browse All Properties
+      </a>
+    </div>
+  </div>
+</section>
 
 
       {/* Our Backers Section */}
@@ -1107,136 +1021,6 @@ useEffect(() => {
           </div>
         </div>
       </section>
-
-      {/* In The News Section */}
-      {/* <section className="py-5">
-        <div className="container">
-          <h2 className="section-title text-left" data-aos="fade-up">In The News</h2>
-          <div className="row">
-            {newsItems.map((news) => (
-              <div
-                className="col-md-4 mb-4"
-                key={news.id}
-                data-aos="fade-up"
-                data-aos-delay={news.delay}
-              >
-                <div className="news-card">
-                  <img
-                    src={news.image}
-                    alt={`News ${news.id}`}
-                    className="img-fluid rounded mb-3"
-                  />
-                  <p className="news-date">{news.date}</p>
-                  <h5>{news.title}</h5>
-                  <p>{news.excerpt}</p>
-                  
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section> */}
-      {/* Contact Us Section */}
-
-      {/* Footer Section */}
-      {/* <footer className="footer-custom">
-        <Container>
-          <Row>
-            <Col md={4} className="mb-4 mb-md-0">
-              <img
-                src="http://175.29.21.7:84/static/media/Logo%20File.78893cdbe11c7dfa5f45.png"
-                alt="Shriraj Logo"
-                className="footer-logo"
-              />
-              <p className="mt-3">Premium commercial real estate investments for discerning investors. Discover exceptional opportunities in prime locations nationwide.</p>
-              <div className="social-links mt-3">
-                <a href="#"><i className="fab fa-facebook-f"></i></a>
-                <a href="#"><i className="fab fa-twitter"></i></a>
-                <a href="#"><i className="fab fa-linkedin-in"></i></a>
-                <a href="#"><i className="fab fa-instagram"></i></a>
-              </div>
-            </Col>
-            <Col md={2} className="mb-4 mb-md-0">
-              <div className="footer-links">
-                <h5>Quick Links</h5>
-                <ul>
-                  <li><a href="#">Home</a></li>
-                  <li><a href="#">Properties</a></li>
-                  <li><a href="#">Why Shriraj</a></li>
-                  <li><a href="#">About Us</a></li>
-                  <li><a href="#">Contact</a></li>
-                </ul>
-              </div>
-            </Col>
-            <Col md={2} className="mb-4 mb-md-0">
-              <div className="footer-links">
-                <h5>Properties</h5>
-                <ul>
-                  <li><a href="#">Warehouses</a></li>
-                  <li><a href="#">Office Spaces</a></li>
-                  <li><a href="#">Retail</a></li>
-                  <li><a href="#">Industrial</a></li>
-                  <li><a href="#">Mixed Use</a></li>
-                </ul>
-              </div>
-            </Col>
-            <Col md={4}>
-              <div className="footer-links">
-                <h5>Newsletter</h5>
-                <p>Subscribe to our newsletter for the latest property listings and market insights.</p>
-                <Form className="mt-3">
-                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <tbody>
-                      <tr>
-                        <td style={{ padding: 0 }}>
-                          <Form.Control
-                            type="email"
-                            placeholder="Your Email"
-                            style={{
-                              borderRadius: '4px 0 0 4px',
-                              borderRight: 'none',
-                              width: '100%'
-                            }}
-                          />
-                        </td>
-                        <td style={{ width: '1%', padding: 0 }}>
-                          <Button
-                            variant="light"
-                            type="submit"
-                            style={{
-                              borderRadius: '0 4px 4px 0',
-                              whiteSpace: 'nowrap',
-                              marginTop: '-20px',
-                              border: '1px solid #21a0ea'
-                            }}
-                            className="newsletter-btn"
-                          >
-                            Subscribe
-                          </Button>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </Form>
-              </div>
-            </Col>
-          </Row>
-          <hr className="mt-4 mb-4 footer-divider" />
-          <Row>
-            <Col md={6} className="text-center text-md-start">
-              <p className="mb-0">&copy; 2025 Shriraj Commercial Real Estate. All rights reserved.</p>
-            </Col>
-            <Col md={6} className="text-center text-md-end">
-              <p className="mb-0">
-                <a href="#" className="text-white me-3">Privacy Policy</a>
-                <a href="#" className="text-white me-3">Terms of Service</a>
-                <a href="#" className="text-white">Sitemap</a>
-              </p>
-            </Col>
-          </Row>
-        </Container>
-      </footer> */}
-
     </>
   );
 };
