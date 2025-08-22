@@ -859,7 +859,7 @@ const ShrirajLandingPage = () => {
                 <a href="/properties" className="btn view-property-btn mt-3">View Properties</a>
               </div>
             </div>
-            <div className="col-lg-6" data-aos="fade-left">
+            <div className="col-lg-6 mt-4" data-aos="fade-left">
               <img
                 src="https://www.developer.com/wp-content/uploads/slider/cache/f8aa18e48223e00fe5e7658c206b4449/Empire-State-Building-1-1200-x-600.jpg"
                 alt="Commercial Property"
