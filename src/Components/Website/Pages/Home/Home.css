@@ -594,11 +594,74 @@ p, .card-body {
 /* Default: no extra margin for desktop */
 .search-bar-wrapper {
   margin-top: 0;
+  margin-top: -100px;
+  width: 100%;
 }
 
 /* On mobile devices (<768px), add top margin */
 @media (max-width: 768px) {
   .search-bar-wrapper {
-    margin-top: 70px; /* Adjust the value as needed */
+    margin-top: 10px; /* Adjust the value as needed */
   }
+
+  .lead {
+    font-size: 1.5rem;
+    display: none;
+}
+
+.hero-content h1 {
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+}
+
+/* Voice search animation */
+.icon-btn.listening {
+  color: #e74c3c !important;
+}
+
+.pulse-ring {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  width: 30px;
+  height: 30px;
+  border: 2px solid #e74c3c;
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+  z-index: -1;
+}
+
+@keyframes pulse {
+  0% {
+    transform: translateX(-50%) translateY(-50%) scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateX(-50%) translateY(-50%) scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* Ensure microphone icon is clickable and has proper cursor */
+.icon-btn {
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background-color 0.3s;
+}
+
+.icon-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Suggestion list styles */
+.hover-cursor-pointer {
+  cursor: pointer;
+}
+
+.hover-bg-light:hover {
+  background-color: #f8f9fa !important;
 }

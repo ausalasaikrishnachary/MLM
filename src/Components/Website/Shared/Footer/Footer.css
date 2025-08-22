@@ -92,10 +92,6 @@ body {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
-.hero-content h1 {
-    font-weight: 700;
-    margin-bottom: 20px;
-}
 
 .lead {
     font-size: 1.5rem;
@@ -416,9 +412,7 @@ footer {
     transform: translateY(-50%);
 }
 
-.container {
-    width: 80%;
-}
+
 /* Main heading */
 .display-4 {
   font-size: 2.5rem !important; /* Adjust to your preferred size */
@@ -469,12 +463,6 @@ p, .card-body {
     }
 }
 
-.search-bar-wrapper {
-  margin-top: -100px; /* pulls it up so it's half in/out of hero section */
-  margin-bottom: 2rem; /* spacing below */
-  position: relative;
-  z-index: 10;
-}
 
 .search-bar-box {
   border-radius: 12px;

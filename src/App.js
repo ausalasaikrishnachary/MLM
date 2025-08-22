@@ -173,7 +173,7 @@ function Layout() {
     <>
       {publicPaths.includes(location.pathname) && <Header />}
 
-      <div style={{ marginTop: "85px" }}>
+      <div className="main-container">
         <Routes>
 
           <Route path="/" element={<Home />} />
