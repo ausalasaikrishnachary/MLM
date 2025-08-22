@@ -1,3 +1,6 @@
+
+import "./Contactus.css";
+
 import React, { useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -8,17 +11,11 @@ import {
   Button,
   Card,
   Grid,
-  IconButton,
 } from "@mui/material";
-import {
-  Facebook,
-  Instagram,
-  LinkedIn,
-  YouTube,
-  Twitter,
-} from "@mui/icons-material";
 import PhoneIcon from "@mui/icons-material/Phone";
 import EmailIcon from "@mui/icons-material/Email";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFacebook, faInstagram, faTwitter, faYoutube } from '@fortawesome/free-brands-svg-icons';
 import "./Contactus.css";
 import { baseurl } from './../../../BaseURL/BaseURL';
 
@@ -50,9 +47,12 @@ const Contact = () => {
       console.error(error);
     }
   };
+
   return (
     <Box className="contact-container" sx={{ mt: 5, px: { xs: 2, sm: 5, md: 15 } }}>
       <Grid container spacing={4}>
+
+        {/* Left Section */}
         <Grid item xs={12} md={6} display="flex" alignItems="center">
           <Box>
             <Typography variant="h6" color="text.secondary" className="contact-subtitle">
@@ -61,6 +61,7 @@ const Contact = () => {
             <Typography variant="h4" fontWeight="bold" color="text.primary" className="contact-title">
               Make an appointment
             </Typography>
+
             <Typography variant="h6" fontWeight="bold" color="text.primary" mt={4} className="contact-location-title">
               Our Location:
             </Typography>
@@ -69,6 +70,7 @@ const Contact = () => {
               Atal Chowk, Main Road Boria Khurd, Near Durga Mandir,
               Raipur, Chhattisgarh, 492017
             </Typography>
+
             <Typography variant="h6" fontWeight="bold" color="text.primary" mt={4} className="contact-contact-title">
               Contact:
             </Typography>
@@ -85,63 +87,58 @@ const Contact = () => {
               </Typography>
             </div>
 
-            {/* Social Media Icons */}
+            {/* Social Media Links */}
             <Box mt={4}>
               <Typography variant="h6" fontWeight="bold" color="text.primary" className="contact-follow-title">
                 Follow Us
               </Typography>
-              <Box display="flex" gap={2} className="contact-social-icons">
-                <IconButton color="primary">
-                  <Facebook />
-                </IconButton>
-                <IconButton sx={{ color: "#E4405F" }}>
-                  <Instagram />
-                </IconButton>
-                <IconButton color="primary">
-                  <LinkedIn />
-                </IconButton>
-                <IconButton sx={{ color: "#FF0000" }}>
-                  <YouTube />
-                </IconButton>
-                <IconButton color="inherit">
-                  <Twitter />
-                </IconButton>
+              <Box sx={{ display: 'flex', justifyContent: 'flex-start', gap: 2, mt: 2 }}>
+                {[
+                  { icon: faInstagram, url: "https://www.instagram.com/shrirajteam/?igsh=YzhjcjVuMGIxZzJq#" },
+                  { icon: faFacebook, url: "https://www.facebook.com/shrirajteam/" },
+                  { icon: faTwitter, url: "https://x.com/shrirajteam" },
+                  { icon: faYoutube, url: "https://www.youtube.com/@Shrirajteam" },
+                ].map((item, i) => (
+                  <a
+                    key={i}
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ textDecoration: "none" }}
+                  >
+                    <Box
+                      sx={{
+                        width: 48,
+                        height: 48,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: '50%',
+                        backgroundColor: '#000',
+                        boxShadow: 2,
+                        transition: 'all 0.3s ease',
+                        cursor: 'pointer',
+                        '&:hover': {
+                          backgroundColor: 'primary.main',
+                          transform: 'scale(1.1)',
+                        },
+                        '& svg': {
+                          fontSize: 24,
+                          color: '#fff',
+                          transition: 'transform 0.3s ease',
+                        },
+                      }}
+                    >
+                      <FontAwesomeIcon icon={item.icon} />
+                    </Box>
+                  </a>
+                ))}
               </Box>
             </Box>
           </Box>
         </Grid>
 
-        {/* <Grid item xs={12} md={6}>
-          <Typography variant="h4" textAlign="center" fontWeight="bold" color="text.primary" mb={2} className="contact-form-title">
-            Contact Us
-          </Typography>
-          <Card sx={{ p: 4, border: "2px solid black", boxShadow: 3 }} className="contact-card">
-            <form>
-              <TextField fullWidth label="Name" variant="outlined" margin="normal" className="contact-input" />
-              <TextField fullWidth label="Contact" variant="outlined" margin="normal" className="contact-input" />
-              <TextField fullWidth label="Email ID" variant="outlined" margin="normal" className="contact-input" />
-              <TextField fullWidth label="Message" multiline rows={3} variant="outlined" margin="normal" className="contact-input" />
-              <div style={{ textAlign: 'center' }}>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  sx={{
-                    backgroundColor: "rgb(46, 22, 109)",
-                    color: "white",
-                    fontWeight: "bold",
-                    borderRadius: "20px",
-                    mt: 2,
-                    '&:hover': { backgroundColor: "rgb(30, 10, 80)" },
-                  }}
-                  className="contact-submit-btn"
-                >
-                  Submit
-                </Button>
-              </div>
-            </form>
-          </Card>
-        </Grid> */}
-
+        {/* Right Section - Contact Form */}
         <Grid item xs={12} md={6}>
           <Typography variant="h4" textAlign="center" fontWeight="bold" color="text.primary" mb={2} className="contact-form-title">
             Contact Us
@@ -195,7 +192,7 @@ const Contact = () => {
                 variant="outlined"
                 margin="normal"
               />
-              <div style={{ textAlign: "center" }}>
+              <Box textAlign="center">
                 <Button
                   type="submit"
                   variant="contained"
@@ -210,11 +207,10 @@ const Contact = () => {
                 >
                   Submit
                 </Button>
-              </div>
+              </Box>
             </form>
           </Card>
         </Grid>
-
 
       </Grid>
     </Box>
@@ -222,3 +218,7 @@ const Contact = () => {
 };
 
 export default Contact;
+
+
+
+

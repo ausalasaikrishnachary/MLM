@@ -530,3 +530,24 @@ p, .card-body {
   font-weight: 900;
   font-family: 'Roboto', sans-serif;
 }
+.property-card {
+  width: 100%;
+}
+
+@media (max-width: 576px) {
+  .property-card {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+}
+/* Default: no extra margin for desktop */
+.search-bar-wrapper {
+  margin-top: 0;
+}
+
+/* On mobile devices (<768px), add top margin */
+@media (max-width: 768px) {
+  .search-bar-wrapper {
+    margin-top: 70px; /* Adjust the value as needed */
+  }
+}
