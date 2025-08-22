@@ -51,17 +51,320 @@
 // export default PropertyDetails;
 
 
+// import React, { useState, useEffect } from 'react';
+// import { useLocation, useParams } from 'react-router-dom';
+// import {
+//   Typography, Grid, Box, Button, Divider, Chip, Card, CardContent, Paper
+// } from '@mui/material';
+// import InvestorHeader from '../../../Shared/Investor/InvestorNavbar';
+// import { baseurl } from '../../../BaseURL/BaseURL';
+// import { useNavigate } from 'react-router-dom';
+
+// const PropertyDetails = () => {
+//     const navigate = useNavigate();
+//   const location = useLocation();
+//   const { property } = location.state || {};
+//   const { id } = useParams();
+
+//   const [propertyTypes, setPropertyTypes] = useState([]);
+//   const [isPlot, setIsPlot] = useState(false);
+//   const [propertyTypeName, setPropertyTypeName] = useState("");
+
+//   useEffect(() => {
+//     const fetchPropertyTypes = async () => {
+//       try {
+//         const res = await fetch("https://shrirajteam.com:81/property-types/");
+//         const data = await res.json();
+//         setPropertyTypes(data);
+
+//         if (property) {
+//           const matchedType = data.find(
+//             (t) => t.property_type_id === property.property_type
+//           );
+//           if (matchedType) {
+//             setPropertyTypeName(matchedType.name);
+//             if (matchedType.name.toLowerCase() === "plot") {
+//               setIsPlot(true);
+//             }
+//           }
+//         }
+//       } catch (err) {
+//         console.error("Error fetching property types:", err);
+//       }
+//     };
+
+//     fetchPropertyTypes();
+//   }, [property]);
+
+//   if (!property) {
+//     return <Typography>Loading property details...</Typography>;
+//   }
+
+
+
+//   // Format currency
+//   const formatCurrency = (value) => {
+//     return new Intl.NumberFormat('en-IN', {
+//       style: 'currency',
+//       currency: 'INR',
+//       maximumFractionDigits: 0
+//     }).format(value);
+//   };
+
+//   return (
+//     <>
+//       <InvestorHeader />
+// <Box sx={{ background: '#ffffffff', py: 4, minHeight: '100vh', width: '100%' }}>
+//         <Box sx={{ px: { xs: 2, sm: 4, md: 8 } }}>
+//           <Box mb={2}>
+//             <Button variant="outlined" onClick={() => navigate(-1)}>Back</Button>
+//           </Box>
+//           {/* 
+//           <Paper elevation={3} sx={{ p: 3 }}> */}
+//           <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
+//             <Typography variant="h4" fontWeight={600} color="primary.main">
+//               {property.property_title}
+//             </Typography>
+//             <Chip
+//               label={property.status.toUpperCase()}
+//               color={property.status === 'booked' ? 'secondary' : 'success'}
+//               sx={{ fontWeight: 600 }}
+//             />
+//           </Box>
+
+//           <Grid container spacing={3}>
+//             {/* Left Column */}
+//             <Grid item xs={12} md={6}>
+//               <Card sx={{ borderRadius: 3 }}>
+//                 <CardContent>
+//                   <Box
+//                     component="img"
+//                     src={property.images.length > 0 ? `${baseurl}${property.images[0].image}` : 'https://via.placeholder.com/300'}
+//                     alt={property.property_title}
+//                     sx={{ width: '100%', borderRadius: 2, mb: 2 }}
+//                   />
+
+//                   {property.videos.length > 0 && (
+//                     <Typography variant="body2" mb={2}>🎥 Videos available: {property.videos.length}</Typography>
+//                   )}
+
+//                   {/* <Typography variant="h5" color="secondary" fontWeight={700} gutterBottom>
+//                     🏷️ Features
+//                   </Typography>
+//                   <Divider sx={{ mb: 2 }} />
+//                   <Grid container spacing={2}>
+//                     {[
+//                       ['Floors', property.number_of_floors],
+//                       ['Facing', property.facing],
+//                       ['Open Sides', property.number_of_open_sides],
+//                       ['Roads', property.number_of_roads],
+//                       ['Road Width 1', `${property.road_width_1_ft} ft`],
+//                       ['Road Width 2', `${property.road_width_2_ft} ft`],
+//                       ['Floor', property.floor || 'N/A'],
+//                       ['Furnishing Status', property.furnishing_status || 'N/A'],
+//                       ['Ownership', property.ownership_type],
+//                       ['Bedrooms', property.number_of_bedrooms || 'N/A'],
+//                       ['Bathrooms', property.number_of_bathrooms || 'N/A'],
+//                       ['Balconies', property.number_of_balconies || 'N/A'],
+//                     ].map(([label, value], index) => (
+//                       <Grid item xs={6} key={index}>
+//                         <Typography><strong>{label}:</strong> {value}</Typography>
+//                       </Grid>
+//                     ))}
+//                   </Grid> */}
+
+//                   {!isPlot && (
+//                     <>
+//                       <Typography variant="h5" color="secondary" fontWeight={700} gutterBottom>
+//                         🏷️ Features
+//                       </Typography>
+//                       <Divider sx={{ mb: 2 }} />
+//                       <Grid container spacing={2}>
+//                         {[
+//                           ['Floors', property.number_of_floors],
+//                           ['Facing', property.facing],
+//                           ['Open Sides', property.number_of_open_sides],
+//                           ['Roads', property.number_of_roads],
+//                           ['Road Width 1', `${property.road_width_1_ft} ft`],
+//                           ['Road Width 2', `${property.road_width_2_ft} ft`],
+//                           ['Floor', property.floor || 'N/A'],
+//                           ['Furnishing Status', property.furnishing_status || 'N/A'],
+//                           ['Ownership', property.ownership_type],
+//                           ['Bedrooms', property.number_of_bedrooms || 'N/A'],
+//                           ['Bathrooms', property.number_of_bathrooms || 'N/A'],
+//                           ['Balconies', property.number_of_balconies || 'N/A'],
+//                         ].map(([label, value], index) => (
+//                           <Grid item xs={6} key={index}>
+//                             <Typography><strong>{label}:</strong> {value}</Typography>
+//                           </Grid>
+//                         ))}
+//                       </Grid>
+//                     </>
+//                   )}
+
+//                   <Typography variant="h5" mt={3} color="secondary" fontWeight={700} gutterBottom>
+//                     ℹ️ Additional Information
+//                   </Typography>
+//                   <Divider sx={{ mb: 2 }} />
+
+//                   {[
+//                     ['Property Uniqueness', property.property_uniqueness],
+//                     ['Location Advantages', property.location_advantages],
+//                     ['Other Features', property.other_features],
+//                   ].map(([label, value], index) => (
+//                     <Typography key={index}><strong>{label}:</strong> {value || 'N/A'}</Typography>
+//                   ))}
+//                 </CardContent>
+//               </Card>
+//             </Grid>
+
+//             {/* Right Column */}
+//             <Grid item xs={12} md={6}>
+//               <Card sx={{ borderRadius: 3 }}>
+//                 <CardContent>
+//                   <Typography variant="h5" color="secondary" fontWeight={700} gutterBottom>
+//                     📄 Basic Information
+//                   </Typography>
+//                   <Divider sx={{ mb: 2 }} />
+
+
+//                   <Grid container spacing={2} mb={3}>
+//                     {[
+//                       ['Looking to', property.looking_to],
+//                       ['Property Value', formatCurrency(property.property_value)],
+//                       ['Category', property.category],
+//                       ['Property Type', property.property_type],
+//                     ].map(([label, value], index) => (
+//                       <Grid item xs={6} key={index}>
+//                         <Typography><strong>{label}:</strong> {value}</Typography>
+//                       </Grid>
+//                     ))}
+//                     <Grid item xs={12}>
+//                       <Typography><strong>Description:</strong> {property.description}</Typography>
+//                     </Grid>
+//                   </Grid>
+
+//                   <Typography variant="h5" color="secondary" fontWeight={700} gutterBottom>
+//                     📍 Address
+//                   </Typography>
+//                   <Divider sx={{ mb: 2 }} />
+
+
+//                   <Typography mb={2}>
+//                     {property.address}, {property.city}, {property.state}, {property.country} - {property.pin_code}
+//                   </Typography>
+//                   <Typography><strong>Coordinates:</strong> {property.latitude}, {property.longitude}</Typography>
+
+//                   <Typography variant="h5" mt={3} color="secondary" fontWeight={700} gutterBottom>
+//                     📏 Dimensions
+//                   </Typography>
+//                   <Divider sx={{ mb: 2 }} />
+
+
+//                   <Grid container spacing={2} mb={3}>
+//                     {[
+//                       ['Plot Area', `${property.plot_area_sqft} sq.ft`],
+//                       ['Built-up Area', `${property.builtup_area_sqft} sq.ft`],
+//                       ['Length', `${property.length_ft} ft`],
+//                       ['Breadth', `${property.breadth_ft} ft`],
+//                     ].map(([label, value], index) => (
+//                       <Grid item xs={6} key={index}>
+//                         <Typography><strong>{label}:</strong> {value}</Typography>
+//                       </Grid>
+//                     ))}
+//                   </Grid>
+
+//                   <Typography variant="h5" color="secondary" fontWeight={700} gutterBottom>
+//                     👤 Owner Details
+//                   </Typography>
+//                   <Divider sx={{ mb: 2 }} />
+
+//                   <Typography variant="body2" sx={{ mb: 2 }}>
+//                     <strong>Name:</strong> {property.owner_name}<br />
+//                     <strong>Contact:</strong> {property.owner_contact}<br />
+//                     <strong>Email:</strong> {property.owner_email}
+//                   </Typography>
+
+//                   <Typography variant="h5" color="secondary" fontWeight={700} gutterBottom>
+//                     👤 Buyer Details
+//                   </Typography>
+//                   <Divider sx={{ mb: 2 }} />
+
+
+//                   {property.buyer_user ? (
+//                     <Box mb={2}>
+//                       <Typography><strong>Username:</strong> {property.buyer_user.username}</Typography>
+//                       <Typography><strong>Referral ID:</strong> {property.buyer_user.referral_id}</Typography>
+//                       <Typography><strong>Contact:</strong> {property.buyer_user.phone_number}</Typography>
+//                       <Typography><strong>Email:</strong> {property.buyer_user.email}</Typography>
+//                       <Typography><strong>Booking Date:</strong> {property.buyer_user.booking_date}</Typography>
+//                       <Typography><strong>Purchase Date:</strong> {property.buyer_user.purchase_date}</Typography>
+//                     </Box>
+//                   ) : (
+//                     <Typography>No buyer information available</Typography>
+//                   )}
+
+//                   <Typography variant="h5" color="secondary" fontWeight={700} gutterBottom>
+//                     🛠️ System Information
+//                   </Typography>
+//                   <Divider sx={{ mb: 2 }} />
+
+//                   <Typography variant="body2">
+//                     <strong>Created At:</strong> {new Date(property.created_at).toLocaleString()}<br />
+//                     <strong>Updated At:</strong> {new Date(property.updated_at).toLocaleString()}<br />
+//                     <strong>User ID:</strong> {property.user_id}
+//                   </Typography>
+//                 </CardContent>
+//               </Card>
+//             </Grid>
+//           </Grid>
+//           {/* </Paper> */}
+//         </Box>
+//       </Box>
+//     </>
+//   );
+// };
+
+// export default PropertyDetails;
+
 import React, { useState, useEffect } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import {
-  Typography, Grid, Box, Button, Divider, Chip, Card, CardContent, Paper
+  Typography, Grid, Box, Button, Divider, Chip, Card, CardContent,
+  Tabs, Tab, Container, IconButton, Table, TableBody, TableCell, TableContainer, 
+  TableRow, Paper
 } from '@mui/material';
 import InvestorHeader from '../../../Shared/Investor/InvestorNavbar';
 import { baseurl } from '../../../BaseURL/BaseURL';
-import { useNavigate } from 'react-router-dom';
 
-const PropertyDetails = () => {
-    const navigate = useNavigate();
+// Icons
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import FileCopyIcon from '@mui/icons-material/FileCopy';
+import InfoIcon from '@mui/icons-material/Info';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import SquareFootIcon from '@mui/icons-material/SquareFoot';
+import HomeIcon from '@mui/icons-material/Home';
+import DetailsIcon from '@mui/icons-material/Details';
+import PersonIcon from '@mui/icons-material/Person';
+import SettingsIcon from '@mui/icons-material/Settings';
+
+const TabPanel = (props) => {
+  const { children, value, index, ...other } = props;
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`property-tabpanel-${index}`}
+      aria-labelledby={`property-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
+    </div>
+  );
+};
+
+const AssetDetail = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const { property } = location.state || {};
   const { id } = useParams();
@@ -69,6 +372,7 @@ const PropertyDetails = () => {
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [isPlot, setIsPlot] = useState(false);
   const [propertyTypeName, setPropertyTypeName] = useState("");
+  const [tabValue, setTabValue] = useState(0);
 
   useEffect(() => {
     const fetchPropertyTypes = async () => {
@@ -100,9 +404,6 @@ const PropertyDetails = () => {
     return <Typography>Loading property details...</Typography>;
   }
 
-
-
-  // Format currency
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
@@ -111,48 +412,269 @@ const PropertyDetails = () => {
     }).format(value);
   };
 
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
+    // Scroll to top of content area when tab changes
+    const contentElement = document.getElementById('tab-content');
+    if (contentElement) {
+      contentElement.scrollTop = 0;
+    }
+  };
+
   return (
     <>
       <InvestorHeader />
-<Box sx={{ background: '#ffffffff', py: 4, minHeight: '100vh', width: '100%' }}>
-        <Box sx={{ px: { xs: 2, sm: 4, md: 8 } }}>
-          <Box mb={2}>
-            <Button variant="outlined" onClick={() => navigate(-1)}>Back</Button>
-          </Box>
-          {/* 
-          <Paper elevation={3} sx={{ p: 3 }}> */}
-          <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
-            <Typography variant="h4" fontWeight={600} color="primary.main">
-              {property.property_title}
-            </Typography>
-            <Chip
-              label={property.status.toUpperCase()}
-              color={property.status === 'booked' ? 'secondary' : 'success'}
-              sx={{ fontWeight: 600 }}
-            />
+      <Box sx={{ background: '#f8f9fa', minHeight: '100vh', width: '100%', py: 3 }}>
+        <Container maxWidth="lg">
+          {/* Back button */}
+          <Box mb={3}>
+            <Button 
+              variant="outlined" 
+              onClick={() => navigate(-1)}
+              startIcon={<ArrowBackIosNewIcon />}
+              sx={{ borderRadius: 2 }}
+            >
+              Back
+            </Button>
           </Box>
 
-          <Grid container spacing={3}>
-            {/* Left Column */}
-            <Grid item xs={12} md={6}>
-              <Card sx={{ borderRadius: 3 }}>
-                <CardContent>
-                  <Box
-                    component="img"
-                    src={property.images.length > 0 ? `${baseurl}${property.images[0].image}` : 'https://via.placeholder.com/300'}
-                    alt={property.property_title}
-                    sx={{ width: '100%', borderRadius: 2, mb: 2 }}
-                  />
+          {/* Title + Status */}
+          <Card sx={{ borderRadius: 2, boxShadow: 2, mb: 3 }}>
+            <CardContent sx={{ p: 3 }}>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                flexWrap="wrap"
+                gap={2}
+              >
+                <Typography
+                  variant="h4"
+                  fontWeight={700}
+                  color="primary"
+                  gutterBottom
+                  sx={{ mb: 0 }}
+                >
+                  {property.property_title}
+                </Typography>
+                <Chip
+                  label={property.status.toUpperCase()}
+                  color={property.status === 'booked' ? 'secondary' : 'primary'}
+                  sx={{
+                    fontWeight: 600,
+                    fontSize: '0.9rem',
+                    py: 1
+                  }}
+                />
+              </Box>
+              
+              {/* Price */}
+              <Typography variant="h5" color="text.secondary" sx={{ mt: 1 }}>
+                {formatCurrency(property.property_value)}
+              </Typography>
+            </CardContent>
+          </Card>
 
-                  {property.videos.length > 0 && (
-                    <Typography variant="body2" mb={2}>🎥 Videos available: {property.videos.length}</Typography>
-                  )}
-
-                  {/* <Typography variant="h5" color="secondary" fontWeight={700} gutterBottom>
-                    🏷️ Features
+          {/* Property Image */}
+          <Card sx={{ borderRadius: 2, boxShadow: 2, mb: 3, overflow: 'hidden' }}>
+            <Box
+              sx={{
+                width: "100%",
+                height: { xs: 250, sm: 350, md: 400 },
+                overflow: "hidden",
+              }}
+            >
+              {property.images.length > 0 ? (
+                <img
+                  src={`${baseurl}${property.images[0].image}`}
+                  alt={property.property_title}
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+              ) : (
+                <Box 
+                  sx={{ 
+                    width: "100%", 
+                    height: "100%", 
+                    display: "flex", 
+                    alignItems: "center", 
+                    justifyContent: "center",
+                    backgroundColor: "#e9ecef"
+                  }}
+                >
+                  <Typography variant="h6" color="text.secondary">
+                    No image available
                   </Typography>
-                  <Divider sx={{ mb: 2 }} />
-                  <Grid container spacing={2}>
+                </Box>
+              )}
+            </Box>
+
+            {/* Video Info */}
+            {property.videos.length > 0 && (
+              <Box sx={{ p: 2, textAlign: 'center', bgcolor: 'background.paper' }}>
+                <Typography variant="body2" color="text.secondary">
+                  🎥 {property.videos.length} video(s) available
+                </Typography>
+              </Box>
+            )}
+          </Card>
+
+          {/* Tab Navigation */}
+          <Card sx={{ borderRadius: 2, boxShadow: 2, mb: 3 }}>
+            <Tabs
+              value={tabValue}
+              onChange={handleTabChange}
+              variant="scrollable"
+              scrollButtons="auto"
+              allowScrollButtonsMobile
+              sx={{
+                borderBottom: 1,
+                borderColor: 'divider',
+                '& .MuiTab-root': {
+                  minHeight: 60,
+                  py: 1.5,
+                }
+              }}
+            >
+              <Tab icon={<InfoIcon />} iconPosition="start" label="Basic Info" />
+              <Tab icon={<LocationOnIcon />} iconPosition="start" label="Address" />
+              <Tab icon={<SquareFootIcon />} iconPosition="start" label="Dimensions" />
+              {!isPlot && <Tab icon={<HomeIcon />} iconPosition="start" label="Features" />}
+              <Tab icon={<DetailsIcon />} iconPosition="start" label="Additional Info" />
+              <Tab icon={<PersonIcon />} iconPosition="start" label="Owner Details" />
+              {property.buyer_user && <Tab icon={<PersonIcon />} iconPosition="start" label="Buyer Details" />}
+              <Tab icon={<SettingsIcon />} iconPosition="start" label="System Info" />
+            </Tabs>
+
+            {/* Tab Content */}
+            <Box id="tab-content" sx={{ maxHeight: '60vh', overflow: 'auto', p: 3 }}>
+              <TabPanel value={tabValue} index={0}>
+                <Typography
+                  variant="h5"
+                  fontWeight={600}
+                  gutterBottom
+                  sx={{
+                    color: "primary.main",
+                    mb: 3,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1
+                  }}
+                >
+                  <InfoIcon /> Basic Information
+                </Typography>
+                <Grid container spacing={3}>
+                  {[
+                    ['Looking to', property.looking_to],
+                    ['Property Value', formatCurrency(property.property_value)],
+                    ['Category', property.category],
+                    ['Property Type', propertyTypeName],
+                  ].map(([label, value], index) => (
+                    <Grid item xs={12} sm={6} key={index}>
+                      <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
+                        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                          {label}
+                        </Typography>
+                        <Typography variant="body1" fontWeight={500}>
+                          {value}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  ))}
+                  <Grid item xs={12}>
+                    <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
+                      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                        Description
+                      </Typography>
+                      <Typography variant="body1" fontWeight={500}>
+                        {property.description}
+                      </Typography>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </TabPanel>
+
+              <TabPanel value={tabValue} index={1}>
+                <Typography
+                  variant="h5"
+                  fontWeight={600}
+                  gutterBottom
+                  sx={{
+                    color: "primary.main",
+                    mb: 3,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1
+                  }}
+                >
+                  <LocationOnIcon /> Address
+                </Typography>
+                <Box sx={{ p: 3, bgcolor: 'grey.50', borderRadius: 2 }}>
+                  <Typography variant="h6" gutterBottom>
+                    {property.address}
+                  </Typography>
+                  <Typography variant="body1" paragraph>
+                    {property.city}, {property.state}, {property.country} - {property.pin_code}
+                  </Typography>
+                  <Divider sx={{ my: 2 }} />
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Coordinates:</strong> {property.latitude}, {property.longitude}
+                  </Typography>
+                </Box>
+              </TabPanel>
+
+              <TabPanel value={tabValue} index={2}>
+                <Typography
+                  variant="h5"
+                  fontWeight={600}
+                  gutterBottom
+                  sx={{
+                    color: "primary.main",
+                    mb: 3,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1
+                  }}
+                >
+                  <SquareFootIcon /> Dimensions
+                </Typography>
+                <Grid container spacing={3}>
+                  {[
+                    ['Plot Area', `${property.plot_area_sqft} sq.ft`],
+                    ['Built-up Area', `${property.builtup_area_sqft} sq.ft`],
+                    ['Length', `${property.length_ft} ft`],
+                    ['Breadth', `${property.breadth_ft} ft`],
+                  ].map(([label, value], index) => (
+                    <Grid item xs={12} sm={6} key={index}>
+                      <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 2, height: '100%' }}>
+                        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                          {label}
+                        </Typography>
+                        <Typography variant="h6" fontWeight={600}>
+                          {value}
+                        </Typography>
+                      </Box>
+                    </Grid>
+                  ))}
+                </Grid>
+              </TabPanel>
+
+              {!isPlot && (
+                <TabPanel value={tabValue} index={3}>
+                  <Typography
+                    variant="h5"
+                    fontWeight={600}
+                    gutterBottom
+                    sx={{
+                      color: "primary.main",
+                      mb: 3,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1
+                    }}
+                  >
+                    <HomeIcon /> Features
+                  </Typography>
+                  <Grid container spacing={3}>
                     {[
                       ['Floors', property.number_of_floors],
                       ['Facing', property.facing],
@@ -167,162 +689,205 @@ const PropertyDetails = () => {
                       ['Bathrooms', property.number_of_bathrooms || 'N/A'],
                       ['Balconies', property.number_of_balconies || 'N/A'],
                     ].map(([label, value], index) => (
-                      <Grid item xs={6} key={index}>
-                        <Typography><strong>{label}:</strong> {value}</Typography>
+                      <Grid item xs={12} sm={6} md={4} key={index}>
+                        <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 2, height: '100%' }}>
+                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                            {label}
+                          </Typography>
+                          <Typography variant="body1" fontWeight={500}>
+                            {value}
+                          </Typography>
+                        </Box>
                       </Grid>
                     ))}
-                  </Grid> */}
+                  </Grid>
+                </TabPanel>
+              )}
 
-                  {!isPlot && (
-                    <>
-                      <Typography variant="h5" color="secondary" fontWeight={700} gutterBottom>
-                        🏷️ Features
-                      </Typography>
-                      <Divider sx={{ mb: 2 }} />
-                      <Grid container spacing={2}>
-                        {[
-                          ['Floors', property.number_of_floors],
-                          ['Facing', property.facing],
-                          ['Open Sides', property.number_of_open_sides],
-                          ['Roads', property.number_of_roads],
-                          ['Road Width 1', `${property.road_width_1_ft} ft`],
-                          ['Road Width 2', `${property.road_width_2_ft} ft`],
-                          ['Floor', property.floor || 'N/A'],
-                          ['Furnishing Status', property.furnishing_status || 'N/A'],
-                          ['Ownership', property.ownership_type],
-                          ['Bedrooms', property.number_of_bedrooms || 'N/A'],
-                          ['Bathrooms', property.number_of_bathrooms || 'N/A'],
-                          ['Balconies', property.number_of_balconies || 'N/A'],
-                        ].map(([label, value], index) => (
-                          <Grid item xs={6} key={index}>
-                            <Typography><strong>{label}:</strong> {value}</Typography>
-                          </Grid>
-                        ))}
-                      </Grid>
-                    </>
-                  )}
-
-                  <Typography variant="h5" mt={3} color="secondary" fontWeight={700} gutterBottom>
-                    ℹ️ Additional Information
-                  </Typography>
-                  <Divider sx={{ mb: 2 }} />
-
+              <TabPanel value={tabValue} index={isPlot ? 3 : 4}>
+                <Typography
+                  variant="h5"
+                  fontWeight={600}
+                  gutterBottom
+                  sx={{
+                    color: "primary.main",
+                    mb: 3,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1
+                  }}
+                >
+                  <DetailsIcon /> Additional Information
+                </Typography>
+                <Grid container spacing={3}>
                   {[
                     ['Property Uniqueness', property.property_uniqueness],
                     ['Location Advantages', property.location_advantages],
                     ['Other Features', property.other_features],
                   ].map(([label, value], index) => (
-                    <Typography key={index}><strong>{label}:</strong> {value || 'N/A'}</Typography>
-                  ))}
-                </CardContent>
-              </Card>
-            </Grid>
-
-            {/* Right Column */}
-            <Grid item xs={12} md={6}>
-              <Card sx={{ borderRadius: 3 }}>
-                <CardContent>
-                  <Typography variant="h5" color="secondary" fontWeight={700} gutterBottom>
-                    📄 Basic Information
-                  </Typography>
-                  <Divider sx={{ mb: 2 }} />
-
-
-                  <Grid container spacing={2} mb={3}>
-                    {[
-                      ['Looking to', property.looking_to],
-                      ['Property Value', formatCurrency(property.property_value)],
-                      ['Category', property.category],
-                      ['Property Type', property.property_type],
-                    ].map(([label, value], index) => (
-                      <Grid item xs={6} key={index}>
-                        <Typography><strong>{label}:</strong> {value}</Typography>
-                      </Grid>
-                    ))}
-                    <Grid item xs={12}>
-                      <Typography><strong>Description:</strong> {property.description}</Typography>
+                    <Grid item xs={12} key={index}>
+                      <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
+                        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                          {label}
+                        </Typography>
+                        <Typography variant="body1" fontWeight={500}>
+                          {value || 'N/A'}
+                        </Typography>
+                      </Box>
                     </Grid>
-                  </Grid>
+                  ))}
+                </Grid>
+              </TabPanel>
 
-                  <Typography variant="h5" color="secondary" fontWeight={700} gutterBottom>
-                    📍 Address
+              <TabPanel value={tabValue} index={isPlot ? 4 : 5}>
+                <Typography
+                  variant="h5"
+                  fontWeight={600}
+                  gutterBottom
+                  sx={{
+                    color: "primary.main",
+                    mb: 3,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1
+                  }}
+                >
+                  <PersonIcon /> Owner Details
+                </Typography>
+                <TableContainer component={Paper} sx={{ boxShadow: 2 }}>
+                  <Table>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell component="th" scope="row" sx={{ fontWeight: 600, width: '30%' }}>
+                          Name
+                        </TableCell>
+                        <TableCell>{property.owner_name}</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell component="th" scope="row" sx={{ fontWeight: 600 }}>
+                          Contact
+                        </TableCell>
+                        <TableCell>
+                          <Box display="flex" alignItems="center">
+                            {property.owner_contact}
+                            <IconButton
+                              size="small"
+                              onClick={() => {
+                                navigator.clipboard.writeText(property.owner_contact);
+                              }}
+                              sx={{ ml: 1 }}
+                              title="Copy contact number"
+                            >
+                              <FileCopyIcon fontSize="small" />
+                            </IconButton>
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell component="th" scope="row" sx={{ fontWeight: 600 }}>
+                          Email
+                        </TableCell>
+                        <TableCell>
+                          <Box display="flex" alignItems="center">
+                            {property.owner_email}
+                            <IconButton
+                              size="small"
+                              onClick={() => {
+                                navigator.clipboard.writeText(property.owner_email);
+                              }}
+                              sx={{ ml: 1 }}
+                              title="Copy email"
+                            >
+                              <FileCopyIcon fontSize="small" />
+                            </IconButton>
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </TabPanel>
+
+              {property.buyer_user && (
+                <TabPanel value={tabValue} index={isPlot ? 5 : 6}>
+                  <Typography
+                    variant="h5"
+                    fontWeight={600}
+                    gutterBottom
+                    sx={{
+                      color: "primary.main",
+                      mb: 3,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1
+                    }}
+                  >
+                    <PersonIcon /> Buyer Details
                   </Typography>
-                  <Divider sx={{ mb: 2 }} />
+                  <TableContainer component={Paper} sx={{ boxShadow: 2 }}>
+                    <Table>
+                      <TableBody>
+                        {[
+                          ['Username', property.buyer_user.username],
+                          ['Referral ID', property.buyer_user.referral_id],
+                          ['Contact', property.buyer_user.phone_number],
+                          ['Email', property.buyer_user.email],
+                          ['Booking Date', property.buyer_user.booking_date],
+                          ['Purchase Date', property.buyer_user.purchase_date],
+                        ].map(([label, value], index) => (
+                          <TableRow key={index}>
+                            <TableCell component="th" scope="row" sx={{ fontWeight: 600, width: '30%' }}>
+                              {label}
+                            </TableCell>
+                            <TableCell>{value}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </TabPanel>
+              )}
 
-
-                  <Typography mb={2}>
-                    {property.address}, {property.city}, {property.state}, {property.country} - {property.pin_code}
-                  </Typography>
-                  <Typography><strong>Coordinates:</strong> {property.latitude}, {property.longitude}</Typography>
-
-                  <Typography variant="h5" mt={3} color="secondary" fontWeight={700} gutterBottom>
-                    📏 Dimensions
-                  </Typography>
-                  <Divider sx={{ mb: 2 }} />
-
-
-                  <Grid container spacing={2} mb={3}>
-                    {[
-                      ['Plot Area', `${property.plot_area_sqft} sq.ft`],
-                      ['Built-up Area', `${property.builtup_area_sqft} sq.ft`],
-                      ['Length', `${property.length_ft} ft`],
-                      ['Breadth', `${property.breadth_ft} ft`],
-                    ].map(([label, value], index) => (
-                      <Grid item xs={6} key={index}>
-                        <Typography><strong>{label}:</strong> {value}</Typography>
-                      </Grid>
-                    ))}
-                  </Grid>
-
-                  <Typography variant="h5" color="secondary" fontWeight={700} gutterBottom>
-                    👤 Owner Details
-                  </Typography>
-                  <Divider sx={{ mb: 2 }} />
-
-                  <Typography variant="body2" sx={{ mb: 2 }}>
-                    <strong>Name:</strong> {property.owner_name}<br />
-                    <strong>Contact:</strong> {property.owner_contact}<br />
-                    <strong>Email:</strong> {property.owner_email}
-                  </Typography>
-
-                  <Typography variant="h5" color="secondary" fontWeight={700} gutterBottom>
-                    👤 Buyer Details
-                  </Typography>
-                  <Divider sx={{ mb: 2 }} />
-
-
-                  {property.buyer_user ? (
-                    <Box mb={2}>
-                      <Typography><strong>Username:</strong> {property.buyer_user.username}</Typography>
-                      <Typography><strong>Referral ID:</strong> {property.buyer_user.referral_id}</Typography>
-                      <Typography><strong>Contact:</strong> {property.buyer_user.phone_number}</Typography>
-                      <Typography><strong>Email:</strong> {property.buyer_user.email}</Typography>
-                      <Typography><strong>Booking Date:</strong> {property.buyer_user.booking_date}</Typography>
-                      <Typography><strong>Purchase Date:</strong> {property.buyer_user.purchase_date}</Typography>
-                    </Box>
-                  ) : (
-                    <Typography>No buyer information available</Typography>
-                  )}
-
-                  <Typography variant="h5" color="secondary" fontWeight={700} gutterBottom>
-                    🛠️ System Information
-                  </Typography>
-                  <Divider sx={{ mb: 2 }} />
-
-                  <Typography variant="body2">
-                    <strong>Created At:</strong> {new Date(property.created_at).toLocaleString()}<br />
-                    <strong>Updated At:</strong> {new Date(property.updated_at).toLocaleString()}<br />
-                    <strong>User ID:</strong> {property.user_id}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
-          {/* </Paper> */}
-        </Box>
+              <TabPanel value={tabValue} index={property.buyer_user ? (isPlot ? 6 : 7) : (isPlot ? 5 : 6)}>
+                <Typography
+                  variant="h5"
+                  fontWeight={600}
+                  gutterBottom
+                  sx={{
+                    color: "primary.main",
+                    mb: 3,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1
+                  }}
+                >
+                  <SettingsIcon /> System Information
+                </Typography>
+                <TableContainer component={Paper} sx={{ boxShadow: 2 }}>
+                  <Table>
+                    <TableBody>
+                      {[
+                        ['Created At', new Date(property.created_at).toLocaleString()],
+                        ['Updated At', new Date(property.updated_at).toLocaleString()],
+                        ['User ID', property.user_id],
+                      ].map(([label, value], index) => (
+                        <TableRow key={index}>
+                          <TableCell component="th" scope="row" sx={{ fontWeight: 600, width: '30%' }}>
+                            {label}
+                          </TableCell>
+                          <TableCell>{value}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </TabPanel>
+            </Box>
+          </Card>
+        </Container>
       </Box>
     </>
   );
 };
 
-export default PropertyDetails;
+export default AssetDetail;

@@ -141,6 +141,7 @@ import AddCommissionLevels from "./Components/Panel/Admin/CommissionLevels/AddCo
 import EditCommissionLevels from "./Components/Panel/Admin/CommissionLevels/EditCommissionLevels";
 import Category from "./Components/Panel/Admin/Category/Category";
 import Subcrptionplan from "./Components/Panel/Partner/Plans/Subcrptionplan";
+import SearchBox from "./Components/Website/Pages/Home/SearchBox";
 
 
 
@@ -283,7 +284,7 @@ function Layout() {
           <Route path="/p-plans" element={<PartnerPlans />} />
           <Route path="/p-assets/:id" element={<AssetDetail />} />
           <Route path="/p-myassets" element={<PartnerMyAssets />} />
-          {/* <Route path="/p-assets/:id" element={<ViewAssetDetails />} /> */}
+          <Route path="/audio" element={<SearchBox />} />
           <Route path="/p-myteam" element={<MyTeam />} />
           <Route path="/p-latestassets" element={<LatestAssets />} />
           <Route path="/p-activeagents" element={<MyAgents />} />
