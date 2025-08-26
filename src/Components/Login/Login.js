@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { Box, TextField, Button, Typography, Link, Paper, Grid } from "@mui/material";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-import image2 from "./../Images/logo.png";
-import loginbg from "./../Images/loinbackgroundimag.png";
+import image2 from "./../Images/logo1.png";
+import login1 from "./../Images/login1.jpg";
+import login2 from "./../Images/login2.jpg";
 import { baseurl } from '../BaseURL/BaseURL';
 import { IconButton, InputAdornment } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
@@ -201,7 +202,8 @@ const Login = () => {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        backgroundImage: "url(https://cdn.pixabay.com/photo/2018/11/22/23/57/london-3833039_1280.jpg)",
+        // backgroundImage: "url(https://cdn.pixabay.com/photo/2018/11/22/23/57/london-3833039_1280.jpg)",
+        backgroundImage: `url(${login2})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         marginTop: "-85px",
@@ -217,9 +219,9 @@ const Login = () => {
               display: { xs: "none", md: "flex" },
               alignItems: "center",
               justifyContent: "center",
-              // backgroundImage: "url(https://img.freepik.com/free-vector/background-banner-colorful-gradient_677411-3591.jpg?w=360)",
-               backgroundImage: `url(${loginbg})`,
+              backgroundImage: `url(${login1})`, // ✅ Use imported image
               backgroundSize: "cover",
+              backgroundPosition: "center", // (optional) keeps image centered
               padding: 2,
             }}
           >
@@ -376,22 +378,22 @@ const Login = () => {
         </Grid>
       </Paper>
 
-    <Box sx={{ mt: 2, textAlign: "center" }}>
-  <Typography variant="body2" color="white" sx={{ opacity: 0.9 }}>
-    © {new Date().getFullYear()} SHRIRAJ. All rights reserved. <br />
-    <RouterLink to="/termsandconditions" style={{ color: "inherit", margin: "0 8px", textDecoration: "underline" }}>
-      Terms & Conditions
-    </RouterLink>
-    |
-    <RouterLink to="/privacypolicy" style={{ color: "inherit", margin: "0 8px", textDecoration: "underline" }}>
-      Privacy Policy
-    </RouterLink>
-    |
-    <RouterLink to="/refundpolicy" style={{ color: "inherit", margin: "0 8px", textDecoration: "underline" }}>
-      Refund Policy
-    </RouterLink>
-  </Typography>
-</Box>
+      <Box sx={{ mt: 2, textAlign: "center" }}>
+        <Typography variant="body2" color="white" sx={{ opacity: 0.9 }}>
+          © {new Date().getFullYear()} SHRIRAJ. All rights reserved. <br />
+          <RouterLink to="/termsandconditions" style={{ color: "inherit", margin: "0 8px", textDecoration: "underline" }}>
+            Terms & Conditions
+          </RouterLink>
+          |
+          <RouterLink to="/privacypolicy" style={{ color: "inherit", margin: "0 8px", textDecoration: "underline" }}>
+            Privacy Policy
+          </RouterLink>
+          |
+          <RouterLink to="/refundpolicy" style={{ color: "inherit", margin: "0 8px", textDecoration: "underline" }}>
+            Refund Policy
+          </RouterLink>
+        </Typography>
+      </Box>
 
 
     </Box>

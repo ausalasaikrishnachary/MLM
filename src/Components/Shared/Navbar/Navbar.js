@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Logo from '../../Images/logo.png';
+import Logo from '../../Images/logo1.png';
 import LogoutIcon from '@mui/icons-material/Logout';
 import {
   AppBar,
@@ -242,6 +242,7 @@ export default function Header() {
                       height: '50px',
                       width: 'auto',
                       maxWidth: '150px',
+                      transform: 'scale(2.0)',
                     }}
                   />
                 </Link>
@@ -278,7 +279,8 @@ export default function Header() {
                       height: '75px',
                       width: 'auto',
                       maxWidth: '150px',
-                      paddingTop: "8px"
+                      transform: 'scale(1.5)',
+                      // paddingTop: "8px"
                     }}
                   />
                 </Link>

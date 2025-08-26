@@ -75,7 +75,7 @@ const paginatedData = propertyData.slice(
 
             <Box sx={{ width: '90%', margin: 'auto', mt: 4 }}>
                 <Tabs value={tabIndex} onChange={handleTabChange} centered>
-                    <Tab label="Agent Commission" />
+                    <Tab label="Team Commission" />
                     <Tab label="Company Commission" />
                 </Tabs>
 

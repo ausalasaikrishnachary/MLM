@@ -4,7 +4,7 @@ import { faHeart } from '@fortawesome/free-solid-svg-icons';
 import { Box, Typography, TextField, Button, Card, Grid, IconButton } from "@mui/material";
 import { Facebook, Instagram, LinkedIn, YouTube, Twitter } from "@mui/icons-material";
 import "./Footer.css";
-import Logo from '../../../Images/logo.png';
+import Logo from '../../../Images/logo1.png';
 import Divider from '@mui/material/Divider';
 import { Container, Navbar, Nav, Row, Col, Form, } from 'react-bootstrap';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -25,7 +25,7 @@ function Footer() {
                 height: '40px',
                 width: 'auto',
                 maxWidth: '150px',
-                transform: 'scale(2.0)',
+                transform: 'scale(3.0)',
                 marginLeft: "25px",
               }}
             />

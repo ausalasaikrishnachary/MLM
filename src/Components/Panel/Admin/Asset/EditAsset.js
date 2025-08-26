@@ -33,7 +33,6 @@ const EditAsset = () => {
     owner_contact: '',
     owner_email: '',
     images: [],
-    // amenities: [],
     facing: '',
   });
 
@@ -43,7 +42,10 @@ const EditAsset = () => {
 
   useEffect(() => {
     if (property) {
-      setFormData({ ...property });
+      // Exclude amenities from the form data
+      const { amenities, ...propertyWithoutAmenities } = property;
+      setFormData({ ...propertyWithoutAmenities });
+      
       if (property.images && property.images.length > 0) {
         const updatedImages = property.images.map(img => ({
           ...img,
@@ -55,7 +57,10 @@ const EditAsset = () => {
       fetch(`${baseurl}/property/${id}/`)
         .then(res => res.json())
         .then(data => {
-          setFormData(data);
+          // Exclude amenities from the form data
+          const { amenities, ...dataWithoutAmenities } = data;
+          setFormData(dataWithoutAmenities);
+          
           if (data.images && data.images.length > 0) {
             setExistingImages(data.images);
           }
@@ -112,9 +117,9 @@ const EditAsset = () => {
     try {
       const submitData = new FormData();
 
-      // Append normal fields
+      // Append normal fields (excluding amenities)
       for (const key in formData) {
-        if (key !== 'images' && formData[key] !== null && formData[key] !== undefined) {
+        if (key !== 'images' && key !== 'amenities' && formData[key] !== null && formData[key] !== undefined) {
           submitData.append(key, formData[key]);
         }
       }
@@ -157,7 +162,7 @@ const EditAsset = () => {
     }
   };
 
-  // Field configuration
+  // Field configuration (removed amenities)
   const fieldConfig = [
     { name: 'property_title', label: 'Property Title' },
     { name: 'city', label: 'City' },
@@ -169,163 +174,164 @@ const EditAsset = () => {
     { name: 'owner_name', label: 'Owner Name' },
     { name: 'owner_contact', label: 'Owner Contact' },
     { name: 'owner_email', label: 'Owner Email' },
-    { name: 'address', label: 'Address', multiline: true},
-    // { name: 'amenities', label: 'Amenities', multiline: true},
-     { name: 'facing', label: 'Facing' },
-     { name: 'property_value', label: 'Property Value' },
+    { name: 'address', label: 'Address', },
+    { name: 'facing', label: 'Facing' },
+    { name: 'property_value', label: 'Property Value' },
     { name: 'agent_commission', label: 'Agent Commission' },
     { name: 'company_commission', label: 'Company Commission' },
-     { name: 'total_property_value', label: 'Total Property Value'},
-     { name: 'description', label: 'Description', multiline: true},
+    { name: 'total_property_value', label: 'Total Property Value'},
+    { name: 'description', label: 'Description', },
   ];
 
-return (
-  <>
-    <Header />
-    <Container maxWidth="xl" sx={{ padding: 3 }}>
-      <Typography variant="h4" gutterBottom textAlign="center">
-        Edit Property
-      </Typography>
-      
-      <Box component="form" onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} sx={{ width: "100%" }}>
-        <Grid container spacing={2}>
-          {/* Form Fields */}
-          {fieldConfig.map((field) => (
-            <Grid item xs={12} md={4} key={field.name}>
-              <TextField
-                fullWidth
-                label={field.label}
-                name={field.name}
-                value={formData[field.name] || ''}
-                onChange={handleChange}
-                variant="outlined"
-                type={field.type || 'text'}
-              />
-              {/* Add Update Button after Company Commission */}
-              {field.name === 'total_property_value' && (
-                <Button 
-                  type="submit" 
-                  variant="contained" 
+  return (
+    <>
+      <Header />
+      <Container maxWidth="xl" sx={{ padding: 3 }}>
+        <Typography variant="h4" gutterBottom textAlign="center">
+          Edit Property
+        </Typography>
+        
+        <Box component="form" onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} sx={{ width: "100%" }}>
+          <Grid container spacing={2}>
+            {/* Form Fields */}
+            {fieldConfig.map((field) => (
+              <Grid item xs={12} md={4} key={field.name}>
+                <TextField
                   fullWidth
-                  sx={{ 
-                    mt: 2,
-                    height: '56px', // Match TextField height
-                    fontSize: '1rem'
-                  }}
+                  label={field.label}
+                  name={field.name}
+                  value={formData[field.name] || ''}
+                  onChange={handleChange}
+                  variant="outlined"
+                  type={field.type || 'text'}
+                  multiline={field.multiline || false}
+                  rows={field.multiline ? 4 : 1}
+                />
+                {/* Add Update Button after Company Commission */}
+                {field.name === 'total_property_value' && (
+                  <Button 
+                    type="submit" 
+                    variant="contained" 
+                    fullWidth
+                    sx={{ 
+                      mt: 2,
+                      height: '56px',
+                      fontSize: '1rem'
+                    }}
+                  >
+                    Update Property
+                  </Button>
+                )}
+              </Grid>
+            ))}
+
+            {/* Image Upload Section */}
+            <Grid item xs={12} md={4}>
+              <Typography variant="subtitle1" gutterBottom sx={{ mb: 1 }}>
+                Property Images
+              </Typography>
+              
+              <Box sx={{ mb: 2 }}>
+                <Button 
+                  variant="outlined" 
+                  component="label" 
+                  fullWidth
+                  sx={{ mb: 2 }}
                 >
-                  Update Property
+                  Upload New Images
+                  <input
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    multiple
+                    onChange={handleFileChange}
+                  />
                 </Button>
+              </Box>
+
+              {/* Existing Images */}
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
+                {existingImages.map((img) => (
+                  <Box key={img.id} sx={{ position: 'relative', width: 120, height: 120 }}>
+                    <img 
+                      src={img.preview || `${baseurl}${img.image}`} 
+                      alt="Property" 
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                    <IconButton
+                      size="small"
+                      sx={{ 
+                        position: 'absolute', 
+                        top: 0, 
+                        right: 0,
+                        backgroundColor: 'rgba(255,255,255,0.7)',
+                        '&:hover': { backgroundColor: 'rgba(255,255,255,0.9)' }
+                      }}
+                      onClick={() => handleRemoveExistingImage(img.id)}
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                    <Button
+                      size="small"
+                      component="label"
+                      sx={{ 
+                        position: 'absolute', 
+                        bottom: 0, 
+                        left: 0,
+                        fontSize: '0.75rem',
+                        backgroundColor: 'rgba(255,255,255,0.7)'
+                      }}
+                    >
+                      Replace
+                      <input
+                        type="file"
+                        accept="image/*"
+                        hidden
+                        onChange={(e) => handleReplaceExistingImage(img.id, e.target.files[0])}
+                      />
+                    </Button>
+                  </Box>
+                ))}
+              </Box>
+              
+              {/* New Images Preview */}
+              {newImages.length > 0 && (
+                <Box sx={{ mb: 2 }}>
+                  <Typography variant="subtitle2" gutterBottom sx={{ mb: 1 }}>
+                    New Images to Upload
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                    {newImages.map((img, index) => (
+                      <Box key={index} sx={{ position: 'relative', width: 120, height: 120 }}>
+                        <img 
+                          src={URL.createObjectURL(img)} 
+                          alt="New upload" 
+                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        />
+                        <IconButton
+                          size="small"
+                          sx={{ 
+                            position: 'absolute', 
+                            top: 0, 
+                            right: 0,
+                            backgroundColor: 'rgba(255,255,255,0.7)',
+                            '&:hover': { backgroundColor: 'rgba(255,255,255,0.9)' }
+                          }}
+                          onClick={() => handleRemoveNewImage(index)}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
               )}
             </Grid>
-          ))}
-
-          {/* Image Upload Section */}
-          <Grid item xs={12} md={4}>
-            <Typography variant="subtitle1" gutterBottom sx={{ mb: 1 }}>
-              Property Images
-            </Typography>
-            
-            {/* <Box sx={{ mb: 2 }}>
-              <Button 
-                variant="outlined" 
-                component="label" 
-                fullWidth
-                sx={{ mb: 2 }}
-              >
-                Upload New Images
-                <input
-                  type="file"
-                  accept="image/*"
-                  hidden
-                  multiple
-                  onChange={handleFileChange}
-                />
-              </Button>
-            </Box> */}
-
-            {/* Existing Images */}
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
-              {existingImages.map((img) => (
-                <Box key={img.id} sx={{ position: 'relative', width: 120, height: 120 }}>
-                  <img 
-                    src={img.preview || `${baseurl}${img.image}`} 
-                    alt="Property" 
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                  <IconButton
-                    size="small"
-                    sx={{ 
-                      position: 'absolute', 
-                      top: 0, 
-                      right: 0,
-                      backgroundColor: 'rgba(255,255,255,0.7)',
-                      '&:hover': { backgroundColor: 'rgba(255,255,255,0.9)' }
-                    }}
-                    onClick={() => handleRemoveExistingImage(img.id)}
-                  >
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
-                  <Button
-                    size="small"
-                    component="label"
-                    sx={{ 
-                      position: 'absolute', 
-                      bottom: 0, 
-                      left: 0,
-                      fontSize: '0.75rem',
-                      backgroundColor: 'rgba(255,255,255,0.7)'
-                    }}
-                  >
-                    Replace
-                    <input
-                      type="file"
-                      accept="image/*"
-                      hidden
-                      onChange={(e) => handleReplaceExistingImage(img.id, e.target.files[0])}
-                    />
-                  </Button>
-                </Box>
-              ))}
-            </Box>
-            
-            {/* New Images Preview */}
-            {newImages.length > 0 && (
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle2" gutterBottom sx={{ mb: 1 }}>
-                  New Images to Upload
-                </Typography>
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-                  {newImages.map((img, index) => (
-                    <Box key={index} sx={{ position: 'relative', width: 120, height: 120 }}>
-                      <img 
-                        src={URL.createObjectURL(img)} 
-                        alt="New upload" 
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                      <IconButton
-                        size="small"
-                        sx={{ 
-                          position: 'absolute', 
-                          top: 0, 
-                          right: 0,
-                          backgroundColor: 'rgba(255,255,255,0.7)',
-                          '&:hover': { backgroundColor: 'rgba(255,255,255,0.9)' }
-                        }}
-                        onClick={() => handleRemoveNewImage(index)}
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </Box>
-                  ))}
-                </Box>
-              </Box>
-            )}
           </Grid>
-        </Grid>
-      </Box>
-    </Container>
-  </>
-);
+        </Box>
+      </Container>
+    </>
+  );
 };
 
 export default EditAsset;

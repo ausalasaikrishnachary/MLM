@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Logo from '../../Images/logo.png';
+import Logo from '../../Images/logo1.png';
 import LogoutIcon from '@mui/icons-material/Logout';
 import {
   AppBar,
@@ -86,6 +86,7 @@ export default function PartnerHeader() {
         { label: 'Commission', path: '/p-commission' },
         { label: 'Plans', path: '/p-plans' },
         { label: 'Training Material', path: '/p-trainingmaterial' },
+        { label: 'Business', path: '/p-viewbusiness' },
       ]
     },
     { label: 'Meetings', path: '/p-meetings' },
@@ -223,7 +224,7 @@ const drawer = (
               </IconButton>
               <Box display="flex" justifyContent="center" flexGrow={1}>
                 <Link to="/p-dashboard" style={{ textDecoration: 'none', color: '#333333' }}>
-                  <img src={Logo} alt="logo" style={{ height: '50px', maxWidth: '150px' }} />
+                  <img src={Logo} alt="logo" style={{ height: '50px', maxWidth: '150px',transform: 'scale(2.0)', }} />
                 </Link>
               </Box>
               <Box display="flex" alignItems="center">
@@ -248,7 +249,7 @@ const drawer = (
             <>
               <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center' }}>
                 <Link to="/p-dashboard" style={{ textDecoration: 'none', color: '#333333' }}>
-                  <img src={Logo} alt="logo" style={{ height: '75px', maxWidth: '150px', paddingTop: "8px" }} />
+                  <img src={Logo} alt="logo" style={{ height: '75px', maxWidth: '150px', transform: 'scale(1.5)', }} />
                 </Link>
               </Typography>
 

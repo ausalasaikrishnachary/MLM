@@ -64,12 +64,19 @@ const AdminProfile = () => {
             <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
             <ProfileField label="Mobile Number:" value={userData.phone_number} />
             <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
-            <ProfileField label="Role:" value={userData.roles[0]?.role_name || "N/A"} />
+            <ProfileField
+              label="Role:"
+              value={
+                userData.roles[0]?.role_name === "Agent"
+                  ? "Team"
+                  : userData.roles[0]?.role_name || "N/A"
+              }
+            />
             <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
-              <ProfileField label="Pan number:" value={userData.pan_number} />
-             <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
-              <ProfileField label="Aadhaar number:" value={userData.aadhaar_number} />
-            
+            <ProfileField label="Pan number:" value={userData.pan_number} />
+            <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
+            <ProfileField label="Aadhaar number:" value={userData.aadhaar_number} />
+
           </Box>
 
           {/* Footer with Close Button */}

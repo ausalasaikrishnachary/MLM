@@ -247,9 +247,9 @@ const ShrirajLandingPage = () => {
               <FaSearch />
             </div>
 
-            <div className="icon-btn">
+            {/* <div className="icon-btn">
               <FaCrosshairs />
-            </div>
+            </div> */}
             <div 
               className={`icon-btn ${isListening ? 'listening' : ''}`}
               onClick={handleVoiceSearch}
@@ -295,50 +295,6 @@ const ShrirajLandingPage = () => {
       </div>
     );
   };
-
-  // Team member data
-  const teamMembers = [
-    {
-      name: "John Doe",
-      position: "Chief Executive Officer",
-      description: "10+ years in investment banking, finance, or real estate. | Strong leadership, strategic planning, and risk management.",
-      imgSrc: "https://img.freepik.com/free-psd/contact-icon-illustration-isolated_23-2151903337.jpg?ga=GA1.1.718196285.1710491388&semt=ais_hybrid&w=740"
-    },
-    {
-      name: "Jane Smith",
-      position: "Chief Financial Officer",
-      description: "8+ years in finance, accounting, or wealth management. Strong analytical skills, financial forecasting, and risk assessment.",
-      imgSrc: "https://img.freepik.com/free-psd/contact-icon-illustration-isolated_23-2151903337.jpg?ga=GA1.1.718196285.1710491388&semt=ais_hybrid&w=740"
-    },
-    {
-      name: "Robert Johnson",
-      position: "Chief Investment Officer",
-      description: "10+ years Proven track record in achieving consistent investment growth and managing diversified portfolios.",
-      imgSrc: "https://img.freepik.com/free-psd/contact-icon-illustration-isolated_23-2151903337.jpg?ga=GA1.1.718196285.1710491388&semt=ais_hybrid&w=740"
-    },
-    {
-      name: "Sarah Williams",
-      position: "Director of Marketing",
-      description: "10+ years in finance, wealth management. Strong analytical skills, financial forecasting, and risk assessment.",
-      imgSrc: "https://img.freepik.com/free-psd/contact-icon-illustration-isolated_23-2151903337.jpg?ga=GA1.1.718196285.1710491388&semt=ais_hybrid&w=740"
-    }
-  ];
-
-
-  const processSteps = [
-    {
-      title: "Property Search",
-      description: "Browse our extensive inventory of premium commercial properties"
-    },
-    {
-      title: "Consultation",
-      description: "Meet with our real estate experts to discuss your needs"
-    },
-    {
-      title: "Closing",
-      description: "Complete the transaction with our hassle-free process"
-    }
-  ];
 
 
   const advantages = [
@@ -685,6 +641,11 @@ const ShrirajLandingPage = () => {
             id="property-tabs"
             className="search-tabs"
           >
+            <Tab eventKey="buy" title="Buy">
+              <div className="mt-3">
+                <SearchInput activeTab="Buy" />
+              </div>
+            </Tab>
             <Tab eventKey="sell" title="Sell">
               <div className="mt-3">
                 <SearchInput activeTab="sell" />
@@ -859,7 +820,7 @@ const ShrirajLandingPage = () => {
                 <a href="/properties" className="btn view-property-btn mt-3">View Properties</a>
               </div>
             </div>
-            <div className="col-lg-6" data-aos="fade-left">
+            <div className="col-lg-6 mt-4" data-aos="fade-left">
               <img
                 src="https://www.developer.com/wp-content/uploads/slider/cache/f8aa18e48223e00fe5e7658c206b4449/Empire-State-Building-1-1200-x-600.jpg"
                 alt="Commercial Property"

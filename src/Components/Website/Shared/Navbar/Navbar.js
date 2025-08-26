@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Logo from '../../../Images/logo.png';
+import Logo from '../../../Images/logo1.png';
 import {
   AppBar,
   Toolbar,
@@ -209,6 +209,7 @@ const navigate = useNavigate();
                       height: '50px',
                       width: 'auto',
                       maxWidth: '150px',
+                      transform: 'scale(1.5)',
                     }}
                   />
                 </Link>
@@ -264,6 +265,7 @@ const navigate = useNavigate();
                       height: '80px',
                       width: 'auto',
                       maxWidth: '150px',
+                      transform: 'scale(1.5)',
                     }}
                   />
                 </Link>

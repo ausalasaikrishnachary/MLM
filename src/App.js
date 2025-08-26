@@ -142,6 +142,8 @@ import EditCommissionLevels from "./Components/Panel/Admin/CommissionLevels/Edit
 import Category from "./Components/Panel/Admin/Category/Category";
 import Subcrptionplan from "./Components/Panel/Partner/Plans/Subcrptionplan";
 import SearchBox from "./Components/Website/Pages/Home/SearchBox";
+import AddBusiness from "./Components/Panel/Partner/Business/AddBusiness";
+import ViewBusiness from "./Components/Panel/Partner/Business/ViewBusiness";
 
 
 
@@ -305,6 +307,8 @@ function Layout() {
           <Route path="/p-listingassets" element={<ListingProperties />} />
           <Route path="/p-latestProperties" element={<LatestProperties />} />
           <Route path="/subscriptionplans" element={<Subcrptionplan />} />
+          <Route path="/p-addbusiness" element={<AddBusiness />} />
+          <Route path="/p-viewbusiness" element={<ViewBusiness />} />
 
 
           <Route path="/termsandconditions" element={<Termsandconditions />} />
