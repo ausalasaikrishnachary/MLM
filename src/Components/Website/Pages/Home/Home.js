@@ -661,7 +661,7 @@ const ShrirajLandingPage = () => {
                       business with Shriraj Real Estate
                     </p>
                     <a href="/properties" className="btn view-property-btn px-3 py-2">
-                      View Properties
+                      View all properties
                     </a>
                   </div>
                 </div>
@@ -824,7 +824,7 @@ const ShrirajLandingPage = () => {
                           }}
                           onClick={() => navigate('/login')}
                         >
-                          Buy Now
+                          Buy Property
                         </Button>
                       </div>
 
@@ -1059,7 +1059,7 @@ const ShrirajLandingPage = () => {
                           }}
                           onClick={() => navigate('/login')}
                         >
-                          Buy Now
+                          Buy Property
                         </Button>
                       </div>
                     </div>

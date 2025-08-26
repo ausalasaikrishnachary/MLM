@@ -3,6 +3,7 @@ import { Box, TextField, Button, Typography, Link, Paper, Grid } from "@mui/mate
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import image2 from "./../Images/logo.png";
+import loginbg from "./../Images/loinbackgroundimag.png";
 import { baseurl } from '../BaseURL/BaseURL';
 import { IconButton, InputAdornment } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
@@ -216,7 +217,8 @@ const Login = () => {
               display: { xs: "none", md: "flex" },
               alignItems: "center",
               justifyContent: "center",
-              backgroundImage: "url(https://img.freepik.com/free-vector/background-banner-colorful-gradient_677411-3591.jpg?w=360)",
+              // backgroundImage: "url(https://img.freepik.com/free-vector/background-banner-colorful-gradient_677411-3591.jpg?w=360)",
+               backgroundImage: `url(${loginbg})`,
               backgroundSize: "cover",
               padding: 2,
             }}
