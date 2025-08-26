@@ -109,7 +109,7 @@ const Team = () => {
                 }}
               >
                 <MenuItem value="">
-                  <em>All Agents</em>
+                  <em>All Team</em>
                 </MenuItem>
                 <MenuItem value="active">Active</MenuItem>
                 <MenuItem value="inactive">Inactive</MenuItem>

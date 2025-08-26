@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./Popup.css";
-import Logo from "./../Images/logo.png";
+import Logo from "./../Images/logo1.png";
 import { baseurl } from "../BaseURL/BaseURL";
 import { Button } from "@mui/material";
 import Swal from 'sweetalert2';
@@ -100,7 +100,7 @@ const handleSubmit = async (e) => {
     <div className="popup-overlay" onClick={handleOverlayClick}>
       <div className="popup-card" onClick={(e) => e.stopPropagation()}>
         <div className="popup-header">
-          <img src={Logo} alt="Shriraj Team" className="popup-logo" />
+          <img src={Logo} alt="Shriraj Team" className="popup-logo" style={{transform: 'scale(2.0)',}}/>
           <div className="popup-title">
             <h2>Shriraj Team</h2>
             <p className="subtitle">Get the best space for your business.</p>

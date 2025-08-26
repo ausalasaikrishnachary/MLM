@@ -5,7 +5,9 @@ import {
 } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import image2 from "./../Images/logo.png";
+import image2 from "./../Images/logo1.png";
+import login1 from "./../Images/login1.jpg";
+import login2 from "./../Images/login2.jpg";
 import { Navigate } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { baseurl } from '../BaseURL/BaseURL';
@@ -308,7 +310,8 @@ const SignUp = () => {
                 flexDirection: "column",
                 justifyContent: "center",
                 alignItems: "center",
-                backgroundImage: "url(https://cdn.pixabay.com/photo/2018/11/22/23/57/london-3833039_1280.jpg)",
+                // backgroundImage: "url(https://cdn.pixabay.com/photo/2018/11/22/23/57/london-3833039_1280.jpg)",
+                backgroundImage: `url(${login2})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 marginTop: "-85px",
@@ -318,19 +321,20 @@ const SignUp = () => {
             <Paper elevation={4} sx={{ display: "flex", width: "90%", maxWidth: 1000, borderRadius: 2, height: { xs: "110vh", md: "auto" } }}>
                 <Grid container>
                     <Grid
-                        item xs={12} md={5}
+                        item xs={12} md={6}
                         sx={{
-                            display: { xs: "none", md: "flex" },
-                            alignItems: "center",
-                            justifyContent: "center",
-                            backgroundImage: "url(https://img.freepik.com/free-vector/background-banner-colorful-gradient_677411-3591.jpg?w=360)",
-                            backgroundSize: "cover",
-                            p: 2,
-                        }}
+              display: { xs: "none", md: "flex" },
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundImage: `url(${login1})`, // ✅ Use imported image
+              backgroundSize: "cover",
+              backgroundPosition: "center", // (optional) keeps image centered
+              padding: 2,
+            }}
                     >
                         <img src={image2} alt="Company Logo" style={{ maxWidth: "100%", height: "auto" }} />
                     </Grid>
-                    <Grid item xs={12} md={7} sx={{ p: 4 }}>
+                    <Grid item xs={12} md={6} sx={{ p: 4 }}>
                         <Typography variant="h4" align="center" gutterBottom>
                             Registration
                         </Typography>
