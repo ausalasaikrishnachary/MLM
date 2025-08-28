@@ -18,11 +18,14 @@ import EmailIcon from "@mui/icons-material/Email";
 import PhoneIcon from "@mui/icons-material/Phone";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PartnerHeader from "../../../Shared/Partner/PartnerNavbar";
+import { useNavigate } from "react-router-dom";
 
 function ViewBusiness() {
   const userId = localStorage.getItem("user_id");
   const [businesses, setBusinesses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     fetch("https://shrirajteam.com:81/business/")
@@ -44,14 +47,37 @@ function ViewBusiness() {
     <>
       <PartnerHeader />
       <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-        <Typography
-          variant="h5"
-          gutterBottom
-          fontWeight="bold"
-          sx={{ textAlign: "center", mb: 3 }}
-        >
-          My Businesses
-        </Typography>
+        {/* Heading Row */}
+        <Box display="flex" justifyContent="center" mb={2}>
+          <Typography
+            variant="h2"
+            fontWeight="bold"
+            sx={{ textAlign: "center" }}
+          >
+            My Businesses
+          </Typography>
+        </Box>
+
+        {/* Button Row */}
+        <Box display="flex" justifyContent="flex-end" mb={3}>
+          <button
+            style={{
+              padding: "10px 20px",
+              borderRadius: "8px",
+              backgroundColor: "#1976d2",
+              color: "white",
+              border: "none",
+              cursor: "pointer",
+              fontWeight: "bold",
+            }}
+            onClick={() => navigate("/p-addbusiness")}
+          >
+            + Add Business
+          </button>
+        </Box>
+
+
+
 
         {loading ? (
           <Box display="flex" justifyContent="center" alignItems="center" mt={5}>
