@@ -6,6 +6,7 @@ import {
   TextField,
   Typography,
   MenuItem,
+  Container
 } from "@mui/material";
 import PartnerHeader from "../../../Shared/Partner/PartnerNavbar";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -78,7 +79,7 @@ const handleSubmit = async (e) => {
   return (
     <>
       <PartnerHeader />
-      <Box p={4}>
+      <Container maxWidth="lg" sx={{ mt: 4 }}>
         <Box display="flex" justifyContent="center" mb={2}>
                 <Typography
                   variant="h2"
@@ -127,7 +128,7 @@ const handleSubmit = async (e) => {
               />
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
                 label="Email"
@@ -138,7 +139,7 @@ const handleSubmit = async (e) => {
                 type="email"
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
                 label="Phone"
@@ -147,6 +148,22 @@ const handleSubmit = async (e) => {
                 onChange={handleChange}
                 variant="outlined"
               />
+            </Grid>
+
+            <Grid item xs={12} md={4}>
+              <TextField
+                select
+                fullWidth
+                label="Status"
+                name="is_active"
+                value={formData.is_active}
+                onChange={(e) =>
+                  setFormData({ ...formData, is_active: e.target.value === "true" })
+                }
+              >
+                <MenuItem value={true}>Active</MenuItem>
+                <MenuItem value={false}>Inactive</MenuItem>
+              </TextField>
             </Grid>
 
             <Grid item xs={12}>
@@ -208,21 +225,7 @@ const handleSubmit = async (e) => {
               {formData.documents && <Typography mt={1}>{formData.documents.name}</Typography>}
             </Grid>
 
-            <Grid item xs={12} md={4}>
-              <TextField
-                select
-                fullWidth
-                label="Status"
-                name="is_active"
-                value={formData.is_active}
-                onChange={(e) =>
-                  setFormData({ ...formData, is_active: e.target.value === "true" })
-                }
-              >
-                <MenuItem value={true}>Active</MenuItem>
-                <MenuItem value={false}>Inactive</MenuItem>
-              </TextField>
-            </Grid>
+
           </Grid>
 
        <Box textAlign="center" mt={4}>
@@ -235,7 +238,7 @@ const handleSubmit = async (e) => {
   </Button>
 </Box>
         </form>
-      </Box>
+      </Container>
     </>
   );
 }
