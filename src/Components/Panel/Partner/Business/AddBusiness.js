@@ -6,7 +6,9 @@ import {
   TextField,
   Typography,
   MenuItem,
-  Container
+  Container,
+  FormControlLabel,
+  Checkbox
 } from "@mui/material";
 import PartnerHeader from "../../../Shared/Partner/PartnerNavbar";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -16,7 +18,7 @@ import { useNavigate } from "react-router-dom";
 
 function AddBusiness() {
   const userId = localStorage.getItem("user_id");
-  const navigate = useNavigate();  
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     user_id: userId,
@@ -42,38 +44,38 @@ function AddBusiness() {
     setFormData({ ...formData, [name]: files[0] });
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    let payload;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      let payload;
 
-    // If user uploaded logo or documents → use FormData
-    if (formData.logo || formData.documents) {
-      payload = new FormData();
-      Object.entries(formData).forEach(([key, value]) => {
-        if (value !== null) {
-          payload.append(key, value);
-        }
-      });
+      // If user uploaded logo or documents → use FormData
+      if (formData.logo || formData.documents) {
+        payload = new FormData();
+        Object.entries(formData).forEach(([key, value]) => {
+          if (value !== null) {
+            payload.append(key, value);
+          }
+        });
 
-      await axios.post("https://shrirajteam.com:81/business/", payload, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-    } else {
-      // Otherwise → send as JSON
-      const { logo, documents, ...jsonData } = formData;
-      await axios.post("https://shrirajteam.com:81/business/", jsonData, {
-        headers: { "Content-Type": "application/json" },
-      });
+        await axios.post("https://shrirajteam.com:81/business/", payload, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+      } else {
+        // Otherwise → send as JSON
+        const { logo, documents, ...jsonData } = formData;
+        await axios.post("https://shrirajteam.com:81/business/", jsonData, {
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+
+      alert("Business added successfully!");
+      navigate("/p-viewbusiness");
+    } catch (error) {
+      console.error("Error while adding business:", error.response?.data || error.message);
+      alert("Failed to add business. Check console for details.");
     }
-
-    alert("Business added successfully!");
-    navigate("/p-viewbusiness");
-  } catch (error) {
-    console.error("Error while adding business:", error.response?.data || error.message);
-    alert("Failed to add business. Check console for details.");
-  }
-};
+  };
 
 
   return (
@@ -81,14 +83,14 @@ const handleSubmit = async (e) => {
       <PartnerHeader />
       <Container maxWidth="lg" sx={{ mt: 4 }}>
         <Box display="flex" justifyContent="center" mb={2}>
-                <Typography
-                  variant="h2"
-                  fontWeight="bold"
-                  sx={{ textAlign: "center" }}
-                >
-                  My Businesses
-                </Typography>
-              </Box>
+          <Typography
+            variant="h2"
+            fontWeight="bold"
+            sx={{ textAlign: "center" }}
+          >
+            My Businesses
+          </Typography>
+        </Box>
 
         <form onSubmit={handleSubmit}>
           <Typography variant="h6" sx={{ mt: 3, mb: 2 }}>
@@ -151,20 +153,20 @@ const handleSubmit = async (e) => {
             </Grid>
 
             <Grid item xs={12} md={4}>
-              <TextField
-                select
-                fullWidth
-                label="Status"
-                name="is_active"
-                value={formData.is_active}
-                onChange={(e) =>
-                  setFormData({ ...formData, is_active: e.target.value === "true" })
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={formData.is_active}
+                    onChange={(e) =>
+                      setFormData({ ...formData, is_active: e.target.checked })
+                    }
+                    color="primary"
+                  />
                 }
-              >
-                <MenuItem value={true}>Active</MenuItem>
-                <MenuItem value={false}>Inactive</MenuItem>
-              </TextField>
+                label="Active"
+              />
             </Grid>
+
 
             <Grid item xs={12}>
               <TextField
@@ -228,15 +230,15 @@ const handleSubmit = async (e) => {
 
           </Grid>
 
-       <Box textAlign="center" mt={4}>
-  <Button
-    type="submit"
-    variant="contained"
-    sx={{ bgcolor: "#1A0033", px: 5, py: 1.5 }}
-  >
-    Submit
-  </Button>
-</Box>
+          <Box textAlign="center" mt={4}>
+            <Button
+              type="submit"
+              variant="contained"
+              sx={{ bgcolor: "#1A0033", px: 5, py: 1.5 }}
+            >
+              Submit
+            </Button>
+          </Box>
         </form>
       </Container>
     </>
