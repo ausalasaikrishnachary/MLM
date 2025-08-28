@@ -14,11 +14,43 @@ const AboutUs = () => {
               How It Works – Investing with Shriraj
             </Typography>
             <Typography variant="body1" paragraph>
-              Shriraj offers a <strong>fractional ownership model</strong> that allows investors to invest in real estate assets 
+              Shriraj offers a <strong>fractional ownership model</strong> that allows investors to invest in real estate assets
               without needing to purchase an entire property. Here’s how it works:
             </Typography>
+            {/* Video Section */}
+            <Box display="flex" justifyContent="center" mt={3} mb={5}>
+              <Box
+                sx={{
+                  position: "relative",
+                  width: "100%",
+                  maxWidth: "800px",   // keep same width cap
+                  height: "60vh",      // 🔹 make video 70% of viewport height
+                  borderRadius: 2,
+                  boxShadow: 3,
+                  overflow: "hidden",
+                }}
+              >
+                <iframe
+                  src="https://www.youtube.com/embed/oWsELEFLHP8"
+                  title="Real Estate Filming Guide"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",  // 🔹 fill full height of parent
+                  }}
+                />
+              </Box>
+            </Box>
 
-           
+
+
+
+
             {/* Vision, Mission, Values Section */}
             <Box mt={2}>
 
@@ -51,7 +83,7 @@ const AboutUs = () => {
                     <VerifiedUserIcon fontSize="large" sx={{ mb: 1, color: "success.main" }} />
                     <Typography variant="h6" fontWeight="bold">Our Values</Typography>
                     <Typography variant="body2" sx={{ maxWidth: "250px" }}>
-                    We prioritize integrity, transparency, and trust to create lasting value for our investors.
+                      We prioritize integrity, transparency, and trust to create lasting value for our investors.
                     </Typography>
                   </Box>
                 </Grid>
@@ -96,12 +128,13 @@ const AboutUs = () => {
               </Box>
             </Box>
 
-        
+
 
           </CardContent>
         </Grid>
       </Grid>
     </Container>
+    
   );
 };
 

@@ -144,6 +144,7 @@ import Subcrptionplan from "./Components/Panel/Partner/Plans/Subcrptionplan";
 import SearchBox from "./Components/Website/Pages/Home/SearchBox";
 import AddBusiness from "./Components/Panel/Partner/Business/AddBusiness";
 import ViewBusiness from "./Components/Panel/Partner/Business/ViewBusiness";
+import AdminBussiness from "./Components/Panel/Admin/AdminBussiness/AdminBussiness";
 
 
 
@@ -242,6 +243,8 @@ function Layout() {
           <Route path="/a-add-commissionmaster" element={<AddCommissionLevels />} />
           <Route path="/a-edit-commissionmaster/:id" element={<EditCommissionLevels />} />
           <Route path="/a-category" element={<Category />} />
+          <Route path="/a-bussiness" element={<AdminBussiness/>} />
+
 
 
           <Route path="/i-dashboard" element={<InvestorDashboard />} />
