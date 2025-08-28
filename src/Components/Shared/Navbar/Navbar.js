@@ -46,7 +46,7 @@ export default function Header() {
         { label: 'Transaction', path: '/a-transactionsummary' },
         { label: 'Commission Master', path: '/a-commissionmaster' },
         { label: 'Create Category', path: '/a-category' },
-        { label: 'Bussiness', path: '/a-bussiness' },
+        { label: 'Business', path: '/a-bussiness' },
       ]
     },
     { label: 'Meetings', path: '/a-meetings' },

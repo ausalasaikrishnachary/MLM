@@ -243,7 +243,7 @@ function Layout() {
           <Route path="/a-add-commissionmaster" element={<AddCommissionLevels />} />
           <Route path="/a-edit-commissionmaster/:id" element={<EditCommissionLevels />} />
           <Route path="/a-category" element={<Category />} />
-          <Route path="/a-bussiness" element={<AdminBussiness/>} />
+          <Route path="/a-business" element={<AdminBussiness/>} />
 
 
 
