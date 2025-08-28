@@ -19,6 +19,10 @@ import PhoneIcon from "@mui/icons-material/Phone";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PartnerHeader from "../../../Shared/Partner/PartnerNavbar";
 import { useNavigate } from "react-router-dom";
+import { IconButton, Tooltip } from "@mui/material";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+
 
 function ViewBusiness() {
   const userId = localStorage.getItem("user_id");
@@ -42,6 +46,25 @@ function ViewBusiness() {
         setLoading(false);
       });
   }, [userId]);
+
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this business?")) {
+      fetch(`https://shrirajteam.com:81/business/${id}/`, {
+        method: "DELETE",
+      })
+        .then((res) => {
+          if (res.ok) {
+            setBusinesses((prev) =>
+              prev.filter((business) => business.business_id !== id)
+            );
+          } else {
+            alert("Failed to delete business");
+          }
+        })
+        .catch((err) => console.error("Error deleting:", err));
+    }
+  };
+
 
   return (
     <>
@@ -103,6 +126,7 @@ function ViewBusiness() {
                     height: "100%",
                     display: "flex",
                     flexDirection: "column",
+                    position: "relative", // important for positioning icons
                   }}
                 >
                   {/* Business Logo */}
@@ -110,12 +134,13 @@ function ViewBusiness() {
                     <CardMedia
                       component="img"
                       alt={business.business_name || "Business Logo"}
-                      // height="160"
-                      // borderRadius="10px"
-                      image={business.logo ? `https://shrirajteam.com:81/${business.logo}` : "/default-logo.png"}
+                      image={
+                        business.logo
+                          ? `https://shrirajteam.com:81/${business.logo}`
+                          : "/default-logo.png"
+                      }
                       sx={{ objectFit: "contain", p: 2 }}
                     />
-
                   ) : (
                     <Box
                       height="160px"
@@ -174,7 +199,28 @@ function ViewBusiness() {
                       <Typography variant="body2">{business.address}</Typography>
                     </Box>
                   </CardContent>
+                  {/* Action Buttons */}
+                  <Box display="flex" justifyContent="flex-end" p={1}>
+                    <Tooltip title="Edit">
+                      <IconButton
+                        color="primary"
+                        onClick={() => navigate(`/p-editbusiness/${business.business_id}`)}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                    </Tooltip>
+
+                    <Tooltip title="Delete">
+                      <IconButton
+                        color="error"
+                        onClick={() => handleDelete(business.business_id)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
                 </Card>
+
               </Grid>
             ))}
           </Grid>
