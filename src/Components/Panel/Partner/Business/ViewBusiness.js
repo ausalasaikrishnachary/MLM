@@ -83,11 +83,13 @@ function ViewBusiness() {
                   {business.logo ? (
                     <CardMedia
                       component="img"
-                      alt={business.business_name}
-                      height="160"
-                      image={business.logo}
+                      alt={business.business_name || "Business Logo"}
+                      // height="160"
+                      // borderRadius="10px"
+                      image={business.logo ? `https://shrirajteam.com:81/${business.logo}` : "/default-logo.png"}
                       sx={{ objectFit: "contain", p: 2 }}
                     />
+
                   ) : (
                     <Box
                       height="160px"

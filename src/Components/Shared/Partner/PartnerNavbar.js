@@ -86,7 +86,7 @@ export default function PartnerHeader() {
         { label: 'Commission', path: '/p-commission' },
         { label: 'Plans', path: '/p-plans' },
         { label: 'Training Material', path: '/p-trainingmaterial' },
-        { label: 'Business', path: '/p-viewbusiness' },
+        { label: 'Add Business', path: '/p-viewbusiness' },
       ]
     },
     { label: 'Meetings', path: '/p-meetings' },
