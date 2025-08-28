@@ -145,6 +145,7 @@ import SearchBox from "./Components/Website/Pages/Home/SearchBox";
 import AddBusiness from "./Components/Panel/Partner/Business/AddBusiness";
 import ViewBusiness from "./Components/Panel/Partner/Business/ViewBusiness";
 import AdminBussiness from "./Components/Panel/Admin/AdminBussiness/AdminBussiness";
+import EditBusiness from "./Components/Panel/Partner/Business/EditBusiness";
 
 
 
@@ -312,6 +313,7 @@ function Layout() {
           <Route path="/subscriptionplans" element={<Subcrptionplan />} />
           <Route path="/p-addbusiness" element={<AddBusiness />} />
           <Route path="/p-viewbusiness" element={<ViewBusiness />} />
+          <Route path="/p-editbusiness/:id" element={<EditBusiness />} />
 
 
           <Route path="/termsandconditions" element={<Termsandconditions />} />

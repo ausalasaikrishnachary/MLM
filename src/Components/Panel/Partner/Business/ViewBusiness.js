@@ -36,7 +36,7 @@ function ViewBusiness() {
       .then((res) => res.json())
       .then((data) => {
         const filtered = data.filter(
-          (business) => String(business.user_id) === String("11")
+          (business) => String(business.user_id) === String(userId)
         );
         setBusinesses(filtered);
         setLoading(false);
