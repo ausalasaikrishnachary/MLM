@@ -80,7 +80,7 @@ const AdminBusiness = () => {
       <Header />
       <Box sx={{ bgcolor: "#fafbfe", minHeight: "100vh", p: 4, position: "relative" }}>
         {/* Hero Section */}
-        <Box textAlign="center" mb={8}>
+        {/* <Box textAlign="center" mb={8}>
           <Typography
             variant="h1"
             fontWeight="bold"
@@ -98,7 +98,7 @@ const AdminBusiness = () => {
             Explore a curated directory of innovative companies and services. Find your next business partner or discover inspiring organizations.
           </Typography>
 
-          {/* Search */}
+         
           <Box mt={4} display="flex" justifyContent="center" alignItems="center" gap={2}>
             <TextField
               placeholder="Search businesses, services, or locations..."
@@ -133,10 +133,10 @@ const AdminBusiness = () => {
               Search
             </Button>
           </Box>
-        </Box>
+        </Box> */}
 
         {/* Filter Tabs */}
-        <Box display="flex" justifyContent="center" mb={6}>
+        {/* <Box display="flex" justifyContent="center" mb={6}>
           <Tabs
             value={tabValue}
             onChange={(e, newValue) => setTabValue(newValue)}
@@ -170,7 +170,7 @@ const AdminBusiness = () => {
               />
             ))}
           </Tabs>
-        </Box>
+        </Box> */}
 
         {/* Business Cards */}
 <Grid container spacing={3} justifyContent="center" mb={10}>
@@ -280,7 +280,7 @@ const AdminBusiness = () => {
 
 
         {/* Platform Stats */}
-        <Box textAlign="center" mb={8}>
+        {/* <Box textAlign="center" mb={8}>
           <Typography variant="h2" sx={{ fontWeight: "bold", mb: 5 }}>
             Platform Statistics
           </Typography>
@@ -328,7 +328,7 @@ const AdminBusiness = () => {
               </Grid>
             ))}
           </Grid>
-        </Box>
+        </Box> */}
 
         {/* Business Details Dialog */}
         <Dialog
