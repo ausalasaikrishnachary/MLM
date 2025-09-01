@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, TextField, Button, Typography, Link, Paper, Grid } from "@mui/material";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
@@ -9,8 +9,6 @@ import { baseurl } from '../BaseURL/BaseURL';
 import { IconButton, InputAdornment } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Link as RouterLink } from "react-router-dom";
-
-
 
 const Login = () => {
   const navigate = useNavigate();
@@ -25,11 +23,19 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  useEffect(() => {
+    return () => {
+      // Clean up if component unmounts without login
+      if (!localStorage.getItem('user_id')) {
+        sessionStorage.removeItem('propertyData');
+        sessionStorage.removeItem('propertyId');
+      }
+    };
+  }, []);
 
   const handleTogglePassword = () => {
     setShowPassword((prev) => !prev);
   };
-
 
   const handleEmailChange = (e) => {
     const value = e.target.value;
@@ -67,7 +73,7 @@ const Login = () => {
       return;
     }
 
-    setIsLoading(true); // Start loading
+    setIsLoading(true);
 
     try {
       const response = await fetch(`${baseurl}/login/`, {
@@ -87,6 +93,31 @@ const Login = () => {
         localStorage.setItem("referred_by", data.referred_by);
         localStorage.setItem("user_name", data.first_name);
 
+        // Check if there's a property to redirect to
+        const propertyId = sessionStorage.getItem('propertyId');
+        const propertyData = sessionStorage.getItem('propertyData');
+        
+        if (propertyId && propertyData) {
+          // Clean up the stored data
+          sessionStorage.removeItem('propertyData');
+          sessionStorage.removeItem('propertyId');
+          
+          // Redirect based on user role
+          const userRoles = data.roles || [];
+          
+          if (userRoles.length > 1) {
+            // If multiple roles, let user choose and then redirect
+            selectUserRoleWithRedirect(userRoles, propertyId, JSON.parse(propertyData));
+          } else if (userRoles.length === 1) {
+            // Single role, redirect directly
+            redirectToPropertyDetails(userRoles[0], propertyId, JSON.parse(propertyData));
+          } else {
+            // No roles, show error
+            setError("No roles assigned. Please contact support.");
+          }
+          return;
+        }
+
         const userRoles = data.roles || [];
 
         if (userRoles.length > 1) {
@@ -102,10 +133,49 @@ const Login = () => {
     } catch (err) {
       setError("Something went wrong. Please try again.");
     } finally {
-      setIsLoading(false); // Stop loading
+      setIsLoading(false);
     }
   };
 
+  const selectUserRoleWithRedirect = async (roles, propertyId, propertyData) => {
+    const { value: selectedRole } = await Swal.fire({
+      title: "Select Your Role",
+      input: "select",
+      inputOptions: roles.reduce((acc, role) => ({ ...acc, [role]: role }), {}),
+      inputPlaceholder: "Choose your role",
+      showCancelButton: true,
+      confirmButtonText: "Proceed",
+      cancelButtonText: "Cancel",
+    });
+
+    if (selectedRole) {
+      redirectToPropertyDetails(selectedRole, propertyId, propertyData);
+    }
+  };
+
+  const redirectToPropertyDetails = (role, propertyId, propertyData) => {
+    let redirectPath = '';
+    
+    switch(role) {
+      case "Admin":
+        redirectPath = `/a-assets/${propertyId}`;
+        break;
+      case "Agent":
+        redirectPath = `/p-assets/${propertyId}`;
+        break;
+      case "Client":
+        redirectPath = `/i-assets/${propertyId}`;
+        break;
+      case "Super Admin":
+        redirectPath = `/s-assets/${propertyId}`;
+        break;
+      default:
+        // Default to client view if role not recognized
+        redirectPath = `/i-assets/${propertyId}`;
+    }
+    
+    navigate(redirectPath, { state: { property: propertyData } });
+  };
 
   const selectUserRole = async (roles) => {
     const { value: selectedRole } = await Swal.fire({
@@ -136,9 +206,6 @@ const Login = () => {
       setError("Invalid role assigned. Please contact support.");
     }
   };
-
-
-
 
   const handleSendOTP = async () => {
     if (!email || emailError) {
@@ -202,7 +269,6 @@ const Login = () => {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        // backgroundImage: "url(https://cdn.pixabay.com/photo/2018/11/22/23/57/london-3833039_1280.jpg)",
         backgroundImage: `url(${login2})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
@@ -219,9 +285,9 @@ const Login = () => {
               display: { xs: "none", md: "flex" },
               alignItems: "center",
               justifyContent: "center",
-              backgroundImage: `url(${login1})`, // ✅ Use imported image
+              backgroundImage: `url(${login1})`,
               backgroundSize: "cover",
-              backgroundPosition: "center", // (optional) keeps image centered
+              backgroundPosition: "center",
               padding: 2,
             }}
           >
@@ -370,9 +436,7 @@ const Login = () => {
                     {error}
                   </Typography>
                 )}
-
               </>
-
             )}
           </Grid>
         </Grid>
@@ -394,8 +458,6 @@ const Login = () => {
           </RouterLink>
         </Typography>
       </Box>
-
-
     </Box>
   );
 };
