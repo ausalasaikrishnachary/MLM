@@ -254,6 +254,7 @@ const Properties = () => {
                     View Details
                   </Button>
 
+
                   <Button
                     sx={{
                       color: "#2E166D",
@@ -264,7 +265,12 @@ const Properties = () => {
                         color: "#FFFFFF"
                       }
                     }}
-                    onClick={() => navigate('/login')}
+                    onClick={() => {
+                      // Store the property ID and redirect info based on role
+                      sessionStorage.setItem('propertyData', JSON.stringify(property));
+                      sessionStorage.setItem('propertyId', property.property_id);
+                      navigate('/login');
+                    }}
                   >
                     Buy now
                   </Button>

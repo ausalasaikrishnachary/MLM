@@ -146,6 +146,7 @@ import AddBusiness from "./Components/Panel/Partner/Business/AddBusiness";
 import ViewBusiness from "./Components/Panel/Partner/Business/ViewBusiness";
 import AdminBussiness from "./Components/Panel/Admin/AdminBussiness/AdminBussiness";
 import EditBusiness from "./Components/Panel/Partner/Business/EditBusiness";
+import Comparelist from "./Components/Panel/Partner/Asset/Comparelist";
 
 
 
@@ -281,6 +282,8 @@ function Layout() {
           <Route path="/p-report" element={<Report />} />
           <Route path="/p-addasset" element={<AssetForm />} />
           <Route path="/p-assets" element={<AssetDashboard />} />
+          <Route path="/p-comparelist" element={<Comparelist />} />
+
           <Route path="/p-profile" element={<PartnerProfile />} />
           <Route path="/p-profiledetails" element={<PartnerKyc />} />
           <Route path="/editprofile" element={<EditProfile />} />

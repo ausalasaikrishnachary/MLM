@@ -19,6 +19,9 @@ import {
   DialogActions,
   Pagination
 } from '@mui/material';
+import Checkbox from '@mui/material/Checkbox';
+
+
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
@@ -35,9 +38,11 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import VideocamIcon from '@mui/icons-material/Videocam';
 
 
+
+
 const AssetsUI = () => {
   const [sortBy, setSortBy] = useState('latest');
-  const [properties, setProperties] = useState([]); 
+  const [properties, setProperties] = useState([]);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const navigate = useNavigate();
@@ -51,6 +56,11 @@ const AssetsUI = () => {
   const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
   const startIndex = (page - 1) * itemsPerPage;
   const paginatedProperties = filteredProperties.slice(startIndex, startIndex + itemsPerPage);
+  const [compareList, setCompareList] = useState([]);
+  const [selectedTypeCategory, setSelectedTypeCategory] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortOption, setSortOption] = useState("");
+
 
   useEffect(() => {
     if (userId) {
@@ -147,9 +157,14 @@ const AssetsUI = () => {
         // No sorting
         break;
     }
+    if (selectedTypeCategory) {
+      results = results.filter((property) => property.category === selectedTypeCategory);
+    }
 
     setFilteredProperties(results);
-  }, [searchQuery, sortBy, properties]);
+  }, [searchQuery, sortBy, properties, selectedTypeCategory]);
+
+
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
@@ -244,9 +259,69 @@ const AssetsUI = () => {
     return media[currentIndex]?.type === 'video';
   };
 
+
+  const handleCompareToggle = (property) => {
+    setCompareList((prev) => {
+      const exists = prev.find((p) => p.property_id === property.property_id);
+      if (exists) {
+        return prev.filter((p) => p.property_id !== property.property_id);
+      } else {
+        return [...prev, property];
+      }
+    });
+  };
+
+  const [propertyTypes, setPropertyTypes] = useState([]);
+
+  useEffect(() => {
+    const fetchPropertyTypes = async () => {
+      try {
+        const response = await axios.get(`${baseurl}/property-types/`);
+        setPropertyTypes(response.data); // assuming response.data is an array of types
+      } catch (error) {
+        console.error('Error fetching property types:', error);
+      }
+    };
+    fetchPropertyTypes();
+  }, []);
+
+  const getPropertyTypeName = (property_type_id) => {
+    const type = propertyTypes.find(pt => pt.property_type_id === property_type_id);
+    return type ? type.name : 'Unknown';
+  };
+
+
   return (
     <>
       <PartnerHeader />
+      {/* ✅ Floating Compare Button */}
+      {compareList.length > 0 && (
+        <Box
+          sx={{
+            position: 'fixed',
+            bottom: 20,
+            right: 20,
+            zIndex: 1300,
+          }}
+        >
+          <Button
+            variant="contained"
+            color="secondary"
+            sx={{
+              borderRadius: '50px',
+              px: 3,
+              py: 1.5,
+              boxShadow: '0px 4px 15px rgba(0,0,0,0.3)',
+              textTransform: 'none',
+              fontWeight: 'bold',
+            }}
+            onClick={() => navigate("/p-comparelist", { state: { compareList } })}
+          >
+            Compare ({compareList.length})
+          </Button>
+        </Box>
+      )}
+
       <Container sx={{ py: 4 }}>
         <Typography variant="h4" sx={{ marginLeft: '10px', textAlign: "center" }}>
           Properties
@@ -277,16 +352,13 @@ const AssetsUI = () => {
                 }}
               />
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={3}>
               <FormControl fullWidth>
                 <Select
                   value={sortBy}
                   onChange={handleSortChange}
                   displayEmpty
-                  sx={{
-                    borderRadius: '8px',
-                    fontSize: '15px'
-                  }}
+                  sx={{ borderRadius: '8px', fontSize: '15px' }}
                 >
                   <MenuItem value="">
                     <em>Sort By</em>
@@ -298,6 +370,29 @@ const AssetsUI = () => {
                   <MenuItem value="sold">Sold</MenuItem>
                   <MenuItem value="available">Available</MenuItem>
                   <MenuItem value="booked">Booked</MenuItem>
+                </Select>
+
+              </FormControl>
+
+
+
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <FormControl fullWidth >
+                <Select
+                  value={selectedTypeCategory}
+                  onChange={(e) => setSelectedTypeCategory(e.target.value)}
+                  displayEmpty
+                  sx={{ borderRadius: '8px', fontSize: '15px' }}
+                >
+                  <MenuItem value="">
+                    <em>All Types</em>
+                  </MenuItem>
+                  {propertyTypes.map((type) => (
+                    <MenuItem key={type.property_type_id} value={type.category}>
+                      {type.name}
+                    </MenuItem>
+                  ))}
                 </Select>
               </FormControl>
             </Grid>
@@ -468,12 +563,31 @@ const AssetsUI = () => {
                       </Box>
                     </Box>
                     <CardContent>
-                      <Typography fontWeight="bold" mb={1}>
-                        {property.property_title}
+                      {/* ✅ Title row with checkbox and label */}
+                      <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+                        <Typography fontWeight="bold">
+                          {property.property_title}
+                        </Typography>
+
+                        {/* Checkbox + Text */}
+                        <Box display="flex" alignItems="center" gap={0.5}>
+                          <Checkbox
+                            checked={compareList.some(p => p.property_id === property.property_id)}
+                            onChange={() => handleCompareToggle(property)}
+                            size="small"
+                            color="primary"
+                          />
+                          <Typography variant="body2" color="textSecondary">
+                            Compare
+                          </Typography>
+                        </Box>
+                      </Box>
+
+
+                      <Typography variant="body2" color="text.secondary" mb={1}>
+                        {property.city}, {property.state} | Category: {getPropertyTypeName(property.property_type)}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary" mb={2}>
-                        {property.city}, {property.state}
-                      </Typography>
+
                       <Grid
                         container
                         spacing={2}
