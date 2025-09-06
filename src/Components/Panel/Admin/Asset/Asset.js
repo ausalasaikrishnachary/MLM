@@ -753,7 +753,7 @@ const updateApprovalStatus = async (propertyId, newStatus) => {
                           </Box>
                         </>
                       )}
-                      {property.status !== 'sold' && (
+                      {/* {property.status !== 'sold' && (
                         <Box
                           sx={{
                             position: 'absolute',
@@ -773,7 +773,7 @@ const updateApprovalStatus = async (propertyId, newStatus) => {
                         >
                           {property.looking_to === 'sell' ? 'Sell' : 'Rent'}
                         </Box>
-                      )}
+                      )} */}
                       <Box
                         sx={{
                           position: 'absolute',

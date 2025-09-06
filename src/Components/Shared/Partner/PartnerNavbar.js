@@ -78,6 +78,7 @@ export default function PartnerHeader() {
     { label: 'Dashboard', path: '/p-dashboard' },
     { label: 'My Properties', path: '/p-myassets' },
     { label: 'Properties', path: '/p-assets' },
+    { label: 'Add Property', path: '/p-addasset' },
     { label: 'My Team', path: '/p-myteam' },
     {
       label: 'Operations',

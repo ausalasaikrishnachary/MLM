@@ -705,7 +705,7 @@ const handleDelete = async (propertyId) => {
                           </Box>
                         </>
                       )}
-                      {property.status !== 'sold' && (
+                      {/* {property.status !== 'sold' && (
                         <Box
                           sx={{
                             position: 'absolute',
@@ -725,7 +725,7 @@ const handleDelete = async (propertyId) => {
                         >
                           {property.looking_to === 'sell' ? 'Sell' : 'Rent'}
                         </Box>
-                      )}
+                      )} */}
                       <Box
                         sx={{
                           position: 'absolute',

@@ -36,6 +36,7 @@ export default function InvestorHeader() {
     { label: 'Dashboard', path: '/i-dashboard' },
     { label: 'My Properties', path: '/i-myassets' },
     { label: 'Properties', path: '/i-asset' },
+    { label: 'Add Property', path: '/i-addproperty' },
     { label: 'Transactions', path: '/i-transactions' }, // Direct link to transactions page
     { label: 'Plans', path: '/i-plans' },
     { label: 'Meetings', path: '/i-meetings' },

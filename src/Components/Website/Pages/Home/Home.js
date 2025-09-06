@@ -783,7 +783,13 @@ const ShrirajLandingPage = () => {
                               color: "#FFFFFF"
                             }
                           }}
-                          onClick={() => navigate('/login')}
+                          // onClick={() => navigate('/login')}
+                          onClick={() => {
+                      // Store the property ID and redirect info based on role
+                      sessionStorage.setItem('propertyData', JSON.stringify(property));
+                      sessionStorage.setItem('propertyId', property.property_id);
+                      navigate('/login');
+                    }}
                         >
                           Buy Property
                         </Button>
@@ -1018,7 +1024,13 @@ const ShrirajLandingPage = () => {
                               color: "#FFFFFF"
                             }
                           }}
-                          onClick={() => navigate('/login')}
+                          // onClick={() => navigate('/login')}
+                          onClick={() => {
+                      // Store the property ID and redirect info based on role
+                      sessionStorage.setItem('propertyData', JSON.stringify(property));
+                      sessionStorage.setItem('propertyId', property.property_id);
+                      navigate('/login');
+                    }}
                         >
                           Buy Property
                         </Button>

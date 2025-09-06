@@ -512,7 +512,7 @@ const AssetsUI = () => {
                           </Box>
                         </>
                       )}
-                      {property.status !== 'sold' && (
+                      {/* {property.status !== 'sold' && (
                         <Box
                           sx={{
                             position: 'absolute',
@@ -532,7 +532,7 @@ const AssetsUI = () => {
                         >
                           {property.looking_to}
                         </Box>
-                      )}
+                      )} */}
                       <Box
                         sx={{
                           position: 'absolute',
