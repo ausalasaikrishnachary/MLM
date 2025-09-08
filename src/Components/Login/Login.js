@@ -22,6 +22,8 @@ const Login = () => {
   const [showResetPassword, setShowResetPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showOtpVerification, setShowOtpVerification] = useState(false);
+const [otpError, setOtpError] = useState("");
 
   useEffect(() => {
     return () => {
@@ -51,40 +53,68 @@ const Login = () => {
     }
   };
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError("");
+ const handleLogin = async (e) => {
+  e.preventDefault();
+  setError("");
 
-    // Validate email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email) {
-      setEmailError("Email is required");
-      return;
-    } else if (!emailRegex.test(email)) {
-      setEmailError("Enter a valid email address");
-      return;
-    } else {
-      setEmailError("");
-    }
+  // Validate email & password...
+  if (!email || !password) {
+    setError("Email and Password are required");
+    return;
+  }
 
-    // Validate password
-    if (!password) {
-      setError("Password is required");
-      return;
-    }
+  setIsLoading(true);
 
-    setIsLoading(true);
+  try {
+    const response = await fetch(`${baseurl}/login/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
 
-    try {
-      const response = await fetch(`${baseurl}/login/`, {
+    const data = await response.json();
+
+    if (response.ok) {
+      // ✅ Credentials valid, now send OTP
+      const otpResponse = await fetch(`${baseurl}/send-otp/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email }),
       });
 
-      const data = await response.json();
+      const otpData = await otpResponse.json();
 
-      if (response.ok) {
+      if (otpResponse.ok) {
+        Swal.fire("Success", "OTP sent to your email. Please verify.", "success");
+        setShowOtpVerification(true); // Show OTP input
+      } else {
+        setError(otpData.error || "Failed to send OTP");
+      }
+    } else {
+      setError(data.error || "Invalid credentials");
+    }
+  } catch (err) {
+    setError("Something went wrong. Please try again.");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+const handleVerifyOtp = async () => {
+  if (!otp) {
+    setOtpError("OTP is required");
+    return;
+  }
+  try {
+    const response = await fetch(`${baseurl}/verify-otp/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, otp }),
+    });
+
+    const data = await response.json();
+
+  if (response.ok) {
         localStorage.setItem("user_id", data.user_id);
         localStorage.setItem("email", data.email);
         localStorage.setItem("username", data.username);
@@ -128,15 +158,31 @@ const Login = () => {
           setError("No roles assigned. Please contact support.");
         }
       } else {
-        setError(data.error || "Invalid credentials");
-      }
-    } catch (err) {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setIsLoading(false);
+      setOtpError(data.error || "Invalid OTP");
     }
-  };
+  } catch (error) {
+    setOtpError("Something went wrong. Please try again.");
+  }
+};
 
+const handleResendOtp = async () => {
+  try {
+    const response = await fetch(`${baseurl}/send-otp/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      Swal.fire("Success", "New OTP sent to your email.", "success");
+    } else {
+      Swal.fire("Error", data.error || "Failed to resend OTP", "error");
+    }
+  } catch (error) {
+    Swal.fire("Error", "Something went wrong. Please try again.", "error");
+  }
+};
   const selectUserRoleWithRedirect = async (roles, propertyId, propertyData) => {
     const { value: selectedRole } = await Swal.fire({
       title: "Select Your Role",
@@ -299,143 +345,184 @@ const Login = () => {
             md={6}
             sx={{ padding: 4, display: "flex", flexDirection: "column", justifyContent: "center" }}
           >
-            {showForgotPassword ? (
-              <>
-                <Typography variant="h4" align="center" gutterBottom>
-                  Forgot Password
-                </Typography>
-                <TextField
-                  fullWidth
-                  label="Email"
-                  variant="outlined"
-                  margin="normal"
-                  value={email}
-                  onChange={handleEmailChange}
-                  error={!!emailError}
-                  helperText={emailError}
-                />
-                <Button
-                  fullWidth
-                  variant="contained"
-                  sx={{ mt: 2, bgcolor: "#00cc8f", "&:hover": { bgcolor: "#004080", color: "#fff" } }}
-                  onClick={handleSendOTP}
-                >
-                  Send OTP
-                </Button>
-              </>
-            ) : showResetPassword ? (
-              <>
-                <Typography variant="h4" align="center" gutterBottom>
-                  Reset Password
-                </Typography>
-                <TextField
-                  fullWidth
-                  label="Email"
-                  variant="outlined"
-                  margin="normal"
-                  value={email}
-                  disabled
-                />
-                <TextField
-                  fullWidth
-                  label="OTP"
-                  variant="outlined"
-                  margin="normal"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
-                />
-                <TextField
-                  fullWidth
-                  label="New Password"
-                  type="password"
-                  variant="outlined"
-                  margin="normal"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                />
-                <Button
-                  fullWidth
-                  variant="contained"
-                  sx={{ mt: 2, bgcolor: "#00cc8f", "&:hover": { bgcolor: "#004080", color: "#fff" } }}
-                  onClick={handleResetPassword}
-                >
-                  Reset Password
-                </Button>
-              </>
-            ) : (
-              <>
-                <Typography variant="h4" align="center" gutterBottom>
-                  Login
-                </Typography>
 
-                <TextField
-                  fullWidth
-                  label="Email"
-                  variant="outlined"
-                  margin="normal"
-                  value={email}
-                  onChange={handleEmailChange}
-                  error={!!emailError}
-                  helperText={emailError}
-                />
+        {showOtpVerification ? (
+  <>
+    <Typography variant="h5" align="center" gutterBottom>
+      Verify OTP
+    </Typography>
+    <TextField
+      fullWidth
+      label="Email"
+      value={email}
+      disabled
+      margin="normal"
+    />
+    <TextField
+      fullWidth
+      label="Enter OTP"
+      value={otp}
+      onChange={(e) => setOtp(e.target.value)}
+      error={!!otpError}
+      helperText={otpError}
+      margin="normal"
+    />
+    <Button
+      fullWidth
+      variant="contained"
+      sx={{ mt: 2, bgcolor: "#00cc8f" }}
+      onClick={handleVerifyOtp}
+    >
+      Verify OTP
+    </Button>
+    <Button
+      fullWidth
+      variant="outlined"
+      sx={{ mt: 2 }}
+      onClick={handleResendOtp}
+    >
+      Resend OTP
+    </Button>
+  </>
+) : showForgotPassword ? (
+  <>
+    <Typography variant="h4" align="center" gutterBottom>
+      Forgot Password
+    </Typography>
+    <TextField
+      fullWidth
+      label="Email"
+      variant="outlined"
+      margin="normal"
+      value={email}
+      onChange={handleEmailChange}
+      error={!!emailError}
+      helperText={emailError}
+    />
+    <Button
+      fullWidth
+      variant="contained"
+      sx={{ mt: 2, bgcolor: "#00cc8f", "&:hover": { bgcolor: "#004080", color: "#fff" } }}
+      onClick={handleSendOTP}
+    >
+      Send OTP
+    </Button>
+  </>
+) : showResetPassword ? (
+  <>
+    <Typography variant="h4" align="center" gutterBottom>
+      Reset Password
+    </Typography>
+    <TextField
+      fullWidth
+      label="Email"
+      variant="outlined"
+      margin="normal"
+      value={email}
+      disabled
+    />
+    <TextField
+      fullWidth
+      label="OTP"
+      variant="outlined"
+      margin="normal"
+      value={otp}
+      onChange={(e) => setOtp(e.target.value)}
+    />
+    <TextField
+      fullWidth
+      label="New Password"
+      type="password"
+      variant="outlined"
+      margin="normal"
+      value={newPassword}
+      onChange={(e) => setNewPassword(e.target.value)}
+    />
+    <Button
+      fullWidth
+      variant="contained"
+      sx={{ mt: 2, bgcolor: "#00cc8f", "&:hover": { bgcolor: "#004080", color: "#fff" } }}
+      onClick={handleResetPassword}
+    >
+      Reset Password
+    </Button>
+  </>
+) : (
+  <>
+    <Typography variant="h4" align="center" gutterBottom>
+      Login
+    </Typography>
 
-                <TextField
-                  fullWidth
-                  label="Password"
-                  type={showPassword ? "text" : "password"}
-                  variant="outlined"
-                  margin="normal"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  error={!password && error === "Password is required"}
-                  helperText={!password && error === "Password is required" ? "Password is required" : ""}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton onClick={handleTogglePassword} edge="end">
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
+    <TextField
+      fullWidth
+      label="Email"
+      variant="outlined"
+      margin="normal"
+      value={email}
+      onChange={handleEmailChange}
+      error={!!emailError}
+      helperText={emailError}
+    />
 
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 1 }}>
-                  <Link href="/signup" sx={{ cursor: "pointer", color: "primary.main" }}>
-                    Register
-                  </Link>
-                  <Link href="#" onClick={() => setShowForgotPassword(true)} sx={{ cursor: "pointer", color: "error.main" }}>
-                    Forgot Password?
-                  </Link>
-                </Box>
+    <TextField
+      fullWidth
+      label="Password"
+      type={showPassword ? "text" : "password"}
+      variant="outlined"
+      margin="normal"
+      value={password}
+      onChange={(e) => setPassword(e.target.value)}
+      error={!password && error === "Password is required"}
+      helperText={!password && error === "Password is required" ? "Password is required" : ""}
+      InputProps={{
+        endAdornment: (
+          <InputAdornment position="end">
+            <IconButton onClick={handleTogglePassword} edge="end">
+              {showPassword ? <VisibilityOff /> : <Visibility />}
+            </IconButton>
+          </InputAdornment>
+        ),
+      }}
+    />
 
-                <Button
-                  fullWidth
-                  variant="contained"
-                  sx={{
-                    mt: 2,
-                    bgcolor: isLoading ? "#004080" : "#00cc8f",
-                    color: isLoading ? "#fff" : "inherit",
-                    "&:hover": {
-                      bgcolor: "#004080",
-                      color: "#fff"
-                    }
-                  }}
-                  onClick={handleLogin}
-                  disabled={isLoading}
-                >
-                  {isLoading ? "Logging In..." : "Login"}
-                </Button>
+    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 1 }}>
+      <Link href="/signup" sx={{ cursor: "pointer", color: "primary.main" }}>
+        Register
+      </Link>
+      <Link href="#" onClick={() => setShowForgotPassword(true)} sx={{ cursor: "pointer", color: "error.main" }}>
+        Forgot Password?
+      </Link>
+    </Box>
 
-                {error && (
-                  <Typography
-                    variant="body2"
-                    color="error"
-                    sx={{ mt: 2, textAlign: 'center' }}
-                  >
-                    {error}
-                  </Typography>
-                )}
+    <Button
+      fullWidth
+      variant="contained"
+      sx={{
+        mt: 2,
+        bgcolor: isLoading ? "#004080" : "#00cc8f",
+        color: isLoading ? "#fff" : "inherit",
+        "&:hover": {
+          bgcolor: "#004080",
+          color: "#fff"
+        }
+      }}
+      onClick={handleLogin}
+      disabled={isLoading}
+    >
+      {isLoading ? "Logging In..." : "Login"}
+    </Button>
+
+    {error && (
+      <Typography
+        variant="body2"
+        color="error"
+        sx={{ mt: 2, textAlign: 'center' }}
+      >
+        {error}
+      </Typography>
+    )}
+
+
               </>
             )}
           </Grid>

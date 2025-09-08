@@ -72,27 +72,32 @@ function TrainingMaterial() {
         ) : (
           <>
             <Grid container spacing={4}>
-              {paginatedMaterials.map((item, index) => (
-                <Grid item xs={12} md={4} key={index}>
-                  <Card>
-                    <CardMedia
-                      component="video"
-                      src={`${baseurl}${item.video}`}
-                      controls
-                      height="150"
-                    />
-                    <CardContent>
-                      <Typography variant="h6" gutterBottom>
-                        {item.title}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {item.description}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
+  {paginatedMaterials.map((item, index) => (
+    <Grid item xs={12} md={4} key={index}>
+      <Card>
+        <CardMedia
+          component="video"
+          src={`${baseurl}${item.video}`}
+          controls
+          height="150"
+        />
+        <CardContent>
+          <Typography variant="body2" color="primary" gutterBottom>
+            Category: {item.category}
+          </Typography>
+          <Typography variant="h6" gutterBottom>
+            {item.title}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" >
+            {item.description}
+          </Typography>
+          
+        </CardContent>
+      </Card>
+    </Grid>
+  ))}
+</Grid>
+
 
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
               <Pagination

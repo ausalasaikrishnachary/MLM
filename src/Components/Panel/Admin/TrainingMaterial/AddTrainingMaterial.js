@@ -7,7 +7,8 @@ import {
     Button,
     Typography,
     Box,
-    Paper
+    Paper,
+    MenuItem
 } from '@mui/material';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -19,6 +20,7 @@ function AddTrainingMaterial() {
 
     const [formData, setFormData] = useState({
         title: '',
+        category: '',
         description: ''
     });
 
@@ -39,50 +41,55 @@ function AddTrainingMaterial() {
         }
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
+   const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-        const data = new FormData();
-        data.append('title', formData.title);
-        data.append('description', formData.description);
-        if (videoFile) {
-            data.append('video', videoFile);
-        }
+    const data = new FormData();
+    data.append('title', formData.title);
+    data.append('category', formData.category);
+    data.append('description', formData.description);
+    if (videoFile) {
+        data.append('video', videoFile);
+    }
 
-        try {
-            await axios.post(`${baseurl}/training-materials/`, data, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
+    try {
+        await axios.post(`${baseurl}/training-materials/`, data, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
 
-            Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: 'Training material uploaded successfully!',
-                confirmButtonText: 'OK'
-            });
+        Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: 'Training material uploaded successfully!',
+            confirmButtonText: 'OK'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                navigate("/a-trainingmaterial"); // ✅ redirect after success
+            }
+        });
 
-            setFormData({ title: '', description: '' });
-            setVideoFile(null);
-        } catch (error) {
-            console.error(error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Upload Failed',
-                text: 'Error uploading training material.'
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
+        setFormData({ title: '', category: '', description: '' });
+        setVideoFile(null);
+    } catch (error) {
+        console.error(error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Upload Failed',
+            text: 'Error uploading training material.'
+        });
+    } finally {
+        setLoading(false);
+    }
+};
+
 
     return (
         <div>
             <Header />
             <Container maxWidth="md" sx={{ mt: 4 }}>
-                
                 <Paper sx={{ p: 4 }}>
                     <Typography variant="h5" gutterBottom>
                         Add Training Material
@@ -98,6 +105,23 @@ function AddTrainingMaterial() {
                             onChange={handleChange}
                             required
                         />
+
+                        {/* Category Dropdown */}
+                        <TextField
+                            select
+                            label="Category"
+                            name="category"
+                            fullWidth
+                            margin="normal"
+                            value={formData.category}
+                            onChange={handleChange}
+                            required
+                        >
+                            <MenuItem value="Sales">Sales</MenuItem>
+                            <MenuItem value="Marketing">Marketing</MenuItem>
+                            <MenuItem value="Admin">Admin</MenuItem>
+                        </TextField>
+
                         <TextField
                             label="Description"
                             name="description"
