@@ -1,20 +1,26 @@
-
-import "./Home.css"
+import "./Home.css";
 import { Container, Navbar, Nav, Row, Col, Form, Button } from 'react-bootstrap';
 import { Tabs, InputGroup } from "react-bootstrap";
 import { FaSearch, FaCrosshairs, FaMicrophone } from 'react-icons/fa';
 import { Carousel, Tab, Card } from "react-bootstrap";
 import React, { useState, useEffect, useRef } from 'react';
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { Box, Grid, CardContent, Typography, CardMedia, IconButton } from '@mui/material';
+import {
+  Box,
+  Grid,
+  CardContent,
+  Typography,
+  CardMedia,
+  IconButton,
+  Dialog,
+  Pagination
+} from '@mui/material';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useNavigate } from 'react-router-dom';
-
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import 'font-awesome/css/font-awesome.min.css';
 import 'aos/dist/aos.css';
-
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
@@ -28,31 +34,12 @@ import {
   faPhone,
   faEnvelope
 } from '@fortawesome/free-solid-svg-icons';
-
 import { baseurl } from './../../../BaseURL/BaseURL';
-
-const sliderSettings = {
-  dots: true,
-  arrows: true,
-  infinite: true,
-  speed: 600,
-  slidesToShow: 3,
-  slidesToScroll: 1,
-  autoplay: true,
-  responsive: [
-    {
-      breakpoint: 992,
-      settings: { slidesToShow: 2 },
-    },
-    {
-      breakpoint: 768,
-      settings: { slidesToShow: 1 },
-    },
-  ],
-};
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
 const ShrirajLandingPage = () => {
-
   const [activeTab, setActiveTab] = useState('sell');
   const [searchResults, setSearchResults] = useState([]);
   const navigate = useNavigate();
@@ -60,11 +47,15 @@ const ShrirajLandingPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [properties, setProperties] = useState([]);
-
-
+  const [selectedProperty, setSelectedProperty] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 3;
+  const totalPages = Math.ceil(properties.length / itemsPerPage);
+  const paginatedProperties = properties.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
   useEffect(() => {
-    // Initialize AOS (Animate On Scroll) if needed
     if (typeof window !== 'undefined') {
       const AOS = require('aos');
       AOS.init({
@@ -80,11 +71,8 @@ const ShrirajLandingPage = () => {
       try {
         const response = await axios.get(`${baseurl}/property/`);
         const allProperties = response.data;
-
-        // Shuffle and pick 3 random properties
         const shuffled = allProperties.sort(() => 0.5 - Math.random());
-        const selected = shuffled.slice(0, 3);
-
+        const selected = shuffled.slice(0, 6);
         setProperties(selected);
       } catch (err) {
         console.error('Error fetching properties:', err);
@@ -96,7 +84,45 @@ const ShrirajLandingPage = () => {
   }, []);
 
 
+  const getAllMedia = (property) => {
+  if (!property.images || !Array.isArray(property.images)) {
+    return [{ url: 'https://via.placeholder.com/300', type: 'image', alt: 'Placeholder' }];
+  }
+  return property.images.map((img) => ({
+    url: `${baseurl}${img.image}`,
+    type: 'image',
+    alt: img.alt || property.property_title
+  }));
+};
+  useEffect(() => {
+    const fetchCarouselData = async () => {
+      try {
+        const response = await axios.get(`${baseurl}/carousel/`);
+        setCarouselItems(response.data);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message);
+        setLoading(false);
+        console.error('Error fetching carousel data:', err);
+      }
+    };
+    fetchCarouselData();
+  }, []);
 
+const handleImageClick = (property) => {
+  setSelectedProperty(property);
+  setOpenModal(true);
+};
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setSelectedProperty(null);
+    setSelectedImage(null);
+  };
+
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
 
   const SearchInput = ({ activeTab }) => {
     const [query, setQuery] = useState('');
@@ -106,7 +132,6 @@ const ShrirajLandingPage = () => {
     const [isListening, setIsListening] = useState(false);
     const recognitionRef = useRef(null);
 
-    // Initialize speech recognition
     useEffect(() => {
       if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -119,7 +144,6 @@ const ShrirajLandingPage = () => {
           const transcript = event.results[0][0].transcript;
           setQuery(transcript);
           setIsListening(false);
-          // Automatically show suggestions when voice input is received
           setShowSuggestions(true);
         };
 
@@ -169,7 +193,6 @@ const ShrirajLandingPage = () => {
       }
     };
 
-    // Function to remove spaces and special characters for comparison
     const normalizeString = (str) => {
       return str.replace(/\s+/g, '').toLowerCase();
     };
@@ -192,21 +215,20 @@ const ShrirajLandingPage = () => {
               },
             }
           );
-          
-          // Filter results to show matches regardless of spaces
+
           const normalizedQuery = normalizeString(query);
           const filteredSuggestions = response.data.filter(item => {
             const normalizedTitle = normalizeString(item.property_title || '');
             const normalizedAddress = normalizeString(item.address || '');
             const normalizedCity = normalizeString(item.city || '');
-            
+
             return (
               normalizedTitle.includes(normalizedQuery) ||
               normalizedAddress.includes(normalizedQuery) ||
               normalizedCity.includes(normalizedQuery)
             );
           });
-          
+
           setSuggestions(filteredSuggestions);
         } catch (error) {
           console.error('Search failed:', error);
@@ -246,10 +268,6 @@ const ShrirajLandingPage = () => {
             <div className="icon-btn" onClick={handleSearchClick} style={{ cursor: 'pointer' }}>
               <FaSearch />
             </div>
-
-            {/* <div className="icon-btn">
-              <FaCrosshairs />
-            </div> */}
             <div 
               className={`icon-btn ${isListening ? 'listening' : ''}`}
               onClick={handleVoiceSearch}
@@ -296,7 +314,6 @@ const ShrirajLandingPage = () => {
     );
   };
 
-
   const advantages = [
     {
       icon: faSearch,
@@ -319,82 +336,24 @@ const ShrirajLandingPage = () => {
     {
       title: 'Residential',
       count: '2437 Properties',
-      image: 'https://img.freepik.com/free-psd/modern-farmhouse-meadow-hill-generative-ai_587448-2217.jpg', // High-rise apartments
+      image: 'https://img.freepik.com/free-psd/modern-farmhouse-meadow-hill-generative-ai_587448-2217.jpg',
     },
     {
       title: 'Commercial',
       count: '521 Properties',
-      image: 'https://img.freepik.com/free-photo/office-skyscrapers-business-district_107420-95733.jpg?ga=GA1.1.944433368.1729337049&semt=ais_hybrid&w=740', // Office buildings
+      image: 'https://img.freepik.com/free-photo/office-skyscrapers-business-district_107420-95733.jpg?ga=GA1.1.944433368.1729337049&semt=ais_hybrid&w=740',
     },
     {
       title: 'Agriculture',
       count: '61 Properties',
-      image: 'https://img.freepik.com/free-photo/young-plants-growing-very-large-plant-commercial-greenhouse_273609-14259.jpg', // Lush farmland
+      image: 'https://img.freepik.com/free-photo/young-plants-growing-very-large-plant-commercial-greenhouse_273609-14259.jpg',
     },
     {
       title: 'Industrial',
       count: '11 Properties',
-      image: 'https://img.freepik.com/free-photo/portrait-engineer-job-site-work-hours_23-2151589636.jpg', // Factory building
+      image: 'https://img.freepik.com/free-photo/portrait-engineer-job-site-work-hours_23-2151589636.jpg',
     },
   ];
-
-  // const properties = [
-  //   {
-  //     id: 1,
-  //     title: 'Elegant Villa',
-  //     details: '3 BHK in a prime location',
-  //     images: [
-  //       "https://www.shutterstock.com/image-photo/land-plot-management-real-estate-260nw-2591764263.jpg",
-  //       "https://www.shutterstock.com/image-photo/land-plot-management-real-estate-260nw-2591764263.jpg",
-  //       "https://www.shutterstock.com/image-photo/land-plot-management-real-estate-260nw-2591764263.jpg",
-  //     ]
-  //   },
-
-  //   {
-  //     id: 2,
-  //     title: 'Villa Sahi',
-  //     details: '3 BHK in a prime location',
-  //     images: [
-  //       'https://t4.ftcdn.net/jpg/03/70/64/43/360_F_370644357_MDF4UXLAXTyyi2OyuK66tWW9cA2f8svL.jpg',
-  //       'https://t4.ftcdn.net/jpg/03/70/64/43/360_F_370644357_MDF4UXLAXTyyi2OyuK66tWW9cA2f8svL.jpg',
-  //       'https://t4.ftcdn.net/jpg/03/70/64/43/360_F_370644357_MDF4UXLAXTyyi2OyuK66tWW9cA2f8svL.jpg',
-  //     ]
-  //   },
-
-
-  //   {
-  //     id: 3,
-  //     title: 'luxurystays',
-  //     details: '3 BHK in a prime location',
-  //     images: [
-  //       'https://luxurystays.in/villas/AzulD/BD2.jpg',
-  //       'https://luxurystays.in/villas/AzulD/BD2.jpg',
-  //       'https://luxurystays.in/villas/AzulD/BD2.jpg',
-  //     ]
-  //   },
-
-  // ];
-
-  // const properties = [
-  //   {
-  //     id: 1,
-  //     title: "Farmland with Irrigation Facility",
-  //     image: "https://www.shutterstock.com/image-photo/land-plot-management-real-estate-260nw-2591764263.jpg",
-  //     details: "32,000 sq ft | ₹ 700000 /-"
-  //   },
-  //   {
-  //     id: 2,
-  //     title: "Villa Sahi",
-  //     image: "https://t4.ftcdn.net/jpg/03/70/64/43/360_F_370644357_MDF4UXLAXTyyi2OyuK66tWW9cA2f8svL.jpg",
-  //     details: "18,500 sq ft | ₹ 800000 /-"
-  //   },
-  //   {
-  //     id: 3,
-  //     title: "luxurystays",
-  //     image: "https://luxurystays.in/villas/AzulD/BD2.jpg",
-  //     details: "24,000 sq ft | ₹ 1200000 /-"
-  //   }
-  // ];
 
   const backers = [
     {
@@ -451,90 +410,12 @@ const ShrirajLandingPage = () => {
     }
   ];
 
-  useEffect(() => {
-    const fetchCarouselData = async () => {
-      try {
-        const response = await axios.get(`${baseurl}/carousel/`);
-        setCarouselItems(response.data);
-        setLoading(false);
-      } catch (err) {
-        setError(err.message);
-        setLoading(false);
-        console.error('Error fetching carousel data:', err);
-      }
-    };
-
-    fetchCarouselData();
-  }, []);
-
-  const imageUrl = "https://www.developer.com/wp-content/uploads/slider/cache/b6f674e40adb492ce3d3a75127c097a3/Art-Deco-City-1200-x-600.jpg";
-
   if (loading) return <div className="text-center py-5">Loading carousel...</div>;
   if (error) return <div className="text-center py-5 text-danger">Error: {error}</div>;
   if (!carouselItems.length) return <div className="text-center py-5">No carousel items found</div>;
 
   return (
     <>
-      {/* <nav className="navbar navbar-expand-lg navbar-light">
-        <div className="container">
-          <a className="navbar-brand" href="#">
-            <img 
-              src="http://175.29.21.7:84/static/media/Logo%20File.78893cdbe11c7dfa5f45.png" 
-              alt="Shriraj Logo" 
-              className="logo"
-            />
-          </a>
-          <button 
-            className="navbar-toggler" 
-            type="button" 
-            data-bs-toggle="collapse" 
-            data-bs-target="#navbarNav" 
-            aria-controls="navbarNav" 
-            aria-expanded="false" 
-            aria-label="Toggle navigation"
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
-          <div className="collapse navbar-collapse" id="navbarNav">
-            <ul className="navbar-nav ms-auto">
-              <li className="nav-item">
-                <a className="nav-link" href="#">Properties</a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="#">Why Shriraj</a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="#">Sign Up</a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="#">Login</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav> */}
-      {/* <Navbar expand="lg" className="navbar-custom">
-              <Container>
-                <Navbar.Brand href="#">
-                  <img 
-                    src="http://175.29.21.7:84/static/media/Logo%20File.78893cdbe11c7dfa5f45.png" 
-                    alt="Shriraj Logo" 
-                    className="logo"
-                  />
-                </Navbar.Brand>
-                <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                <Navbar.Collapse id="basic-navbar-nav">
-                  <Nav className="ms-auto">
-                    <Nav.Link href="#">Properties</Nav.Link>
-                    <Nav.Link href="#">Why Shriraj</Nav.Link>
-                    <Nav.Link href="#">Sign Up</Nav.Link>
-                    <Nav.Link href="#">Login</Nav.Link>
-                  </Nav>
-                </Navbar.Collapse>
-              </Container>
-            </Navbar> */}
-
-
       <div className="container-fluid px-0" style={{ marginTop: "-4px" }}>
         <Card className="shadow rounded-0 border-0">
           <Carousel
@@ -589,8 +470,6 @@ const ShrirajLandingPage = () => {
                       "https://via.placeholder.com/1200x500?text=Image+Not+Found";
                   }}
                 />
-
-                {/* Dark Overlay */}
                 <div
                   style={{
                     position: "absolute",
@@ -602,8 +481,6 @@ const ShrirajLandingPage = () => {
                     zIndex: 2,
                   }}
                 ></div>
-
-                {/* Hero Content */}
                 <div
                   className="position-absolute top-50 start-50 translate-middle text-white text-center px-3"
                   style={{ zIndex: 3 }}
@@ -627,9 +504,6 @@ const ShrirajLandingPage = () => {
         </Card>
       </div>
 
-
-
-      {/* Search Bar Section */}
       <div className="container search-bar-wrapper">
         <div
           className="search-bar-box bg-white rounded shadow p-3"
@@ -659,7 +533,6 @@ const ShrirajLandingPage = () => {
           </Tabs>
         </div>
 
-        {/* Display search results */}
         {searchResults.length > 0 && (
           <div className="mt-3 p-3 bg-white rounded shadow">
             <h5>Search Results</h5>
@@ -684,10 +557,6 @@ const ShrirajLandingPage = () => {
         )}
       </div>
 
-
-
-
-      {/* Featured Properties Section */}
       <section className="py-5 bg-light">
         <div className="container">
           <h2 className="section-title text-left mb-5" data-aos="fade-up">
@@ -697,8 +566,8 @@ const ShrirajLandingPage = () => {
           <div className="row">
             {loading ? (
               <div className="text-center">Loading properties...</div>
-            ) : (
-              properties.map((property, index) => (
+            ) : paginatedProperties.length > 0 ? (
+              paginatedProperties.map((property, index) => (
                 <div
                   className="col-md-4 mb-4"
                   key={property.property_id}
@@ -709,30 +578,22 @@ const ShrirajLandingPage = () => {
                     className="property-card card d-flex flex-column"
                     style={{ height: "100%" }}
                   >
-                    {/* Carousel */}
-                    <Carousel
-                      interval={3000}
-                      indicators={false}
-                      controls={true}
-                      pause={false}
-                    >
-                      {(property.images || []).map((imgObj, i) => (
-                        <Carousel.Item key={i}>
-                          <img
-                            src={`${baseurl}${imgObj.image}`}
-                            className="d-block w-100"
-                            alt={`slide-${i}`}
-                            style={{
-                              borderRadius: "8px",
-                              maxHeight: "200px",
-                              objectFit: "cover",
-                            }}
-                          />
-                        </Carousel.Item>
-                      ))}
-                    </Carousel>
+                    <div className="property-image-container">
+             <img
+  src={`${baseurl}${property.images && property.images[0] ? property.images[0].image : ''}`}
+  className="d-block w-100"
+  alt="property"
+  style={{
+    borderRadius: "8px",
+    height: "200px",
+    width: "100%",
+    objectFit: "cover",
+    cursor: 'pointer'
+  }}
+  onClick={() => handleImageClick(property)}
+/>
+                    </div>
 
-                    {/* Card Body */}
                     <div
                       className="card-body d-flex flex-column justify-content-between"
                       style={{ flexGrow: 1 }}
@@ -740,22 +601,48 @@ const ShrirajLandingPage = () => {
                       <div>
                         <div className="row mb-2 align-items-center">
                           <div className="col text-start ps-0">
-                            <span className="badge bg-success me-2">
-                              {property.looking_to?.charAt(0).toUpperCase() +
-                                property.looking_to?.slice(1)}
-                            </span>
                             <span className="badge bg-secondary">
                               {property.furnishing_status}
                             </span>
                           </div>
                         </div>
-
                         <h5 className="card-title">{property.property_title}</h5>
                         <p className="card-text">{property.description}</p>
+                        <Grid container spacing={2} sx={{ mt: 2 }}>
+                          <Grid item xs={6}>
+                            <Typography variant="caption" color="text.secondary">
+                              Plot Area
+                            </Typography>
+                            <Typography fontWeight="600" color="#4A90E2">
+                              {property.plot_area_sqft || 'N/A'} sqft
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="caption" color="text.secondary">
+                              Built-up Area
+                            </Typography>
+                            <Typography fontWeight="600" color="#4A90E2">
+                              {property.builtup_area_sqft || 'N/A'} sqft
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="caption" color="text.secondary">
+                              Property Value
+                            </Typography>
+                            <Typography fontWeight="600" color="#4A90E2">
+                              ₹{property.total_property_value || 'N/A'}
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="caption" color="text.secondary">
+                              Floors
+                            </Typography>
+                            <Typography fontWeight="600" color="#4A90E2">
+                              {property.number_of_floors || 'N/A'}
+                            </Typography>
+                          </Grid>
+                        </Grid>
                       </div>
-
-
-                      {/* Buttons Section */}
                       <div className="btn-container single-button mt-3">
                         <Button
                           sx={{
@@ -771,7 +658,6 @@ const ShrirajLandingPage = () => {
                         >
                           View Property
                         </Button>
-
                         <Button
                           sx={{
                             color: "#2E166D",
@@ -783,27 +669,31 @@ const ShrirajLandingPage = () => {
                               color: "#FFFFFF"
                             }
                           }}
-                          // onClick={() => navigate('/login')}
                           onClick={() => {
-                      // Store the property ID and redirect info based on role
-                      sessionStorage.setItem('propertyData', JSON.stringify(property));
-                      sessionStorage.setItem('propertyId', property.property_id);
-                      navigate('/login');
-                    }}
+                            sessionStorage.setItem('propertyData', JSON.stringify(property));
+                            sessionStorage.setItem('propertyId', property.property_id);
+                            navigate('/login');
+                          }}
                         >
                           Buy Property
                         </Button>
                       </div>
-
-
                     </div>
                   </div>
                 </div>
               ))
+            ) : (
+              <div className="text-center">No properties found</div>
             )}
           </div>
-
-          {/* Browse All */}
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+            <Pagination
+              count={totalPages}
+              page={page}
+              onChange={handlePageChange}
+              color="primary"
+            />
+          </Box>
           <div className="text-center mt-3">
             <a href="/properties" className="btn btn-primary px-4 py-2">
               Browse All Properties
@@ -812,9 +702,6 @@ const ShrirajLandingPage = () => {
         </div>
       </section>
 
-
-
-      {/* Intro Section */}
       <section className="py-5 bg-light">
         <div className="container">
           <div className="row align-items-left">
@@ -837,7 +724,6 @@ const ShrirajLandingPage = () => {
         </div>
       </section>
 
-      {/* Explore Categories */}
       <Box sx={{ py: 6 }}>
         <Box textAlign="center" mb={4}>
           <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold' }}>
@@ -847,7 +733,6 @@ const ShrirajLandingPage = () => {
             Find Best Categories in town with Shriraj Team
           </Typography>
         </Box>
-
         <Box sx={{ width: '85%', mx: 'auto' }}>
           <Grid container spacing={3} justifyContent="center">
             {categories.map((category, index) => (
@@ -883,9 +768,6 @@ const ShrirajLandingPage = () => {
                       <Typography variant="subtitle1" fontWeight="bold">
                         {category.title}
                       </Typography>
-                      {/* <Typography variant="body2" color="text.secondary">
-                        {category.count}
-                      </Typography> */}
                     </Box>
                     <IconButton
                       sx={{ backgroundColor: '#f1f1f1' }}
@@ -902,9 +784,6 @@ const ShrirajLandingPage = () => {
         </Box>
       </Box>
 
-
-
-      {/* Shriraj Advantage Section */}
       <section className="py-5">
         <div className="container">
           <h2 className="section-title text-left mb-5" data-aos="fade-up">Shriraj Advantage</h2>
@@ -936,7 +815,6 @@ const ShrirajLandingPage = () => {
         </div>
       </section>
 
-      {/* Properties Section */}
       <section className="py-5 bg-light">
         <div className="container">
           <h2 className="section-title text-left mb-5" data-aos="fade-up">
@@ -945,8 +823,8 @@ const ShrirajLandingPage = () => {
           <div className="row">
             {loading ? (
               <div className="text-center">Loading properties...</div>
-            ) : (
-              properties.map((property, index) => (
+            ) : paginatedProperties.length > 0 ? (
+              paginatedProperties.map((property, index) => (
                 <div
                   className="col-md-4 mb-4"
                   key={property.property_id}
@@ -957,28 +835,24 @@ const ShrirajLandingPage = () => {
                     className="property-card card d-flex flex-column"
                     style={{ height: '100%' }}
                   >
-                    <Carousel
-                      interval={3000}
-                      indicators={false}
-                      controls={true}
-                      pause={false}
-                    >
-                      {(property.images || []).map((imgObj, i) => (
-                        <Carousel.Item key={i}>
-                          <img
-                            src={`${baseurl}${imgObj.image}`}
-                            className="d-block w-100"
-                            alt={`slide-${i}`}
-                            style={{
-                              borderRadius: '8px',
-                              maxHeight: '200px',
-                              objectFit: 'cover',
-                            }}
-                          />
-                        </Carousel.Item>
-                      ))}
-                    </Carousel>
-
+                    <div className="property-image-container">
+                      <img
+                        src={`${baseurl}${property.images && property.images[0] ? property.images[0].image : ''}`}
+                        className="d-block w-100"
+                        alt="property"
+                        style={{
+                          borderRadius: '8px',
+                          height: '200px',
+                          width: '100%',
+                          objectFit: 'cover',
+                          cursor: 'pointer'
+                        }}
+                        onClick={() => handleImageClick(
+                          property, 
+                          `${baseurl}${property.images && property.images[0] ? property.images[0].image : ''}`
+                        )}
+                      />
+                    </div>
                     <div
                       className="card-body d-flex flex-column justify-content-between"
                       style={{ flexGrow: 1 }}
@@ -986,17 +860,46 @@ const ShrirajLandingPage = () => {
                       <div>
                         <div className="row mb-2 align-items-center">
                           <div className="col text-start ps-0">
-                            <span className="badge bg-success me-2">
-                              {property.looking_to?.charAt(0).toUpperCase() + property.looking_to?.slice(1)}
-                            </span>
                             <span className="badge bg-secondary">{property.furnishing_status}</span>
                           </div>
                         </div>
                         <h5 className="card-title">{property.property_title}</h5>
                         <p className="card-text">{property.description}</p>
+                        <Grid container spacing={2} sx={{ mt: 2 }}>
+                          <Grid item xs={6}>
+                            <Typography variant="caption" color="text.secondary">
+                              Plot Area
+                            </Typography>
+                            <Typography fontWeight="600" color="#4A90E2">
+                              {property.plot_area_sqft || 'N/A'} sqft
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="caption" color="text.secondary">
+                              Built-up Area
+                            </Typography>
+                            <Typography fontWeight="600" color="#4A90E2">
+                              {property.builtup_area_sqft || 'N/A'} sqft
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="caption" color="text.secondary">
+                              Property Value
+                            </Typography>
+                            <Typography fontWeight="600" color="#4A90E2">
+                              ₹{property.total_property_value || 'N/A'}
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography variant="caption" color="text.secondary">
+                              Floors
+                            </Typography>
+                            <Typography fontWeight="600" color="#4A90E2">
+                              {property.number_of_floors || 'N/A'}
+                            </Typography>
+                          </Grid>
+                        </Grid>
                       </div>
-
-                      {/* Buttons Section */}
                       <div className="btn-container single-button mt-3">
                         <Button
                           sx={{
@@ -1012,7 +915,6 @@ const ShrirajLandingPage = () => {
                         >
                           View Property
                         </Button>
-
                         <Button
                           sx={{
                             color: "#2E166D",
@@ -1024,13 +926,11 @@ const ShrirajLandingPage = () => {
                               color: "#FFFFFF"
                             }
                           }}
-                          // onClick={() => navigate('/login')}
                           onClick={() => {
-                      // Store the property ID and redirect info based on role
-                      sessionStorage.setItem('propertyData', JSON.stringify(property));
-                      sessionStorage.setItem('propertyId', property.property_id);
-                      navigate('/login');
-                    }}
+                            sessionStorage.setItem('propertyData', JSON.stringify(property));
+                            sessionStorage.setItem('propertyId', property.property_id);
+                            navigate('/login');
+                          }}
                         >
                           Buy Property
                         </Button>
@@ -1039,9 +939,18 @@ const ShrirajLandingPage = () => {
                   </div>
                 </div>
               ))
+            ) : (
+              <div className="text-center">No properties found</div>
             )}
           </div>
-
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+            <Pagination
+              count={totalPages}
+              page={page}
+              onChange={handlePageChange}
+              color="primary"
+            />
+          </Box>
           <div className="text-center mt-3">
             <a href="/properties" className="btn btn-primary px-4 py-2">
               Browse All Properties
@@ -1050,8 +959,6 @@ const ShrirajLandingPage = () => {
         </div>
       </section>
 
-
-      {/* Our Backers Section */}
       <section className="py-5" style={{ backgroundColor: '#e9e9e9' }}>
         <div className="container">
           <h2 className="section-title text-left mb-5" data-aos="fade-up">Our Backers</h2>
@@ -1073,6 +980,46 @@ const ShrirajLandingPage = () => {
           </div>
         </div>
       </section>
+
+
+
+<Dialog
+  open={openModal}
+  onClose={handleCloseModal}
+  maxWidth="md"
+  fullWidth
+  sx={{
+    "& .MuiDialog-paper": {
+      maxWidth: "900px",
+      width: "100%",
+      background: "transparent",
+      boxShadow: "none",
+      borderRadius: 0,
+    },
+  }}
+>
+  <Box sx={{ p: 2, position: "relative" }}>
+    {selectedProperty && getAllMedia(selectedProperty).length > 0 ? (
+      <>
+        <img
+          src={getAllMedia(selectedProperty)[0].url}
+          alt={getAllMedia(selectedProperty)[0].alt || "Property Image"}
+          style={{
+            borderRadius: 0,
+            maxHeight: "550px",
+            objectFit: "cover",
+            width: "100%",
+          }}
+        />
+      </>
+    ) : (
+      <Typography color="white" textAlign="center">
+        No media available.
+      </Typography>
+    )}
+  </Box>
+</Dialog>
+
     </>
   );
 };
