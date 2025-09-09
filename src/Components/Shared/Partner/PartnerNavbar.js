@@ -46,33 +46,68 @@ export default function PartnerHeader() {
 
   const [profileImage, setProfileImage] = useState('');
 
-  useEffect(() => {
-    const fetchProfileImage = () => {
-      axios.get(`${baseurl}/users/${userId}/`)
-        .then(res => {
-          setProfileImage(res.data.image || '');
-        })
-        .catch(err => {
-          console.error('Error fetching profile image:', err);
-        });
-    };
+ useEffect(() => {
+  const fetchProfileImageAndBirthday = () => {
+    axios.get(`${baseurl}/users/${userId}/`)
+      .then(res => {
+        const user = res.data;
+        setProfileImage(user.image || '');
 
-    const fetchNotifications = () => {
-      axios.get(`${baseurl}/notifications/user-id/${userId}/`)
-        .then(response => {
-          const unread = response.data.filter(n => !n.is_read);
-          setNotifications(unread);
-        })
-        .catch(error => {
-          console.error("Error fetching notifications:", error);
-        });
-    };
+        // 🎂 Birthday check
+        if (user.date_of_birth) {
+          const today = new Date();
+          const dob = new Date(user.date_of_birth);
 
-    fetchProfileImage();
-    fetchNotifications();
-    const interval = setInterval(fetchNotifications, 10000);
-    return () => clearInterval(interval);
-  }, [userId]);
+          if (
+            dob.getDate() === today.getDate() &&
+            dob.getMonth() === today.getMonth()
+          ) {
+            // Add birthday wish as a notification (local)
+            setNotifications(prev => [
+              ...prev,
+              {
+                notification_status_id: "birthday_" + userId,
+                message: `🎉 Happy Birthday, ${user.first_name || "User"}! 🎂`,
+                is_read: false,
+              }
+            ]);
+          }
+        }
+      })
+      .catch(err => {
+        console.error('Error fetching profile image:', err);
+      });
+  };
+
+  const fetchNotifications = () => {
+    axios.get(`${baseurl}/notifications/user-id/${userId}/`)
+      .then(response => {
+        const unread = response.data.filter(n => !n.is_read);
+        setNotifications(prev => {
+          // avoid duplicates when merging birthday + API notifications
+          const all = [...unread, ...prev];
+          const unique = [];
+          const seen = new Set();
+          for (let n of all) {
+            if (!seen.has(n.notification_status_id)) {
+              unique.push(n);
+              seen.add(n.notification_status_id);
+            }
+          }
+          return unique;
+        });
+      })
+      .catch(error => {
+        console.error("Error fetching notifications:", error);
+      });
+  };
+
+  fetchProfileImageAndBirthday();
+  fetchNotifications();
+  const interval = setInterval(fetchNotifications, 10000);
+  return () => clearInterval(interval);
+}, [userId]);
+
 
   const navItems = [
     { label: 'Dashboard', path: '/p-dashboard' },
