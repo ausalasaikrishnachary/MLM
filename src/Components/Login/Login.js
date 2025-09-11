@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Box, TextField, Button, Typography, Link, Paper, Grid } from "@mui/material";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +9,8 @@ import { baseurl } from '../BaseURL/BaseURL';
 import { IconButton, InputAdornment } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Link as RouterLink } from "react-router-dom";
+
+
 
 const Login = () => {
   const navigate = useNavigate();
@@ -22,22 +24,12 @@ const Login = () => {
   const [showResetPassword, setShowResetPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showOtpVerification, setShowOtpVerification] = useState(false);
-const [otpError, setOtpError] = useState("");
 
-  useEffect(() => {
-    return () => {
-      // Clean up if component unmounts without login
-      if (!localStorage.getItem('user_id')) {
-        sessionStorage.removeItem('propertyData');
-        sessionStorage.removeItem('propertyId');
-      }
-    };
-  }, []);
 
   const handleTogglePassword = () => {
     setShowPassword((prev) => !prev);
   };
+
 
   const handleEmailChange = (e) => {
     const value = e.target.value;
@@ -53,68 +45,40 @@ const [otpError, setOtpError] = useState("");
     }
   };
 
- const handleLogin = async (e) => {
-  e.preventDefault();
-  setError("");
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError("");
 
-  // Validate email & password...
-  if (!email || !password) {
-    setError("Email and Password are required");
-    return;
-  }
+    // Validate email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email) {
+      setEmailError("Email is required");
+      return;
+    } else if (!emailRegex.test(email)) {
+      setEmailError("Enter a valid email address");
+      return;
+    } else {
+      setEmailError("");
+    }
 
-  setIsLoading(true);
+    // Validate password
+    if (!password) {
+      setError("Password is required");
+      return;
+    }
 
-  try {
-    const response = await fetch(`${baseurl}/login/`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    setIsLoading(true); // Start loading
 
-    const data = await response.json();
-
-    if (response.ok) {
-      // ✅ Credentials valid, now send OTP
-      const otpResponse = await fetch(`${baseurl}/send-otp/`, {
+    try {
+      const response = await fetch(`${baseurl}/login/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, password }),
       });
 
-      const otpData = await otpResponse.json();
+      const data = await response.json();
 
-      if (otpResponse.ok) {
-        Swal.fire("Success", "OTP sent to your email. Please verify.", "success");
-        setShowOtpVerification(true); // Show OTP input
-      } else {
-        setError(otpData.error || "Failed to send OTP");
-      }
-    } else {
-      setError(data.error || "Invalid credentials");
-    }
-  } catch (err) {
-    setError("Something went wrong. Please try again.");
-  } finally {
-    setIsLoading(false);
-  }
-};
-
-const handleVerifyOtp = async () => {
-  if (!otp) {
-    setOtpError("OTP is required");
-    return;
-  }
-  try {
-    const response = await fetch(`${baseurl}/verify-otp/`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, otp }),
-    });
-
-    const data = await response.json();
-
-  if (response.ok) {
+      if (response.ok) {
         localStorage.setItem("user_id", data.user_id);
         localStorage.setItem("email", data.email);
         localStorage.setItem("username", data.username);
@@ -122,31 +86,6 @@ const handleVerifyOtp = async () => {
         localStorage.setItem("referral_id", data.referral_id);
         localStorage.setItem("referred_by", data.referred_by);
         localStorage.setItem("user_name", data.first_name);
-
-        // Check if there's a property to redirect to
-        const propertyId = sessionStorage.getItem('propertyId');
-        const propertyData = sessionStorage.getItem('propertyData');
-        
-        if (propertyId && propertyData) {
-          // Clean up the stored data
-          sessionStorage.removeItem('propertyData');
-          sessionStorage.removeItem('propertyId');
-          
-          // Redirect based on user role
-          const userRoles = data.roles || [];
-          
-          if (userRoles.length > 1) {
-            // If multiple roles, let user choose and then redirect
-            selectUserRoleWithRedirect(userRoles, propertyId, JSON.parse(propertyData));
-          } else if (userRoles.length === 1) {
-            // Single role, redirect directly
-            redirectToPropertyDetails(userRoles[0], propertyId, JSON.parse(propertyData));
-          } else {
-            // No roles, show error
-            setError("No roles assigned. Please contact support.");
-          }
-          return;
-        }
 
         const userRoles = data.roles || [];
 
@@ -158,70 +97,15 @@ const handleVerifyOtp = async () => {
           setError("No roles assigned. Please contact support.");
         }
       } else {
-      setOtpError(data.error || "Invalid OTP");
-    }
-  } catch (error) {
-    setOtpError("Something went wrong. Please try again.");
-  }
-};
-
-const handleResendOtp = async () => {
-  try {
-    const response = await fetch(`${baseurl}/send-otp/`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
-
-    const data = await response.json();
-    if (response.ok) {
-      Swal.fire("Success", "New OTP sent to your email.", "success");
-    } else {
-      Swal.fire("Error", data.error || "Failed to resend OTP", "error");
-    }
-  } catch (error) {
-    Swal.fire("Error", "Something went wrong. Please try again.", "error");
-  }
-};
-  const selectUserRoleWithRedirect = async (roles, propertyId, propertyData) => {
-    const { value: selectedRole } = await Swal.fire({
-      title: "Select Your Role",
-      input: "select",
-      inputOptions: roles.reduce((acc, role) => ({ ...acc, [role]: role }), {}),
-      inputPlaceholder: "Choose your role",
-      showCancelButton: true,
-      confirmButtonText: "Proceed",
-      cancelButtonText: "Cancel",
-    });
-
-    if (selectedRole) {
-      redirectToPropertyDetails(selectedRole, propertyId, propertyData);
+        setError(data.error || "Invalid credentials");
+      }
+    } catch (err) {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setIsLoading(false); // Stop loading
     }
   };
 
-  const redirectToPropertyDetails = (role, propertyId, propertyData) => {
-    let redirectPath = '';
-    
-    switch(role) {
-      case "Admin":
-        redirectPath = `/a-assets/${propertyId}`;
-        break;
-      case "Agent":
-        redirectPath = `/p-assets/${propertyId}`;
-        break;
-      case "Client":
-        redirectPath = `/i-assets/${propertyId}`;
-        break;
-      case "Super Admin":
-        redirectPath = `/s-assets/${propertyId}`;
-        break;
-      default:
-        // Default to client view if role not recognized
-        redirectPath = `/i-assets/${propertyId}`;
-    }
-    
-    navigate(redirectPath, { state: { property: propertyData } });
-  };
 
   const selectUserRole = async (roles) => {
     const { value: selectedRole } = await Swal.fire({
@@ -252,6 +136,9 @@ const handleResendOtp = async () => {
       setError("Invalid role assigned. Please contact support.");
     }
   };
+
+
+
 
   const handleSendOTP = async () => {
     if (!email || emailError) {
@@ -315,6 +202,7 @@ const handleResendOtp = async () => {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
+        // backgroundImage: "url(https://cdn.pixabay.com/photo/2018/11/22/23/57/london-3833039_1280.jpg)",
         backgroundImage: `url(${login2})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
@@ -331,9 +219,9 @@ const handleResendOtp = async () => {
               display: { xs: "none", md: "flex" },
               alignItems: "center",
               justifyContent: "center",
-              backgroundImage: `url(${login1})`,
+              backgroundImage: `url(${login1})`, // ✅ Use imported image
               backgroundSize: "cover",
-              backgroundPosition: "center",
+              backgroundPosition: "center", // (optional) keeps image centered
               padding: 2,
             }}
           >
@@ -345,185 +233,146 @@ const handleResendOtp = async () => {
             md={6}
             sx={{ padding: 4, display: "flex", flexDirection: "column", justifyContent: "center" }}
           >
+            {showForgotPassword ? (
+              <>
+                <Typography variant="h4" align="center" gutterBottom>
+                  Forgot Password
+                </Typography>
+                <TextField
+                  fullWidth
+                  label="Email"
+                  variant="outlined"
+                  margin="normal"
+                  value={email}
+                  onChange={handleEmailChange}
+                  error={!!emailError}
+                  helperText={emailError}
+                />
+                <Button
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 2, bgcolor: "#00cc8f", "&:hover": { bgcolor: "#004080", color: "#fff" } }}
+                  onClick={handleSendOTP}
+                >
+                  Send OTP
+                </Button>
+              </>
+            ) : showResetPassword ? (
+              <>
+                <Typography variant="h4" align="center" gutterBottom>
+                  Reset Password
+                </Typography>
+                <TextField
+                  fullWidth
+                  label="Email"
+                  variant="outlined"
+                  margin="normal"
+                  value={email}
+                  disabled
+                />
+                <TextField
+                  fullWidth
+                  label="OTP"
+                  variant="outlined"
+                  margin="normal"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                />
+                <TextField
+                  fullWidth
+                  label="New Password"
+                  type="password"
+                  variant="outlined"
+                  margin="normal"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                />
+                <Button
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 2, bgcolor: "#00cc8f", "&:hover": { bgcolor: "#004080", color: "#fff" } }}
+                  onClick={handleResetPassword}
+                >
+                  Reset Password
+                </Button>
+              </>
+            ) : (
+              <>
+                <Typography variant="h4" align="center" gutterBottom>
+                  Login
+                </Typography>
 
-        {showOtpVerification ? (
-  <>
-    <Typography variant="h5" align="center" gutterBottom>
-      Verify OTP
-    </Typography>
-    <TextField
-      fullWidth
-      label="Email"
-      value={email}
-      disabled
-      margin="normal"
-    />
-    <TextField
-      fullWidth
-      label="Enter OTP"
-      value={otp}
-      onChange={(e) => setOtp(e.target.value)}
-      error={!!otpError}
-      helperText={otpError}
-      margin="normal"
-    />
-    <Button
-      fullWidth
-      variant="contained"
-      sx={{ mt: 2, bgcolor: "#00cc8f" }}
-      onClick={handleVerifyOtp}
-    >
-      Verify OTP
-    </Button>
-    <Button
-      fullWidth
-      variant="outlined"
-      sx={{ mt: 2 }}
-      onClick={handleResendOtp}
-    >
-      Resend OTP
-    </Button>
-  </>
-) : showForgotPassword ? (
-  <>
-    <Typography variant="h4" align="center" gutterBottom>
-      Forgot Password
-    </Typography>
-    <TextField
-      fullWidth
-      label="Email"
-      variant="outlined"
-      margin="normal"
-      value={email}
-      onChange={handleEmailChange}
-      error={!!emailError}
-      helperText={emailError}
-    />
-    <Button
-      fullWidth
-      variant="contained"
-      sx={{ mt: 2, bgcolor: "#00cc8f", "&:hover": { bgcolor: "#004080", color: "#fff" } }}
-      onClick={handleSendOTP}
-    >
-      Send OTP
-    </Button>
-  </>
-) : showResetPassword ? (
-  <>
-    <Typography variant="h4" align="center" gutterBottom>
-      Reset Password
-    </Typography>
-    <TextField
-      fullWidth
-      label="Email"
-      variant="outlined"
-      margin="normal"
-      value={email}
-      disabled
-    />
-    <TextField
-      fullWidth
-      label="OTP"
-      variant="outlined"
-      margin="normal"
-      value={otp}
-      onChange={(e) => setOtp(e.target.value)}
-    />
-    <TextField
-      fullWidth
-      label="New Password"
-      type="password"
-      variant="outlined"
-      margin="normal"
-      value={newPassword}
-      onChange={(e) => setNewPassword(e.target.value)}
-    />
-    <Button
-      fullWidth
-      variant="contained"
-      sx={{ mt: 2, bgcolor: "#00cc8f", "&:hover": { bgcolor: "#004080", color: "#fff" } }}
-      onClick={handleResetPassword}
-    >
-      Reset Password
-    </Button>
-  </>
-) : (
-  <>
-    <Typography variant="h4" align="center" gutterBottom>
-      Login
-    </Typography>
+                <TextField
+                  fullWidth
+                  label="Email"
+                  variant="outlined"
+                  margin="normal"
+                  value={email}
+                  onChange={handleEmailChange}
+                  error={!!emailError}
+                  helperText={emailError}
+                />
 
-    <TextField
-      fullWidth
-      label="Email"
-      variant="outlined"
-      margin="normal"
-      value={email}
-      onChange={handleEmailChange}
-      error={!!emailError}
-      helperText={emailError}
-    />
+                <TextField
+                  fullWidth
+                  label="Password"
+                  type={showPassword ? "text" : "password"}
+                  variant="outlined"
+                  margin="normal"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  error={!password && error === "Password is required"}
+                  helperText={!password && error === "Password is required" ? "Password is required" : ""}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton onClick={handleTogglePassword} edge="end">
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
 
-    <TextField
-      fullWidth
-      label="Password"
-      type={showPassword ? "text" : "password"}
-      variant="outlined"
-      margin="normal"
-      value={password}
-      onChange={(e) => setPassword(e.target.value)}
-      error={!password && error === "Password is required"}
-      helperText={!password && error === "Password is required" ? "Password is required" : ""}
-      InputProps={{
-        endAdornment: (
-          <InputAdornment position="end">
-            <IconButton onClick={handleTogglePassword} edge="end">
-              {showPassword ? <VisibilityOff /> : <Visibility />}
-            </IconButton>
-          </InputAdornment>
-        ),
-      }}
-    />
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 1 }}>
+                  <Link href="/signup" sx={{ cursor: "pointer", color: "primary.main" }}>
+                    Register
+                  </Link>
+                  <Link href="#" onClick={() => setShowForgotPassword(true)} sx={{ cursor: "pointer", color: "error.main" }}>
+                    Forgot Password?
+                  </Link>
+                </Box>
 
-    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 1 }}>
-      <Link href="/signup" sx={{ cursor: "pointer", color: "primary.main" }}>
-        Register
-      </Link>
-      <Link href="#" onClick={() => setShowForgotPassword(true)} sx={{ cursor: "pointer", color: "error.main" }}>
-        Forgot Password?
-      </Link>
-    </Box>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  sx={{
+                    mt: 2,
+                    bgcolor: isLoading ? "#004080" : "#00cc8f",
+                    color: isLoading ? "#fff" : "inherit",
+                    "&:hover": {
+                      bgcolor: "#004080",
+                      color: "#fff"
+                    }
+                  }}
+                  onClick={handleLogin}
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Logging In..." : "Login"}
+                </Button>
 
-    <Button
-      fullWidth
-      variant="contained"
-      sx={{
-        mt: 2,
-        bgcolor: isLoading ? "#004080" : "#00cc8f",
-        color: isLoading ? "#fff" : "inherit",
-        "&:hover": {
-          bgcolor: "#004080",
-          color: "#fff"
-        }
-      }}
-      onClick={handleLogin}
-      disabled={isLoading}
-    >
-      {isLoading ? "Logging In..." : "Login"}
-    </Button>
-
-    {error && (
-      <Typography
-        variant="body2"
-        color="error"
-        sx={{ mt: 2, textAlign: 'center' }}
-      >
-        {error}
-      </Typography>
-    )}
-
+                {error && (
+                  <Typography
+                    variant="body2"
+                    color="error"
+                    sx={{ mt: 2, textAlign: 'center' }}
+                  >
+                    {error}
+                  </Typography>
+                )}
 
               </>
+
             )}
           </Grid>
         </Grid>
@@ -545,6 +394,8 @@ const handleResendOtp = async () => {
           </RouterLink>
         </Typography>
       </Box>
+
+
     </Box>
   );
 };
