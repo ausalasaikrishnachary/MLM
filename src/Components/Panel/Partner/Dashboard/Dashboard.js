@@ -268,75 +268,83 @@ const AgentDashboard = () => {
           </Typography>
         </Box>
 
-        {/* Top Metrics Row */}
-        <Grid container spacing={3} sx={{ mb: 3, display: 'flex', flexWrap: 'wrap' }}>
-          {[
-            {
-              title: 'Listing Properties',
-              value: property?.total_properties ?? 0,
-              icon: faBuilding,
-              path: '/p-listingassets',
-              bgColor: '#054ea2ff'
-            },
-            {
-              title: 'Team',
-              value: totalAgents.toString(),
-              icon: faUsers,
-              path: '/p-team',
-              bgColor: '#aa280bff'
-            },
-            {
-              title: 'Active Team',
-              value: totalActiveAgents,
-              icon: faUserCheck,
-              path: '/p-activeagents',
-              bgColor: '#274f05ff'
-            },
-            {
-              title: 'Latest Properties',
-              value: property?.total_latest_properties ?? 0,
-              icon: faHome,
-              path: '/p-latestProperties',
-              bgColor: '#5a4400ff'
-            },
-            {
-              title: 'Bookings',
-              value: transactionSummary?.bookings?.properties?.count ?? 0,
-              icon: faUserPlus,
-              path: '/p-bookedassets',
-              bgColor: '#E74C3C' // Red
-            },
-          ].map((metric, index) => (
-            <Grid
-              key={index}
-              item
-              xs={12}
-              sm={6}
-              md={2.4} // ✅ 5 cards per row at md+
-              sx={{ flex: '1 1 20%' }} // force 5 cards per row
-            >
-              <Link to={metric.path} style={{ textDecoration: 'none' }}>
-                <Card
-                  sx={{
-                    borderRadius: 3,
-                    background: metric.bgColor,
-                    color: '#fff',
-                    boxShadow: 4,
-                    transition: 'transform 0.3s',
-                    '&:hover': { transform: 'translateY(-5px)' },
-                    cursor: 'pointer',
-                  }}
-                >
-                  <CardContent sx={{ textAlign: 'center' }}>
-                    <FontAwesomeIcon icon={metric.icon} size="2x" color="#fff" />
-                    <Typography variant="h4" sx={{ my: 1, color: '#fff' }}>{metric.value}</Typography>
-                    <Typography sx={{ mt: 1, color: '#fff' }}>{metric.title}</Typography>
-                  </CardContent>
-                </Card>
-              </Link>
-            </Grid>
-          ))}
-        </Grid>
+{/* Top Metrics Row */}
+<Grid container spacing={3} sx={{ mb: 3 }}>
+  {[
+    {
+      title: 'Listing Properties',
+      value: property?.total_properties ?? 0,
+      icon: faBuilding,
+      path: '/p-listingassets',
+      bgColor: '#054ea2ff'
+    },
+    {
+      title: 'Team',
+      value: totalAgents.toString(),
+      icon: faUsers,
+      path: '/p-team',
+      bgColor: '#aa280bff'
+    },
+    {
+      title: 'Active Team',
+      value: totalActiveAgents,
+      icon: faUserCheck,
+      path: '/p-activeagents',
+      bgColor: '#274f05ff'
+    },
+    {
+      title: 'Latest Properties',
+      value: property?.total_latest_properties ?? 0,
+      icon: faHome,
+      path: '/p-latestProperties',
+      bgColor: '#5a4400ff'
+    },
+    {
+      title: 'Bookings',
+      value: transactionSummary?.bookings?.properties?.count ?? 0,
+      icon: faUserPlus,
+      path: '/p-bookedassets',
+      bgColor: '#E74C3C' 
+    },
+  ].map((metric, index) => (
+    <Grid
+      key={index}
+      item
+      xs={6}    
+      sm={6}
+      md={2.4}  
+    >
+      <Link to={metric.path} style={{ textDecoration: 'none' }}>
+        <Card
+          sx={{
+            borderRadius: 3,
+            background: metric.bgColor,
+            color: '#fff',
+            boxShadow: 4,
+            transition: 'transform 0.3s',
+            '&:hover': { transform: 'translateY(-5px)' },
+            cursor: 'pointer',
+            height: { xs: 165, sm: 160, md: 160 },
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          <CardContent sx={{ textAlign: 'center' }}>
+            <FontAwesomeIcon icon={metric.icon} size="2x" color="#fff" />
+            <Typography variant="h4" sx={{ my: 1, color: '#fff' }}>
+              {metric.value}
+            </Typography>
+            <Typography sx={{ mt: 1, color: '#fff' }}>
+              {metric.title}
+            </Typography>
+          </CardContent>
+        </Card>
+      </Link>
+    </Grid>
+  ))}
+</Grid>
+
 
 
         {transactionSummary && (

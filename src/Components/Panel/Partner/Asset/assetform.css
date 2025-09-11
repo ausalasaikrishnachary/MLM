@@ -102,10 +102,33 @@ h2 {
 /* For mobile screens */
 @media (max-width: 480px) {
   .form-card {
-    max-width: 100%; /* Ensure full width on mobile */
-    padding: 0.5rem; /* Reduce padding */
+    max-width: 100%; 
+    padding: 0.5rem; 
+  }
+  .section-box {
+    margin-bottom: 0.5rem;
+    padding: 0.25rem;
   }
 
+  .form-group {
+    margin-bottom: 0.25rem;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    font-size: 0.75rem;
+    padding: 0.35rem;
+  }
+}
+
+
+/* For mobile screens */
+@media (max-width: 740px) {
+  .form-card {
+    max-width: 100%; 
+    padding: 0.5rem; 
+  }
   .section-box {
     margin-bottom: 0.5rem;
     padding: 0.25rem;

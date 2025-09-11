@@ -1214,7 +1214,12 @@ const AssetForm = () => {
           ))}
         </Stepper>
 
-        <Paper elevation={3} sx={{ p: 4, width: '80%' }}>
+      <Paper
+  elevation={3}
+  sx={{
+    p: 4,
+    width: { xs: '100%', sm: '100%', md: '80%' } 
+  }}>
           {renderStepContent()}
 
           <Box display="flex" justifyContent="space-between" mt={3}>

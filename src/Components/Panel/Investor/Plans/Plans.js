@@ -328,6 +328,7 @@ import {
   TableRow,
   Box,
   CircularProgress,
+  TableContainer,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import InvestorHeader from "../../../Shared/Investor/InvestorNavbar";
@@ -538,6 +539,7 @@ useEffect(() => {
             <CircularProgress />
           </Box>
         ) : (
+          <TableContainer sx={{ overflowX: 'auto' }}>
           <Table sx={{ border: '1px solid black', width: '100%', mt: 3 }}>
             <TableHead>
               <TableRow>
@@ -596,6 +598,7 @@ useEffect(() => {
               )}
             </TableBody>
           </Table>
+          </TableContainer>
         )}
       </Container>
     </>

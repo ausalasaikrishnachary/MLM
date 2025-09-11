@@ -443,7 +443,7 @@ const AddPropertyForm = () => {
             </FormControl>
           </Grid>
 
-          <Grid item xs={6}>
+          <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label="Property Title"
@@ -1187,8 +1187,13 @@ const AddPropertyForm = () => {
           ))}
         </Stepper>
 
-        <Paper elevation={3} sx={{ p: 4, width: '80%' }}>
-          {renderStepContent()}
+      <Paper
+  elevation={3}
+  sx={{
+    p: 4,
+    width: { xs: '100%', sm: '100%', md: '80%' } 
+  }}>
+              {renderStepContent()}
 
           <Box display="flex" justifyContent="space-between" mt={3}>
             <Button

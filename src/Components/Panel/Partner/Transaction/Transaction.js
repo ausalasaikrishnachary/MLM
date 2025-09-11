@@ -21,6 +21,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  TableContainer,
 } from '@mui/material';
 import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
 import { useNavigate } from 'react-router-dom';
@@ -390,6 +391,7 @@ const generatePDFReport = () => {
           </Box>
         ) : (
           <>
+          <TableContainer sx={{ overflowX: 'auto' }}>
             <Table sx={{ border: '1px solid black', width: '100%' }}>
               <TableHead>
                 <TableRow>
@@ -446,7 +448,7 @@ const generatePDFReport = () => {
                 )}
               </TableBody>
             </Table>
-
+</TableContainer>
             <Box display="flex" justifyContent="center" mt={2}>
               <ButtonGroup>
                 <Button 

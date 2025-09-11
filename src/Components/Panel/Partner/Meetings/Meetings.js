@@ -58,7 +58,7 @@ function Meetings() {
         <>
             <Header />
             <Box sx={{ p: 3 }}>
-                <Grid container spacing={3} justifyContent="center">
+                <Grid container spacing={3} justifyContent="center" >
                     {profiles.map((profile) => (
                         <Grid item xs={12} sm={6} md={4} key={profile.id}>
                             <Card
@@ -69,6 +69,7 @@ function Meetings() {
                                     boxShadow: 3,
                                     position: 'relative',
                                     overflow: 'visible',
+                                    mb:1
                                 }}
                             >
                                 <CardContent>

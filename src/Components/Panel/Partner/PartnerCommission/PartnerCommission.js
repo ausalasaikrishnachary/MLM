@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
     Table, TableBody, TableCell, TableHead, TableRow,
-    Tabs, Tab, Box, Typography
+    Tabs, Tab, Box, Typography, TableContainer,
 } from '@mui/material';
 import Header from "../../../Shared/Partner/PartnerNavbar";
 import { baseurl } from '../../../BaseURL/BaseURL';
@@ -82,6 +82,7 @@ const paginatedData = propertyData.slice(
                 {/* Agent Commission Tab */}
                 {tabIndex === 0 && (
                     <Box mt={4}>
+                        <TableContainer sx={{ overflowX: 'auto' }}>
                         <Table sx={{ border: '1px solid black' }}>
                             <TableHead>
                                 <TableRow>
@@ -116,6 +117,7 @@ const paginatedData = propertyData.slice(
                                 )}
                             </TableBody>
                         </Table>
+                        </TableContainer>
 
                         {/* Pagination Bottom Right */}
                         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
