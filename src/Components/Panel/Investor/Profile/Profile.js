@@ -92,7 +92,7 @@ const InvestorProfile = () => {
           </Box>
 
           {/* Footer with Close Button */}
-          {/* <Box sx={{ textAlign: "center", p: "15px" }}>
+          <Box sx={{ textAlign: "center", p: "15px" }}>
             <Button
               variant="contained"
               sx={{
@@ -106,10 +106,12 @@ const InvestorProfile = () => {
                   backgroundColor: "rgb(15, 4, 50)",
                 },
               }}
+                             onClick={() => navigate("/i-dashboard")}
+
             >
               Close
             </Button>
-          </Box> */}
+          </Box>
         </Card>
       </Box>
     </>

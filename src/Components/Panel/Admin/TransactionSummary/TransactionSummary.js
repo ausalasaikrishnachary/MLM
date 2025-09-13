@@ -85,18 +85,39 @@ function TransactionSummary() {
     return (
         <>
             <Header />
-            <Typography
-                variant="h2"
-                sx={{
-                    marginTop: 4,
-                    fontWeight: "bold",
-                    textAlign: "center",
-                }}
-            >
-                Transaction Summary
-            </Typography>
 
-            <Box maxWidth={1430} sx={{ display: 'flex', justifyContent: 'end', mb: 2 }}>
+
+            <Typography
+              variant="h4"
+              gutterBottom
+              sx={{
+                fontSize: {
+                  xs: "2.0rem",  
+                  sm: "2.1rem",   
+                  md: "2.2rem",     
+                },
+                fontWeight: "bold",  
+                textAlign: "center",    
+                whiteSpace: "nowrap",   
+                overflow: "hidden",
+                textOverflow: "ellipsis", 
+           
+                   marginTop: 5,
+              }}
+            >
+
+                Transaction Summary
+                            </Typography>
+
+            <Box maxWidth={1270} sx={{ display: 'flex',
+                  justifyContent: {
+      xs: "center",   
+      sm: "flex-end", 
+      md: "flex-end",
+    },
+    
+    mr: { xs: 0, sm: 2, md: 3 },
+  }}>
                 <FormControl size="medium" sx={{ minWidth: 200 }}>
                     <InputLabel>Filter</InputLabel>
                     <Select
@@ -119,7 +140,7 @@ function TransactionSummary() {
             />
 
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-                <Pagination
+                {/* <Pagination
                     count={totalPages}
                     page={page}
                     onChange={handlePageChange}
@@ -129,7 +150,7 @@ function TransactionSummary() {
                             borderRadius: "0px"
                         }
                     }}
-                />
+                /> */}
             </Box>
         </>
     );

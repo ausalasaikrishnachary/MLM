@@ -22,6 +22,9 @@ import Swal from "sweetalert2";
 import Header from "../../../Shared/Navbar/Navbar";
 import { baseurl } from "../../../BaseURL/BaseURL";
 import PaginationComponent from "../../../Shared/Pagination";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+
 
 const Tmanagement = () => {
   const navigate = useNavigate();
@@ -29,7 +32,7 @@ const Tmanagement = () => {
   const [loading, setLoading] = useState(true);
   const [selectedRole, setSelectedRole] = useState("All");
   const [page, setPage] = useState(1);
-  const itemsPerPage = 5;
+    const rowsPerPage = 5; 
 
   // Fetch data
   useEffect(() => {
@@ -66,12 +69,13 @@ const Tmanagement = () => {
       ? data
       : data.filter((user) => user.role === selectedRole);
 
-  // Paginated data
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-  const paginatedData = filteredData.slice(
-    (page - 1) * itemsPerPage,
-    page * itemsPerPage
-  );
+
+const startIndex = (page - 1) * rowsPerPage;
+const paginatedData = filteredData.slice(startIndex, startIndex + rowsPerPage);
+const pageCount = Math.ceil(filteredData.length / rowsPerPage);
+;
+
+
 
   // Reset to page 1 when filter changes
   useEffect(() => {
@@ -187,6 +191,14 @@ const Tmanagement = () => {
 
         </Box>
 
+
+            <Box
+           sx={{
+             width: "100%",
+             overflowX: "auto", 
+             display: "block",
+           }}
+         >
         <Table sx={{ border: "1px solid black", width: "100%" }}>
           <TableHead>
             <TableRow>
@@ -264,13 +276,79 @@ const Tmanagement = () => {
             )}
           </TableBody>
         </Table>
+        </Box>
 
         <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
-          <PaginationComponent
-            count={totalPages}
-            page={page}
-            onChange={handlePageChange}
-          />
+        
+        {pageCount > 1 && (
+  <Box display="flex" justifyContent="flex-end" mt={2}>
+    <Box display="flex" alignItems="center" gap={1}>
+      {/* Prev Button */}
+      <IconButton
+        disabled={page === 1}
+        onClick={() => setPage(page - 1)}
+        sx={{
+          borderRadius: "4px", // square button
+          width: { xs: 32, sm: 36, md: 40 },
+          height: { xs: 32, sm: 36, md: 40 },
+        }}
+      >
+        <ChevronLeftIcon
+          fontSize="small"
+          sx={{ fontSize: { xs: 18, sm: 20, md: 22 } }}
+        />
+      </IconButton>
+
+      {/* Show only 3 pages (current, prev, next) */}
+      {[...Array(pageCount)].map((_, i) => {
+        const pageNum = i + 1;
+        if (
+          pageNum === page ||
+          pageNum === page - 1 ||
+          pageNum === page + 1
+        ) {
+          return (
+            <IconButton
+              key={pageNum}
+              onClick={() => setPage(pageNum)}
+              sx={{
+                borderRadius: "4px", // square
+                width: { xs: 32, sm: 36, md: 35 },
+                height: { xs: 32, sm: 36, md: 38 },
+                fontSize: { xs: "0.8rem", sm: "0.9rem", md: "1rem" },
+                backgroundColor: page === pageNum ? "primary.main" : "transparent",
+                color: page === pageNum ? "#fff" : "inherit",
+                "&:hover": {
+                  backgroundColor:
+                    page === pageNum ? "primary.dark" : "#f0f0f0",
+                },
+              }}
+            >
+              {pageNum}
+            </IconButton>
+          );
+        }
+        return null;
+      })}
+
+      {/* Next Button */}
+      <IconButton
+        disabled={page === pageCount}
+        onClick={() => setPage(page + 1)}
+        sx={{
+          borderRadius: "4px", // square button
+          width: { xs: 32, sm: 36, md: 40 },
+          height: { xs: 32, sm: 36, md: 40 },
+        }}
+      >
+        <ChevronRightIcon
+          fontSize="small"
+          sx={{ fontSize: { xs: 18, sm: 20, md: 22 } }}
+        />
+      </IconButton>
+    </Box>
+  </Box>
+)}
         </Box>
       </Container>
     </>

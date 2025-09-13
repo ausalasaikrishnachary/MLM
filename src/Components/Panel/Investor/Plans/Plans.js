@@ -329,20 +329,34 @@ import {
   Box,
   CircularProgress,
   TableContainer,
+  IconButton,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import InvestorHeader from "../../../Shared/Investor/InvestorNavbar";
 import { baseurl } from '../../../BaseURL/BaseURL';
 import Swal from 'sweetalert2';
 import { useSearchParams } from 'react-router-dom';
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 function PartnerPlans() {
   const [variantData, setVariantData] = useState([]);
   const [planDataMap, setPlanDataMap] = useState({});
   const [loading, setLoading] = useState(true);
+   const [page, setPage] = useState(1);
+
   const [subscribedVariants, setSubscribedVariants] = useState([]);
   const navigate = useNavigate();
   const userId = localStorage.getItem("user_id");
+
+ 
+  
+  // Pagination setup
+const rowsPerPage = 5;
+const startIndex = (page - 1) * rowsPerPage;
+const paginatedData = variantData.slice(startIndex, startIndex + rowsPerPage);
+const pageCount = Math.ceil(variantData.length / rowsPerPage);
+
 
   const cellStyle = {
     fontWeight: 'bold',
@@ -530,8 +544,37 @@ useEffect(() => {
     <>
       <InvestorHeader />
       <Container>
-        <div style={{ textAlign: 'center', marginTop: "12%" }}>
-          <h2 style={{ fontWeight: 'bold' }}>Subscription Plan Variants</h2>
+        <div style={{ textAlign: 'center', marginTop: "10%" }}>
+           <Box
+            sx={{
+              textAlign: "center",
+              marginTop: {
+                xs: "8%",   
+                sm: "10%", 
+                md: "8%",  
+              },
+            }}
+          >
+            <Typography
+              variant="h4"
+              gutterBottom
+              sx={{
+                fontSize: {
+                  xs: "1.6rem",
+                  sm: "2.1rem",
+                  md: "2.2rem",
+                },
+                fontWeight: "bold",
+                textAlign: "center",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                marginBottom: "15px",
+              }}
+            >
+              Subscription Plan Variants
+            </Typography>
+          </Box>
         </div>
 
         {loading ? (
@@ -551,8 +594,9 @@ useEffect(() => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {variantData.length > 0 ? (
-                variantData.map((variant, index) => {
+            {paginatedData.length > 0 ? (
+  paginatedData.map((variant, index) => {
+
                   const plan = planDataMap[variant.plan_id] || {};
                   const isSubscribed = subscribedVariants.includes(variant.variant_id);
                   console.log("id",variant.variant_id)
@@ -599,7 +643,79 @@ useEffect(() => {
             </TableBody>
           </Table>
           </TableContainer>
+
+          
         )}
+
+{/* ✅ Pagination always visible */}
+<Box display="flex" justifyContent="flex-end" mt={2}>
+  <Box display="flex" alignItems="center" gap={1}>
+    {/* Prev Button */}
+    <IconButton
+      disabled={page === 1}
+      onClick={() => setPage(page - 1)}
+      sx={{
+        borderRadius: "4px", // square button
+        width: { xs: 32, sm: 36, md: 40 },
+        height: { xs: 32, sm: 36, md: 40 },
+      }}
+    >
+      <ChevronLeftIcon
+        fontSize="small"
+        sx={{ fontSize: { xs: 18, sm: 20, md: 22 } }}
+      />
+    </IconButton>
+
+    {/* Show only 3 pages (prev, current, next) */}
+    {[...Array(pageCount)].map((_, i) => {
+      const pageNum = i + 1;
+      if (
+        pageNum === page ||
+        pageNum === page - 1 ||
+        pageNum === page + 1
+      ) {
+        return (
+          <IconButton
+            key={pageNum}
+            onClick={() => setPage(pageNum)}
+            sx={{
+              borderRadius: "4px", // square
+              width: { xs: 32, sm: 36, md: 35 },
+              height: { xs: 32, sm: 36, md: 38 },
+              fontSize: { xs: "0.8rem", sm: "0.9rem", md: "1rem" },
+              backgroundColor: page === pageNum ? "primary.main" : "transparent",
+              color: page === pageNum ? "#fff" : "inherit",
+              "&:hover": {
+                backgroundColor:
+                  page === pageNum ? "primary.dark" : "#f0f0f0",
+              },
+            }}
+          >
+            {pageNum}
+          </IconButton>
+        );
+      }
+      return null;
+    })}
+
+    {/* Next Button */}
+    <IconButton
+      disabled={page === pageCount || pageCount === 0}
+      onClick={() => setPage(page + 1)}
+      sx={{
+        borderRadius: "4px", // square button
+        width: { xs: 32, sm: 36, md: 40 },
+        height: { xs: 32, sm: 36, md: 40 },
+      }}
+    >
+      <ChevronRightIcon
+        fontSize="small"
+        sx={{ fontSize: { xs: 18, sm: 20, md: 22 } }}
+      />
+    </IconButton>
+  </Box>
+</Box>
+
       </Container>
     </>
   );

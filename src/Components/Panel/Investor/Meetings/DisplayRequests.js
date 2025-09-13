@@ -63,7 +63,7 @@ function DisplayRequests() {
 </Box>
 
       {/* Pagination Control */}
-      <Box display="flex" justifyContent="flex-end" mt={2} mr={3}>
+      <Box display="flex" justifyContent="flex-end" mt={2} mr={12}>
         <Pagination
           count={Math.ceil(data.length / rowsPerPage)}
           page={page}

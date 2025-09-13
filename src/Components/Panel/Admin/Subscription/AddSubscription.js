@@ -145,10 +145,8 @@ const handleAddPlan = async () => {
     );
 
     setNewPlan({ plan_name: '', description: '', user_type: '' });
-    setOpenModal(false); // ✅ close the modal first
-    fetchPlans(); // ✅ refresh the list
-
-    // ✅ Show SweetAlert after a short delay
+    setOpenModal(false); 
+    fetchPlans();
     setTimeout(() => {
       Swal.fire({
         icon: 'success',
@@ -157,7 +155,7 @@ const handleAddPlan = async () => {
         timer: 2000,
         showConfirmButton: false,
       });
-    }, 300); // small delay to allow modal closing animation
+    }, 300); 
   } catch (error) {
     console.error('Error adding plan:', error);
     await Swal.fire({
@@ -176,9 +174,27 @@ const handleAddPlan = async () => {
     <>
       <Header />
       <Container maxWidth="xl" sx={{ padding: 4 }}>
-        <Typography variant="h4" gutterBottom textAlign="center">
-          Add Subscription Plan Variant
-        </Typography>
+      
+
+                 <Typography
+                              variant="h4"
+                              gutterBottom
+                              sx={{
+                                fontSize: {
+                                  xs: "1.2rem",
+                                  sm: "2.1rem",
+                                  md: "2.0rem",
+                                },
+                                fontWeight: "bold",
+                                textAlign: "center",
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                marginBottom: "15px",
+                              }}
+                            >
+                               Add Subscription Plan Variant
+                            </Typography>
         
         <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%" }}>
           <Grid container spacing={2}>
@@ -247,7 +263,7 @@ const handleAddPlan = async () => {
             </Grid>
 
             {/* Description */}
-            <Grid item xs={4}>
+            <Grid item xs={12}>
               <TextField
                 label="Description"
                 name="description"
@@ -289,7 +305,8 @@ const handleAddPlan = async () => {
 
       {/* Add Plan Modal */}
       <Dialog open={openModal} onClose={() => setOpenModal(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>New Subscription Plan</DialogTitle>
+        <DialogTitle sx={{fontWeight:'bold',textAlign:'center'}}>New Subscription Plan</DialogTitle>
+        
         <DialogContent>
           <Grid container spacing={2} sx={{ mt: 1 }}>
             <Grid item xs={12}>
@@ -333,7 +350,7 @@ const handleAddPlan = async () => {
             </Grid>
           </Grid>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{display:'flex',  justifyContent:{ xs: 'center', sm: 'flex-end', md: 'flex-end' } }}>
           <Button 
             onClick={() => setOpenModal(false)} 
             variant="outlined"

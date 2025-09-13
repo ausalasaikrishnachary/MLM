@@ -51,8 +51,26 @@ function TrainingMaterial() {
   return (
     <>
       <Header />
-      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-        <Typography variant="h4">Training Materials</Typography>
+      <Container maxWidth="lg" sx={{ mt: 5, mb: 4 }}>
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{
+            fontSize: {
+              xs: "2.0rem",  
+              sm: "2.1rem",   
+              md: "2.2rem",     
+            },
+            fontWeight: "bold",  
+            textAlign: "center",    
+            whiteSpace: "nowrap",   
+            overflow: "hidden",
+            textOverflow: "ellipsis", 
+            marginBottom:'15px',
+          }}
+        >
+         Training Materials
+        </Typography>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
           <Typography variant="h4"></Typography>
           <Button

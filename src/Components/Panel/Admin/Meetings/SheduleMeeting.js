@@ -152,9 +152,28 @@ const handleSubmit = async (e) => {
         <>
             <Header />
             <Container maxWidth="lg" sx={{ p: 4 }}>
-                <Typography variant="h6" mb={2}>
+                {/* <Typography variant="h6" mb={2}>
                     Meeting Request for <strong>{form.profile_type}</strong>
-                </Typography>
+                </Typography> */}
+
+                <Typography
+                        variant="h4"
+                        sx={{
+                            fontSize: {
+                                xs: "1.4rem",
+                                sm: "2.1rem",
+                                md: "2.0rem",
+                            },
+                            fontWeight: "bold",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            textAlign:'center',
+                            marginBottom:'18px',
+                        }}
+                    >
+                     Meeting Request for <strong>{form.profile_type}</strong>
+                    </Typography>
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
                         <Grid item xs={12} sm={4}>
@@ -199,7 +218,7 @@ const handleSubmit = async (e) => {
                                 required
                             />
                         </Grid>
-                        <Grid item xs={6} sm={4}>
+                        <Grid item xs={12} sm={4}>
                             <TextField
                                 fullWidth
                                 type="time"
@@ -236,7 +255,7 @@ const handleSubmit = async (e) => {
                                 </Select>
                             </FormControl>
                         </Grid> */}
-                        <Grid item xs={4}>
+                        <Grid item xs={12}>
                             <TextField
                                 fullWidth
                                 name="notes"

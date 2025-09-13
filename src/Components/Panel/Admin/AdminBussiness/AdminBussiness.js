@@ -232,41 +232,62 @@ const AdminBusiness = () => {
             </Box>
 
             {/* Buttons */}
-            <Box display="flex" justifyContent="space-between" alignItems="center" mt={3} gap={1}>
-              <Button
-                variant="contained"
-                sx={{
-                  borderRadius: "30px",
-                  px: 3,
-                  background: "linear-gradient(90deg, #4776E6, #8E54E9)",
-                  "&:hover": {
-                    background: "linear-gradient(90deg, #3b66d9, #7a46d3)",
-                  },
-                }}
-                onClick={() => handleOpen(biz)}
-              >
-                View Details
-              </Button>
-
-              {/* Call Button */}
-              <IconButton
-                sx={{ bgcolor: "#f2f2f7", "&:hover": { bgcolor: "#e1e1ec" } }}
-                onClick={() => (window.location.href = `tel:${biz.phone}`)}
-              >
-                <PhoneIcon />
-              </IconButton>
-
-              {/* Download Button if document exists */}
-             {biz.documents && (
-  <IconButton
-    sx={{ bgcolor: "#f2f2f7", "&:hover": { bgcolor: "#e1e1ec" } }}
-    onClick={() => window.open(`https://shrirajteam.com:81${biz.documents}`, "_blank")}
+      <Box
+  display="flex"
+  flexDirection={{ xs: "column", sm: "row" }} // column on mobile, row on tablet/desktop
+  justifyContent={{ xs: "center", sm: "space-between" }}
+  alignItems={{ xs: "stretch", sm: "center" }}
+  mt={3}
+  gap={1}
+>
+  {/* View Details Button */}
+  <Button
+    variant="contained"
+    fullWidth={false} // default false
+    sx={{
+      width: { xs: "100%", sm: "auto" }, // full width only on mobile
+      borderRadius: "30px",
+      px: 3,
+      background: "linear-gradient(90deg, #4776E6, #8E54E9)",
+      "&:hover": {
+        background: "linear-gradient(90deg, #3b66d9, #7a46d3)",
+      },
+    }}
+    onClick={() => handleOpen(biz)}
   >
-    ⬇️
-  </IconButton>
-)}
+    View Details
+  </Button>
 
-            </Box>
+  {/* Phone + Download grouped */}
+  <Box
+    display="flex"
+    justifyContent={{ xs: "center", sm: "flex-start" }}
+    gap={1}
+    mt={{ xs: 1, sm: 0 }}
+  >
+    {/* Call Button */}
+    <IconButton
+      sx={{ bgcolor: "#f2f2f7", "&:hover": { bgcolor: "#e1e1ec" } }}
+      onClick={() => (window.location.href = `tel:${biz.phone}`)}
+    >
+      <PhoneIcon />
+    </IconButton>
+
+    {/* Download Button if document exists */}
+    {biz.documents && (
+      <IconButton
+        sx={{ bgcolor: "#f2f2f7", "&:hover": { bgcolor: "#e1e1ec" } }}
+        onClick={() =>
+          window.open(`https://shrirajteam.com:81${biz.documents}`, "_blank")
+        }
+      >
+        ⬇️
+      </IconButton>
+    )}
+  </Box>
+</Box>
+
+
           </CardContent>
         </Card>
       </Grid>

@@ -76,10 +76,28 @@ function TableAdminMeetings() {
     <>
       <Header />
       <Container>
-        <div style={{ textAlign: 'center', marginTop: "8%" }}>
-          <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-            Helpline Number
-          </Typography>
+        <div style={{ textAlign: 'center', marginTop: "10%" }}>
+        
+
+                 <Typography
+                    variant="h4"
+                    gutterBottom
+                    sx={{
+                      fontSize: {
+                        xs: "2.0rem",  
+                        sm: "2.1rem",   
+                        md: "2.2rem",     
+                      },
+                      fontWeight: "bold",  
+                      textAlign: "center",    
+                      whiteSpace: "nowrap",   
+                      overflow: "hidden",
+                      textOverflow: "ellipsis", 
+                      marginBottom:'10px',
+                    }}
+                  >
+                  Helpline Number
+                  </Typography>
         </div>
 
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
@@ -92,6 +110,15 @@ function TableAdminMeetings() {
           </Button>
         </Box>
 
+
+   
+                   <Box
+           sx={{
+             width: "100%",
+             overflowX: "auto", 
+             display: "block",
+           }}
+         >
         <Table sx={{ border: '1px solid black', width: '100%' }}>
           <TableHead>
             <TableRow>
@@ -128,6 +155,8 @@ function TableAdminMeetings() {
             )}
           </TableBody>
         </Table>
+        
+        </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
           <Pagination

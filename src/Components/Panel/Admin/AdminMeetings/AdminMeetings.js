@@ -80,9 +80,25 @@ const AdminMeetings = () => {
     <>
       <Header />
       <Box sx={{ textAlign: 'center', mt: 12 }}>
-        <Typography variant="h4" gutterBottom>
+        {/* <Typography variant="h4" gutterBottom>
           Add Phone Numbers
-        </Typography>
+        </Typography> */}
+        <Typography
+                        variant="h4"
+                        sx={{
+                            fontSize: {
+                                xs: "1.8rem",
+                                sm: "2.1rem",
+                                md: "2.2rem",
+                            },
+                            fontWeight: "bold",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                        }}
+                    >
+                         Add Phone Numbers
+                    </Typography>
 
         {/* Fields side by side */}
         <Box

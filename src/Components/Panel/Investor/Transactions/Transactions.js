@@ -323,8 +323,41 @@ const Transactions = () => {
     <>
       <InvestorHeader />
       <Container>
-        <div style={{ textAlign: 'center', marginTop: "12%" }}>
-          <h2 style={{ fontWeight: 'bold' }}>Transaction History</h2>
+        <div style={{ textAlign: 'center', marginTop: "10%" }}>
+     
+
+
+          <Box
+      sx={{
+        textAlign: "center",
+        marginTop: {
+          xs: "8%",   
+          sm: "10%",   
+          md: "8%", 
+        },
+      }}
+    >
+      <Typography
+        variant="h4"
+        gutterBottom
+        sx={{
+          fontSize: {
+            xs: "2.0rem",
+            sm: "2.1rem",
+            md: "2.2rem",
+          },
+          fontWeight: "bold",
+          textAlign: "center",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          marginBottom: "15px",
+        }}
+      >
+      Transaction History
+      </Typography>
+    </Box>
+        
         </div>
 
         <Box display="flex" justifyContent="flex-end" mb={2}>

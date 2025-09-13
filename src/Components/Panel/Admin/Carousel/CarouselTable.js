@@ -102,6 +102,16 @@ function CarouselList() {
           </Button>
         </Box>
 
+
+
+ 
+                   <Box
+           sx={{
+             width: "100%",
+             overflowX: "auto", 
+             display: "block",
+           }}
+         >
         <Table sx={{ border: '1px solid black', width: '100%' }}>
           <TableHead>
             <TableRow>
@@ -151,6 +161,7 @@ function CarouselList() {
             )}
           </TableBody>
         </Table>
+        </Box>
 
         {/* Pagination Controls */}
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>

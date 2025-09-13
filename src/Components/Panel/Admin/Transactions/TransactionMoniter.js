@@ -132,17 +132,26 @@ const Tmoniter = () => {
     <>
       <Header />
       <Container sx={{ pt: 3 }}>
-        <Typography
-          variant="h5"
-          sx={{
-            marginTop: 4,
-            marginBottom: 2,
-            fontWeight: "bold",
-            textAlign: "center",
-          }}
-        >
-          Transaction List
-        </Typography>
+<Typography
+  variant="h4"
+  gutterBottom
+  sx={{
+    fontSize: {
+      xs: "2.0rem",  
+      sm: "2.1rem",   
+      md: "2.2rem",     
+    },
+    fontWeight: "bold",  
+    textAlign: "center",    
+    whiteSpace: "nowrap",   
+    overflow: "hidden",
+    textOverflow: "ellipsis", 
+    marginBottom:'15px',
+  }}
+>
+   Transaction List
+</Typography>
+
 
         <FormControl sx={{ minWidth: 200, mb: 3 }}>
           <InputLabel id="role-filter-label">Filter by Role</InputLabel>
@@ -157,6 +166,14 @@ const Tmoniter = () => {
           </Select>
         </FormControl>
 
+
+<Box
+  sx={{
+    width: "100%",
+    overflowX: "auto", 
+    display: "block",
+  }}
+>
         <Table sx={{ border: "1px solid black", width: "100%" }}>
           <TableHead>
             <TableRow>
@@ -232,6 +249,7 @@ const Tmoniter = () => {
             )}
           </TableBody>
         </Table>
+        </Box>
 
         {/* Pagination Controls */}
         <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>

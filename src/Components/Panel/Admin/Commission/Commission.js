@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import {
-    Table, TableBody, TableCell, TableHead, TableRow, Button, Box, Pagination
+    Table, TableBody, TableCell, TableHead, TableRow, Button, Box, Pagination,Typography
 } from '@mui/material';
 import Header from "../../../Shared/Navbar/Navbar";
 import { useNavigate } from 'react-router-dom';
@@ -59,7 +59,25 @@ function Commission() {
             <Header />
             <>
                 <div style={{ textAlign: 'center', marginTop: "8%" }}>
-                    <h2 style={{ fontWeight: 'bold' }}>Team Commission</h2>
+                    <Typography
+        variant="h4"
+        gutterBottom
+        sx={{
+          fontSize: {
+            xs: "2.0rem",
+            sm: "2.1rem",
+            md: "2.2rem",
+          },
+          fontWeight: "bold",
+          textAlign: "center",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          marginBottom: "15px",
+        }}
+      >
+Team Commission    
+  </Typography>
                 </div>
                 <Table sx={{ border: '1px solid black', width: '90%', marginLeft: "5%", }}>
                     <TableHead>

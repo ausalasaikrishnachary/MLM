@@ -193,23 +193,66 @@ const updateApprovalStatus = async (propertyId, newStatus) => {
         <>
             <Header />
             <Container sx={{ py: 4 }}>
-                <Box position="relative" mb={3} height="56px">
-                    {/* Back Button aligned left */}
-                    <Box position="absolute" left={0} top={0}>
-                        <Button
-                            variant="outlined"
-                            startIcon={<ArrowBackIcon />}
-                            onClick={() => navigate(-1)}
-                        >
-                            Back
-                        </Button>
-                    </Box>
+              
 
-                    {/* Centered Heading */}
-                    <Typography variant="h4" align="center" sx={{ lineHeight: '46px' }}>
-                        Rejected Properties
-                    </Typography>
-                </Box>
+
+
+
+                  <Box
+                               sx={{
+                                 position: "relative",
+                                 mb: 3,
+                                 height: { xs: "auto", sm: "56px" },
+                                 display: "flex",
+                                 flexDirection: { xs: "column", sm: "row" },
+                                 alignItems: { xs: "center", sm: "center" },
+                                 justifyContent: "center",
+                                 textAlign: "center",
+                               }}
+                             >
+                                   
+                                   <Box
+                    sx={{
+                      position: { xs: "static", sm: "absolute" }, 
+                      left: { sm: 0 },
+                      top: { sm: 0 },
+                      mb: { xs: 1, sm: 0 },
+                    }}
+                  >
+                  <Button
+              variant="outlined"
+              startIcon={<ArrowBackIcon />}
+              onClick={() => navigate(-1)}
+              sx={{
+                display: { xs: "none", sm: "inline-flex" }, 
+                minWidth: "auto",
+                px: 2,
+                py: 1,
+                fontSize: { sm: "0.85rem", md: "0.9rem" },
+              }}
+            >
+              Back
+            </Button>
+                  </Box>
+                                    {/* Centered Heading */}
+                
+                                      <Typography
+                                        variant="h4"
+                                        sx={{
+                                          fontSize: {
+                                            xs: "2.0rem",
+                                            sm: "2.1rem",
+                                            md: "2.2rem",
+                                          },
+                                          fontWeight: "bold",
+                                          whiteSpace: "nowrap",
+                                          overflow: "hidden",
+                                          textOverflow: "ellipsis",
+                                        }}
+                                      >
+                                        Rejected Properties
+                                      </Typography>
+                                </Box>
 
                 <Box
                     sx={{

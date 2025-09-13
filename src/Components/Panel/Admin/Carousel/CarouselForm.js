@@ -95,9 +95,29 @@ function AddCarousel() {
     <>
       <Header />
       <Container maxWidth="lg" sx={{ padding: 4 }}>
-        <Typography variant="h4" gutterBottom textAlign="center" sx={{ mb: 4 }}>
+        {/* <Typography variant="h4" gutterBottom textAlign="center" sx={{ mb: 4 }}>
           Add New Carousel
-        </Typography>
+        </Typography> */}
+
+
+        <Typography
+                        variant="h4"
+                        sx={{
+                            fontSize: {
+                                xs: "2.0rem",
+                                sm: "2.1rem",
+                                md: "2.2rem",
+                            },
+                            fontWeight: "bold",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            textAlign:'center',
+                            marginBottom:'15px',
+                        }}
+                    >
+Add New Carousel
+                    </Typography>
 
         <Box
           component="form"
@@ -137,22 +157,22 @@ function AddCarousel() {
                 />
               </Grid>
 
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} sm={12} md={4}>
   <input
     accept="image/*"
     style={{ display: 'none' }}
     id="carousel-image-upload"
     type="file"
     onChange={handleImageChange}
-    sx={{ width: '100%' }}
+   
   />
-  <label htmlFor="carousel-image-upload">
+  <label htmlFor="carousel-image-upload"  style={{ width: '100%' }}>
     <TextField
       fullWidth
       label="Image"
       value={fileName}
       variant="outlined"
-      sx={{ width: '100%' }} // Optional for emphasis
+    
       InputProps={{
         readOnly: true,
       }}

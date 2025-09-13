@@ -184,9 +184,27 @@ const I_LatestProperties = () => {
                     </Box> */}
 
                     {/* Centered Heading */}
-                    <Typography variant="h4" align="center" sx={{ lineHeight: '46px' }}>
-                        Latest Properties
-                    </Typography>
+       
+
+                    <Typography
+        variant="h4"
+        gutterBottom
+        sx={{
+          fontSize: {
+            xs: "2.0rem",
+            sm: "2.1rem",
+            md: "2.2rem",
+          },
+          fontWeight: "bold",
+          textAlign: "center",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+     
+        }}
+      >
+     Latest Properties
+      </Typography>
                 </Box>
 
                 <Box

@@ -94,6 +94,17 @@ function BookingSlab() {
           </Button>
         </Box>
 
+
+
+         
+                   <Box
+           sx={{
+             width: "100%",
+             overflowX: "auto", 
+             display: "block",
+           }}
+         >
+             
         <Table sx={{ border: '1px solid black', width: '100%' }}>
           <TableHead>
             <TableRow>
@@ -143,6 +154,7 @@ function BookingSlab() {
             )}
           </TableBody>
         </Table>
+        </Box>
 
         {/* Always show pagination when data is present */}
         {!loading && slabs.length > 0 && (

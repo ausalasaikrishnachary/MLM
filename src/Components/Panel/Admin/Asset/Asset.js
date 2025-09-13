@@ -553,20 +553,43 @@ const updateApprovalStatus = async (propertyId, newStatus) => {
     <>
       <Header />
       <Container sx={{ py: 4 }}>
-         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Typography variant="h4" sx={{ textAlign: "center" }}>
-            Properties
-          </Typography>
-          <Button 
-            variant="contained" 
-            color="secondary"
-            onClick={openReportConfiguration}
-            startIcon={<DescriptionIcon />}
-            sx={{ ml: 2 }}
-          >
-            Generate Report
-          </Button>
-        </Box>
+ <Box
+  sx={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    mb: 3,
+    flexDirection: { xs: "column", sm: "row" }, 
+    gap: 2,
+  }}
+>
+  <Typography
+    variant="h4"
+    sx={{ textAlign: { xs: "center", sm: "left" } }} 
+    fontWeight="bold"
+  >
+    Properties
+  </Typography>
+
+<Button
+  variant="contained"
+  color="secondary"
+  onClick={openReportConfiguration}
+  startIcon={<DescriptionIcon />}
+  sx={{
+    mt: { xs: 2, sm: 0 },
+    px: 3,
+    py: 1,
+    height: "55px",
+    width: { xs: "93%", sm: "auto" } // full width only on mobile
+  }}
+>
+  Generate Report
+</Button>
+
+
+</Box>
+
         <Box
           sx={{
             backgroundColor: 'white',

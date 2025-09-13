@@ -1177,7 +1177,25 @@ const AddPropertyForm = () => {
     <>
       <InvestorHeader />
       <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', p: 3, }}>
-        <Typography variant="h4" gutterBottom>Add New Property</Typography>
+             <Typography
+                        variant="h4"
+                        gutterBottom
+                        sx={{
+                          fontSize: {
+                            xs: "2.0rem",  
+                            sm: "2.1rem",   
+                            md: "2.2rem",     
+                          },
+                          fontWeight: "bold",  
+                          textAlign: "center",    
+                          whiteSpace: "nowrap",   
+                          overflow: "hidden",
+                          textOverflow: "ellipsis", 
+                          marginBottom:'15px',
+                        }}
+                      >
+                    Add New Property
+                  </Typography>
 
         <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
           {steps.map((label) => (

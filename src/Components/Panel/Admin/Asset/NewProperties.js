@@ -314,9 +314,31 @@ const updateApprovalStatus = async (propertyId, newStatus) => {
     <>
       <Header />
       <Container sx={{ py: 4 }}>
-        <Typography variant="h4" sx={{ marginLeft: '10px', textAlign: "center" }}>
-          New Properties
-        </Typography>
+      
+
+               <Box
+                  
+                  >
+                    <Typography
+                      variant="h4"
+                      gutterBottom
+                      sx={{
+                        fontSize: {
+                          xs: "2.0rem",
+                          sm: "2.1rem",
+                          md: "2.2rem",
+                        },
+                        fontWeight: "bold",
+                        textAlign: "center",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        // marginBottom: "15px",
+                      }}
+                    >
+                     New Properties
+                    </Typography>
+                  </Box>
         <Box
           sx={{
             backgroundColor: 'white',

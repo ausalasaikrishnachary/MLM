@@ -91,9 +91,29 @@ function AddTrainingMaterial() {
             <Header />
             <Container maxWidth="md" sx={{ mt: 4 }}>
                 <Paper sx={{ p: 4 }}>
-                    <Typography variant="h5" gutterBottom>
+                    {/* <Typography variant="h5" gutterBottom>
                         Add Training Material
-                    </Typography>
+                    </Typography> */}
+
+                                 <Typography
+                            variant="h4"
+                            gutterBottom
+                            sx={{
+                              fontSize: {
+                                xs: "1.6rem",
+                                sm: "2.1rem",
+                                md: "2.2rem",
+                              },
+                              fontWeight: "bold",
+                              textAlign: "center",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              marginBottom: "15px",
+                            }}
+                          >
+                    Add Training Material
+                      </Typography>
 
                     <Box component="form" onSubmit={handleSubmit} noValidate autoComplete="off">
                         <TextField

@@ -1314,7 +1314,25 @@ const AddPropertyForm = () => {
     <>
       <Header />
       <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', p: 3, }}>
-        <Typography variant="h4" gutterBottom>Add New Property</Typography>
+<Typography
+  variant="h4"
+  gutterBottom
+  sx={{
+    fontSize: {
+      xs: "2.0rem",  
+      sm: "2.1rem",   
+      md: "2.2rem",     
+    },
+    fontWeight: "bold",  
+    textAlign: "center",    
+    whiteSpace: "nowrap",   
+    overflow: "hidden",
+    textOverflow: "ellipsis", 
+    marginBottom:'10px',
+  }}
+>
+  Add New Property
+</Typography>
 
         <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
           {steps.map((label) => (
@@ -1324,8 +1342,13 @@ const AddPropertyForm = () => {
           ))}
         </Stepper>
 
-        <Paper elevation={3} sx={{ p: 4, width: '80%' }}>
-          {renderStepContent()}
+<Paper
+  elevation={3}
+  sx={{
+    p: 4,
+    width: { xs: "90%", sm: "80%", md: "80%" } // mobile 80%, others 90%
+  }}
+>          {renderStepContent()}
 
           <Box display="flex" justifyContent="space-between" mt={3}>
             <Button

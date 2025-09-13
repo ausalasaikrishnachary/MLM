@@ -3,9 +3,11 @@ import axios from "axios";
 import { Box, Card, Typography, Divider, Button } from "@mui/material";
 import { baseurl } from '../../../BaseURL/BaseURL';
 import Header from "../../../Shared/Navbar/Navbar";
+import { useNavigate } from "react-router-dom";
 
 const AdminProfile = () => {
   const [userData, setUserData] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -94,6 +96,7 @@ const AdminProfile = () => {
                   backgroundColor: "rgb(15, 4, 50)",
                 },
               }}
+               onClick={() => navigate("/a-dashboard")}
             >
               Close
             </Button>

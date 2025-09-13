@@ -182,10 +182,30 @@ const EditSubscription = () => {
     <Header />
     <Container maxWidth="md" sx={{ mt: 4 }}>
       <Paper elevation={3} sx={{ p: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Edit Subscription Plan Variant
-        </Typography>
-        <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+     
+
+        <Typography
+            variant="h4"
+            gutterBottom
+            sx={{
+              fontSize: {
+                xs: "1.1rem",
+                sm: "2.1rem",
+                md: "2.0rem",
+              },
+              fontWeight: "bold",
+              textAlign: "center",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              marginBottom: "15px",
+            }}
+          >
+  Edit Subscription Plan Variant
+            </Typography>
+        <Typography variant="subtitle1"
+        sx={{display:'flex',justifyContent: { xs: 'center', sm: 'flex-start', md: 'flex-start' },}}
+         color="text.secondary" gutterBottom>
           Variant ID: {id}
         </Typography>
         
@@ -260,7 +280,9 @@ const EditSubscription = () => {
            
           />
           
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 3 }}>
+          <Box sx={{ display: 'flex',
+ justifyContent: { xs: 'center', sm: 'flex-end', md: 'flex-end' },
+              gap: 2, mt: 3 }}>
             <Button
               variant="outlined"
               onClick={() => navigate(-1)}

@@ -184,9 +184,34 @@ import InvestorHeader from "../../../Shared/Investor/InvestorNavbar";
                      </Box> */}
  
                      {/* Centered Heading */}
-                     <Typography variant="h4" align="center" sx={{ lineHeight: '46px' }}>
-                         Listing Properties
-                     </Typography>
+                   
+
+                        <Box
+                           sx={{
+                             textAlign: "center",
+                           
+                           }}
+                         >
+                           <Typography
+                             variant="h4"
+                             gutterBottom
+                             sx={{
+                               fontSize: {
+                                 xs: "2.0rem",
+                                 sm: "2.1rem",
+                                 md: "2.2rem",
+                               },
+                               fontWeight: "bold",
+                               textAlign: "center",
+                               whiteSpace: "nowrap",
+                               overflow: "hidden",
+                               textOverflow: "ellipsis",
+                            
+                             }}
+                           >
+                          Listing Properties
+                           </Typography>
+                         </Box>
                  </Box>
  
                  <Box

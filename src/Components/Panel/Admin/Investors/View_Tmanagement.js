@@ -83,9 +83,10 @@ const View_Tmanagement = () => {
         }}
       >
         {/* Action Buttons */}
-        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3,width: "80%",
+        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3,width: "80%",gap:2,
             mx: "auto", }}>
           <Button
+          sx={{p:1, textAlign:'center'}}
             variant="outlined"
             startIcon={<ArrowBackIcon />}
             onClick={() => navigate(-1)}
@@ -93,7 +94,7 @@ const View_Tmanagement = () => {
             Back
           </Button>
 
-          <Box sx={{ display: "flex", gap: 2 }}>
+          {/* <Box sx={{ display: "flex", gap: 2 }}>
             <Button
               variant="outlined"
               startIcon={<DownloadIcon />}
@@ -110,7 +111,7 @@ const View_Tmanagement = () => {
             >
               Print
             </Button>
-          </Box>
+          </Box> */}
         </Box>
 
         {/* Main Content */}

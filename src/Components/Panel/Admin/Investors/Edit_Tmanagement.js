@@ -139,18 +139,40 @@ const handleSubmit = async () => {
     <Box sx={{ p: 4, maxWidth: 1300, mx: 'auto', mt: "10" }}>
       {/* Back Button */}
       <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2 }}>
-        <Button
-          variant="outlined"
-          startIcon={<ArrowBackIcon />}
-          onClick={() => navigate(-1)}
-        >
-          Back
-        </Button>
+  <Button
+  sx={{
+    p: 1,
+    display: { xs: "none", sm: "flex" }, 
+  }}
+  variant="outlined"
+  startIcon={<ArrowBackIcon />}
+  onClick={() => navigate(-1)}
+>
+  Back
+</Button>
       </Box>
 
-      <Typography variant="h4" align="center" gutterBottom>
+      {/* <Typography variant="h4" align="center" gutterBottom>
         Edit User
-      </Typography>
+      </Typography> */}
+
+       <Typography
+                                       variant="h4"
+                                       sx={{
+                                           fontSize: {
+                                               xs: "1.8rem",
+                                               sm: "2.1rem",
+                                               md: "2.0rem",
+                                           },
+                                           fontWeight: "bold",
+                                           whiteSpace: "nowrap",
+                                           overflow: "hidden",
+                                           textOverflow: "ellipsis",
+                                           textAlign:'center',
+                                           marginBottom:'15px',
+                                       }}
+                                   >
+        Edit User                </Typography>
 
       {selectedUserId && (
         <>

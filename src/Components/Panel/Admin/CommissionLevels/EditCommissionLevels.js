@@ -67,7 +67,28 @@ const handleSubmit = (e) => {
         <>
         <Header />
         <Paper sx={{ maxWidth: 500, margin: 'auto', padding: 4, mt: 5 }}>
-            <Typography variant="h6" mb={2}>Edit Commission Level</Typography>
+      
+
+            
+                    <Typography
+                                    variant="h4"
+                                    sx={{
+                                        fontSize: {
+                                            xs: "1.6rem",
+                                            sm: "2.1rem",
+                                            md: "2.0rem",
+                                        },
+                                        fontWeight: "bold",
+                                        whiteSpace: "nowrap",
+                                        overflow: "hidden",
+                                        textAlign:'center',
+                                        textOverflow: "ellipsis",
+                                        marginBottom:"15px",
+                                    }}
+                                >
+                                   Edit Commission Level
+                                </Typography>
+                    
             <form onSubmit={handleSubmit}>
                 <TextField
                     fullWidth

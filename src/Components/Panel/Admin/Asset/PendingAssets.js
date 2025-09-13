@@ -39,7 +39,7 @@ const PendingAssets = () => {
     const userId = localStorage.getItem("user_id");
     const [filteredProperties, setFilteredProperties] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
-    const [page, setPage] = useState(1);
+    const [page, setPage] = useState(1);    
     const itemsPerPage = 6;
     const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
     const startIndex = (page - 1) * itemsPerPage;
@@ -192,22 +192,63 @@ const PendingAssets = () => {
         <>
             <Header />
             <Container sx={{ py: 4 }}>
-                <Box position="relative" mb={3} height="56px">
-                    {/* Back Button aligned left */}
-                    <Box position="absolute" left={0} top={0}>
-                        <Button
-                            variant="outlined"
-                            startIcon={<ArrowBackIcon />}
-                            onClick={() => navigate(-1)}
-                        >
-                            Back
-                        </Button>
-                    </Box>
+         
 
+
+                    <Box
+               sx={{
+                 position: "relative",
+                 mb: 3,
+                 height: { xs: "auto", sm: "56px" },
+                 display: "flex",
+                 flexDirection: { xs: "column", sm: "row" },
+                 alignItems: { xs: "center", sm: "center" },
+                 justifyContent: "center",
+                 textAlign: "center",
+               }}
+             >
+                   
+                   <Box
+    sx={{
+      position: { xs: "static", sm: "absolute" }, 
+      left: { sm: 0 },
+      top: { sm: 0 },
+      mb: { xs: 1, sm: 0 },
+    }}
+  >
+        <Button
+              variant="outlined"
+              startIcon={<ArrowBackIcon />}
+              onClick={() => navigate(-1)}
+              sx={{
+                display: { xs: "none", sm: "inline-flex" }, 
+                minWidth: "auto",
+                px: 2,
+                py: 1,
+                fontSize: { sm: "0.85rem", md: "0.9rem" },
+              }}
+            >
+              Back
+            </Button>
+  </Box>
                     {/* Centered Heading */}
-                    <Typography variant="h4" align="center" sx={{ lineHeight: '46px' }}>
-                        Pending Properties
-                    </Typography>
+
+                      <Typography
+                        variant="h4"
+                        sx={{
+                          fontSize: {
+                            xs: "2.0rem",
+                            sm: "2.1rem",
+                            md: "2.2rem",
+                          },
+                          fontWeight: "bold",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                           Pending Properties
+                      </Typography>
                 </Box>
 
                 <Box

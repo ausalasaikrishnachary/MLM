@@ -18,12 +18,21 @@ import { baseurl } from '../../../BaseURL/BaseURL';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 const ActiveAgents = () => {
   const [agents, setAgents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+    const rowsPerPage = 5; 
   const navigate = useNavigate();
   const referral_id = localStorage.getItem("referral_id");
+
+
+    const startIndex = (page - 1) * rowsPerPage;
+  const paginatedAgents = agents.slice(startIndex, startIndex + rowsPerPage);
+  const pageCount = Math.ceil(agents.length / rowsPerPage);
 
   const cellStyle = {
     fontWeight: 'bold',
@@ -72,6 +81,14 @@ const ActiveAgents = () => {
             <CircularProgress />
           </Box>
         ) : (
+
+                     <Box
+                     sx={{
+                       width: "100%",
+                       overflowX: "auto", 
+                       display: "block",
+                     }}
+                   >
           <Table sx={{ border: '1px solid black', width: '100%', mt: 3 }}>
             <TableHead>
               <TableRow>
@@ -84,8 +101,8 @@ const ActiveAgents = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {agents.length > 0 ? (
-                agents.map((agent, index) => (
+           {paginatedAgents.length > 0 ? (
+                  paginatedAgents.map((agent, index) => (
                   <TableRow key={index}>
                     <TableCell sx={cellBodyStyle}>{agent.username}</TableCell>
                     <TableCell sx={cellBodyStyle}>{agent.email}</TableCell>
@@ -120,7 +137,82 @@ const ActiveAgents = () => {
               )}
             </TableBody>
           </Table>
+
+
+
+
+          </Box>
         )}
+
+        {pageCount > 1 && (
+  <Box display="flex" justifyContent="flex-end" mt={2}>
+    <Box display="flex" alignItems="center" gap={1}>
+      {/* Prev Button */}
+      <IconButton
+        disabled={page === 1}
+        onClick={() => setPage(page - 1)}
+        sx={{
+          borderRadius: "4px", // square button
+          width: { xs: 32, sm: 36, md: 40 },
+          height: { xs: 32, sm: 36, md: 40 },
+        }}
+      >
+        <ChevronLeftIcon
+          fontSize="small"
+          sx={{ fontSize: { xs: 18, sm: 20, md: 22 } }}
+        />
+      </IconButton>
+
+      {/* Show only 3 pages (current, prev, next) */}
+      {[...Array(pageCount)].map((_, i) => {
+        const pageNum = i + 1;
+        if (
+          pageNum === page ||
+          pageNum === page - 1 ||
+          pageNum === page + 1
+        ) {
+          return (
+            <IconButton
+              key={pageNum}
+              onClick={() => setPage(pageNum)}
+              sx={{
+                borderRadius: "4px", // square
+                width: { xs: 32, sm: 36, md: 35 },
+                height: { xs: 32, sm: 36, md: 38 },
+                fontSize: { xs: "0.8rem", sm: "0.9rem", md: "1rem" },
+                backgroundColor: page === pageNum ? "primary.main" : "transparent",
+                color: page === pageNum ? "#fff" : "inherit",
+                "&:hover": {
+                  backgroundColor:
+                    page === pageNum ? "primary.dark" : "#f0f0f0",
+                },
+              }}
+            >
+              {pageNum}
+            </IconButton>
+          );
+        }
+        return null;
+      })}
+
+      {/* Next Button */}
+      <IconButton
+        disabled={page === pageCount}
+        onClick={() => setPage(page + 1)}
+        sx={{
+          borderRadius: "4px", // square button
+          width: { xs: 32, sm: 36, md: 40 },
+          height: { xs: 32, sm: 36, md: 40 },
+        }}
+      >
+        <ChevronRightIcon
+          fontSize="small"
+          sx={{ fontSize: { xs: 18, sm: 20, md: 22 } }}
+        />
+      </IconButton>
+    </Box>
+  </Box>
+)}
       </Container>
     </>
   );

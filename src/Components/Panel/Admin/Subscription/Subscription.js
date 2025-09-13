@@ -145,31 +145,72 @@ function Subscription() {
     <>
       <Header />
       <Container>
-        <div style={{ textAlign: 'center', marginTop: "12%" }}>
-          <h2 style={{ fontWeight: 'bold' }}>Subscription Plan Variants</h2>
-        </div>
+      <Box
+  sx={{
+    textAlign: "center",
+    marginTop: {
+      xs: "8%",   
+      sm: "10%",   
+      md: "8%", 
+    },
+  }}
+>
+  <Typography
+    variant="h4"
+    gutterBottom
+    sx={{
+      fontSize: {
+        xs: "1.6rem",
+        sm: "2.1rem",
+        md: "2.2rem",
+      },
+      fontWeight: "bold",
+      textAlign: "center",
+      whiteSpace: "nowrap",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      marginBottom: "15px",
+    }}
+  >
+    Subscription Plan Variants
+  </Typography>
+</Box>
 
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <FormControl sx={{ width: 200 }}>
-            <InputLabel>User Type</InputLabel>
-            <Select
-              value={userType}
-              label="User Type"
-              onChange={(e) => setUserType(e.target.value)}
-            >
-              <MenuItem value="client">Client</MenuItem>
-              <MenuItem value="agent">Team</MenuItem>
-            </Select>
-          </FormControl>
+<Box
+  sx={{
+    display: "flex",
+    flexDirection: { xs: "column", sm: "row" }, 
+    justifyContent: "space-between",
+    alignItems: { xs: "stretch", sm: "center" }, // stretch children on mobile
+    gap: 2, 
+    mb: 3,
+  }}
+>
 
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => navigate('/a-addsubscriptions')}
-          >
-            + Add Subscription
-          </Button>
-        </Box>
+<Button
+    variant="contained"
+    color="primary"
+    onClick={() => navigate("/a-addsubscriptions")}
+    sx={{ width: { xs: "100%", sm: "auto" }, mt: { xs: 2, sm: 0 } ,p:1, mb:2 }} 
+  >
+    + Add Subscription
+  </Button>
+
+
+  <FormControl sx={{ width: { xs: "100%", sm: 200 } }}>
+    <InputLabel>User Type</InputLabel>
+    <Select
+      value={userType}
+      label="User Type"
+      onChange={(e) => setUserType(e.target.value)}
+    >
+      <MenuItem value="client">Client</MenuItem>
+      <MenuItem value="agent">Team</MenuItem>
+    </Select>
+  </FormControl>
+
+  
+</Box>
 
         {loading ? (
           <Box display="flex" justifyContent="center" mt={5}>
@@ -177,6 +218,15 @@ function Subscription() {
           </Box>
         ) : (
           <>
+
+
+          <Box
+  sx={{
+    width: "100%",
+    overflowX: "auto", 
+    display: "block",
+  }}
+>
             <Table sx={{ border: '1px solid black', width: '100%' }}>
               <TableHead>
                 <TableRow>
@@ -231,6 +281,8 @@ function Subscription() {
                 )}
               </TableBody>
             </Table>
+      
+            </Box>
 
             {/* Pagination Bottom Right */}
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>

@@ -60,9 +60,28 @@ const handleSubmit = async (e) => {
     <>
       <Header />
       <Container maxWidth="xl" sx={{ padding: 4 }}>
-        <Typography variant="h4" gutterBottom textAlign="center" sx={{ mb: 4 }}>
+        {/* <Typography variant="h4" gutterBottom textAlign="center" sx={{ mb: 4 }}>
           Add New Booking Slab
-        </Typography>
+        </Typography> */}
+
+         <Typography
+                                                variant="h4"
+                                                sx={{
+                                                  fontSize: {
+                                                    xs: "1.6rem",
+                                                    sm: "2.1rem",
+                                                    md: "2.2rem",
+                                                  },
+                                                  fontWeight: "bold",
+                                                  whiteSpace: "nowrap",
+                                                  overflow: "hidden",
+                                                  textAlign:'center',
+                                                  textOverflow: "ellipsis",
+                                                  marginBottom:"15px",
+                                                }}
+                                              >
+                                                Add New Booking Slab
+                                              </Typography>
         
         <Box 
           component="form" 
@@ -136,7 +155,7 @@ const handleSubmit = async (e) => {
                    height: '56px',
                    fontSize: '1rem',
                    mt: 2,
-                   px: 4 // optional: padding-x to widen the button a bit
+                   px: 4
                  }}
                >
                  Add Booking Slab

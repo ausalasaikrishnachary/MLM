@@ -42,7 +42,7 @@ function DisplayRequests() {
     <>
       <Header />
       <TableLayout
-        title="Meeting Requests"
+       title="Meeting Requests"
         headers={headers}
         data={data}
         loading={loading}
