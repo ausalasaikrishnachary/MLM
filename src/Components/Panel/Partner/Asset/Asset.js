@@ -17,6 +17,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Popover,
   Pagination
 } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
@@ -60,7 +61,35 @@ const AssetsUI = () => {
   const [selectedTypeCategory, setSelectedTypeCategory] = useState('');
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("");
+  const [commissions, setCommissions] = useState([]);
 
+  useEffect(() => {
+    const fetchCommissions = async () => {
+      try {
+        const response = await axios.get(`${baseurl}/commissions-master/`);
+        setCommissions(response.data); // assuming response.data is an array
+      } catch (error) {
+        console.error("Error fetching commissions:", error);
+      }
+    };
+
+    fetchCommissions();
+  }, []);
+
+const [anchorEl, setAnchorEl] = useState(null);
+const [hoveredProperty, setHoveredProperty] = useState(null);
+
+const handlePopoverOpen = (event, propertyId) => {
+  setAnchorEl(event.currentTarget);
+  setHoveredProperty(propertyId);
+};
+
+const handlePopoverClose = () => {
+  setAnchorEl(null);
+  setHoveredProperty(null);
+};
+
+const open = Boolean(anchorEl);
 
   useEffect(() => {
     if (userId) {
@@ -714,6 +743,62 @@ const AssetsUI = () => {
                           )}
                         </Grid>
                       </Box>
+
+                      <Button
+  onMouseEnter={(e) => handlePopoverOpen(e, property.property_id)}
+  onMouseLeave={handlePopoverClose}
+  fullWidth
+  variant="contained"
+  sx={{
+    color: 'white',
+    textTransform: 'none',
+    '&:hover': { color: 'rgb(5,5,5)' },
+    marginBottom: "9px"
+  }}
+>
+  Payout
+</Button>
+
+
+<Popover
+  id="mouse-over-popover"
+  sx={{ pointerEvents: "none" }}
+  open={open && hoveredProperty === property.property_id}
+  anchorEl={anchorEl}
+  anchorOrigin={{
+    vertical: "bottom",
+    horizontal: "left",
+  }}
+  transformOrigin={{
+    vertical: "top",
+    horizontal: "left",
+  }}
+  onClose={handlePopoverClose}
+  disableRestoreFocus
+>
+  <Box sx={{ p: 2 }}>
+    <Typography fontWeight="bold">Commissions</Typography>
+    {commissions.length > 0 ? (
+      commissions.map((c) => {
+        const amount =
+          (parseFloat(c.percentage) * property.total_property_value) / 100;
+        return (
+          <Typography key={c.id} variant="body2">
+            Level {c.level_no}: {c.percentage}% → ₹{amount.toLocaleString()}
+          </Typography>
+        );
+      })
+    ) : (
+      <Typography variant="body2" color="text.secondary">
+        No commission data
+      </Typography>
+    )}
+  </Box>
+</Popover>
+
+
+
+
 
                       <Grid container spacing={1}>
                         <Grid item xs={12}>
