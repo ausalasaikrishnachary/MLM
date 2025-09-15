@@ -781,7 +781,7 @@ const open = Boolean(anchorEl);
     {commissions.length > 0 ? (
       commissions.map((c) => {
         const amount =
-          (parseFloat(c.percentage) * property.total_property_value) / 100;
+          (parseFloat(c.percentage) * property.company_commission) / 100;
         return (
           <Typography key={c.id} variant="body2">
             Level {c.level_no}: {c.percentage}% → ₹{amount.toLocaleString()}
