@@ -285,7 +285,7 @@ function Layout() {
           <Route path="/p-comparelist" element={<Comparelist />} />
 
           <Route path="/p-profile" element={<PartnerProfile />} />
-          <Route path="/p-profiledetails" element={<PartnerKyc />} />z
+          <Route path="/p-profiledetails" element={<PartnerKyc />} />
           <Route path="/editprofile" element={<EditProfile />} />
           <Route path="/p-leads" element={<Leads />} />
           <Route path="/p-addleads" element={<PAddLead />} />

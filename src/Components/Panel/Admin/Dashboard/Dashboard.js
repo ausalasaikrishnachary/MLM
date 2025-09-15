@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Box, Grid, Card, Typography, Stack, CardContent, Container } from "@mui/material";
 import { Business, People, Home } from "@mui/icons-material";
-import { faInstagram, faFacebook, faTwitter, faYoutube } from "@fortawesome/free-brands-svg-icons";
-
+import { faInstagram, faFacebook , faYoutube } from "@fortawesome/free-brands-svg-icons";
+import { faXTwitter } from "@fortawesome/free-brands-svg-icons";
 import { 
   CheckCircle,
   EventAvailable,
@@ -239,7 +239,7 @@ const AdminDashboard = () => {
           {[
             { icon: faInstagram, url: "https://www.instagram.com/shrirajteam/?igsh=YzhjcjVuMGIxZzJq#" },
             { icon: faFacebook, url: "https://www.facebook.com/shrirajteam/" },
-            { icon: faTwitter, url: "https://x.com/shrirajteam" },
+            { icon: faXTwitter , url: "https://x.com/shrirajteam" },
             { icon: faYoutube, url: "https://www.youtube.com/@Shrirajteam" },
           ].map((item, i) => (
             <a

@@ -41,6 +41,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import { faInstagram, faFacebook, faTwitter, faYoutube } from "@fortawesome/free-brands-svg-icons";
+import { faXTwitter } from "@fortawesome/free-brands-svg-icons";
 import {
   CurrencyRupee,
   Group,
@@ -573,7 +574,7 @@ const AgentDashboard = () => {
                  {[
                    { icon: faInstagram, url: "https://www.instagram.com/shrirajteam/?igsh=YzhjcjVuMGIxZzJq#" },
                    { icon: faFacebook, url: "https://www.facebook.com/shrirajteam/" },
-                   { icon: faTwitter, url: "https://x.com/shrirajteam" },
+                   { icon: faXTwitter, url: "https://x.com/shrirajteam" },
                    { icon: faYoutube, url: "https://www.youtube.com/@Shrirajteam" },
                  ].map((item, i) => (
                    <a
