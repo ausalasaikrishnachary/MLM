@@ -18,6 +18,10 @@ import {
   MenuItem,
   useTheme,
   useMediaQuery,
+    Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
@@ -30,6 +34,30 @@ import axios from 'axios';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 export default function Header() {
+
+      const [subscriptionPaid, setSubscriptionPaid] = useState(false);
+    const [openModal, setOpenModal] = useState(false);
+  
+  
+  
+    // ✅ Subscription check
+    useEffect(() => {
+      if (userId) {
+        axios
+          .get(`${baseurl}/user-subscriptions/user-id/${userId}/`)
+          .then((response) => {
+            const latest = response.data.find(
+              (item) => item.latest_status !== undefined
+            );
+            setSubscriptionPaid(latest?.latest_status === "paid");
+          })
+          .catch((error) => {
+            console.error("Subscription fetch error:", error);
+          });
+      }
+    }, [userId]);
+
+
   // Navigation items with Operations dropdown
   const navItems = [
     { label: 'Dashboard', path: '/a-dashboard' },
@@ -56,6 +84,19 @@ export default function Header() {
     { label: 'Company', path: '/tableadminmeetings' },
     // { label: 'Agents', path: '/a-partners' },
   ];
+
+      // ✅ Intercept Add Property clicks
+  const handleNavClick = (path) => {
+    if (path === "/p-addasset") {
+      if (subscriptionPaid) {
+        navigate(path);
+      } else {
+        setOpenModal(true);
+      }
+    } else {
+      navigate(path);
+    }
+  };
 
   const userId = localStorage.getItem("user_id");
   const [notifications, setNotifications] = useState([]);
@@ -312,17 +353,17 @@ export default function Header() {
                 {navItems.map((item) => (
                   item.path ? (
                     <Button
-                      key={item.label}
-                      onClick={() => navigate(item.path)}
-                      sx={{
-                        color: location.pathname === item.path ? 'blue' : '#000',
-                        fontWeight: 'bold',
-                        textTransform: 'none',
-                        fontSize: "16px"
-                      }}
-                    >
-                      {item.label}
-                    </Button>
+                                key={item.label}
+                                onClick={() => handleNavClick(item.path)}
+                                sx={{
+                                  color: location.pathname === item.path ? 'blue' : '#000',
+                                  fontWeight: 'bold',
+                                  textTransform: 'none',
+                                  fontSize: "16px"
+                                }}
+                              >
+                                {item.label}
+                              </Button>
                   ) : (
                     <Button
                       key={item.label}
@@ -473,7 +514,28 @@ export default function Header() {
           <MenuItem disabled>No notifications</MenuItem>
         )}
       </MuiMenu>
-
+ {/* ✅ Subscription Required Modal */}
+      <Dialog open={openModal} onClose={() => setOpenModal(false)}>
+        <DialogTitle sx={{ fontWeight: "bold", color: "red" }}>
+          Subscription Required
+        </DialogTitle>
+        <DialogContent>
+          You need an active subscription to Add Properties.
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenModal(false)}>Cancel</Button>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              setOpenModal(false);
+              navigate("/p-plans");
+            }}
+          >
+            Subscribe Now
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
