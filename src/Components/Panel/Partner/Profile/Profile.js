@@ -74,7 +74,19 @@ const PartnerProfile = () => {
             <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
             <ProfileField label="Last Name:" value={userData.last_name} />
             <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
-            <ProfileField label="Date of Birth:" value={userData.date_of_birth} />
+            <ProfileField
+              label="Date of Birth:"
+              value={
+                userData.date_of_birth
+                  ? new Date(userData.date_of_birth).toLocaleDateString("en-IN", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })
+                  : "N/A"
+              }
+            />
+
             <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
             <ProfileField label="Gender:" value={userData.gender} />
             <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
@@ -83,13 +95,13 @@ const PartnerProfile = () => {
             <ProfileField label="Mobile Number:" value={userData.phone_number} />
             <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
             <ProfileField
-  label="Role:"
-  value={
-    userData.roles[0]?.role_name === "Agent"
-      ? "Team"
-      : userData.roles[0]?.role_name || "N/A"
-  }
-/>
+              label="Role:"
+              value={
+                userData.roles[0]?.role_name === "Agent"
+                  ? "Team"
+                  : userData.roles[0]?.role_name || "N/A"
+              }
+            />
 
             <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
             <ProfileField label="Pan number:" value={userData.pan_number} />
