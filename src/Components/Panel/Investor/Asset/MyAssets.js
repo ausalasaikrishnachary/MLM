@@ -503,42 +503,42 @@ const PartnerMyAssets = () => {
     <>
       <InvestorHeader />
       <Container sx={{ py: 4 }}>
-  <Box
-   sx={{
-     display: "flex",
-     justifyContent: "space-between",
-     alignItems: "center",
-     mb: 3,
-     flexDirection: { xs: "column", sm: "row" }, 
-     gap: 1,
-   }}
- >
-    <Typography
-      variant="h4"
-      sx={{ textAlign: { xs: "center", sm: "left" } }} 
-      fontWeight="bold"
-    >
-      Properties
-    </Typography>
-    
-    <Button
-      variant="contained"
-      color="secondary"
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 3,
+            flexDirection: { xs: "column", sm: "row" },
+            gap: 1,
+          }}
+        >
+          <Typography
+            variant="h4"
+            sx={{ textAlign: { xs: "center", sm: "left" } }}
+            fontWeight="bold"
+          >
+            Properties
+          </Typography>
+
+          <Button
+            variant="contained"
+            color="secondary"
             onClick={openReportConfiguration}
-        startIcon={<DescriptionIcon />}
-        sx={{
-          mt: { xs: 2, sm: 0 },
-          px: 3,
-          py: 1,
-          height: "55px",
-          width: { xs: "93%", sm: "auto" } // full width only on mobile
-        }}
-      >
-        Generate Report
-      </Button>
-      
-      
-      </Box>
+            startIcon={<DescriptionIcon />}
+            sx={{
+              mt: { xs: 2, sm: 0 },
+              px: 3,
+              py: 1,
+              height: "55px",
+              width: { xs: "93%", sm: "auto" } // full width only on mobile
+            }}
+          >
+            Generate Report
+          </Button>
+
+
+        </Box>
         <Box
           sx={{
             backgroundColor: 'white',
@@ -565,7 +565,7 @@ const PartnerMyAssets = () => {
                 }}
               />
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={6}>
               <FormControl fullWidth>
                 <Select
                   value={sortBy}
@@ -589,14 +589,14 @@ const PartnerMyAssets = () => {
                 </Select>
               </FormControl>
             </Grid>
-             <SubscriptionProtectedButton
-      userId={userId}
-      buttonText="Add Property"
-      navigateTo="/i-addproperty"
-      baseurl={baseurl}
-    />
-            </Grid>
-         
+            {/* <SubscriptionProtectedButton
+              userId={userId}
+              buttonText="Add Property"
+              navigateTo="/i-addproperty"
+              baseurl={baseurl}
+            /> */}
+          </Grid>
+
         </Box>
 
         {/* Cards Section */}
@@ -862,7 +862,7 @@ const PartnerMyAssets = () => {
                           display="flex"
                           justifyContent="space-between"
                           alignItems="center"
-                          sx={{ width: '100%',  }}
+                          sx={{ width: '100%', }}
                         >
                           {/* Left side: Agent Referral Id */}
                           <Box

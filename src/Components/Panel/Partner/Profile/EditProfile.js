@@ -203,7 +203,7 @@ const PartnerKyc = () => {
               </TextField>
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            {/* <Grid item xs={12} md={4}>
               <TextField
                 select
                 fullWidth
@@ -216,7 +216,7 @@ const PartnerKyc = () => {
                 <MenuItem value="active">Active</MenuItem>
                 <MenuItem value="inactive">Inactive</MenuItem>
               </TextField>
-            </Grid>
+            </Grid> */}
           </Grid>
 
           {/* Address */}
