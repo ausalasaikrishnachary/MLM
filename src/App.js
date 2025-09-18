@@ -147,6 +147,7 @@ import ViewBusiness from "./Components/Panel/Partner/Business/ViewBusiness";
 import AdminBussiness from "./Components/Panel/Admin/AdminBussiness/AdminBussiness";
 import EditBusiness from "./Components/Panel/Partner/Business/EditBusiness";
 import Comparelist from "./Components/Panel/Partner/Asset/Comparelist";
+import BirthdayPopup from "./Components/Panel/BirthdayPopup/BirthdayPopup";
 
 
 
@@ -183,6 +184,7 @@ function Layout() {
 
           <Route path="/" element={<Home />} />
           <Route path="/popup" element={<Popup />} />
+           <Route path="/birthdaypopup" element={<BirthdayPopup/>} />
           <Route path="/aboutus" element={<Aboutus />} />
           <Route path="/FAQ" element={<FAQAccordion />} />
           <Route path="/contactus" element={<Contact />} />
