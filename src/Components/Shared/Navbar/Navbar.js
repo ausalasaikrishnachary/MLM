@@ -18,7 +18,7 @@ import {
   MenuItem,
   useTheme,
   useMediaQuery,
-    Dialog,
+  Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -35,34 +35,34 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 export default function Header() {
 
-      const [subscriptionPaid, setSubscriptionPaid] = useState(false);
-    const [openModal, setOpenModal] = useState(false);
-  
-  
-  
-    // ✅ Subscription check
-    useEffect(() => {
-      if (userId) {
-        axios
-          .get(`${baseurl}/user-subscriptions/user-id/${userId}/`)
-          .then((response) => {
-            const latest = response.data.find(
-              (item) => item.latest_status !== undefined
-            );
-            setSubscriptionPaid(latest?.latest_status === "paid");
-          })
-          .catch((error) => {
-            console.error("Subscription fetch error:", error);
-          });
-      }
-    }, [userId]);
+  const [subscriptionPaid, setSubscriptionPaid] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const userId = localStorage.getItem("user_id");
+
+
+  // ✅ Subscription check
+  useEffect(() => {
+    if (userId) {
+      axios
+        .get(`${baseurl}/user-subscriptions/user-id/${userId}/`)
+        .then((response) => {
+          const latest = response.data.find(
+            (item) => item.latest_status !== undefined
+          );
+          setSubscriptionPaid(latest?.latest_status === "paid");
+        })
+        .catch((error) => {
+          console.error("Subscription fetch error:", error);
+        });
+    }
+  }, [userId]);
 
 
   // Navigation items with Operations dropdown
   const navItems = [
     { label: 'Dashboard', path: '/a-dashboard' },
     { label: 'Properties', path: '/a-asset' },
-     { label: 'Add Property', path: '/a-addasset' },
+    { label: 'Add Property', path: '/a-addasset' },
     { label: 'Users', path: '/a-investormanagement' },
     {
       label: 'Operations',
@@ -85,7 +85,7 @@ export default function Header() {
     // { label: 'Agents', path: '/a-partners' },
   ];
 
-      // ✅ Intercept Add Property clicks
+  // ✅ Intercept Add Property clicks
   const handleNavClick = (path) => {
     if (path === "/p-addasset") {
       if (subscriptionPaid) {
@@ -98,7 +98,7 @@ export default function Header() {
     }
   };
 
-  const userId = localStorage.getItem("user_id");
+
   const [notifications, setNotifications] = useState([]);
   const [notificationAnchorEl, setNotificationAnchorEl] = useState(null);
   const notificationMenuOpen = Boolean(notificationAnchorEl);
@@ -175,77 +175,77 @@ export default function Header() {
         </IconButton>
       </Box>
 
-     <List>
-  {navItems.map((item) => (
-    <React.Fragment key={item.label}>
-      {item.path ? (
-        // Main items with direct path
-        <ListItem disablePadding>
-          <ListItemButton
-            onClick={() => {
-              handleDrawerToggle();
-              navigate(item.path);
-            }}
-          >
-            <ListItemText
-              primary={item.label}
-              primaryTypographyProps={{
-                color: location.pathname === item.path ? 'blue' : 'inherit',
-                fontWeight: 'bold',
-              }}
-            />
-          </ListItemButton>
-        </ListItem>
-      ) : (
-        <>
-          {/* For items without path, like Operations */}
-          <ListItem disablePadding>
-            <ListItemButton
-              onClick={() => {
-                if (item.label === 'Operations') {
-                  setShowOperations((prev) => !prev);
-                }
-              }}
-            >
-              <ListItemText
-                primary={item.label}
-                primaryTypographyProps={{ fontWeight: 'bold' }}
-              />
-              {item.label === 'Operations' && (
-                <ArrowDropDownIcon
-                  style={{
-                    transform: showOperations ? 'rotate(180deg)' : 'rotate(0deg)',
-                    transition: 'transform 0.3s ease',
+      <List>
+        {navItems.map((item) => (
+          <React.Fragment key={item.label}>
+            {item.path ? (
+              // Main items with direct path
+              <ListItem disablePadding>
+                <ListItemButton
+                  onClick={() => {
+                    handleDrawerToggle();
+                    navigate(item.path);
                   }}
-                />
-              )}
-            </ListItemButton>
-          </ListItem>
+                >
+                  <ListItemText
+                    primary={item.label}
+                    primaryTypographyProps={{
+                      color: location.pathname === item.path ? 'blue' : 'inherit',
+                      fontWeight: 'bold',
+                    }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            ) : (
+              <>
+                {/* For items without path, like Operations */}
+                <ListItem disablePadding>
+                  <ListItemButton
+                    onClick={() => {
+                      if (item.label === 'Operations') {
+                        setShowOperations((prev) => !prev);
+                      }
+                    }}
+                  >
+                    <ListItemText
+                      primary={item.label}
+                      primaryTypographyProps={{ fontWeight: 'bold' }}
+                    />
+                    {item.label === 'Operations' && (
+                      <ArrowDropDownIcon
+                        style={{
+                          transform: showOperations ? 'rotate(180deg)' : 'rotate(0deg)',
+                          transition: 'transform 0.3s ease',
+                        }}
+                      />
+                    )}
+                  </ListItemButton>
+                </ListItem>
 
-          {/* Render subItems for expandable sections like Operations */}
-          {item.label === 'Operations' && showOperations && item.subItems?.map((subItem) => (
-            <ListItem key={subItem.label} disablePadding sx={{ pl: 4 }}>
-              <ListItemButton
-                onClick={() => {
-                  handleDrawerToggle();
-                  navigate(subItem.path);
-                }}
-              >
-                <ListItemText
-                  primary={subItem.label}
-                  primaryTypographyProps={{
-                    color: location.pathname === subItem.path ? 'blue' : 'inherit',
-                    fontWeight: 'bold',
-                  }}
-                />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </>
-      )}
-    </React.Fragment>
-  ))}
-</List>
+                {/* Render subItems for expandable sections like Operations */}
+                {item.label === 'Operations' && showOperations && item.subItems?.map((subItem) => (
+                  <ListItem key={subItem.label} disablePadding sx={{ pl: 4 }}>
+                    <ListItemButton
+                      onClick={() => {
+                        handleDrawerToggle();
+                        navigate(subItem.path);
+                      }}
+                    >
+                      <ListItemText
+                        primary={subItem.label}
+                        primaryTypographyProps={{
+                          color: location.pathname === subItem.path ? 'blue' : 'inherit',
+                          fontWeight: 'bold',
+                        }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+              </>
+            )}
+          </React.Fragment>
+        ))}
+      </List>
 
     </Box>
   );
@@ -353,17 +353,17 @@ export default function Header() {
                 {navItems.map((item) => (
                   item.path ? (
                     <Button
-                                key={item.label}
-                                onClick={() => handleNavClick(item.path)}
-                                sx={{
-                                  color: location.pathname === item.path ? 'blue' : '#000',
-                                  fontWeight: 'bold',
-                                  textTransform: 'none',
-                                  fontSize: "16px"
-                                }}
-                              >
-                                {item.label}
-                              </Button>
+                      key={item.label}
+                      onClick={() => handleNavClick(item.path)}
+                      sx={{
+                        color: location.pathname === item.path ? 'blue' : '#000',
+                        fontWeight: 'bold',
+                        textTransform: 'none',
+                        fontSize: "16px"
+                      }}
+                    >
+                      {item.label}
+                    </Button>
                   ) : (
                     <Button
                       key={item.label}
@@ -514,7 +514,7 @@ export default function Header() {
           <MenuItem disabled>No notifications</MenuItem>
         )}
       </MuiMenu>
- {/* ✅ Subscription Required Modal */}
+      {/* ✅ Subscription Required Modal */}
       <Dialog open={openModal} onClose={() => setOpenModal(false)}>
         <DialogTitle sx={{ fontWeight: "bold", color: "red" }}>
           Subscription Required
