@@ -1,24 +1,51 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Box, Card, Typography, Divider, Button, IconButton } from "@mui/material";
+import {
+  Box,
+  Card,
+  Typography,
+  Divider,
+  IconButton,
+} from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import { baseurl } from '../../../BaseURL/BaseURL';
-import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
+import { baseurl } from "../../../BaseURL/BaseURL";
+import PartnerHeader from "../../../Shared/Partner/PartnerNavbar";
+import BirthdayPopup from "./../../BirthdayPopup/BirthdayPopup"; // ✅ Import Popup
 
 const PartnerProfile = () => {
   const [userData, setUserData] = useState(null);
+  const [showBirthday, setShowBirthday] = useState(false); // ✅ birthday popup state
   const navigate = useNavigate();
   const userId = localStorage.getItem("user_id");
 
   useEffect(() => {
     axios
       .get(`${baseurl}/users/${userId}/`)
-      .then((response) => setUserData(response.data))
-      .catch((error) => console.error("Error fetching user data:", error));
-  }, []);
+      .then((response) => {
+        const data = response.data;
+        setUserData(data);
 
-  if (!userData) return <Typography sx={{ mt: 4, textAlign: "center" }}>Loading...</Typography>;
+        // ✅ Check if today is user's birthday
+        if (data.date_of_birth) {
+          const today = new Date();
+          const dob = new Date(data.date_of_birth);
+
+          if (
+            today.getDate() === dob.getDate() &&
+            today.getMonth() === dob.getMonth()
+          ) {
+            setShowBirthday(true);
+          }
+        }
+      })
+      .catch((error) => console.error("Error fetching user data:", error));
+  }, [userId]);
+
+  if (!userData)
+    return (
+      <Typography sx={{ mt: 4, textAlign: "center" }}>Loading...</Typography>
+    );
 
   return (
     <>
@@ -79,14 +106,13 @@ const PartnerProfile = () => {
               value={
                 userData.date_of_birth
                   ? new Date(userData.date_of_birth).toLocaleDateString("en-IN", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                  })
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                    })
                   : "N/A"
               }
             />
-
             <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
             <ProfileField label="Gender:" value={userData.gender} />
             <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
@@ -102,34 +128,20 @@ const PartnerProfile = () => {
                   : userData.roles[0]?.role_name || "N/A"
               }
             />
-
             <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
             <ProfileField label="Pan number:" value={userData.pan_number} />
             <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
             <ProfileField label="Aadhaar number:" value={userData.aadhaar_number} />
           </Box>
-
-          {/* Footer with Close Button */}
-          {/* <Box sx={{ textAlign: "center", p: "15px" }}>
-            <Button
-              variant="contained"
-              sx={{
-                backgroundColor: "rgb(20, 5, 60)",
-                color: "white",
-                padding: "8px 20px",
-                fontSize: "14px",
-                borderRadius: "20px",
-                transition: "0.3s ease-in-out",
-                "&:hover": {
-                  backgroundColor: "rgb(15, 4, 50)",
-                },
-              }}
-            >
-              Close
-            </Button>
-          </Box> */}
         </Card>
       </Box>
+
+      {/* ✅ Birthday Popup with Confetti */}
+      <BirthdayPopup
+        open={showBirthday}
+        onClose={() => setShowBirthday(false)}
+        userName={userData.first_name}
+      />
     </>
   );
 };

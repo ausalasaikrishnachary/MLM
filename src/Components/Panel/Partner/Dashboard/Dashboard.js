@@ -40,6 +40,8 @@ import {
   faEnvelope
 } from '@fortawesome/free-solid-svg-icons';
 
+import BirthdayPopup from "./../../BirthdayPopup/BirthdayPopup";
+
 import { faInstagram, faFacebook, faTwitter, faYoutube } from "@fortawesome/free-brands-svg-icons";
 import { faXTwitter } from "@fortawesome/free-brands-svg-icons";
 import {
@@ -63,9 +65,12 @@ ChartJS.register(
   Legend
 );
 
+
 const AgentDashboard = () => {
 
   const referralId = localStorage.getItem('referral_id');
+    const [userData, setUserData] = useState(null);
+    const [showBirthday, setShowBirthday] = useState(false);
   const [totalAgents, setTotalAgents] = useState(0); // ✨ new state
   const [totalActiveAgents, setTotalActiveAgents] = useState(0); // ✨ new state
   const [counts, setCounts] = useState(null);
@@ -78,6 +83,29 @@ const AgentDashboard = () => {
     total_agent_commission_paid: 0,
     total_company_commission_paid: 0,
   });
+
+    useEffect(() => {
+    axios
+      .get(`${baseurl}/users/${userId}/`)
+      .then((response) => {
+        const data = response.data;
+        setUserData(data);
+
+        // ✅ Check if today is user's birthday
+        if (data.date_of_birth) {
+          const today = new Date();
+          const dob = new Date(data.date_of_birth);
+
+          if (
+            today.getDate() === dob.getDate() &&
+            today.getMonth() === dob.getMonth()
+          ) {
+            setShowBirthday(true);
+          }
+        }
+      })
+      .catch((error) => console.error("Error fetching user data:", error));
+  }, [userId]);
 
   useEffect(() => {
     const userId = localStorage.getItem('user_id');
@@ -613,6 +641,18 @@ const AgentDashboard = () => {
                  ))}
                </Box>
       </Container>
+
+        {/* ✅ Birthday Popup with Confetti */}
+           {/* ✅ Birthday Popup with Confetti */}
+{userData && (
+  <BirthdayPopup
+    open={showBirthday}
+    onClose={() => setShowBirthday(false)}
+    userName={userData.first_name || "User"}
+  />
+)}
+
+    
     </>
   );
 };
