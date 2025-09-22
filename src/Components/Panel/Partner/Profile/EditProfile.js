@@ -19,7 +19,10 @@ import { Country, State, City } from "country-state-city";
 
 const PartnerKyc = () => {
   const navigate = useNavigate();
-  const userId = localStorage.getItem("user_id");
+  // const userId = localStorage.getItem("user_id");
+  const userId = Number(localStorage.getItem("user_id")); // ensure it's a number-- changed now
+console.log("Fetched userId:", userId);
+
 
   const [formData, setFormData] = useState({
     image: null,
@@ -38,34 +41,89 @@ const PartnerKyc = () => {
     "gender", "marital_status", "address", "city", "state", "country", "pin_code",
     "account_holder_name", "bank_name", "branch_name", "account_number", "account_type", "ifsc_code",
     "pan_number", "aadhaar_number", "nominee_reference_to",
-    "image", "aadhaar_front", "aadhaar_back", "pan_front", "pan_back", "bank_passbook", "cancelled_cheque"
+    "image", "aadhaar_front", "aadhaar_back", "pan_front", "pan_back", "bank_passbook", "cancelled_cheque", "nominee_relationship",
+    "nominee_reference_to", "nominee_aadhaar_front", "nominee_aadhaar_back"
   ];
 
-  // Fetch user data
-  useEffect(() => {
-    axios
-      .get(`${baseurl}/users/${userId}/`)
-      .then((response) => {
-        const user = response.data;
+  // Fetch user data--- now changed
+  // useEffect(() => {
+  //   axios
+  //     .get(`${baseurl}/users/${userId}/`)
+  //     .then((response) => {
+  //       const user = response.data;
 
-        const toFileObject = (url) =>
-          url ? { name: url.split("/").pop(), url, file: null } : null;
+  //       const toFileObject = (url) =>
+  //         url ? { name: url.split("/").pop(), url, file: null } : null;
 
-        setFormData({
-          ...user,
-          image: toFileObject(user.image),
-          aadhaar_front: toFileObject(user.aadhaar_front),
-          aadhaar_back: toFileObject(user.aadhaar_back),
-          pan_front: toFileObject(user.pan_front),
-          pan_back: toFileObject(user.pan_back),
-          bank_passbook: toFileObject(user.bank_passbook),
-          cancelled_cheque: toFileObject(user.cancelled_cheque),
-        });
-      })
-      .catch((error) => {
-        console.error("Error fetching user data:", error);
+  //       setFormData({
+  //         ...user,
+  //         image: toFileObject(user.image),
+  //         aadhaar_front: toFileObject(user.aadhaar_front),
+  //         aadhaar_back: toFileObject(user.aadhaar_back),
+  //         pan_front: toFileObject(user.pan_front),
+  //         pan_back: toFileObject(user.pan_back),
+  //         bank_passbook: toFileObject(user.bank_passbook),
+  //         cancelled_cheque: toFileObject(user.cancelled_cheque),
+  //         nominee_aadhaar_front: toFileObject(user.nominee_aadhaar_front),
+  //         nominee_aadhaar_back: toFileObject(user.nominee_aadhaar_back),
+  //       });
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching user data:", error);
+  //     });
+  // }, [userId]);
+
+useEffect(() => {
+  if (!userId) return;
+
+  axios
+    .get(`${baseurl}/users/${userId}/`)
+    .then((response) => {
+      const user = response.data;
+
+      // Convert file URLs → file objects
+      const toFileObject = (url) =>
+        url ? { name: url.split("/").pop(), url, file: null } : null;
+
+      // Country full name
+      const countryObj = Country.getCountryByCode(user.country) || Country.getAllCountries().find(c => c.name === user.country);
+      const countryName = countryObj?.name || user.country;
+
+      // State full name
+      const stateObj = State.getStateByCodeAndCountry(user.state, user.country) || State.getStatesOfCountry(countryObj?.isoCode).find(s => s.name === user.state);
+      const stateName = stateObj?.name || user.state;
+
+      // Populate states and cities arrays for dropdowns
+      const statesArray = State.getStatesOfCountry(countryObj?.isoCode);
+      const citiesArray = City.getCitiesOfState(countryObj?.isoCode, stateObj?.isoCode);
+
+      setStates(statesArray);
+      setCities(citiesArray);
+
+      setFormData({
+        ...user,
+        country: countryName,
+        state: stateName,
+        city: user.city || "",
+        image: toFileObject(user.image),
+        aadhaar_front: toFileObject(user.aadhaar_front),
+        aadhaar_back: toFileObject(user.aadhaar_back),
+        pan_front: toFileObject(user.pan_front),
+        pan_back: toFileObject(user.pan_back),
+        bank_passbook: toFileObject(user.bank_passbook),
+        cancelled_cheque: toFileObject(user.cancelled_cheque),
+        nominee_aadhaar_front: toFileObject(user.nominee_aadhaar_front),
+        nominee_aadhaar_back: toFileObject(user.nominee_aadhaar_back),
       });
-  }, [userId]);
+    })
+    .catch((error) => {
+      console.error("Error fetching user data:", error);
+    });
+}, [userId]);
+
+
+
+
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -91,82 +149,87 @@ const PartnerKyc = () => {
     setFormData((prev) => ({ ...prev, [name]: null }));
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  let newErrors = {};
-  let missingFields = [];
+    let newErrors = {};
+    let missingFields = [];
 
-  requiredFields.forEach((field) => {
-    const value = formData[field];
-    if (!value || (typeof value === "object" && !value.file && !value.url)) {
-      newErrors[field] = "This field is required";
-      missingFields.push(field.replace(/_/g, " ").toUpperCase());
-    }
-  });
-
-  if (Object.keys(newErrors).length > 0) {
-    setErrors(newErrors);
-
-    // 🔴 Show popup with all missing fields
-    alert("Please fill the following required fields:\n\n" + missingFields.join("\n"));
-
-    return; // stop submission
-  }
-
-  const form = new FormData();
-  Object.entries(formData).forEach(([key, value]) => {
-    if (
-      ["image","aadhaar_front","aadhaar_back","pan_front","pan_back","bank_passbook","cancelled_cheque"].includes(key)
-    ) {
-      if (value?.file instanceof File) {
-        form.append(key, value.file);
+    requiredFields.forEach((field) => {
+      const value = formData[field];
+      if (!value || (typeof value === "object" && !value.file && !value.url)) {
+        newErrors[field] = "This field is required";
+        missingFields.push(field.replace(/_/g, " ").toUpperCase());
       }
-    } else {
-      form.append(key, value);
-    }
-  });
-
-  try {
-    await axios.put(`${baseurl}/users/${userId}/`, form, {
-      headers: { "Content-Type": "multipart/form-data" },
     });
-    alert("Profile updated successfully");
-    navigate("/p-profile");
-  } catch (error) {
-    console.error("Update failed:", error.response?.data || error.message);
-    alert("Failed to update profile");
-  }
-};
 
-const [countries, setCountries] = useState([]);
-const [states, setStates] = useState([]);
-const [cities, setCities] = useState([]);
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
 
-useEffect(() => {
-  setCountries(Country.getAllCountries()); // load all countries
-}, []);
+      // 🔴 Show popup with all missing fields
+      alert("Please fill the following required fields:\n\n" + missingFields.join("\n"));
 
+      return; // stop submission
+    }
+
+    const form = new FormData();
+    Object.entries(formData).forEach(([key, value]) => {
+      if (
+        ["image", "aadhaar_front", "aadhaar_back", "pan_front", "pan_back", "bank_passbook", "cancelled_cheque", "nominee_aadhaar_front", "nominee_aadhaar_back"].includes(key)
+
+      ) {
+        if (value?.file instanceof File) {
+          form.append(key, value.file);
+        }
+      } else {
+        form.append(key, value);
+      }
+    });
+
+    try {
+      await axios.put(`${baseurl}/users/${userId}/`, form, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      alert("Profile updated successfully");
+      navigate("/p-profile");
+    } catch (error) {
+      console.error("Update failed:", error.response?.data || error.message);
+      alert("Failed to update profile");
+    }
+  };
+
+  const [countries, setCountries] = useState([]);
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
+
+  useEffect(() => {
+    setCountries(Country.getAllCountries()); // load all countries
+  }, []);
+// Country Change
 const handleCountryChange = (e) => {
-  const countryCode = e.target.value;
-  setFormData({ ...formData, country: countryCode, state: "", city: "" });
+  const countryName = e.target.value; // already full name
+  setFormData({ ...formData, country: countryName, state: "", city: "" });
 
-  // load states of that country
-  setStates(State.getStatesOfCountry(countryCode));
-  setCities([]); // reset cities
+  const countryObj = countries.find(c => c.name === countryName);
+  setStates(State.getStatesOfCountry(countryObj.isoCode));
+  setCities([]);
 };
 
 const handleStateChange = (e) => {
-  const stateCode = e.target.value;
-  setFormData({ ...formData, state: stateCode, city: "" });
+  const stateName = e.target.value; // full state name
+  setFormData({ ...formData, state: stateName, city: "" });
 
-  // load cities of that state
-  setCities(City.getCitiesOfState(formData.country, stateCode));
+  const stateObj = states.find(s => s.name === stateName);
+  setCities(City.getCitiesOfState(stateObj.countryCode, stateObj.isoCode));
 };
-
+// City Change
 const handleCityChange = (e) => {
-  setFormData({ ...formData, city: e.target.value });
+  const cityName = e.target.value; // full city name
+  setFormData({ ...formData, city: cityName });
 };
+
+
+
 
 
   return (
@@ -214,57 +277,57 @@ const handleCityChange = (e) => {
               </Grid>
             ))}
 
-           {/* Gender */}
-<Grid item xs={12} md={4}>
-  <TextField
-    select
-    fullWidth
-    required
-    label="Gender"
-    name="gender"
-    value={formData.gender || ""}
-    onChange={handleChange}
-    variant="outlined"
-    error={!!errors.gender}
-    helperText={errors.gender}
-  >
-    <MenuItem value="Female">Female</MenuItem>
-    <MenuItem value="Male">Male</MenuItem>
-    <MenuItem value="Other">Other</MenuItem>
-  </TextField>
-</Grid>
+            {/* Gender */}
+            <Grid item xs={12} md={4}>
+              <TextField
+                select
+                fullWidth
+                required
+                label="Gender"
+                name="gender"
+                value={formData.gender || ""}
+                onChange={handleChange}
+                variant="outlined"
+                error={!!errors.gender}
+                helperText={errors.gender}
+              >
+                <MenuItem value="Female">Female</MenuItem>
+                <MenuItem value="Male">Male</MenuItem>
+                <MenuItem value="Other">Other</MenuItem>
+              </TextField>
+            </Grid>
 
-{/* Marital Status */}
-<Grid item xs={12} md={4}>
-  <TextField
-    select
-    fullWidth
-    required
-    label="Marital Status"
-    name="marital_status"
-    value={formData.marital_status || ""}
-    onChange={handleChange}
-    variant="outlined"
-    error={!!errors.marital_status}
-    helperText={errors.marital_status}
-  >
-    <MenuItem value="Single">Single</MenuItem>
-    <MenuItem value="Married">Married</MenuItem>
-    <MenuItem value="Divorced">Divorced</MenuItem>
-    <MenuItem value="Widowed">Widowed</MenuItem>
-  </TextField>
-</Grid>
+            {/* Marital Status */}
+            <Grid item xs={12} md={4}>
+              <TextField
+                select
+                fullWidth
+                required
+                label="Marital Status"
+                name="marital_status"
+                value={formData.marital_status || ""}
+                onChange={handleChange}
+                variant="outlined"
+                error={!!errors.marital_status}
+                helperText={errors.marital_status}
+              >
+                <MenuItem value="Single">Single</MenuItem>
+                <MenuItem value="Married">Married</MenuItem>
+                <MenuItem value="Divorced">Divorced</MenuItem>
+                <MenuItem value="Widowed">Widowed</MenuItem>
+              </TextField>
+            </Grid>
 
           </Grid>
 
-<Typography
-  variant="h6"
-  sx={{ fontWeight: "bold", color: "rgb(30, 10, 80)", mb: 2 }}
->
-  Address Details
-</Typography>
+          <Typography
+            variant="h6"
+            sx={{ fontWeight: "bold", color: "rgb(30, 10, 80)", mb: 2 }}
+          >
+            Address Details
+          </Typography>
 
-<Grid container spacing={2} sx={{ mb: 4 }}>
+          <Grid container spacing={2} sx={{ mb: 4 }}>
   {/* Address */}
   <Grid item xs={12} md={6}>
     <TextField
@@ -281,61 +344,60 @@ const handleCityChange = (e) => {
   </Grid>
 
   {/* Country */}
-<Grid item xs={12} md={3}>
-  <TextField
-    select
-    fullWidth
-    required
-    label="Country"
-    value={formData.country || ""}
-    onChange={handleCountryChange}
-  >
-    {countries.map((c) => (
-      <MenuItem key={c.isoCode} value={c.isoCode}>
-        {c.name}
-      </MenuItem>
-    ))}
-  </TextField>
-</Grid>
+  <Grid item xs={12} md={3}>
+    <TextField
+      select
+      fullWidth
+      required
+      label="Country"
+      value={formData.country || ""}
+      onChange={handleCountryChange}
+    >
+      {countries.map((c) => (
+        <MenuItem key={c.isoCode} value={c.name}>
+          {c.name}
+        </MenuItem>
+      ))}
+    </TextField>
+  </Grid>
 
-{/* State */}
-<Grid item xs={12} md={3}>
-  <TextField
-    select
-    fullWidth
-    required
-    label="State"
-    value={formData.state || ""}
-    onChange={handleStateChange}
-    disabled={!states.length}
-  >
-    {states.map((s) => (
-      <MenuItem key={s.isoCode} value={s.isoCode}>
-        {s.name}
-      </MenuItem>
-    ))}
-  </TextField>
-</Grid>
+  {/* State */}
+  <Grid item xs={12} md={3}>
+    <TextField
+      select
+      fullWidth
+      required
+      label="State"
+      value={formData.state || ""}
+      onChange={handleStateChange}
+      disabled={!states.length}
+    >
+      {states.map((s) => (
+        <MenuItem key={s.isoCode} value={s.name}>
+          {s.name}
+        </MenuItem>
+      ))}
+    </TextField>
+  </Grid>
 
-{/* City */}
-<Grid item xs={12} md={3}>
-  <TextField
-    select
-    fullWidth
-    required
-    label="City"
-    value={formData.city || ""}
-    onChange={handleCityChange}
-    disabled={!cities.length}
-  >
-    {cities.map((city) => (
-      <MenuItem key={city.name} value={city.name}>
-        {city.name}
-      </MenuItem>
-    ))}
-  </TextField>
-</Grid>
-
+  {/* City */}
+  <Grid item xs={12} md={3}>
+    <TextField
+      select
+      fullWidth
+      required
+      label="City"
+      value={formData.city || ""}
+      onChange={handleCityChange}
+      disabled={!cities.length}
+    >
+      {cities.map((city) => (
+        <MenuItem key={city.name} value={city.name}>
+          {city.name}
+        </MenuItem>
+      ))}
+    </TextField>
+  </Grid>
 
   {/* Pincode */}
   <Grid item xs={12} md={3}>
@@ -423,22 +485,6 @@ const handleCityChange = (e) => {
             ))}
           </Grid>
 
-          {/* Nominee */}
-          <Grid container spacing={2} sx={{ mb: 4 }}>
-            <Grid item xs={12} md={6}>
-              <TextField
-                fullWidth
-                required
-                label="Nominee Reference To"
-                name="nominee_reference_to"
-                value={formData.nominee_reference_to || ""}
-                onChange={handleChange}
-                variant="outlined"
-                error={!!errors.nominee_reference_to}
-                helperText={errors.nominee_reference_to}
-              />
-            </Grid>
-          </Grid>
 
           {/* File Uploads */}
           <Typography variant="h6" sx={{ fontWeight: "bold", color: "rgb(30, 10, 80)", mb: 2 }}>
@@ -482,6 +528,89 @@ const handleCityChange = (e) => {
               </Grid>
             ))}
           </Grid>
+
+          {/* Nominee Section */}
+          <Typography
+            variant="h6"
+            sx={{ fontWeight: "bold", color: "rgb(30, 10, 80)", mb: 2 }}
+          >
+            Nominee Details
+          </Typography>
+
+          <Grid container spacing={2} sx={{ mb: 4 }}>
+            {/* Nominee Relationship */}
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                required
+                label="Nominee Relationship"
+                name="nominee_relationship"
+                value={formData.nominee_relationship || ""}
+                onChange={handleChange}
+                variant="outlined"
+                error={!!errors.nominee_relationship}
+                helperText={errors.nominee_relationship}
+              />
+            </Grid>
+
+            {/* Nominee Reference To */}
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                required
+                label="Nominee Reference To"
+                name="nominee_reference_to"
+                value={formData.nominee_reference_to || ""}
+                onChange={handleChange}
+                variant="outlined"
+                error={!!errors.nominee_reference_to}
+                helperText={errors.nominee_reference_to}
+              />
+            </Grid>
+          </Grid>
+
+          {/* Nominee Uploads */}
+          <Typography
+            variant="h6"
+            sx={{ fontWeight: "bold", color: "rgb(30, 10, 80)", mb: 2 }}
+          >
+            Nominee Uploads
+          </Typography>
+
+          <Grid container spacing={2} sx={{ mb: 2 }}>
+            {[
+              { label: "Nominee Aadhaar Front", name: "nominee_aadhaar_front" },
+              { label: "Nominee Aadhaar Back", name: "nominee_aadhaar_back" },
+            ].map(({ label, name }) => (
+              <Grid item xs={12} md={4} key={name}>
+                <InputLabel shrink required>{label}</InputLabel>
+                <Button variant="outlined" fullWidth component="label">
+                  {label}
+                  <input
+                    type="file"
+                    name={name}
+                    hidden
+                    onChange={handleChange}
+                  />
+                </Button>
+
+                {formData[name]?.name && (
+                  <Chip
+                    label={formData[name].name}
+                    onDelete={() => handleRemove(name)}
+                    sx={{ mt: 1 }}
+                  />
+                )}
+
+                {errors[name] && (
+                  <Typography color="error" variant="caption">
+                    {errors[name]}
+                  </Typography>
+                )}
+              </Grid>
+            ))}
+          </Grid>
+
 
           <Box sx={{ display: "flex", justifyContent: "center" }}>
             <Button
