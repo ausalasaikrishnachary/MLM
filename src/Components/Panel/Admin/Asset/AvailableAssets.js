@@ -19,7 +19,7 @@ import {
     DialogActions,
     Pagination
 } from '@mui/material';
-  import Swal from 'sweetalert2';
+import Swal from 'sweetalert2';
 import SearchIcon from '@mui/icons-material/Search';
 import Header from '../../../Shared/Navbar/Navbar';
 import { useNavigate } from "react-router-dom";
@@ -78,58 +78,58 @@ const AvailableAssets = () => {
         setSelectedProperty(null);
     };
 
-const updateApprovalStatus = async (propertyId, newStatus) => {
-  try {
-    const response = await fetch(`${baseurl}/property/${propertyId}/`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ approval_status: newStatus })
-    });
+    const updateApprovalStatus = async (propertyId, newStatus) => {
+        try {
+            const response = await fetch(`${baseurl}/property/${propertyId}/`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ approval_status: newStatus })
+            });
 
-    if (response.ok) {
-      const updatedData = await response.json();
+            if (response.ok) {
+                const updatedData = await response.json();
 
-      setProperties(prev =>
-        prev.map(p =>
-          p.property_id === propertyId
-            ? { ...p, approval_status: updatedData.approval_status }
-            : p
-        )
-      );
+                setProperties(prev =>
+                    prev.map(p =>
+                        p.property_id === propertyId
+                            ? { ...p, approval_status: updatedData.approval_status }
+                            : p
+                    )
+                );
 
-      setFilteredProperties(prev =>
-        prev.map(p =>
-          p.property_id === propertyId
-            ? { ...p, approval_status: updatedData.approval_status }
-            : p
-        )
-      );
+                setFilteredProperties(prev =>
+                    prev.map(p =>
+                        p.property_id === propertyId
+                            ? { ...p, approval_status: updatedData.approval_status }
+                            : p
+                    )
+                );
 
-      Swal.fire({
-        icon: 'success',
-        title: 'Success!',
-        text: 'Approval status updated successfully.',
-        timer: 2000,
-        showConfirmButton: false
-      });
-    } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'Update Failed',
-        text: `Failed to update approval status. Status: ${response.status}`
-      });
-    }
-  } catch (error) {
-    console.error('Error updating approval status:', error);
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'An error occurred while updating the approval status.'
-    });
-  }
-};
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: 'Approval status updated successfully.',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Update Failed',
+                    text: `Failed to update approval status. Status: ${response.status}`
+                });
+            }
+        } catch (error) {
+            console.error('Error updating approval status:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An error occurred while updating the approval status.'
+            });
+        }
+    };
 
 
     useEffect(() => {
@@ -194,64 +194,64 @@ const updateApprovalStatus = async (propertyId, newStatus) => {
         <>
             <Header />
             <Container sx={{ py: 4 }}>
-          
 
 
-                     <Box
-                               sx={{
-                                 position: "relative",
-                                 mb: 3,
-                                 height: { xs: "auto", sm: "56px" },
-                                 display: "flex",
-                                 flexDirection: { xs: "column", sm: "row" },
-                                 alignItems: { xs: "center", sm: "center" },
-                                 justifyContent: "center",
-                                 textAlign: "center",
-                               }}
-                             >
-                                   
-                                   <Box
+
+                <Box
                     sx={{
-                      position: { xs: "static", sm: "absolute" }, 
-                      left: { sm: 0 }, // only works when absolute
-                      top: { sm: 0 },
-                      mb: { xs: 1, sm: 0 },
+                        position: "relative",
+                        mb: 3,
+                        height: { xs: "auto", sm: "56px" },
+                        display: "flex",
+                        flexDirection: { xs: "column", sm: "row" },
+                        alignItems: { xs: "center", sm: "center" },
+                        justifyContent: "center",
+                        textAlign: "center",
                     }}
-                  >
-              <Button
-              variant="outlined"
-              startIcon={<ArrowBackIcon />}
-              onClick={() => navigate(-1)}
-              sx={{
-                display: { xs: "none", sm: "inline-flex" }, 
-                minWidth: "auto",
-                px: 2,
-                py: 1,
-                fontSize: { sm: "0.85rem", md: "0.9rem" },
-              }}
-            >
-              Back
-            </Button>
-                  </Box>
-                                    {/* Centered Heading */}
-                
-                                      <Typography
-                                        variant="h4"
-                                        sx={{
-                                          fontSize: {
-                                            xs: "2.0rem",
-                                            sm: "2.1rem",
-                                            md: "2.2rem",
-                                          },
-                                          fontWeight: "bold",
-                                          whiteSpace: "nowrap",
-                                          overflow: "hidden",
-                                          textOverflow: "ellipsis",
-                                        }}
-                                      >
-                                         Available Properties
-                                      </Typography>
-                                </Box>
+                >
+
+                    <Box
+                        sx={{
+                            position: { xs: "static", sm: "absolute" },
+                            left: { sm: 0 }, // only works when absolute
+                            top: { sm: 0 },
+                            mb: { xs: 1, sm: 0 },
+                        }}
+                    >
+                        <Button
+                            variant="outlined"
+                            startIcon={<ArrowBackIcon />}
+                            onClick={() => navigate(-1)}
+                            sx={{
+                                display: { xs: "none", sm: "inline-flex" },
+                                minWidth: "auto",
+                                px: 2,
+                                py: 1,
+                                fontSize: { sm: "0.85rem", md: "0.9rem" },
+                            }}
+                        >
+                            Back
+                        </Button>
+                    </Box>
+                    {/* Centered Heading */}
+
+                    <Typography
+                        variant="h4"
+                        sx={{
+                            fontSize: {
+                                xs: "2.0rem",
+                                sm: "2.1rem",
+                                md: "2.2rem",
+                            },
+                            fontWeight: "bold",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                        }}
+                    >
+                        Available Properties
+                    </Typography>
+                </Box>
 
                 <Box
                     sx={{
@@ -328,7 +328,7 @@ const updateApprovalStatus = async (propertyId, newStatus) => {
                                                 sx={{ objectFit: 'cover', borderRadius: '12px 12px 0 0', cursor: 'pointer' }}
                                                 onClick={() => handleImageClick(property)}
                                             />
-                                            {property.status !== 'sold' && (
+                                            {/* {property.status !== 'sold' && (
                                                 <Box
                                                     sx={{
                                                         position: 'absolute',
@@ -348,7 +348,7 @@ const updateApprovalStatus = async (propertyId, newStatus) => {
                                                 >
                                                     {property.looking_to === 'sell' ? 'Sell' : 'Rent'}
                                                 </Box>
-                                            )}
+                                            )} */}
                                             <Box
                                                 sx={{
                                                     position: 'absolute',

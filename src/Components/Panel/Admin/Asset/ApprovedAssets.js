@@ -332,7 +332,7 @@ const ApprovedAssets = () => {
                                                 sx={{ objectFit: 'cover', borderRadius: '12px 12px 0 0', cursor: 'pointer' }}
                                                 onClick={() => handleImageClick(property)}
                                             />
-                                            {property.status !== 'sold' && (
+                                            {/* {property.status !== 'sold' && (
                                                 <Box
                                                     sx={{
                                                         position: 'absolute',
@@ -352,7 +352,7 @@ const ApprovedAssets = () => {
                                                 >
                                                     {property.looking_to === 'sell' ? 'Sell' : 'Rent'}
                                                 </Box>
-                                            )}
+                                            )} */}
                                             <Box
                                                 sx={{
                                                     position: 'absolute',

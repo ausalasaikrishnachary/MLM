@@ -16,6 +16,7 @@ import PhoneIcon from "@mui/icons-material/Phone";
 import EmailIcon from "@mui/icons-material/Email";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebook, faInstagram, faTwitter, faYoutube } from '@fortawesome/free-brands-svg-icons';
+import { faXTwitter } from "@fortawesome/free-brands-svg-icons";
 import "./Contactus.css";
 import { baseurl } from './../../../BaseURL/BaseURL';
 
@@ -96,7 +97,7 @@ const Contact = () => {
                 {[
                   { icon: faInstagram, url: "https://www.instagram.com/shrirajteam/?igsh=YzhjcjVuMGIxZzJq#" },
                   { icon: faFacebook, url: "https://www.facebook.com/shrirajteam/" },
-                  { icon: faTwitter, url: "https://x.com/shrirajteam" },
+                  { icon: faXTwitter, url: "https://x.com/shrirajteam" },
                   { icon: faYoutube, url: "https://www.youtube.com/@Shrirajteam" },
                 ].map((item, i) => (
                   <a

@@ -540,7 +540,7 @@ const handleDelete = async (propertyId) => {
                 }}
               />
             </Grid>
-            <Grid item xs={12} md={3}>
+            <Grid item xs={12} md={6}>
               <FormControl fullWidth>
                 <Select
                   value={sortBy}
@@ -583,12 +583,12 @@ const handleDelete = async (propertyId) => {
                 Add Property
               </Button>
             </Grid> */}
-                   <SubscriptionProtectedButton
+                   {/* <SubscriptionProtectedButton
                   userId={userId}
                   buttonText="Add Property"
                   navigateTo="/p-addasset"
                   baseurl={baseurl}
-                />
+                /> */}
           </Grid>
         </Box>
 

@@ -9,6 +9,7 @@ import Divider from '@mui/material/Divider';
 import { Container, Navbar, Nav, Row, Col, Form, } from 'react-bootstrap';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebookF, faTwitter, faLinkedinIn, faInstagram, faYoutube } from '@fortawesome/free-brands-svg-icons';
+import { faXTwitter } from "@fortawesome/free-brands-svg-icons";
 
 function Footer() {
   return (
@@ -32,7 +33,7 @@ function Footer() {
             <p className="mt-4">Premium commercial real estate investments for discerning investors. Discover exceptional opportunities in prime locations nationwide.</p>
             <div className="social-links mt-3">
               <a href="https://www.facebook.com/shrirajteam/"><FontAwesomeIcon icon={faFacebookF} /></a>
-              <a href="https://x.com/shrirajteam"><FontAwesomeIcon icon={faTwitter} /></a>
+              <a href="https://x.com/shrirajteam"><FontAwesomeIcon icon={faXTwitter} /></a>
               <a href="https://www.youtube.com/@Shrirajteam"><FontAwesomeIcon icon={faYoutube} /></a>
               <a href="https://www.instagram.com/shrirajteam?igsh=YzhjcjVuMGIxZzJq"><FontAwesomeIcon icon={faInstagram} /></a>
             </div>

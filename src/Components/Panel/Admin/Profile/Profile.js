@@ -58,7 +58,18 @@ const AdminProfile = () => {
             <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
             <ProfileField label="Last Name:" value={userData.last_name} />
             <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
-            <ProfileField label="Date of Birth:" value={userData.date_of_birth} />
+            <ProfileField
+              label="Date of Birth:"
+              value={
+                userData.date_of_birth
+                  ? new Date(userData.date_of_birth).toLocaleDateString("en-IN", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })
+                  : "N/A"
+              }
+            />
             <Divider sx={{ borderColor: "#ccc", my: "5px" }} />
             <ProfileField label="Gender:" value={userData.gender} />
             <Divider sx={{ borderColor: "#ccc", my: "5px" }} />

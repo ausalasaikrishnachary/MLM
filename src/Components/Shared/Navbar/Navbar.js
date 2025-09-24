@@ -18,6 +18,10 @@ import {
   MenuItem,
   useTheme,
   useMediaQuery,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
@@ -30,6 +34,30 @@ import axios from 'axios';
 import './Navbar.css'; // Import the updated CSS file
 
 export default function Header() {
+
+  const [subscriptionPaid, setSubscriptionPaid] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const userId = localStorage.getItem("user_id");
+
+
+  // ✅ Subscription check
+  useEffect(() => {
+    if (userId) {
+      axios
+        .get(`${baseurl}/user-subscriptions/user-id/${userId}/`)
+        .then((response) => {
+          const latest = response.data.find(
+            (item) => item.latest_status !== undefined
+          );
+          setSubscriptionPaid(latest?.latest_status === "paid");
+        })
+        .catch((error) => {
+          console.error("Subscription fetch error:", error);
+        });
+    }
+  }, [userId]);
+
+
   // Navigation items with Operations dropdown
   const navItems = [
     { label: 'Dashboard', path: '/a-dashboard' },
@@ -56,7 +84,20 @@ export default function Header() {
     { label: 'Company', path: '/tableadminmeetings' },
   ];
 
-  const userId = localStorage.getItem("user_id");
+  // ✅ Intercept Add Property clicks
+  const handleNavClick = (path) => {
+    if (path === "/p-addasset") {
+      if (subscriptionPaid) {
+        navigate(path);
+      } else {
+        setOpenModal(true);
+      }
+    } else {
+      navigate(path);
+    }
+  };
+
+
   const [notifications, setNotifications] = useState([]);
   const [notificationAnchorEl, setNotificationAnchorEl] = useState(null);
   const [avatarBlink, setAvatarBlink] = useState(false); // State for avatar blink

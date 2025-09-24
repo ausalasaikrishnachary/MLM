@@ -90,53 +90,54 @@ const pageCount = Math.ceil(filteredData.length / rowsPerPage);
     navigate("/Edit_Tmanagement", { state: { user } });
   };
 
-  const handleDelete = (user_id) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "Do you really want to delete this user?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, delete it!"
-    }).then((result) => {
-      if (result.isConfirmed) {
-        axios
-          .delete(`${baseurl}/users/${user_id}`)
-          .then((res) => {
-            if (res.status === 200) {
-              setData((prevData) =>
-                prevData.filter((user) => user.id !== user_id)
-              );
-              Swal.fire({
-                icon: "success",
-                title: "Deleted!",
-                text: "User has been deleted.",
-                timer: 2000,
-                showConfirmButton: false
-              });
-            } else {
-              Swal.fire({
-                icon: "error",
-                title: "Failed",
-                text: "Failed to delete user."
-              });
-            }
-          })
-          .catch((err) => {
-            console.error(
-              "Error deleting user:",
-              err.response ? err.response.data : err
+const handleDelete = (user_id) => {
+  Swal.fire({
+    title: "Are you sure?",
+    text: "Do you really want to delete this user?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    cancelButtonColor: "#3085d6",
+    confirmButtonText: "Yes, delete it!"
+  }).then((result) => {
+    if (result.isConfirmed) {
+      axios
+        .delete(`${baseurl}/users/${user_id}/`) // <-- ensure trailing slash
+        .then((res) => {
+          if (res.status === 204 || res.status === 200) {
+            setData((prevData) =>
+              prevData.filter((user) => user.user_id !== user_id) // <-- match backend field (user_id not id)
             );
             Swal.fire({
-              icon: "error",
-              title: "Error",
-              text: "Error deleting user, please try again."
+              icon: "success",
+              title: "Deleted!",
+              text: "User has been deleted.",
+              timer: 2000,
+              showConfirmButton: false
             });
+          } else {
+            Swal.fire({
+              icon: "error",
+              title: "Failed",
+              text: "Failed to delete user."
+            });
+          }
+        })
+        .catch((err) => {
+          console.error(
+            "Error deleting user:",
+            err.response ? err.response.data : err
+          );
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Error deleting user, please try again."
           });
-      }
-    });
-  };
+        });
+    }
+  });
+};
+
 
   const handlePageChange = (event, value) => {
     setPage(value);
