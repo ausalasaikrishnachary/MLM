@@ -1,0 +1,42 @@
+/* Desktop: Active Button Styling */
+.MuiButton-root.active {
+  background-color: rgba(223, 221, 221, 0.2) !important;
+  border-bottom: 4px solid #FFA500 !important;
+  color: #FFA500 !important;
+  padding: 20px;
+  transition: all 0.3s ease-in-out; /* Smooth transition for all properties */
+}
+
+/* Mobile: Active List Item Styling */
+.MuiListItemButton-root.active {
+  background-color: #D3D3D3 !important;
+  border-bottom: 3px solid #FFA500 !important;
+  color: #FFA500 !important;
+  transition: all 0.3s ease-in-out; /* Smooth transition for mobile items */
+}
+
+/* Smooth transition for buttons, list items, and menu items */
+.MuiButton-root,
+.MuiListItemButton-root,
+.MuiMenuItem-root {
+  transition: color 0.3s ease-in-out, background-color 0.3s ease-in-out, border-bottom 0.3s ease-in-out;
+}
+
+/* Hover effect for buttons and list items */
+.MuiButton-root:hover,
+.MuiListItemButton-root:hover,
+.MuiMenuItem-root:hover {
+  background-color: rgba(223, 221, 221, 0.1);
+  color: #FFA500;
+}
+
+/* Blinking animation for the avatar */
+@keyframes blink {
+  0% { box-shadow: 0 0 8px 2px rgba(255, 165, 0, 0.5); }
+  50% { box-shadow: 0 0 12px 4px rgba(255, 165, 0, 0.8); }
+  100% { box-shadow: 0 0 8px 2px rgba(255, 165, 0, 0.5); }
+}
+
+.avatar-blink {
+  animation: blink 0.5s ease-in-out 2; /* Blink twice */
+}
