@@ -30,7 +30,6 @@ const Login = () => {
   const [showResetPassword, setShowResetPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [spinnerTarget, setSpinnerTarget] = useState(""); // "login", "forgot", "register"
 
   const handleTogglePassword = () => setShowPassword((prev) => !prev);
 
@@ -46,24 +45,22 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
-    setSpinnerTarget("login");
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email) {
       setEmailError("Email is required");
-      setSpinnerTarget("");
       return;
     } else if (!emailRegex.test(email)) {
       setEmailError("Enter a valid email address");
-      setSpinnerTarget("");
       return;
     } else setEmailError("");
 
     if (!password) {
       setError("Password is required");
-      setSpinnerTarget("");
       return;
     }
 
+    setIsLoading(true);
     try {
       const response = await fetch(`${baseurl}/login/`, {
         method: "POST",
@@ -95,7 +92,7 @@ const Login = () => {
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {
-      setSpinnerTarget("");
+      setIsLoading(false);
     }
   };
 
@@ -125,7 +122,6 @@ const Login = () => {
       setEmailError("Enter a valid email address");
       return;
     }
-    setSpinnerTarget("forgot");
     try {
       const response = await fetch(`${baseurl}/send-otp/`, {
         method: "POST",
@@ -142,8 +138,6 @@ const Login = () => {
       }
     } catch {
       Swal.fire("Error", "Something went wrong. Please try again.", "error");
-    } finally {
-      setSpinnerTarget("");
     }
   };
 
@@ -194,10 +188,11 @@ const Login = () => {
           borderRadius: 4,
           overflow: "hidden",
           transition: "all 0.3s ease",
-          boxShadow: "0 6px 20px rgba(0, 0, 0, 0.47)",
+          boxShadow: "0 6px 20px rgba(0, 0, 0, 0.47)", // Fixed shadow instead of dynamic
         }}
       >
         <Grid container>
+          {/* Left image */}
           <Grid
             item
             xs={12}
@@ -215,12 +210,13 @@ const Login = () => {
             <img src={image2} alt="Login illustration" style={{ maxWidth: "100%", height: "auto" }} />
           </Grid>
 
+          {/* Right form */}
           <Grid
             item
             xs={12}
             md={6}
             sx={{
-              padding: 5,
+              padding: 4,
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
@@ -229,81 +225,32 @@ const Login = () => {
           >
             {showForgotPassword ? (
               <>
-                <Typography
-                  variant="h4"
-                  align="center"
-                  gutterBottom
-                  sx={{ mb: 4 }}
-                >
+                <Typography variant="h4" align="center" gutterBottom>
                   Forgot Password
                 </Typography>
+                <TextField
+                  fullWidth
+                  label="Email"
+                  variant="outlined"
+                  margin="normal"
+                  value={email}
+                  onChange={handleEmailChange}
+                  error={!!emailError}
+                  helperText={emailError}
+                />
 
-    <Typography
-  variant="body2"
-  color="error"
-  sx={{
-    mb: -1.5,
-    mt: 0,
-    ml: 1,
-    textAlign: "left",
-    minHeight: "2em",   // reserves space
-    fontSize: "0.6rem", // small text
-    lineHeight: 1.2,
-  }}
->
-  {emailError || " "}  {/* keeps placeholder space so no shake */}
-</Typography>
-
-<TextField
-  fullWidth
-  label="Email"
-  variant="outlined"
-  margin="normal"
-  value={email}
-  onChange={handleEmailChange}
-  error={!!emailError}
-  helperText=""   // disable default helperText
-/>
-
-
-                <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2, gap: 2 }}>
-                  <Button
-                    fullWidth
-                    variant="outlined"
-                    sx={{
-                      borderColor: "#004080",
-                      color: "#004080",
-                      "&:hover": { bgcolor: "#004080", color: "#fff" },
-                    }}
-                    onClick={() => {
-                      setShowForgotPassword(false);
-                      setEmail("");
-                      setEmailError("");
-                    }}
-                  >
-                    Cancel
-                  </Button>
-
-                  <Button
-                    fullWidth
-                    variant="contained"
-                    sx={{
-                      bgcolor: "#00cc8f",
-                      "&:hover": { bgcolor: "#004080", color: "#fff" },
-                    }}
-                    onClick={handleSendOTP}
-                    disabled={spinnerTarget === "forgot"}
-                  >
-                    {spinnerTarget === "forgot" ? (
-                      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
-                        <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                        Sending...
-                      </Box>
-                    ) : (
-                      "Send OTP"
-                    )}
-                  </Button>
-                </Box>
+                <Button
+                  fullWidth
+                  variant="contained"
+                  sx={{
+                    mt: 2,
+                    bgcolor: "#00cc8f",
+                    "&:hover": { bgcolor: "#004080", color: "#fff" },
+                  }}
+                  onClick={handleSendOTP}
+                >
+                  Send OTP
+                </Button>
               </>
             ) : showResetPassword ? (
               <>
@@ -343,114 +290,80 @@ const Login = () => {
               </>
             ) : (
               <>
-                <Typography variant="h4" align="center" sx={{ mb: 3 }} gutterBottom>
+                <Typography variant="h4" align="center" gutterBottom>
                   Login
                 </Typography>
+                
+               <Box sx={{ display: "flex", flexDirection: "column", gap: 0 }}>
+              <TextField
+                  fullWidth
+                  label="Email"
+                  variant="outlined"
+                  margin="normal"
+                  value={email}
+                  onChange={handleEmailChange}
+                  error={!!emailError}
+                  helperText={emailError}
+                  FormHelperTextProps={{
+                    sx: { minHeight: "30px" },
+                  }}
+                />
 
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 0 }}>
-                  <Box sx={{ minHeight: "25px", ml: 1 }}>
-                    {emailError && (
-                      <Typography variant="caption" color="error">
-                        {emailError}
-                      </Typography>
-                    )}
-                  </Box>
+                <TextField
+                  fullWidth
+                  label="Password"
+                  type={showPassword ? "text" : "password"}
+                  variant="outlined"
+                  margin="normal"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  error={!password && error === "Password is required"}
+                  helperText={!password && error === "Password is required" ? "Password is required" : ""}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton onClick={handleTogglePassword} edge="end">
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+                </Box> 
 
-                  <TextField
-                    fullWidth
-                    label="Email"
-                    variant="outlined"
-                    value={email}
-                    onChange={handleEmailChange}
-                    error={!!emailError}
-                    margin="dense"
-                    sx={{ mt: 0.5 }}
-                  />
-
-                  <TextField
-                    fullWidth
-                    label="Password"
-                    type={showPassword ? "text" : "password"}
-                    variant="outlined"
-                    margin="normal"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    error={!password && error === "Password is required"}
-                    helperText={!password && error === "Password is required" ? "Password is required" : ""}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            onClick={handleTogglePassword}
-                            edge="end"
-                            sx={{ color: "#ffa000" }}
-                          >
-                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                </Box>
-
+                {/* Forgot password link with gap */}
                 <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: 2, gap: 1 }}>
                   <Typography variant="body2">Forgot Password?</Typography>
-                  <Link
-                    onClick={async () => {
-                      setSpinnerTarget("forgot");
-                      setShowForgotPassword(true);
-                      setTimeout(() => setSpinnerTarget(""), 500); // optional quick spinner
-                    }}
-                    sx={{ cursor: "pointer", color: "#004080", display: "inline-flex", alignItems: "center", gap: 1 }}
-                  >
-                    {spinnerTarget === "forgot" && (
-                      <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    )}
+                  <Link onClick={() => setShowForgotPassword(true)} sx={{ cursor: "pointer", color: "#004080" }}>
                     Reset Here
                   </Link>
                 </Box>
 
+                {/* Login Button */}
                 <Button
                   fullWidth
                   variant="contained"
                   sx={{
                     mt: 3,
-                    borderRadius: '50px',
-                    bgcolor: spinnerTarget === "login" ? "#004080" : "#ffa000",
-                    color: spinnerTarget === "login" ? "#fff" : "inherit",
+                    bgcolor: isLoading ? "#004080" : "#ffa000",
+                    color: isLoading ? "#fff" : "inherit",
                     border: "2px solid transparent",
                     "&:hover": {
                       bgcolor: "#fff",
                       color: "#ffa000",
-                      border: "2px solid #ffa000",
+                      border: "2px solid #ffa000", 
                     },
                   }}
                   onClick={handleLogin}
-                  disabled={spinnerTarget === "login"}
+                  disabled={isLoading}
                 >
-                  {spinnerTarget === "login" ? (
-                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
-                      <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                      Logging In...
-                    </Box>
-                  ) : (
-                    "Login"
-                  )}
+                  {isLoading ? "Logging In..." : "Login"}
                 </Button>
 
+                {/* Register Link */}
                 <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: 4 }}>
                   <Typography variant="body2">Don't have an account?</Typography>
-                  <Link
-                    href="/signup"
-                    sx={{ cursor: "pointer", color: "primary.main", ml: 1, display: "inline-flex", alignItems: "center", gap: 1 }}
-                    onClick={(e) => {
-                      setSpinnerTarget("register");
-                      setTimeout(() => setSpinnerTarget(""), 1000); // simulate spinner
-                    }}
-                  >
-                    {spinnerTarget === "register" && (
-                      <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    )}
+                  <Link href="/signup" sx={{ cursor: "pointer", color: "primary.main", ml: 1 }}>
                     Register Here
                   </Link>
                 </Box>

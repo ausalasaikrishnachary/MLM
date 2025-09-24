@@ -18,10 +18,6 @@ import {
   MenuItem,
   useTheme,
   useMediaQuery,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
@@ -31,38 +27,14 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { baseurl } from '../../BaseURL/BaseURL';
 import { Badge, Menu as MuiMenu } from '@mui/material';
 import axios from 'axios';
-import './Navbar.css'; // Import the updated CSS file
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 export default function Header() {
-
-  const [subscriptionPaid, setSubscriptionPaid] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
-  const userId = localStorage.getItem("user_id");
-
-
-  // ✅ Subscription check
-  useEffect(() => {
-    if (userId) {
-      axios
-        .get(`${baseurl}/user-subscriptions/user-id/${userId}/`)
-        .then((response) => {
-          const latest = response.data.find(
-            (item) => item.latest_status !== undefined
-          );
-          setSubscriptionPaid(latest?.latest_status === "paid");
-        })
-        .catch((error) => {
-          console.error("Subscription fetch error:", error);
-        });
-    }
-  }, [userId]);
-
-
   // Navigation items with Operations dropdown
   const navItems = [
     { label: 'Dashboard', path: '/a-dashboard' },
     { label: 'Properties', path: '/a-asset' },
-    { label: 'Add Property', path: '/a-addasset' },
+     { label: 'Add Property', path: '/a-addasset' },
     { label: 'Users', path: '/a-investormanagement' },
     {
       label: 'Operations',
@@ -82,29 +54,14 @@ export default function Header() {
     { label: 'Offer', path: '/a-table-carousel' },
     { label: 'Leads', path: '/a-popup-leads' },
     { label: 'Company', path: '/tableadminmeetings' },
+    // { label: 'Agents', path: '/a-partners' },
   ];
 
-  // ✅ Intercept Add Property clicks
-  const handleNavClick = (path) => {
-    if (path === "/p-addasset") {
-      if (subscriptionPaid) {
-        navigate(path);
-      } else {
-        setOpenModal(true);
-      }
-    } else {
-      navigate(path);
-    }
-  };
-
-
+  const userId = localStorage.getItem("user_id");
   const [notifications, setNotifications] = useState([]);
   const [notificationAnchorEl, setNotificationAnchorEl] = useState(null);
-  const [avatarBlink, setAvatarBlink] = useState(false); // State for avatar blink
   const notificationMenuOpen = Boolean(notificationAnchorEl);
-  const navigate = useNavigate();
-  const location = useLocation();
-
+  const goBack = () => navigate(-1);
   const handleNotificationClick = (event) => {
     setNotificationAnchorEl(event.currentTarget);
   };
@@ -132,55 +89,43 @@ export default function Header() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const user_name = localStorage.getItem("user_name");
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const [showOperations, setShowOperations] = useState(false);
+
+  // State for mobile drawer
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [profileAnchorEl, setProfileAnchorEl] = useState(null);
-  const [operationsAnchorEl, setOperationsAnchorEl] = useState(null);
-
-  const profileMenuOpen = Boolean(profileAnchorEl);
-  const operationsMenuOpen = Boolean(operationsAnchorEl);
-
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
   };
 
+  // State for Profile Avatar dropdown menu
+  const [profileAnchorEl, setProfileAnchorEl] = useState(null);
+  const profileMenuOpen = Boolean(profileAnchorEl);
   const handleAvatarClick = (event) => {
     setProfileAnchorEl(event.currentTarget);
   };
-
   const handleProfileMenuClose = () => {
     setProfileAnchorEl(null);
   };
 
+  // State for Operations dropdown menu
+  const [operationsAnchorEl, setOperationsAnchorEl] = useState(null);
+  const operationsMenuOpen = Boolean(operationsAnchorEl);
   const handleOperationsClick = (event) => {
     setOperationsAnchorEl(event.currentTarget);
-    triggerAvatarBlink(); // Trigger blink on Operations click
   };
-
   const handleOperationsMenuClose = () => {
     setOperationsAnchorEl(null);
   };
 
-  // Trigger avatar blink animation
-  const triggerAvatarBlink = () => {
-    setAvatarBlink(true);
-    setTimeout(() => setAvatarBlink(false), 1000); // Reset after animation duration
-  };
-
-  // Handle navigation with smooth scroll and blink
-  const handleNavigate = (path) => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    setTimeout(() => {
-      navigate(path);
-      triggerAvatarBlink(); // Trigger blink on navigation
-    }, 200);
-  };
-
+  // Check if any sub-item is active for highlighting the Operations button
   const isOperationsActive = navItems
     .find(item => item.label === 'Operations')
     ?.subItems.some(subItem => location.pathname === subItem.path);
 
+  // Drawer content for mobile view
   const drawer = (
     <Box sx={{ width: 250 }}>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 2 }}>
@@ -189,77 +134,78 @@ export default function Header() {
         </IconButton>
       </Box>
 
-      <List>
-        {navItems.map((item) => (
-          <React.Fragment key={item.label}>
-            {item.path ? (
-              <ListItem disablePadding>
-                <ListItemButton
-                  onClick={() => {
-                    handleDrawerToggle();
-                    handleNavigate(item.path);
+     <List>
+  {navItems.map((item) => (
+    <React.Fragment key={item.label}>
+      {item.path ? (
+        // Main items with direct path
+        <ListItem disablePadding>
+          <ListItemButton
+            onClick={() => {
+              handleDrawerToggle();
+              navigate(item.path);
+            }}
+          >
+            <ListItemText
+              primary={item.label}
+              primaryTypographyProps={{
+                color: location.pathname === item.path ? 'blue' : 'inherit',
+                fontWeight: 'bold',
+              }}
+            />
+          </ListItemButton>
+        </ListItem>
+      ) : (
+        <>
+          {/* For items without path, like Operations */}
+          <ListItem disablePadding>
+            <ListItemButton
+              onClick={() => {
+                if (item.label === 'Operations') {
+                  setShowOperations((prev) => !prev);
+                }
+              }}
+            >
+              <ListItemText
+                primary={item.label}
+                primaryTypographyProps={{ fontWeight: 'bold' }}
+              />
+              {item.label === 'Operations' && (
+                <ArrowDropDownIcon
+                  style={{
+                    transform: showOperations ? 'rotate(180deg)' : 'rotate(0deg)',
+                    transition: 'transform 0.3s ease',
                   }}
-                  className={location.pathname === item.path ? 'active' : ''}
-                >
-                  <ListItemText
-                    primary={item.label}
-                    primaryTypographyProps={{
-                      color: location.pathname === item.path ? '#FFA500' : 'inherit',
-                      fontWeight: 'bold',
-                    }}
-                  />
-                </ListItemButton>
-              </ListItem>
-            ) : (
-              <>
-                <ListItem disablePadding>
-                  <ListItemButton
-                    onClick={() => {
-                      if (item.label === 'Operations') {
-                        setShowOperations((prev) => !prev);
-                        triggerAvatarBlink(); // Trigger blink on Operations toggle
-                      }
-                    }}
-                    className={isOperationsActive ? 'active' : ''}
-                  >
-                    <ListItemText
-                      primary={item.label}
-                      primaryTypographyProps={{ fontWeight: 'bold' }}
-                    />
-                    {item.label === 'Operations' && (
-                      <ArrowDropDownIcon
-                        style={{
-                          transform: showOperations ? 'rotate(180deg)' : 'rotate(0deg)',
-                          transition: 'transform 0.3s ease',
-                        }}
-                      />
-                    )}
-                  </ListItemButton>
-                </ListItem>
-                {item.label === 'Operations' && showOperations && item.subItems?.map((subItem) => (
-                  <ListItem key={subItem.label} disablePadding sx={{ pl: 4 }}>
-                    <ListItemButton
-                      onClick={() => {
-                        handleDrawerToggle();
-                        handleNavigate(subItem.path);
-                      }}
-                      className={location.pathname === subItem.path ? 'active' : ''}
-                    >
-                      <ListItemText
-                        primary={subItem.label}
-                        primaryTypographyProps={{
-                          color: location.pathname === subItem.path ? '#FFA500' : 'inherit',
-                          fontWeight: 'bold',
-                        }}
-                      />
-                    </ListItemButton>
-                  </ListItem>
-                ))}
-              </>
-            )}
-          </React.Fragment>
-        ))}
-      </List>
+                />
+              )}
+            </ListItemButton>
+          </ListItem>
+
+          {/* Render subItems for expandable sections like Operations */}
+          {item.label === 'Operations' && showOperations && item.subItems?.map((subItem) => (
+            <ListItem key={subItem.label} disablePadding sx={{ pl: 4 }}>
+              <ListItemButton
+                onClick={() => {
+                  handleDrawerToggle();
+                  navigate(subItem.path);
+                }}
+              >
+                <ListItemText
+                  primary={subItem.label}
+                  primaryTypographyProps={{
+                    color: location.pathname === subItem.path ? 'blue' : 'inherit',
+                    fontWeight: 'bold',
+                  }}
+                />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </>
+      )}
+    </React.Fragment>
+  ))}
+</List>
+
     </Box>
   );
 
@@ -270,12 +216,14 @@ export default function Header() {
         sx={{
           backgroundColor: 'white',
           color: '#000',
-          boxShadow: '0px 4px 12px rgba(0,0,0,0.3)',
+          boxShadow: "-moz-initial"
         }}
       >
         <Toolbar>
           {isMobile ? (
+            // Mobile / iPad Layout
             <Box display="flex" alignItems="center" justifyContent="space-between" width="100%">
+              {/* Left: Menu Icon */}
               <IconButton
                 edge="start"
                 color="inherit"
@@ -285,6 +233,8 @@ export default function Header() {
               >
                 <MenuIcon />
               </IconButton>
+
+              {/* Center: Logo */}
               <Box display="flex" justifyContent="center" flexGrow={1}>
                 <Link to="/a-dashboard" style={{ textDecoration: 'none', color: '#333333' }}>
                   <img
@@ -299,6 +249,8 @@ export default function Header() {
                   />
                 </Link>
               </Box>
+
+              {/* Right: Notification, Username, Profile Avatar */}
               <Box display="flex" alignItems="center">
                 <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
                   <Badge badgeContent={notifications.length} color="error">
@@ -311,14 +263,15 @@ export default function Header() {
                 <Avatar
                   onClick={handleAvatarClick}
                   sx={{ width: 40, height: 40, cursor: 'pointer' }}
-                  className={avatarBlink ? 'avatar-blink' : ''}
                   alt="Admin"
                   src="https://via.placeholder.com/40"
                 />
               </Box>
             </Box>
           ) : (
+            // Desktop Layout
             <>
+              {/* Left: Logo */}
               <Box sx={{ display: 'flex', alignItems: 'center', mr: 4 }}>
                 <Link to="/a-dashboard" style={{ textDecoration: 'none', color: '#333333' }}>
                   <img
@@ -329,19 +282,40 @@ export default function Header() {
                       width: 'auto',
                       maxWidth: '150px',
                       transform: 'scale(1.5)',
+                      // paddingTop: "8px"
                     }}
                   />
                 </Link>
               </Box>
+
+              {/* <IconButton
+                onClick={goBack}
+                sx={{
+                  backgroundColor: '#f0f0f0',
+                  color: '#000',
+                  borderRadius: '12px',
+                  padding: '8px',
+                  marginLeft: '20px', // left padding from edge of screen
+                  marginRight: '10px', // space between button and logo
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    backgroundColor: '#e0e0e0',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                  },
+                }}
+              >
+                <ArrowBackIcon />
+              </IconButton> */}
+
+              {/* Center: Nav Items */}
               <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', gap: 3 }}>
                 {navItems.map((item) => (
                   item.path ? (
                     <Button
                       key={item.label}
-                      onClick={() => handleNavigate(item.path)}
-                      className={location.pathname === item.path ? 'active' : ''}
+                      onClick={() => navigate(item.path)}
                       sx={{
-                        color: location.pathname === item.path ? '#FFA500' : '#000',
+                        color: location.pathname === item.path ? 'orange' : '#000',
                         fontWeight: 'bold',
                         textTransform: 'none',
                         fontSize: "16px"
@@ -354,9 +328,8 @@ export default function Header() {
                       key={item.label}
                       onClick={handleOperationsClick}
                       endIcon={<ArrowDropDownIcon />}
-                      className={isOperationsActive ? 'active' : ''}
                       sx={{
-                        color: isOperationsActive ? '#FFA500' : '#000',
+                        color: isOperationsActive ? 'blue' : '#000',
                         fontWeight: 'bold',
                         textTransform: 'none',
                         fontSize: "16px"
@@ -367,6 +340,8 @@ export default function Header() {
                   )
                 ))}
               </Box>
+
+              {/* Right: Notification, Username, Profile Avatar */}
               <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
                 <Badge badgeContent={notifications.length} color="error">
                   <NotificationsNoneIcon />
@@ -378,13 +353,14 @@ export default function Header() {
               <Avatar
                 onClick={handleAvatarClick}
                 sx={{ width: 40, height: 40, cursor: 'pointer' }}
-                className={avatarBlink ? 'avatar-blink' : ''}
                 alt="Admin"
                 src="https://via.placeholder.com/40"
               />
             </>
           )}
         </Toolbar>
+
+        {/* Mobile Drawer */}
         <Drawer
           anchor="left"
           open={mobileOpen}
@@ -394,6 +370,8 @@ export default function Header() {
           {drawer}
         </Drawer>
       </AppBar>
+
+      {/* Operations Dropdown Menu */}
       <Menu
         anchorEl={operationsAnchorEl}
         open={operationsMenuOpen}
@@ -406,11 +384,11 @@ export default function Header() {
             key={subItem.label}
             onClick={() => {
               handleOperationsMenuClose();
-              handleNavigate(subItem.path);
+              navigate(subItem.path);
             }}
             sx={{
               fontWeight: 'bold',
-              color: location.pathname === subItem.path ? '#FFA500' : 'inherit',
+              color: location.pathname === subItem.path ? 'blue' : 'inherit',
               fontSize: "16px"
             }}
           >
@@ -418,6 +396,8 @@ export default function Header() {
           </MenuItem>
         ))}
       </Menu>
+
+      {/* Profile Dropdown Menu */}
       <Menu
         anchorEl={profileAnchorEl}
         open={profileMenuOpen}
@@ -428,16 +408,25 @@ export default function Header() {
         <MenuItem
           onClick={() => {
             handleProfileMenuClose();
-            handleNavigate('/a-profile');
+            navigate('/a-profile');
           }}
           sx={{ fontWeight: 'bold' }}
         >
           Profile
         </MenuItem>
+        {/* <MenuItem
+          onClick={() => {
+            handleProfileMenuClose();
+            navigate('/a-profiledetails');
+          }}
+          sx={{ fontWeight: 'bold' }}
+        >
+          KYC
+        </MenuItem> */}
         <MenuItem
           onClick={() => {
             handleProfileMenuClose();
-            handleNavigate('/');
+            navigate('/');
           }}
           sx={{
             fontSize: '16px',
@@ -450,6 +439,7 @@ export default function Header() {
           Logout <LogoutIcon sx={{ ml: 1 }} />
         </MenuItem>
       </Menu>
+
       <MuiMenu
         anchorEl={notificationAnchorEl}
         open={notificationMenuOpen}
@@ -469,7 +459,7 @@ export default function Header() {
                   .then(() => {
                     setNotifications(prev => prev.filter(n => n.notification_status_id !== notif.notification_status_id));
                     handleNotificationClose();
-                    handleNavigate('/a-asset');
+                    navigate('/a-asset');
                   })
                   .catch(error => {
                     console.error("Error marking notification as read:", error);
@@ -483,6 +473,7 @@ export default function Header() {
           <MenuItem disabled>No notifications</MenuItem>
         )}
       </MuiMenu>
+
     </>
   );
 }

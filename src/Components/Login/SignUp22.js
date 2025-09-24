@@ -14,7 +14,6 @@ import { baseurl } from '../BaseURL/BaseURL';
 import Swal from "sweetalert2";
 import { color } from "@mui/system";
 import { Link as RouterLink } from "react-router-dom";
-import { CircularProgress } from "@mui/material";
 
 const SignUp = () => {
     const [acceptedTC, setAcceptedTC] = useState(false);
@@ -92,8 +91,6 @@ const SignUp = () => {
     const [partnerUsers, setPartnerUsers] = useState([]);
     const [showPassword, setShowPassword] = useState(false);
     const [helplineNumber, setHelplineNumber] = useState("");
-    const [loading, setLoading] = useState(false);
-
 
     const togglePasswordVisibility = () => {
         setShowPassword((prev) => !prev);
@@ -193,93 +190,79 @@ const SignUp = () => {
         setFileName(file.name);
     };
 
-// add with other states
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-const handleSubmit = async (e) => {
-    e.preventDefault();
+        // Reset previous errors
+        setErrors({ email: "", phone_number: "" });
 
-    setErrors({ email: "", phone_number: "" });
+        const { email, phone_number } = formData;
+        const newErrors = {};
 
-    const { email, phone_number } = formData;
-    const newErrors = {};
+        if (!email.trim()) newErrors.email = "Email is required";
+        if (!phone_number.trim()) newErrors.phone_number = "Phone number is required";
 
-    if (!email.trim()) newErrors.email = "Email is required";
-    if (!phone_number.trim()) newErrors.phone_number = "Phone number is required";
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return;
+        }
 
-    if (Object.keys(newErrors).length > 0) {
-        setErrors(newErrors);
-        return;
-    }
-
-    // ✅ Start loading
-    setLoading(true);
-
-    const formDataToSend = new FormData();
-    Object.keys(formData).forEach((key) => {
-        formDataToSend.append(key, formData[key]);
-    });
-
-    if (pancard) formDataToSend.append("pan", pancard);
-    if (aadhar) formDataToSend.append("aadhaar", aadhar);
-    if (image) formDataToSend.append("image", image);
-
-    try {
-        const response = await fetch(`${baseurl}/users/`, {
-            method: "POST",
-            body: formDataToSend,
+        // Proceed with submission
+        const formDataToSend = new FormData();
+        Object.keys(formData).forEach((key) => {
+            formDataToSend.append(key, formData[key]);
         });
 
-        const responseData = await response.json();
+        if (pancard) formDataToSend.append("pan", pancard);
+        if (aadhar) formDataToSend.append("aadhaar", aadhar);
+        if (image) formDataToSend.append("image", image);
 
-        if (response.ok) {
-            Swal.fire({
-                icon: "success",
-                title: "User Registered",
-                text: "User registered successfully!",
-                confirmButtonColor: "#3085d6"
-            }).then(() => {
-                setUsers([...users, responseData]);
-                navigate("/login");
+        try {
+            const response = await fetch(`${baseurl}/users/`, {
+                method: "POST",
+                body: formDataToSend,
             });
-        } else {
-            if (responseData.email) {
-                setErrors(prev => ({ ...prev, email: "Email already exists" }));
-            }
-            if (responseData.phone_number) {
-                setErrors(prev => ({ ...prev, phone_number: "Phone number already exists" }));
-            }
 
+            const responseData = await response.json();
+
+            if (response.ok) {
+                Swal.fire({
+                    icon: "success",
+                    title: "User Registered",
+                    text: "User registered successfully!",
+                    confirmButtonColor: "#3085d6"
+                }).then(() => {
+                    setUsers([...users, responseData]);
+                    navigate("/login");
+                });
+            } else {
+                // Handle server validation errors
+                if (responseData.email) {
+                    setErrors(prev => ({ ...prev, email: "Email already exists" }));
+                }
+                if (responseData.phone_number) {
+                    setErrors(prev => ({ ...prev, phone_number: "Phone number already exists" }));
+                }
+
+                Swal.fire({
+                    icon: "error",
+                    title: "Registration Failed",
+                    text: "Please check the form for errors.",
+                    confirmButtonColor: "#d33"
+                });
+            }
+        } catch (error) {
+            console.error("Error submitting form:", error);
             Swal.fire({
                 icon: "error",
-                title: "Registration Failed",
-                text: "Please check the form for errors.",
+                title: "Submission Error",
+                text: "An error occurred while submitting the form.",
                 confirmButtonColor: "#d33"
             });
         }
-    } catch (error) {
-        console.error("Error submitting form:", error);
-        Swal.fire({
-            icon: "error",
-            title: "Submission Error",
-            text: "An error occurred while submitting the form.",
-            confirmButtonColor: "#d33"
-        });
-    } finally {
-        // ✅ Stop loading
-        setLoading(false);
-    }
-};
+    };
 
 
-
-const [loginLoading, setLoginLoading] = useState(false);
-
-const handleLoginClick = () => {
-  setLoginLoading(true);
-  setTimeout(() => {
-    navigate("/login");
-  }, 800); // small delay so spinner is visible
-};
     // Role Dialog States
     const [openRoleDialog, setOpenRoleDialog] = useState(false);
     const [newRole, setNewRole] = useState("");
@@ -487,48 +470,32 @@ const handleLoginClick = () => {
   </Typography>
 </Box>
 
-             <Button
-    type="submit"
-    variant="contained"
-    fullWidth
-    disabled={!acceptedTC || loading}
-    sx={{
-        mt: 2,
-        borderRadius:"50px",
-        bgcolor: acceptedTC ? "#00cc8f" : "grey.500",
-        "&:hover": {
-            bgcolor: acceptedTC ? "#004080" : "grey.600",
-            color: acceptedTC ? "#fff" : "inherit"
-        }
-    }}
->
-    {loading ? (
-        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
-            <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-            Registering...
-        </Box>
-    ) : (
-        "Register"
-    )}
-</Button>
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                fullWidth
+                                disabled={!acceptedTC}
+                                sx={{
+                                    mt: 2,
+                                    borderRadius:"50px",
+                                    // border:'2px solid #ffa000',
+                                    bgcolor: acceptedTC ? "#00cc8f" : "grey.500",
+                                    "&:hover": {
+                                        bgcolor: acceptedTC ? "#004080" : "grey.600",
+                                        color: acceptedTC ? "#fff" : "inherit"
+                                    }
+                                }}
+                            >
+                                Register
+                            </Button>
 
-<Typography align="center" sx={{ mt: 2 }}>
-  Already registered?{" "}
-  {loginLoading ? (
-    <Box sx={{ display: "inline-flex", alignItems: "center", ml: 1 }}>
-      <CircularProgress size={14} color="primary" />
-      <Typography sx={{ ml: 1, fontSize: "0.85rem" }}>Redirecting...</Typography>
-    </Box>
-  ) : (
-    <Link
-      onClick={handleLoginClick}
-      sx={{ cursor: "pointer", color: "primary.main" }}
-    >
-      Login
-    </Link>
-  )}
-</Typography>
 
+                            <Typography align="center" sx={{ mt: 2 }}>
+                                Already registered?{" "}
+                                <Link href="/login" sx={{ cursor: "pointer", color: "primary.main" }}>
+                                    Login
+                                </Link>
+                            </Typography>
                         </form>
 
                     </Grid>

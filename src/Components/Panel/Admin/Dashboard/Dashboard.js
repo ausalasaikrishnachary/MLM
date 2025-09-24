@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import { Box, Grid, Card, Typography, Stack, CardContent, Container } from "@mui/material";
-import { Business, People, Home } from "@mui/icons-material";
+
+import { Box, Card, Typography, Select, MenuItem, CircularProgress, FormControl, Input } from "@mui/material";
+
 import { faInstagram, faFacebook , faYoutube } from "@fortawesome/free-brands-svg-icons";
 import { faXTwitter } from "@fortawesome/free-brands-svg-icons";
 import { 
@@ -12,76 +13,73 @@ import {
   Verified,
   Cancel,
   AccountBalance,
-  Payments
+  Payments,
+  Business,
+  People,
+  Home,
 } from "@mui/icons-material";
-
-
-import { Bar } from 'react-chartjs-2';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Bar } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
 import Header from "../../../Shared/Navbar/Navbar";
-import { useNavigate } from 'react-router-dom';
-import { baseurl } from '../../../BaseURL/BaseURL';
-import './Dashboard.css';
+import { useNavigate } from "react-router-dom";
+import { baseurl } from "../../../BaseURL/BaseURL";
+import "./Dashboard.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-// Solid dark colors for cards
+// Register Chart.js components
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+
 const cardColors = [
-  "#037af2ff", // dark blue-gray
-  "#ff4901ff", // dark slate
-  "#028690ff", // gray
-  "#a6a302ff", // dark teal
-  "#6e8a07ff", // dark green
-  "#024978ff", // dark blue
-  "#8300bbff", // dark purple
-  "#cd1400ff", // dark red
-  "#a84300ff", // dark orange
-  "#0266c4ff", // navy dark
-  "#2400c0ff", // charcoal
-  "#7a4646ff", // dark gray
-  "#4a235a", // plum
-  "#590063ff", // steel gray
-  "#076b8fff", // brown
-  "#7b241c", // maroon
+  "#ffecb3","#ffecb3",
+  "#ffe082","#ffe082",
+  "#ffd54f","#ffd54f",
+  "#ffca28","#ffca28",
+  "#ffc107","#ffc107",
+  "#ffb300","#ffb300",
 ];
+
+const textColors = [
+  "rgba(0,0,0,1)","rgba(0,0,0,1)",
+  "rgba(0,0,0,0.85)","rgba(0,0,0,0.85)",
+  "rgba(0,0,0,0.7)","rgba(0,0,0,0.7)",
+  "rgba(0,0,0,0.55)","rgba(0,0,0,0.55)",
+  "rgba(0,0,0,0.7)","rgba(0,0,0,0.7)",
+  "rgba(243,240,240,1)","rgba(247,242,242,0.99)",
+];
+
+const fontWeights = [900,900,800,800,700,700,600,600,500,500,400,400];
+const fontSizes = ["1.5rem","1.5rem","1.4rem","1.4rem","1.3rem","1.3rem","1.2rem","1.2rem","1.1rem","1.1rem","1rem","0.9rem"];
 
 const AdminDashboard = () => {
   const [counts, setCounts] = useState(null);
+  const [chartData, setChartData] = useState(null);
+  const [filter, setFilter] = useState("all");
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const chartRef = useRef(null);
 
-  const propertyStatusCards = counts ? [
-    { label: "Sold Properties", value: counts.total_sold_properties, icon: <CheckCircle sx={{ color: "white" }} />, path: "/a-soldassets" },
-    { label: "Booked Properties", value: counts.total_booked_properties, icon: <EventAvailable sx={{ color: "white" }} />, path: "/a-bookedassets" },
-    { label: "Available Properties", value: counts.total_available_properties, icon: <HomeWork sx={{ color: "white" }} />, path: "/a-availableassets" },
-    { label: "Pending Properties", value: counts.total_pending_properties, icon: <HourglassEmpty sx={{ color: "white" }} />, path: "/a-pendingassets" },
-    { label: "Approved Properties", value: counts.total_approved_properties, icon: <Verified sx={{ color: "white" }} />, path: "/a-approvedassets" },
-    { label: "Rejected Properties", value: counts.total_rejected_properties, icon: <Cancel sx={{ color: "white" }} />, path: "/a-rejectedassets" },
-   { label: "Company Commissions", value: `₹${counts.total_company_commission_paid.toLocaleString('en-IN')}`, icon: <AccountBalance sx={{ color: "white" }} />, path: "/a-transactionmoniter" },
-{ 
-  label: "Agent Commissions", 
-  value: `₹${counts.total_agent_commission_paid.toLocaleString('en-IN')}`, 
-  icon: <Payments sx={{ color: "white" }} />, 
-  path: "/a-commission" 
-},
-  ] : [];
-
-
+  // Fetch counts
   useEffect(() => {
+    setLoading(true);
     axios.get(`${baseurl}/counts/`)
-      .then((response) => setCounts(response.data))
-      .catch((error) => console.error("Error fetching counts:", error));
+      .then(res => setCounts(res.data))
+      .catch(err => console.error(err))
+      .finally(() => setLoading(false));
   }, []);
 
-  const metrics = counts ? [
-    { value: counts.total_properties, label: "Total Properties", icon: <Business />, path: "/a-asset" },
-    { value: counts.total_active_users, label: "Total Active Users", icon: <People />, path: "/a-activeagents" },
-    { value: counts.total_inactive_users, label: "Total InActive Users", icon: <People />, path: "/a-Inactiveagents" },
-    { value: counts.total_latest_properties, label: "New Properties", icon: <Home />, path: "/a-Newproperties" },
-  ] : [];
-
-  const [chartData, setChartData] = useState(null);
-
+  // Fetch chart data
   useEffect(() => {
+    setLoading(true);
     axios.get(`${baseurl}/property-stats/`)
-      .then((res) => {
+      .then(res => {
         const data = res.data;
         const labels = Object.keys(data);
         const available = labels.map(type => data[type].available);
@@ -89,195 +87,122 @@ const AdminDashboard = () => {
         const pending = labels.map(type => data[type].pending);
         const approved = labels.map(type => data[type].approved);
 
+        const gradientPairs = {
+          Available: ["#4caf50","#c8e6c97d"],
+          Sold: ["#2196f3","#90caf966"],
+          Pending: ["#ff9800","#ffe0b2"],
+          Approved: ["#9c27b0","#e1bee741"],
+        };
+
+        const createGradients = (dataset, colors) => {
+          const ctx = chartRef.current?.ctx;
+          if(!ctx) return colors[0];
+          const gradient = ctx.createLinearGradient(0,0,0,400);
+          gradient.addColorStop(0,colors[0]);
+          gradient.addColorStop(1,colors[1]);
+          return Array(dataset.length).fill(gradient);
+        };
+
         setChartData({
           labels,
           datasets: [
-            { label: 'Available', data: available, backgroundColor: '#3498db' },
-            { label: 'Sold', data: sold, backgroundColor: '#2ecc71' },
-            { label: 'Pending', data: pending, backgroundColor: '#f1c40f' },
-            { label: 'Approved', data: approved, backgroundColor: '#9b59b6' }
+            { label: "Available", data: available, backgroundColor: createGradients(available, gradientPairs.Available) },
+            { label: "Sold", data: sold, backgroundColor: createGradients(sold, gradientPairs.Sold) },
+            { label: "Pending", data: pending, backgroundColor: createGradients(pending, gradientPairs.Pending) },
+            { label: "Approved", data: approved, backgroundColor: createGradients(approved, gradientPairs.Approved) },
           ]
         });
       })
-      .catch((err) => console.error(err));
+      .catch(err => console.error(err))
+      .finally(() => setLoading(false));
   }, []);
 
-  const options = {
-    responsive: true,
-    plugins: { legend: { position: 'bottom' } },
-    scales: { y: { beginAtZero: true } }
+  const metrics = counts ? [
+    { label:"Total Properties", value: counts.total_properties, icon:<Business />, path:"/a-asset" },
+    { label:"Active Users", value: counts.total_active_users, icon:<People />, path:"/a-activeagents" },
+    { label:"Inactive Users", value: counts.total_inactive_users, icon:<People />, path:"/a-Inactiveagents" },
+    { label:"New Properties", value: counts.total_latest_properties, icon:<Home />, path:"/a-Newproperties" },
+    { label:"Sold Properties", value: counts.total_sold_properties, icon:<CheckCircle />, path:"/a-soldassets" },
+    { label:"Booked Properties", value: counts.total_booked_properties, icon:<EventAvailable />, path:"/a-bookedassets" },
+    { label:"Available Properties", value: counts.total_available_properties, icon:<HomeWork />, path:"/a-availableassets" },
+    { label:"Pending Properties", value: counts.total_pending_properties, icon:<HourglassEmpty />, path:"/a-pendingassets" },
+    { label:"Approved Properties", value: counts.total_approved_properties, icon:<Verified />, path:"/a-approvedassets" },
+    { label:"Rejected Properties", value: counts.total_rejected_properties, icon:<Cancel />, path:"/a-rejectedassets" },
+    { label:"Company Commissions", value:`₹${counts.total_company_commission_paid.toLocaleString("en-IN")}`, icon:<AccountBalance />, path:"/a-transactionmoniter" },
+    { label:"Agent Commissions", value:`₹${counts.total_agent_commission_paid.toLocaleString("en-IN")}`, icon:<Payments />, path:"/a-commission" },
+  ] : [];
+
+  const options = { responsive:true, plugins:{ legend:{ position:"bottom" }}, scales:{ y:{ beginAtZero:true }}, maintainAspectRatio:false };
+  const getFilteredChart = () => {
+    if(!chartData) return null;
+    if(filter==="all") return chartData;
+    return { labels: chartData.labels, datasets: chartData.datasets.filter(d=>d.label===filter) };
   };
 
   return (
     <>
       <Header />
-      <Box sx={{ p: 2 }}>
-        {/* Dashboard Heading */}
-        <Box sx={{ mb: 4, display: "flex", justifyContent: "center" }}>
-          <Typography
-            variant="h4"
-            gutterBottom
-            sx={{
-              fontWeight: "bold",
-              color: "primary.main",
-              letterSpacing: 1,
-              position: "relative",
-              display: "inline-block",
-              '&::after': {
-                content: '""',
-                display: 'block',
-                width: '60%',
-                height: '4px',
-                backgroundColor: 'primary.main',
-                margin: '8px auto 0',
-                borderRadius: '2px',
-              },
-            }}
-          >
-            Dashboard
-          </Typography>
-        </Box>
-
-        {/* Cards Section */}
-        <Grid container spacing={3}>
-          {[...(metrics || []), ...(propertyStatusCards || [])].map((metric, index) => (
-            <Grid item xs={12} sm={6} md={2} key={index}>
-              <Card
-                onClick={() => navigate(metric.path)}
-                sx={{
-                  textAlign: "center",
-                  p: 3,
-                  borderRadius: 3,
-                  boxShadow: 4,
-                  cursor: "pointer",
-                  color: "#fff",
-                  backgroundColor: cardColors[index % cardColors.length], // unique dark color
-                  transition: "0.3s",
-                  "&:hover": {
-                    transform: "translateY(-6px)",
-                    boxShadow: 6,
-
-                  },
-                }}
-              >
-                <Stack alignItems="center">   {/* reduce spacing */}
-                  <Box
-                    sx={{
-                      width: 70,
-                      height: 70,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {React.cloneElement(metric.icon, { sx: { fontSize: 50, color: "white" } })}
-                  </Box>
-
-                  <Typography variant="h4" fontWeight={700}>
-                    {metric.value}
-                  </Typography>
-                  <Typography variant="body2" fontWeight={500}>
-                    {metric.label}
-                  </Typography>
-                </Stack>
-
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-
-        {/* Chart Heading */}
-        <Box sx={{ mt: 6, mb: 4, display: "flex", justifyContent: "center" }}>
-          <Typography
-            variant="h4"
-            gutterBottom
-            sx={{
-              fontWeight: "bold",
-              color: "primary.main",
-              letterSpacing: 1,
-              position: "relative",
-              display: "inline-block",
-              '&::after': {
-                content: '""',
-                display: 'block',
-                width: '60%',
-                height: '4px',
-                backgroundColor: 'primary.main',
-                margin: '8px auto 0',
-                borderRadius: '2px',
-              },
-            }}
-          >
-            Properties Performance
-          </Typography>
-        </Box>
-
-        {/* Chart Section */}
-        <Container maxWidth="xl" sx={{ py: 4 }}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} lg={12}>
-              <Card sx={{ boxShadow: 3, borderRadius: 2 }}>
-                <CardContent sx={{ overflowX: 'auto' }}>
-                  <Box sx={{ minWidth: '1000px', maxWidth: '100%', height: 350 }}>
-                    {chartData && (
-                      <Bar
-                        data={chartData}
-                        options={{ ...options, maintainAspectRatio: false }}
-                      />
-                    )}
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
-        </Container>
-
-
-
-        {/* Social Links */}
-        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, mt: 4 }}>
-          {[
-            { icon: faInstagram, url: "https://www.instagram.com/shrirajteam/?igsh=YzhjcjVuMGIxZzJq#" },
-            { icon: faFacebook, url: "https://www.facebook.com/shrirajteam/" },
-            { icon: faXTwitter , url: "https://x.com/shrirajteam" },
-            { icon: faYoutube, url: "https://www.youtube.com/@Shrirajteam" },
-          ].map((item, i) => (
-            <a
-              key={i}
-              href={item.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ textDecoration: "none" }}
-            >
-              <Box
-                sx={{
-                  width: 48,
-                  height: 48,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: '50%',
-                  backgroundColor: '#000',
-                  boxShadow: 2,
-                  transition: 'all 0.3s ease',
-                  cursor: 'pointer',
-                  '&:hover': {
-                    backgroundColor: 'primary.main',
-                    transform: 'scale(1.1)',
-                  },
-                  '& svg': {
-                    fontSize: 24,
-                    color: '#fff',
-                    transition: 'transform 0.3s ease',
-                  },
-                }}
-              >
-                <FontAwesomeIcon icon={item.icon} />
+      <Box className="dashboard-container">
+        <Box className="dashboard-content">
+          {loading ? (
+            <Box sx={{ width:"100%", display:"flex", justifyContent:"center", alignItems:"center", minHeight:400 }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <>
+              <Box className="metrics-grid">
+                {metrics.map((metric,index)=>(
+                  <Card key={index} className="metric-card" style={{backgroundColor: cardColors[index % cardColors.length]}} onClick={()=>navigate(metric.path)}>
+                    <Box className="icon">
+                      {React.cloneElement(metric.icon,{ sx:{ fontSize:20, color:textColors[index % textColors.length], fontWeight: fontWeights[index % fontWeights.length] } })}
+                      <Typography className="metric-label" style={{ color:textColors[index % textColors.length], fontWeight: fontWeights[index % fontWeights.length], fontSize: fontSizes[index % fontSizes.length] }}>
+                        {metric.label}
+                      </Typography>
+                    </Box>
+                    <Typography className="metric-value" style={{ color:textColors[index % textColors.length], fontWeight: fontWeights[index % fontWeights.length], fontSize: fontSizes[index % fontSizes.length] }}>
+                      {metric.value}
+                    </Typography>
+                  </Card>
+                ))}
               </Box>
-            </a>
-          ))}
-        </Box>
 
+              <Box className="chart-card">
+                <Box className="chart-header">
+                  <Typography className="chart-title">Properties Performance</Typography>
+                 <Box sx={{ display: 'flex', flexDirection: 'column', gap:0, minWidth: 200 }}>
+  {/* Plain input acting as a label */}
+  <Input
+    value="Select Category"
+    readOnly
+    disableUnderline
+    sx={{ fontSize: 16, color: '#555', px: 1, ml:-2 }}
+  />
+
+  {/* Actual Select */}
+  <FormControl size="small" sx={{ borderRadius: '50px' }}>
+    <Select
+      value={filter}
+      onChange={(e) => setFilter(e.target.value)}
+      displayEmpty
+      sx={{ borderRadius: '50px' }}
+    >
+      <MenuItem value="all">Select All</MenuItem>
+      <MenuItem value="Available">Available</MenuItem>
+      <MenuItem value="Sold">Sold</MenuItem>
+      <MenuItem value="Pending">Pending</MenuItem>
+      <MenuItem value="Approved">Approved</MenuItem>
+    </Select>
+  </FormControl>
+</Box>
+
+                </Box>
+                <Box className="chart-body">
+                  {chartData && <Bar ref={chartRef} data={getFilteredChart()} options={options} />}
+                </Box>
+              </Box>
+            </>
+          )}
+        </Box>
       </Box>
     </>
   );
