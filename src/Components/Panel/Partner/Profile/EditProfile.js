@@ -29,6 +29,8 @@ const PartnerKyc = () => {
     pan_back: null,
     bank_passbook: null,
     cancelled_cheque: null,
+    nominee_aadhaar_front:null,
+    nominee_aadhaar_back:null,
   });
 
   const [errors, setErrors] = useState({}); // Track field errors
@@ -37,8 +39,8 @@ const PartnerKyc = () => {
     "username", "first_name", "last_name", "email", "phone_number", "date_of_birth",
     "gender", "marital_status", "address", "city", "state", "country", "pin_code",
     "account_holder_name", "bank_name", "branch_name", "account_number", "account_type", "ifsc_code",
-    "pan_number", "aadhaar_number", "nominee_reference_to",
-    "image", "aadhaar_front", "aadhaar_back", "pan_front", "pan_back", "bank_passbook", "cancelled_cheque"
+    "pan_number", "aadhaar_number", "nominee_reference_to","nominee_relationship",
+    "image", "aadhaar_front", "aadhaar_back", "pan_front", "pan_back", "bank_passbook", "cancelled_cheque", "nominee_aadhaar_front", "nominee_aadhaar_back"
   ];
 
   // Fetch user data
@@ -60,6 +62,8 @@ const PartnerKyc = () => {
           pan_back: toFileObject(user.pan_back),
           bank_passbook: toFileObject(user.bank_passbook),
           cancelled_cheque: toFileObject(user.cancelled_cheque),
+          nominee_aadhaar_front: toFileObject(user.nominee_aadhaar_front),
+          nominee_aadhaar_back: toFileObject(user.nominee_aadhaar_back),
         });
       })
       .catch((error) => {
@@ -117,7 +121,7 @@ const handleSubmit = async (e) => {
   const form = new FormData();
   Object.entries(formData).forEach(([key, value]) => {
     if (
-      ["image","aadhaar_front","aadhaar_back","pan_front","pan_back","bank_passbook","cancelled_cheque"].includes(key)
+      ["image","aadhaar_front","aadhaar_back","pan_front","pan_back","bank_passbook","cancelled_cheque", "nominee_aadhaar_front", "nominee_aadhaar_back", ].includes(key)
     ) {
       if (value?.file instanceof File) {
         form.append(key, value.file);
@@ -438,7 +442,21 @@ const handleCityChange = (e) => {
                 helperText={errors.nominee_reference_to}
               />
             </Grid>
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                required
+                label="Nominee Relationship"
+                name="nominee_relationship"
+                value={formData.nominee_relationship || ""}
+                onChange={handleChange}
+                variant="outlined"
+                error={!!errors.nominee_relationship}
+                helperText={errors.nominee_relationship}
+              />
+            </Grid>
           </Grid>
+
 
           {/* File Uploads */}
           <Typography variant="h6" sx={{ fontWeight: "bold", color: "rgb(30, 10, 80)", mb: 2 }}>
@@ -453,6 +471,8 @@ const handleCityChange = (e) => {
               { label: "PAN Back", name: "pan_back" },
               { label: "Bank Passbook", name: "bank_passbook" },
               { label: "Cancelled Cheque", name: "cancelled_cheque" },
+              { label: "Nominee Aadhaar Front", name: "nominee_aadhaar_front" },
+              { label: "Nominee Aadhaar Back", name: "nominee_aadhaar_back" },
             ].map(({ label, name }) => (
               <Grid item xs={12} md={4} key={name}>
                 <InputLabel shrink required>{label}</InputLabel>

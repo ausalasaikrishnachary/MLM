@@ -291,7 +291,7 @@ function Layout() {
           <Route path="/editprofile" element={<EditProfile />} />
           <Route path="/p-leads" element={<Leads />} />
           <Route path="/p-addleads" element={<PAddLead />} />
-          <Route path="/p-commission" element={<PartnerCommission />} />
+          <Route path="/p-commission" element={<PartnerCommission />} />a
           <Route path="/p-plans" element={<PartnerPlans />} />
           <Route path="/p-assets/:id" element={<AssetDetail />} />
           <Route path="/p-myassets" element={<PartnerMyAssets />} />
