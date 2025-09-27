@@ -85,15 +85,15 @@ const ShrirajLandingPage = () => {
 
 
   const getAllMedia = (property) => {
-  if (!property.images || !Array.isArray(property.images)) {
-    return [{ url: 'https://via.placeholder.com/300', type: 'image', alt: 'Placeholder' }];
-  }
-  return property.images.map((img) => ({
-    url: `${baseurl}${img.image}`,
-    type: 'image',
-    alt: img.alt || property.property_title
-  }));
-};
+    if (!property.images || !Array.isArray(property.images)) {
+      return [{ url: 'https://via.placeholder.com/300', type: 'image', alt: 'Placeholder' }];
+    }
+    return property.images.map((img) => ({
+      url: `${baseurl}${img.image}`,
+      type: 'image',
+      alt: img.alt || property.property_title
+    }));
+  };
   useEffect(() => {
     const fetchCarouselData = async () => {
       try {
@@ -109,10 +109,10 @@ const ShrirajLandingPage = () => {
     fetchCarouselData();
   }, []);
 
-const handleImageClick = (property) => {
-  setSelectedProperty(property);
-  setOpenModal(true);
-};
+  const handleImageClick = (property) => {
+    setSelectedProperty(property);
+    setOpenModal(true);
+  };
 
   const handleCloseModal = () => {
     setOpenModal(false);
@@ -268,7 +268,7 @@ const handleImageClick = (property) => {
             <div className="icon-btn" onClick={handleSearchClick} style={{ cursor: 'pointer' }}>
               <FaSearch />
             </div>
-            <div 
+            <div
               className={`icon-btn ${isListening ? 'listening' : ''}`}
               onClick={handleVoiceSearch}
               style={{ cursor: 'pointer', position: 'relative' }}
@@ -481,7 +481,7 @@ const handleImageClick = (property) => {
                     zIndex: 2,
                   }}
                 ></div>
-                <div
+                {/* <div
                   className="position-absolute top-50 start-50 translate-middle text-white text-center px-3"
                   style={{ zIndex: 3 }}
                 >
@@ -497,7 +497,7 @@ const handleImageClick = (property) => {
                       View all properties
                     </a>
                   </div>
-                </div>
+                </div> */}
               </Carousel.Item>
             ))}
           </Carousel>
@@ -528,6 +528,13 @@ const handleImageClick = (property) => {
             <Tab eventKey="rent" title="Rent">
               <div className="mt-3">
                 <SearchInput activeTab="rent" />
+              </div>
+            </Tab>
+            <Tab eventKey="View all properties" title="View all properties">
+              <div className="mt-3">
+                <a href="/properties" className="btn view-property-btn px-3 py-2">
+                  View all properties
+                </a>
               </div>
             </Tab>
           </Tabs>
@@ -579,19 +586,19 @@ const handleImageClick = (property) => {
                     style={{ height: "100%" }}
                   >
                     <div className="property-image-container">
-             <img
-  src={`${baseurl}${property.images && property.images[0] ? property.images[0].image : ''}`}
-  className="d-block w-100"
-  alt="property"
-  style={{
-    borderRadius: "8px",
-    height: "200px",
-    width: "100%",
-    objectFit: "cover",
-    cursor: 'pointer'
-  }}
-  onClick={() => handleImageClick(property)}
-/>
+                      <img
+                        src={`${baseurl}${property.images && property.images[0] ? property.images[0].image : ''}`}
+                        className="d-block w-100"
+                        alt="property"
+                        style={{
+                          borderRadius: "8px",
+                          height: "200px",
+                          width: "100%",
+                          objectFit: "cover",
+                          cursor: 'pointer'
+                        }}
+                        onClick={() => handleImageClick(property)}
+                      />
                     </div>
 
                     <div
@@ -607,7 +614,7 @@ const handleImageClick = (property) => {
                           </div>
                         </div>
                         <h5 className="card-title">{property.property_title}</h5>
-                        <p className="card-text">{property.description}</p>
+                        {/* <p className="card-text">{property.description}</p> */}
                         <Grid container spacing={2} sx={{ mt: 2 }}>
                           <Grid item xs={6}>
                             <Typography variant="caption" color="text.secondary">
@@ -848,7 +855,7 @@ const handleImageClick = (property) => {
                           cursor: 'pointer'
                         }}
                         onClick={() => handleImageClick(
-                          property, 
+                          property,
                           `${baseurl}${property.images && property.images[0] ? property.images[0].image : ''}`
                         )}
                       />
@@ -864,7 +871,7 @@ const handleImageClick = (property) => {
                           </div>
                         </div>
                         <h5 className="card-title">{property.property_title}</h5>
-                        <p className="card-text">{property.description}</p>
+                        {/* <p className="card-text">{property.description}</p> */}
                         <Grid container spacing={2} sx={{ mt: 2 }}>
                           <Grid item xs={6}>
                             <Typography variant="caption" color="text.secondary">
@@ -959,7 +966,7 @@ const handleImageClick = (property) => {
         </div>
       </section>
 
-      <section className="py-5" style={{ backgroundColor: '#e9e9e9' }}>
+      {/* <section className="py-5" style={{ backgroundColor: '#e9e9e9' }}>
         <div className="container">
           <h2 className="section-title text-left mb-5" data-aos="fade-up">Our Backers</h2>
           <div className="row align-items-center justify-content-center">
@@ -979,46 +986,46 @@ const handleImageClick = (property) => {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
 
 
-<Dialog
-  open={openModal}
-  onClose={handleCloseModal}
-  maxWidth="md"
-  fullWidth
-  sx={{
-    "& .MuiDialog-paper": {
-      maxWidth: "900px",
-      width: "100%",
-      background: "transparent",
-      boxShadow: "none",
-      borderRadius: 0,
-    },
-  }}
->
-  <Box sx={{ p: 2, position: "relative" }}>
-    {selectedProperty && getAllMedia(selectedProperty).length > 0 ? (
-      <>
-        <img
-          src={getAllMedia(selectedProperty)[0].url}
-          alt={getAllMedia(selectedProperty)[0].alt || "Property Image"}
-          style={{
-            borderRadius: 0,
-            maxHeight: "550px",
-            objectFit: "cover",
+      <Dialog
+        open={openModal}
+        onClose={handleCloseModal}
+        maxWidth="md"
+        fullWidth
+        sx={{
+          "& .MuiDialog-paper": {
+            maxWidth: "900px",
             width: "100%",
-          }}
-        />
-      </>
-    ) : (
-      <Typography color="white" textAlign="center">
-        No media available.
-      </Typography>
-    )}
-  </Box>
-</Dialog>
+            background: "transparent",
+            boxShadow: "none",
+            borderRadius: 0,
+          },
+        }}
+      >
+        <Box sx={{ p: 2, position: "relative" }}>
+          {selectedProperty && getAllMedia(selectedProperty).length > 0 ? (
+            <>
+              <img
+                src={getAllMedia(selectedProperty)[0].url}
+                alt={getAllMedia(selectedProperty)[0].alt || "Property Image"}
+                style={{
+                  borderRadius: 0,
+                  maxHeight: "550px",
+                  objectFit: "cover",
+                  width: "100%",
+                }}
+              />
+            </>
+          ) : (
+            <Typography color="white" textAlign="center">
+              No media available.
+            </Typography>
+          )}
+        </Box>
+      </Dialog>
 
     </>
   );

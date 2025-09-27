@@ -235,44 +235,44 @@ export default function InvestorHeader() {
               {/* Left: Logo */}
               {/* Left: Back Button + Logo */}
               <Box display="flex" alignItems="center" gap={2}>
-  {/* Back Button on far left */}
- 
+                {/* Back Button on far left */}
 
 
-  {/* Logo */}
-  <Link to="/i-dashboard" style={{ textDecoration: 'none', color: '#333333' }}>
-    <img
-      src={Logo}
-      alt="logo"
-      style={{
-        height: '75px',
-        width: 'auto',
-        maxWidth: '150px',
-        // paddingTop: '8px',
-        transform: 'scale(1.5)',
-      }}
-    />
-  </Link>
-</Box>
 
-  <IconButton
-    onClick={goBack}
-    sx={{
-      backgroundColor: '#f0f0f0',
-      color: '#000',
-      borderRadius: '12px',
-      padding: '8px',
-      marginLeft: '20px', // left padding from edge of screen
-      marginRight: '10px', // space between button and logo
-      transition: 'all 0.3s ease',
-      '&:hover': {
-        backgroundColor: '#e0e0e0',
-        boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
-      },
-    }}
-  >
-    <ArrowBackIcon />
-  </IconButton>
+                {/* Logo */}
+                <Link to="/i-dashboard" style={{ textDecoration: 'none', color: '#333333' }}>
+                  <img
+                    src={Logo}
+                    alt="logo"
+                    style={{
+                      height: '75px',
+                      width: 'auto',
+                      maxWidth: '150px',
+                      // paddingTop: '8px',
+                      transform: 'scale(1.5)',
+                    }}
+                  />
+                </Link>
+              </Box>
+
+              <IconButton
+                onClick={goBack}
+                sx={{
+                  backgroundColor: '#f0f0f0',
+                  color: '#000',
+                  borderRadius: '12px',
+                  padding: '8px',
+                  marginLeft: '20px', // left padding from edge of screen
+                  marginRight: '10px', // space between button and logo
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    backgroundColor: '#e0e0e0',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                  },
+                }}
+              >
+                <ArrowBackIcon />
+              </IconButton>
 
 
 
@@ -385,6 +385,13 @@ export default function InvestorHeader() {
         <MenuItem
           onClick={() => {
             handleProfileMenuClose();
+            localStorage.removeItem("user_id");
+            localStorage.removeItem("email");
+            localStorage.removeItem("username");
+            localStorage.removeItem("phone_number");
+            localStorage.removeItem("referral_id");
+            localStorage.removeItem("referred_by");
+            localStorage.removeItem("user_name");
             navigate('/');
           }}
           sx={{

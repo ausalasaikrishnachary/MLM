@@ -437,6 +437,17 @@ export default function Header() {
         <MenuItem
           onClick={() => {
             handleProfileMenuClose();
+
+            // Remove specific keys from localStorage
+            localStorage.removeItem("user_id");
+            localStorage.removeItem("email");
+            localStorage.removeItem("username");
+            localStorage.removeItem("phone_number");
+            localStorage.removeItem("referral_id");
+            localStorage.removeItem("referred_by");
+            localStorage.removeItem("user_name");
+
+            // Redirect to home (or login page)
             handleNavigate('/');
           }}
           sx={{
@@ -449,6 +460,7 @@ export default function Header() {
         >
           Logout <LogoutIcon sx={{ ml: 1 }} />
         </MenuItem>
+
       </Menu>
       <MuiMenu
         anchorEl={notificationAnchorEl}

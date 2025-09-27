@@ -67,9 +67,7 @@ const Contact = () => {
               Our Location:
             </Typography>
             <Typography variant="body1" color="text.secondary" className="contact-location">
-              50/4, SHRIRAJ PROPERTY SOLUTIONS PRIVATE LIMITED,
-              Atal Chowk, Main Road Boria Khurd, Near Durga Mandir,
-              Raipur, Chhattisgarh, 492017
+              Near Old Dhamtari Road Boriya Khurd Raipur 492013
             </Typography>
 
             <Typography variant="h6" fontWeight="bold" color="text.primary" mt={4} className="contact-contact-title">
@@ -84,7 +82,7 @@ const Contact = () => {
             <div className="contact-item">
               <EmailIcon className="contact-icon" />
               <Typography variant="body1" color="text.secondary" className="contact-text">
-                shrirajproperty00@gmail.com
+                 shrirajteam@gmail.com
               </Typography>
             </div>
 

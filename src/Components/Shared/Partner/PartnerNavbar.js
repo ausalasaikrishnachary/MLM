@@ -46,67 +46,67 @@ export default function PartnerHeader() {
 
   const [profileImage, setProfileImage] = useState('');
 
- useEffect(() => {
-  const fetchProfileImageAndBirthday = () => {
-    axios.get(`${baseurl}/users/${userId}/`)
-      .then(res => {
-        const user = res.data;
-        setProfileImage(user.image || '');
+  useEffect(() => {
+    const fetchProfileImageAndBirthday = () => {
+      axios.get(`${baseurl}/users/${userId}/`)
+        .then(res => {
+          const user = res.data;
+          setProfileImage(user.image || '');
 
-        // 🎂 Birthday check
-        if (user.date_of_birth) {
-          const today = new Date();
-          const dob = new Date(user.date_of_birth);
+          // 🎂 Birthday check
+          if (user.date_of_birth) {
+            const today = new Date();
+            const dob = new Date(user.date_of_birth);
 
-          if (
-            dob.getDate() === today.getDate() &&
-            dob.getMonth() === today.getMonth()
-          ) {
-            // Add birthday wish as a notification (local)
-            setNotifications(prev => [
-              ...prev,
-              {
-                notification_status_id: "birthday_" + userId,
-                message: `🎉 Happy Birthday, ${user.first_name || "User"}! 🎂`,
-                is_read: false,
-              }
-            ]);
-          }
-        }
-      })
-      .catch(err => {
-        console.error('Error fetching profile image:', err);
-      });
-  };
-
-  const fetchNotifications = () => {
-    axios.get(`${baseurl}/notifications/user-id/${userId}/`)
-      .then(response => {
-        const unread = response.data.filter(n => !n.is_read);
-        setNotifications(prev => {
-          // avoid duplicates when merging birthday + API notifications
-          const all = [...unread, ...prev];
-          const unique = [];
-          const seen = new Set();
-          for (let n of all) {
-            if (!seen.has(n.notification_status_id)) {
-              unique.push(n);
-              seen.add(n.notification_status_id);
+            if (
+              dob.getDate() === today.getDate() &&
+              dob.getMonth() === today.getMonth()
+            ) {
+              // Add birthday wish as a notification (local)
+              setNotifications(prev => [
+                ...prev,
+                {
+                  notification_status_id: "birthday_" + userId,
+                  message: `🎉 Happy Birthday, ${user.first_name || "User"}! 🎂`,
+                  is_read: false,
+                }
+              ]);
             }
           }
-          return unique;
+        })
+        .catch(err => {
+          console.error('Error fetching profile image:', err);
         });
-      })
-      .catch(error => {
-        console.error("Error fetching notifications:", error);
-      });
-  };
+    };
 
-  fetchProfileImageAndBirthday();
-  fetchNotifications();
-  const interval = setInterval(fetchNotifications, 10000);
-  return () => clearInterval(interval);
-}, [userId]);
+    const fetchNotifications = () => {
+      axios.get(`${baseurl}/notifications/user-id/${userId}/`)
+        .then(response => {
+          const unread = response.data.filter(n => !n.is_read);
+          setNotifications(prev => {
+            // avoid duplicates when merging birthday + API notifications
+            const all = [...unread, ...prev];
+            const unique = [];
+            const seen = new Set();
+            for (let n of all) {
+              if (!seen.has(n.notification_status_id)) {
+                unique.push(n);
+                seen.add(n.notification_status_id);
+              }
+            }
+            return unique;
+          });
+        })
+        .catch(error => {
+          console.error("Error fetching notifications:", error);
+        });
+    };
+
+    fetchProfileImageAndBirthday();
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 10000);
+    return () => clearInterval(interval);
+  }, [userId]);
 
 
   const navItems = [
@@ -135,7 +135,7 @@ export default function PartnerHeader() {
 
   const navigate = useNavigate();
   const location = useLocation();
-   const goBack = () => navigate(-1);
+  const goBack = () => navigate(-1);
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [operationsAnchorEl, setOperationsAnchorEl] = useState(null);
@@ -164,77 +164,77 @@ export default function PartnerHeader() {
     setProfileAnchorEl(null);
   };
 
- const [openOperationsMobile, setOpenOperationsMobile] = useState(false);
+  const [openOperationsMobile, setOpenOperationsMobile] = useState(false);
 
-const drawer = (
-  <Box sx={{ width: 250 }}>
-    <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 2 }}>
-      <IconButton onClick={handleDrawerToggle}>
-        <CloseIcon />
-      </IconButton>
-    </Box>
-    <List>
-      {navItems.map((item) => (
-        item.subItems ? (
-          <React.Fragment key={item.label}>
-            <ListItemButton onClick={() => setOpenOperationsMobile(!openOperationsMobile)}>
-              <ListItemText
-                primary={item.label}
-                primaryTypographyProps={{
-                  fontWeight: 'bold',
-                  color: isOperationsActive ? 'blue' : 'inherit',
-                }}
-              />
-              {openOperationsMobile ? <ExpandLess /> : <ExpandMore />}
-            </ListItemButton>
-            {openOperationsMobile && (
-              <Box sx={{ pl: 4 }}>
-                {item.subItems.map((subItem) => (
-                  <ListItemButton
-                    key={subItem.label}
-                    onClick={() => {
-                      navigate(subItem.path);
-                      handleDrawerToggle();
-                    }}
-                    sx={{
-                      backgroundColor: location.pathname === subItem.path ? '#f0f0f0' : 'transparent',
-                      borderRadius: '8px',
-                    }}
-                  >
-                    <ListItemText
-                      primary={subItem.label}
-                      primaryTypographyProps={{
-                        fontWeight: 'Bold',
-                        color: location.pathname === subItem.path ? 'blue' : 'inherit',
+  const drawer = (
+    <Box sx={{ width: 250 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 2 }}>
+        <IconButton onClick={handleDrawerToggle}>
+          <CloseIcon />
+        </IconButton>
+      </Box>
+      <List>
+        {navItems.map((item) => (
+          item.subItems ? (
+            <React.Fragment key={item.label}>
+              <ListItemButton onClick={() => setOpenOperationsMobile(!openOperationsMobile)}>
+                <ListItemText
+                  primary={item.label}
+                  primaryTypographyProps={{
+                    fontWeight: 'bold',
+                    color: isOperationsActive ? 'blue' : 'inherit',
+                  }}
+                />
+                {openOperationsMobile ? <ExpandLess /> : <ExpandMore />}
+              </ListItemButton>
+              {openOperationsMobile && (
+                <Box sx={{ pl: 4 }}>
+                  {item.subItems.map((subItem) => (
+                    <ListItemButton
+                      key={subItem.label}
+                      onClick={() => {
+                        navigate(subItem.path);
+                        handleDrawerToggle();
                       }}
-                    />
-                  </ListItemButton>
-                ))}
-              </Box>
-            )}
-          </React.Fragment>
-        ) : (
-          <ListItem key={item.label} disablePadding>
-            <ListItemButton
-              onClick={() => {
-                navigate(item.path);
-                handleDrawerToggle();
-              }}
-            >
-              <ListItemText
-                primary={item.label}
-                primaryTypographyProps={{
-                  fontWeight: 'bold',
-                  color: location.pathname === item.path ? 'blue' : 'inherit',
+                      sx={{
+                        backgroundColor: location.pathname === subItem.path ? '#f0f0f0' : 'transparent',
+                        borderRadius: '8px',
+                      }}
+                    >
+                      <ListItemText
+                        primary={subItem.label}
+                        primaryTypographyProps={{
+                          fontWeight: 'Bold',
+                          color: location.pathname === subItem.path ? 'blue' : 'inherit',
+                        }}
+                      />
+                    </ListItemButton>
+                  ))}
+                </Box>
+              )}
+            </React.Fragment>
+          ) : (
+            <ListItem key={item.label} disablePadding>
+              <ListItemButton
+                onClick={() => {
+                  navigate(item.path);
+                  handleDrawerToggle();
                 }}
-              />
-            </ListItemButton>
-          </ListItem>
-        )
-      ))}
-    </List>
-  </Box>
-);
+              >
+                <ListItemText
+                  primary={item.label}
+                  primaryTypographyProps={{
+                    fontWeight: 'bold',
+                    color: location.pathname === item.path ? 'blue' : 'inherit',
+                  }}
+                />
+              </ListItemButton>
+            </ListItem>
+          )
+        ))}
+      </List>
+    </Box>
+  );
 
   return (
     <>
@@ -260,7 +260,7 @@ const drawer = (
               </IconButton>
               <Box display="flex" justifyContent="center" flexGrow={1}>
                 <Link to="/p-dashboard" style={{ textDecoration: 'none', color: '#333333' }}>
-                  <img src={Logo} alt="logo" style={{ height: '50px', maxWidth: '150px',transform: 'scale(2.0)', }} />
+                  <img src={Logo} alt="logo" style={{ height: '50px', maxWidth: '150px', transform: 'scale(2.0)', }} />
                 </Link>
               </Box>
               <Box display="flex" alignItems="center">
@@ -289,24 +289,24 @@ const drawer = (
                 </Link>
               </Typography>
 
-               <IconButton
-    onClick={goBack}
-    sx={{
-      backgroundColor: '#f0f0f0',
-      color: '#000',
-      borderRadius: '12px',
-      padding: '8px',
-      marginLeft: '20px', // left padding from edge of screen
-      marginRight: '10px', // space between button and logo
-      transition: 'all 0.3s ease',
-      '&:hover': {
-        backgroundColor: '#e0e0e0',
-        boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
-      },
-    }}
-  >
-    <ArrowBackIcon />
-  </IconButton>
+              <IconButton
+                onClick={goBack}
+                sx={{
+                  backgroundColor: '#f0f0f0',
+                  color: '#000',
+                  borderRadius: '12px',
+                  padding: '8px',
+                  marginLeft: '20px', // left padding from edge of screen
+                  marginRight: '10px', // space between button and logo
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    backgroundColor: '#e0e0e0',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                  },
+                }}
+              >
+                <ArrowBackIcon />
+              </IconButton>
 
               <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', gap: 3 }}>
                 {navItems.map((item) => (
@@ -349,11 +349,11 @@ const drawer = (
                 {first_name} ({referral_id})
               </Typography>
               <Avatar
-                  onClick={handleAvatarClick}
-                  sx={{ width: 40, height: 40, cursor: 'pointer' }}
-                  alt="Profile Avatar"
-                  src={profileImage ? `${baseurl}${profileImage}` : "https://via.placeholder.com/40"}
-                />
+                onClick={handleAvatarClick}
+                sx={{ width: 40, height: 40, cursor: 'pointer' }}
+                alt="Profile Avatar"
+                src={profileImage ? `${baseurl}${profileImage}` : "https://via.placeholder.com/40"}
+              />
             </>
           )}
         </Toolbar>
@@ -411,6 +411,13 @@ const drawer = (
         <MenuItem
           onClick={() => {
             handleProfileMenuClose();
+            localStorage.removeItem("user_id");
+            localStorage.removeItem("email");
+            localStorage.removeItem("username");
+            localStorage.removeItem("phone_number");
+            localStorage.removeItem("referral_id");
+            localStorage.removeItem("referred_by");
+            localStorage.removeItem("user_name");
             navigate('/');
           }}
           sx={{
