@@ -594,22 +594,21 @@ p, .card-body {
 }
 /* Default: no extra margin for desktop */
 .search-bar-wrapper {
-  margin-top: 5px !important;
-  margin-top: -0px;
+  margin-top: 0;
+  margin-top: -100px;
   width: 100%;
 }
 
 /* On mobile devices (<768px), add top margin */
 @media (max-width: 768px) {
   .search-bar-wrapper {
-    margin-top: 7px; /* Adjust the value as needed */
+    margin-top: 10px; /* Adjust the value as needed */
   }
 
   .lead {
     font-size: 1.5rem;
     display: none;
 }
-
 
 .hero-content h1 {
     font-weight: 500;
@@ -667,27 +666,3 @@ p, .card-body {
 .hover-bg-light:hover {
   background-color: #f8f9fa !important;
 }
-
-
-@media (max-width: 740px) {
-  .search-tabs {
-    display: flex;
-    flex-wrap: nowrap !important;
-    overflow-x: auto !important;   
-    overflow-y: hidden !important; 
-    white-space: nowrap !important;
-    justify-content: space-between !important;
-    -ms-overflow-style: none;    
-    scrollbar-width: none;       
-  }
-
-  .search-tabs::-webkit-scrollbar {
-    display: none;  /* hide scrollbar in Chrome/Safari/Opera */
-  }
-
-  .search-tabs .nav-link {
-    font-size: 10px !important;
-    padding: 10px 8px !important;
-  }
-}
-

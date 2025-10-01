@@ -477,7 +477,7 @@ const ShrirajLandingPage = () => {
                     left: 0,
                     width: "100%",
                     height: "100%",
-                    // backgroundColor: "rgba(0, 0, 0, 0.5)",
+                    backgroundColor: "rgba(0, 0, 0, 0.5)",
                     zIndex: 2,
                   }}
                 ></div>
@@ -532,7 +532,7 @@ const ShrirajLandingPage = () => {
             </Tab>
             <Tab eventKey="View all properties" title="View all properties">
               <div className="mt-3">
-                <a href="/properties" className="btn view-property-btn ">
+                <a href="/properties" className="btn view-property-btn px-3 py-2">
                   View all properties
                 </a>
               </div>

@@ -89,8 +89,9 @@ useEffect(() => {
 
       // Gradient color pairs (bottom -> top)
       const gradientPairs = {
-        Available: ["#e53935", "#ff6f6f6d"], // red gradient
-        Sold: ["#4caf50", "#81c7846d"],      // green gradient
+     
+        Available: ["#4caf50", "#81c7846d"], 
+        Sold:       ["#e53935", "#ff6f6f6d"] ,    // green gradient
         Pending: ["#ffeb3b", "#fff1766d"],   // yellow gradient
         Approved: ["#ba68c8f9", "#9b27b04f"],  // purple gradient (unchanged)
       };
