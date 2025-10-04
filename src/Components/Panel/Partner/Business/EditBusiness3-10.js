@@ -10,7 +10,6 @@ import {
     Typography,
     Grid,
 } from "@mui/material";
-import { baseurl } from "../../../BaseURL/BaseURL";   // ✅ use baseurl
 
 function EditBusiness() {
     const { id } = useParams(); // business_id from URL
@@ -24,10 +23,6 @@ function EditBusiness() {
         email: "",
         phone: "",
         address: "",
-        offer_title: "",
-        offer_description: "",
-        logo: "",        
-        documents: "",   
         is_active: true,
     });
 
@@ -38,7 +33,7 @@ function EditBusiness() {
 
     // Fetch existing business details
     useEffect(() => {
-        fetch(`${baseurl}/business/${id}/`)
+        fetch(`https://shrirajteam.com:81/business/${id}/`)
             .then((res) => res.json())
             .then((data) => {
                 setBusinessData({
@@ -49,10 +44,6 @@ function EditBusiness() {
                     email: data.email,
                     phone: data.phone,
                     address: data.address,
-                    offer_title: data.offer_title,
-                    offer_description: data.offer_description,
-                    logo: data.logo,
-                    documents: data.documents,
                     is_active: data.is_active,
                 });
                 setLoading(false);
@@ -79,51 +70,33 @@ function EditBusiness() {
         setDocumentFile(e.target.files[0]);
     };
 
-const handleSubmit = (e) => {
-    e.preventDefault();
-    setSaving(true);
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        setSaving(true);
 
-    const formData = new FormData();
+        const formData = new FormData();
+        Object.keys(businessData).forEach((key) => {
+            formData.append(key, businessData[key]);
+        });
 
-    // Append all text fields
-    const textFields = [
-        "business_name",
-        "business_type",
-        "description",
-        "website",
-        "email",
-        "phone",
-        "address",
-        "offer_title",
-        "offer_description",
-        "is_active",
-    ];
+        if (logoFile) formData.append("logo", logoFile);
+        if (documentFile) formData.append("documents", documentFile);
 
-    textFields.forEach((key) => {
-        formData.append(key, businessData[key]);
-    });
-
-    // Append files only if new files are selected
-    if (logoFile) formData.append("logo", logoFile);
-    if (documentFile) formData.append("documents", documentFile);
-
-    fetch(`${baseurl}/business/${id}/`, {
-        method: "PUT",
-        body: formData,
-    })
-        .then((res) => res.json())
-        .then((data) => {
-            alert("Business updated successfully!");
-            navigate("/p-viewbusiness");
+        fetch(`https://shrirajteam.com:81/business/${id}/`, {
+            method: "PUT",
+            body: formData,
         })
-        .catch((err) => {
-            console.error("Error updating business:", err);
-            alert("Failed to update business.");
-        })
-        .finally(() => setSaving(false));
-};
-
-
+            .then((res) => {
+                if (res.ok) {
+                    alert("Business updated successfully!");
+                    navigate("/p-viewbusiness");
+                } else {
+                    alert("Failed to update business.");
+                }
+            })
+            .catch((err) => console.error("Error updating business:", err))
+            .finally(() => setSaving(false));
+    };
 
     if (loading) {
         return (
@@ -136,12 +109,6 @@ const handleSubmit = (e) => {
         );
     }
 
-    // ✅ Helper function to extract file name from path/url
-    const getFileName = (path) => {
-        if (!path) return "";
-        return path.split("/").pop(); // take last part after /
-    };
-
     return (
         <>
             <PartnerHeader />
@@ -152,7 +119,6 @@ const handleSubmit = (e) => {
 
                 <form onSubmit={handleSubmit} encType="multipart/form-data">
                     <Grid container spacing={2}>
-                        {/* Inputs */}
                         <Grid item xs={12} sm={4}>
                             <TextField
                                 fullWidth
@@ -185,9 +151,6 @@ const handleSubmit = (e) => {
                             />
                         </Grid>
 
-
-                        
-
                         <Grid item xs={12} sm={4}>
                             <TextField
                                 fullWidth
@@ -201,27 +164,12 @@ const handleSubmit = (e) => {
                         <Grid item xs={12} sm={4}>
                             <TextField
                                 fullWidth
-                                label="Website URL"
+                                label="Website"
                                 name="website"
                                 value={businessData.website}
                                 onChange={handleChange}
                             />
                         </Grid>
-                              {/* Active Checkbox */}
-                     <Grid item xs={12} sm={4}>
-    <Box display="flex" alignItems="center" justifyContent="center" gap={1} mt={1}>
-        <input
-            type="checkbox"
-            name="is_active"
-            checked={businessData.is_active}
-            onChange={handleChange}
-            style={{ width: '20px', height: '15px', cursor: 'pointer' }} // ✅ bigger checkbox
-        />
-        <Typography variant="h5" sx={{ cursor: 'pointer' }}>
-            Active
-        </Typography>
-    </Box>
-</Grid>
 
                         <Grid item xs={12} sm={4}>
                             <TextField
@@ -233,53 +181,22 @@ const handleSubmit = (e) => {
                             />
                         </Grid>
 
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                fullWidth
-                                label="Offer Title"
-                                name="offer_title"
-                                value={businessData.offer_title}
-                                onChange={handleChange}
-                            />
-                        </Grid>
-
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                fullWidth
-                                label="Offer Description"
-                                name="offer_description"
-                                value={businessData.offer_description}
-                                onChange={handleChange}
-                            />
-                        </Grid>
-
-                             <Grid item xs={12} >
-                            <TextField
-                                fullWidth
-                             multiline
-                            rows={3}
-                                label="Description"
-                                name="description"
-                                value={businessData.description}
-                                onChange={handleChange}
-                            />
-                        </Grid>
-
-                        {/* Logo File Name */}
+                        {/* Logo Upload + Preview */}
                         <Grid item xs={12} sm={4}>
                             <Typography variant="subtitle2" mb={1}>
-                                Logo File:
+                                Existing Logo:
                             </Typography>
-                            {logoFile ? (
-                                <Typography variant="body2">{logoFile.name}</Typography>
-                            ) : businessData.logo ? (
-                                <Typography variant="body2">
-                                    {getFileName(businessData.logo)}
-                                </Typography>
+                            {businessData.logo ? (
+                                <Box mb={1}>
+                                    <img
+                                        src={`https://shrirajteam.com:81/${businessData.logo}`}
+                                        alt="Logo"
+                                        style={{ width: "100%", maxHeight: "150px", objectFit: "contain" }}
+                                    />
+                                </Box>
                             ) : (
                                 <Typography variant="body2">No logo uploaded</Typography>
                             )}
-
                             <Button variant="outlined" component="label" fullWidth>
                                 Upload Logo
                                 <input
@@ -289,23 +206,27 @@ const handleSubmit = (e) => {
                                     accept="image/*"
                                 />
                             </Button>
+                            {logoFile && <Typography mt={1}>{logoFile.name}</Typography>}
                         </Grid>
 
-                        {/* Document File Name */}
+                        {/* Document Upload + Preview */}
                         <Grid item xs={12} sm={4}>
                             <Typography variant="subtitle2" mb={1}>
-                                Document File:
+                                Existing Document:
                             </Typography>
-                            {documentFile ? (
-                                <Typography variant="body2">{documentFile.name}</Typography>
-                            ) : businessData.documents ? (
-                                <Typography variant="body2">
-                                    {getFileName(businessData.documents)}
-                                </Typography>
+                            {businessData.documents ? (
+                                <Box mb={1}>
+                                    <a
+                                        href={`https://shrirajteam.com:81/${businessData.documents}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        View Document
+                                    </a>
+                                </Box>
                             ) : (
                                 <Typography variant="body2">No document uploaded</Typography>
                             )}
-
                             <Button variant="outlined" component="label" fullWidth>
                                 Upload Document
                                 <input
@@ -315,9 +236,23 @@ const handleSubmit = (e) => {
                                     accept=".pdf,.doc,.docx"
                                 />
                             </Button>
+                            {documentFile && <Typography mt={1}>{documentFile.name}</Typography>}
                         </Grid>
 
-                  
+
+                        <Grid item xs={12} sm={4}>
+                            <Box display="flex" alignItems="center" gap={1} mt={1}>
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        name="is_active"
+                                        checked={businessData.is_active}
+                                        onChange={handleChange}
+                                    />{" "}
+                                    Active
+                                </label>
+                            </Box>
+                        </Grid>
                     </Grid>
 
                     <Button

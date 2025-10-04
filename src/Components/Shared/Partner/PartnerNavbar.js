@@ -182,7 +182,7 @@ export default function PartnerHeader() {
                   primary={item.label}
                   primaryTypographyProps={{
                     fontWeight: 'bold',
-                    color: isOperationsActive ? 'blue' : 'inherit',
+                    color: isOperationsActive ? '#ffa000' : 'inherit',
                   }}
                 />
                 {openOperationsMobile ? <ExpandLess /> : <ExpandMore />}
@@ -205,7 +205,7 @@ export default function PartnerHeader() {
                         primary={subItem.label}
                         primaryTypographyProps={{
                           fontWeight: 'Bold',
-                          color: location.pathname === subItem.path ? 'blue' : 'inherit',
+                          color: location.pathname === subItem.path ? '#ffa000' : 'inherit',
                         }}
                       />
                     </ListItemButton>
@@ -225,7 +225,7 @@ export default function PartnerHeader() {
                   primary={item.label}
                   primaryTypographyProps={{
                     fontWeight: 'bold',
-                    color: location.pathname === item.path ? 'blue' : 'inherit',
+                    color: location.pathname === item.path ? '#ffa000' : 'inherit',
                   }}
                 />
               </ListItemButton>
@@ -315,7 +315,7 @@ export default function PartnerHeader() {
                       key={item.label}
                       onClick={() => navigate(item.path)}
                       sx={{
-                        color: location.pathname === item.path ? 'blue' : '#000',
+                        color: location.pathname === item.path ? '#ffa000' : '#000',
                         fontWeight: 'bold',
                         textTransform: 'none',
                         fontSize: "16px"
@@ -329,7 +329,7 @@ export default function PartnerHeader() {
                       onClick={handleOperationsClick}
                       endIcon={<ArrowDropDownIcon />}
                       sx={{
-                        color: isOperationsActive ? 'blue' : '#000',
+                        color: isOperationsActive ? '#ffa000' : '#000',
                         fontWeight: 'bold',
                         textTransform: 'none',
                         fontSize: "16px"
@@ -383,7 +383,7 @@ export default function PartnerHeader() {
             }}
             sx={{
               fontWeight: 'bold',
-              color: location.pathname === subItem.path ? 'blue' : 'inherit',
+              color: location.pathname === subItem.path ? '#ffa000' : 'inherit',
               fontSize: "16px"
             }}
           >

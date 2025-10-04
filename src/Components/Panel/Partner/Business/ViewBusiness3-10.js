@@ -11,21 +11,18 @@ import {
   Chip,
   Divider,
   Link,
-  IconButton,
-  Tooltip,
 } from "@mui/material";
 import BusinessIcon from "@mui/icons-material/Business";
 import LanguageIcon from "@mui/icons-material/Language";
 import EmailIcon from "@mui/icons-material/Email";
 import PhoneIcon from "@mui/icons-material/Phone";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
-import DescriptionIcon from "@mui/icons-material/Description";
-import DownloadIcon from "@mui/icons-material/Download";
 import PartnerHeader from "../../../Shared/Partner/PartnerNavbar";
 import { useNavigate } from "react-router-dom";
+import { IconButton, Tooltip } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { baseurl } from "../../../BaseURL/BaseURL";
+
 
 function ViewBusiness() {
   const userId = localStorage.getItem("user_id");
@@ -33,8 +30,9 @@ function ViewBusiness() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+
   useEffect(() => {
-    fetch(`${baseurl}/business/`)
+    fetch("https://rahul30.pythonanywhere.com/business/")
       .then((res) => res.json())
       .then((data) => {
         const filtered = data.filter(
@@ -51,7 +49,9 @@ function ViewBusiness() {
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this business?")) {
-      fetch(`${baseurl}/business/${id}/`, { method: "DELETE" })
+      fetch(`https://shrirajteam.com:81/business/${id}/`, {
+        method: "DELETE",
+      })
         .then((res) => {
           if (res.ok) {
             setBusinesses((prev) =>
@@ -65,16 +65,23 @@ function ViewBusiness() {
     }
   };
 
+
   return (
     <>
       <PartnerHeader />
       <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+        {/* Heading Row */}
         <Box display="flex" justifyContent="center" mb={2}>
-          <Typography variant="h2" fontWeight="bold" sx={{ textAlign: "center" }}>
+          <Typography
+            variant="h2"
+            fontWeight="bold"
+            sx={{ textAlign: "center" }}
+          >
             My Businesses
           </Typography>
         </Box>
 
+        {/* Button Row */}
         <Box display="flex" justifyContent="flex-end" mb={3}>
           <button
             style={{
@@ -91,6 +98,9 @@ function ViewBusiness() {
             + Add Business
           </button>
         </Box>
+
+
+
 
         {loading ? (
           <Box display="flex" justifyContent="center" alignItems="center" mt={5}>
@@ -116,34 +126,9 @@ function ViewBusiness() {
                     height: "100%",
                     display: "flex",
                     flexDirection: "column",
-                    position: "relative",
-                    overflow: "hidden", // Changed from "visible" to "hidden"
+                    position: "relative", // important for positioning icons
                   }}
                 >
-                  {/* Offer Ribbon - Fixed positioning */}
-                  {business.offer_title && (
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        top: 16,
-                        left: -25, // Position from right instead of left
-                        width: '120px',
-                        transform: 'rotate(-45deg)', // Rotate clockwise
-                        backgroundColor: '#2ECC71',
-                        color: 'white',
-                        textAlign: 'center',
-                        fontSize: '12px',
-                        fontWeight: 'bold',
-                        textTransform: 'uppercase',
-                        py: '3px',
-                        boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-                        zIndex: 1,
-                      }}
-                    >
-                      {business.offer_title.toUpperCase()}
-                    </Box>
-                  )}
-
                   {/* Business Logo */}
                   {business.logo ? (
                     <CardMedia
@@ -151,7 +136,7 @@ function ViewBusiness() {
                       alt={business.business_name || "Business Logo"}
                       image={
                         business.logo
-                          ? `${baseurl}/${business.logo}`
+                          ? `https://shrirajteam.com:81/${business.logo}`
                           : "/default-logo.png"
                       }
                       sx={{ objectFit: "contain", p: 2 }}
@@ -181,9 +166,12 @@ function ViewBusiness() {
                       sx={{ mb: 1 }}
                     />
 
+                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                      {business.description}
+                    </Typography>
+
                     <Divider sx={{ my: 1.5 }} />
 
-                    {/* Website */}
                     <Box display="flex" alignItems="center" gap={1} mb={1}>
                       <LanguageIcon fontSize="small" color="primary" />
                       <Link
@@ -196,66 +184,27 @@ function ViewBusiness() {
                       </Link>
                     </Box>
 
-                    {/* Email */}
                     <Box display="flex" alignItems="center" gap={1} mb={1}>
                       <EmailIcon fontSize="small" color="primary" />
                       <Typography variant="body2">{business.email}</Typography>
                     </Box>
 
-                    {/* Phone */}
                     <Box display="flex" alignItems="center" gap={1} mb={1}>
                       <PhoneIcon fontSize="small" color="primary" />
                       <Typography variant="body2">{business.phone}</Typography>
                     </Box>
 
-                    {/* Location */}
-                    {business.address && (
-                      <Box display="flex" alignItems="center" gap={1} mb={1}>
-                        <LocationOnIcon fontSize="small" color="primary" />
-                        <Typography variant="body2" color="text.secondary">
-                          {business.address}
-                        </Typography>
-                      </Box>
-                    )}
-
-                    {/* Description with icon */}
-                    {business.description && (
-                      <Box display="flex" alignItems="flex-start" mb={1}>
-                        <DescriptionIcon
-                          fontSize="small"
-                          color="primary"
-                          sx={{ mr: 0.5, mt: 0.3 }}
-                        />
-                        <Typography variant="body2" color="text.secondary">
-                          {business.description}
-                        </Typography>
-                      </Box>
-                    )}
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <LocationOnIcon fontSize="small" color="primary" />
+                      <Typography variant="body2">{business.address}</Typography>
+                    </Box>
                   </CardContent>
-
                   {/* Action Buttons */}
                   <Box display="flex" justifyContent="flex-end" p={1}>
-                    {/* Download Document Icon (Bottom Left Corner) */}
-                    {business.documents && (
-                      <Tooltip title="Download">
-                        <IconButton
-                          component="a"
-                          href={`${baseurl}/${business.documents}`}
-                          target="_blank"
-                          rel="noopener"
-                          color="primary"
-                        >
-                          <DownloadIcon />
-                        </IconButton>
-                      </Tooltip>
-                    )}
-
                     <Tooltip title="Edit">
                       <IconButton
                         color="primary"
-                        onClick={() =>
-                          navigate(`/p-editbusiness/${business.business_id}`)
-                        }
+                        onClick={() => navigate(`/p-editbusiness/${business.business_id}`)}
                       >
                         <EditIcon />
                       </IconButton>
@@ -271,6 +220,7 @@ function ViewBusiness() {
                     </Tooltip>
                   </Box>
                 </Card>
+
               </Grid>
             ))}
           </Grid>

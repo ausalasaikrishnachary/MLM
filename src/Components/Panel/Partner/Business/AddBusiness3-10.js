@@ -5,14 +5,16 @@ import {
   Grid,
   TextField,
   Typography,
+  MenuItem,
   Container,
   FormControlLabel,
   Checkbox
 } from "@mui/material";
 import PartnerHeader from "../../../Shared/Partner/PartnerNavbar";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { baseurl } from "../../../BaseURL/BaseURL";   // ✅ use baseurl
+
 
 function AddBusiness() {
   const userId = localStorage.getItem("user_id");
@@ -27,8 +29,6 @@ function AddBusiness() {
     email: "",
     phone: "",
     address: "",
-    offer_title: "",
-    offer_description: "",
     logo: null,
     documents: null,
     is_active: true,
@@ -49,43 +49,22 @@ function AddBusiness() {
     try {
       let payload;
 
-      // sanitize website
-      let website = formData.website?.trim();
-      if (website) {
-        if (!/^https?:\/\//i.test(website)) {
-          website = "https://" + website;
-        }
-        try {
-          new URL(website);
-        } catch (err) {
-          alert("Please enter a valid website URL.");
-          return;
-        }
-      }
-
-      const finalFormData = { ...formData, website };
-
-      if (finalFormData.logo || finalFormData.documents) {
-        // ✅ send FormData
+      // If user uploaded logo or documents → use FormData
+      if (formData.logo || formData.documents) {
         payload = new FormData();
-        Object.entries(finalFormData).forEach(([key, value]) => {
-          if (value !== null && value !== "") {
+        Object.entries(formData).forEach(([key, value]) => {
+          if (value !== null) {
             payload.append(key, value);
           }
         });
 
-        await axios.post(`${baseurl}/business/`, payload, {
+        await axios.post("https://shrirajteam.com:81/business/", payload, {
           headers: { "Content-Type": "multipart/form-data" },
         });
       } else {
-        // ✅ send JSON
-        const { logo, documents, ...jsonData } = finalFormData;
-        Object.keys(jsonData).forEach(
-          (key) =>
-            (jsonData[key] === "" || jsonData[key] === null) && delete jsonData[key]
-        );
-
-        await axios.post(`${baseurl}/business/`, jsonData, {
+        // Otherwise → send as JSON
+        const { logo, documents, ...jsonData } = formData;
+        await axios.post("https://shrirajteam.com:81/business/", jsonData, {
           headers: { "Content-Type": "application/json" },
         });
       }
@@ -97,6 +76,7 @@ function AddBusiness() {
       alert("Failed to add business. Check console for details.");
     }
   };
+
 
   return (
     <>
@@ -142,7 +122,7 @@ function AddBusiness() {
             <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
-                label="Website URL"
+                label="Website"
                 name="website"
                 value={formData.website}
                 onChange={handleChange}
@@ -188,34 +168,12 @@ function AddBusiness() {
             </Grid>
 
 
-            <Grid item xs={12}  md={4}>
+            <Grid item xs={12}>
               <TextField
                 fullWidth
                 label="Address"
                 name="address"
                 value={formData.address}
-                onChange={handleChange}
-                variant="outlined"
-              />
-            </Grid>
-
-               <Grid item xs={12}  md={4}>
-              <TextField
-                fullWidth
-                label="Offer Title"
-                name="offer_title"
-                value={formData.offer_title}
-                onChange={handleChange}
-                variant="outlined"
-              />
-            </Grid>
-
-               <Grid item xs={12}  md={4}>
-              <TextField
-                fullWidth
-                label="Offer Description"
-                name="offer_description"
-                value={formData.offer_description}
                 onChange={handleChange}
                 variant="outlined"
               />
