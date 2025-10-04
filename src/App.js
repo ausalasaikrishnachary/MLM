@@ -148,6 +148,9 @@ import AdminBussiness from "./Components/Panel/Admin/AdminBussiness/AdminBussine
 import EditBusiness from "./Components/Panel/Partner/Business/EditBusiness";
 import Comparelist from "./Components/Panel/Partner/Asset/Comparelist";
 import BirthdayPopup from "./Components/Panel/BirthdayPopup/BirthdayPopup";
+import UpVdHowitworks from "./Components/Panel/Admin/UpVdHowitworks/UpVdHowitworks";
+import AddVideo from "./Components/Panel/Admin/UpVdHowitworks/AddVideo";
+import EditVideo from "./Components/Panel/Admin/UpVdHowitworks/EditVideo";
 
 
 
@@ -193,6 +196,9 @@ function Layout() {
 
 
           <Route path="/a-trainingmaterial" element={<TrainingMaterial />} />
+          <Route path="/a-upvdhowitworks" element={<UpVdHowitworks />} />
+          <Route path="/a-editvideo/:id" element={<EditVideo/>} />
+           <Route path="/a-addvideo" element={<AddVideo />} />
           <Route path="/a-addtrainingmaterial" element={<AddTrainingMaterial />} />
           {/* <Route path="/home" element={<LandingPage />} /> */}
           <Route path="/a-dashboard" element={<AdminDashboard />} />
