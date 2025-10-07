@@ -737,140 +737,159 @@ const ShrirajLandingPage = () => {
         </div>
       </section>
 
-      {/* Updated Businesses Section with Pagination */}
-      <section className="py-5 bg-light">
-        <div className="container">
-          <h2 className="section-title text-left mb-5" data-aos="fade-up">
-            Featured Businesses
-          </h2>
+{/* Updated Businesses Section with Pagination */}
+<section className="py-5 bg-light">
+  <div className="container">
+    <h2 className="section-title text-left mb-5" data-aos="fade-up">
+      Featured Businesses
+    </h2>
 
-          <div className="row">
-            {businesses.length > 0 ? (
-              paginatedBusinesses.map((business, index) => (
-                <div
-                  className="col-md-4 mb-4"
-                  key={index}
-                  data-aos="fade-up"
-                  data-aos-delay={(index + 1) * 100}
-                >
-                  <div className="card business-card h-100 shadow-sm">
-                    {/* Business Logo */}
-                    <div className="business-logo-container text-center py-3">
-                      <img
-                        src={`${baseurl}${business.logo}`}
-                        alt={`${business.business_name} logo`}
-                        className="business-logo"
-                        style={{
-                          maxHeight: '80px',
-                          maxWidth: '150px',
-                          objectFit: 'contain'
-                        }}
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = 'https://via.placeholder.com/150x80?text=No+Logo';
-                        }}
-                      />
-                    </div>
-
-                    <div className="card-body">
-                      {/* Business Name and Status */}
-                      <div className="d-flex justify-content-between align-items-start mb-2">
-                        <h5 className="card-title mb-0">{business.business_name}</h5>
-                        {business.is_active && (
-                          <span className="badge bg-success">Active</span>
-                        )}
-                      </div>
-
-                      {/* Business Type */}
-                      <p className="text-muted small mb-2">
-                        <strong>Type:</strong> {business.business_type}
-                      </p>
-
-                      {/* Description */}
-                      <p className="card-text small mb-3">
-                        {business.description}
-                      </p>
-
-                      {/* Contact Information */}
-                      <div className="contact-info">
-                        {business.email && (
-                          <div className="d-flex align-items-center mb-1">
-                            <FontAwesomeIcon
-                              icon={faEnvelope}
-                              className="text-primary me-2"
-                              size="xs"
-                            />
-                            <small className="text-muted">{business.email}</small>
-                          </div>
-                        )}
-
-                        {business.phone && (
-                          <div className="d-flex align-items-center mb-1">
-                            <FontAwesomeIcon
-                              icon={faPhone}
-                              className="text-primary me-2"
-                              size="xs"
-                            />
-                            <small className="text-muted">{business.phone}</small>
-                          </div>
-                        )}
-
-                        {business.address && (
-                          <div className="d-flex align-items-center mb-2">
-                            <FontAwesomeIcon
-                              icon={faMapMarkerAlt}
-                              className="text-primary me-2"
-                              size="xs"
-                            />
-                            <small className="text-muted">{business.address}</small>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Website Link */}
-                      {business.website && (
-                        <div className="mt-3">
-                          <a
-                            href={business.website}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="btn btn-outline-primary btn-sm w-100"
-                          >
-                            Visit Website
-                          </a>
-                        </div>
-                      )}
-                    </div>
+    <div className="row">
+      {businesses.length > 0 ? (
+        paginatedBusinesses.map((business, index) => (
+          <div
+            className="col-md-4 mb-4"
+            key={index}
+            data-aos="fade-up"
+            data-aos-delay={(index + 1) * 100}
+          >
+            <div className="card business-card h-100 shadow-sm position-relative">
+              {/* Offer Ribbon - Top Left Corner */}
+              {business.offer_title && (
+                <div className="position-absolute top-0 start-0">
+                  <div className="offer-ribbon bg-warning text-dark px-3 py-1 shadow-sm">
+                    <strong>{business.offer_title}</strong>
                   </div>
+                  <div className="offer-ribbon-triangle"></div>
                 </div>
-              ))
-            ) : (
-              <div className="col-12 text-center py-4">
-                <p className="text-muted">No businesses available at the moment.</p>
+              )}
+
+              {/* Business Logo */}
+              <div className="business-logo-container text-center py-3">
+                <img
+                  src={`${baseurl}${business.logo}`}
+                  alt={`${business.business_name} logo`}
+                  className="business-logo"
+                  style={{
+                    maxHeight: '80px',
+                    maxWidth: '150px',
+                    objectFit: 'contain'
+                  }}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = 'https://via.placeholder.com/150x80?text=No+Logo';
+                  }}
+                />
               </div>
-            )}
-          </div>
 
-          {/* Business Pagination */}
-          {businesses.length > businessItemsPerPage && (
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
-              <Pagination
-                count={businessTotalPages}
-                page={businessPage}
-                onChange={handleBusinessPageChange}
-                color="primary"
-              />
-            </Box>
-          )}
+              <div className="card-body">
+                {/* Business Name and Status */}
+                <div className="d-flex justify-content-between align-items-start mb-2">
+                  <h5 className="card-title mb-0">{business.business_name}</h5>
+                  {business.is_active && (
+                    <span className="badge bg-success">Active</span>
+                  )}
+                </div>
 
-          {/* View All Businesses Button */}
-          <div className="text-center mt-4">
-            <a href="/business" className="btn btn-primary px-4 py-2">
-              Browse All Businesses
-            </a>
+                {/* Business Type */}
+                <p className="text-muted small mb-2">
+                  <strong>Type:</strong> {business.business_type}
+                </p>
+
+                {/* Description */}
+                <p className="card-text small mb-3">
+                  {business.description}
+                </p>
+
+                {/* Offer Description (if any) */}
+                {business.offer_description && (
+                  <div className="offer-description bg-warning bg-opacity-10 p-3 rounded mb-3">
+                    <p className="small text-muted mb-0">
+                      {business.offer_description}
+                    </p>
+                  </div>
+                )}
+
+                {/* Contact Information */}
+                <div className="contact-info">
+                  {business.email && (
+                    <div className="d-flex align-items-center mb-1">
+                      <FontAwesomeIcon
+                        icon={faEnvelope}
+                        className="text-primary me-2"
+                        size="xs"
+                      />
+                      <small className="text-muted">{business.email}</small>
+                    </div>
+                  )}
+
+                  {business.phone && (
+                    <div className="d-flex align-items-center mb-1">
+                      <FontAwesomeIcon
+                        icon={faPhone}
+                        className="text-primary me-2"
+                        size="xs"
+                      />
+                      <small className="text-muted">{business.phone}</small>
+                    </div>
+                  )}
+
+                  {business.address && (
+                    <div className="d-flex align-items-center mb-2">
+                      <FontAwesomeIcon
+                        icon={faMapMarkerAlt}
+                        className="text-primary me-2"
+                        size="xs"
+                      />
+                      <small className="text-muted">{business.address}</small>
+                    </div>
+                  )}
+                </div>
+
+                {/* Website Link */}
+                {business.website && (
+                  <div className="mt-3">
+                    <a
+                      href={business.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-outline-primary btn-sm w-100"
+                    >
+                      Visit Website
+                    </a>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
+        ))
+      ) : (
+        <div className="col-12 text-center py-4">
+          <p className="text-muted">No businesses available at the moment.</p>
         </div>
-      </section>
+      )}
+    </div>
+
+    {/* Business Pagination */}
+    {businesses.length > businessItemsPerPage && (
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
+        <Pagination
+          count={businessTotalPages}
+          page={businessPage}
+          onChange={handleBusinessPageChange}
+          color="primary"
+        />
+      </Box>
+    )}
+
+    {/* View All Businesses Button */}
+    <div className="text-center mt-4">
+      <a href="/business" className="btn btn-primary px-4 py-2">
+        Browse All Businesses
+      </a>
+    </div>
+  </div>
+</section>
 
       <section className="py-5 bg-light">
         <div className="container">

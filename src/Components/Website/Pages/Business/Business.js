@@ -71,9 +71,52 @@ const AdminBusiness = () => {
                     justifyContent: "space-between",
                     width: "100%",
                     height: "100%",
+                    position: "relative", // Added for ribbon positioning
+                    overflow: "visible", // Ensure ribbon is fully visible
                   }}
                 >
-                  <CardContent sx={{ flexGrow: 1 }}>
+                  {/* Offer Ribbon - Top Left Corner */}
+                  {biz.offer_title && (
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        top: -5,
+                        left: -5,
+                        zIndex: 1,
+                        transform: "rotate(-5deg)",
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          backgroundColor: "#ff6b6b",
+                          color: "white",
+                          px: 2,
+                          py: 0.5,
+                          borderRadius: "8px 8px 8px 0",
+                          boxShadow: "2px 2px 8px rgba(0,0,0,0.2)",
+                          fontSize: "0.75rem",
+                          fontWeight: "bold",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.5px",
+                          "&::after": {
+                            content: '""',
+                            position: "absolute",
+                            bottom: -5,
+                            left: 0,
+                            width: 0,
+                            height: 0,
+                            borderLeft: "5px solid transparent",
+                            borderRight: "5px solid transparent",
+                            borderTop: "5px solid #cc5555",
+                          }
+                        }}
+                      >
+                        {biz.offer_title}
+                      </Box>
+                    </Box>
+                  )}
+
+                  <CardContent sx={{ flexGrow: 1, pt: biz.offer_title ? 1 : 0 }}>
                     <Box display="flex" justifyContent="space-between" alignItems="center">
                       {biz.logo ? (
                         <img
@@ -105,6 +148,23 @@ const AdminBusiness = () => {
                     <Typography variant="body2" color="text.secondary" mt={1}>
                       {biz.description}
                     </Typography>
+
+                    {/* Offer Description */}
+                    {biz.offer_description && (
+                      <Box
+                        sx={{
+                          backgroundColor: "#fff9e6",
+                          border: "1px solid #ffd54f",
+                          borderRadius: "8px",
+                          p: 1.5,
+                          mt: 2,
+                        }}
+                      >
+                        <Typography variant="body2" color="#e65100" fontWeight="medium">
+                          {biz.offer_description}
+                        </Typography>
+                      </Box>
+                    )}
 
                     <Box display="flex" alignItems="center" mt={2} gap={1}>
                       <LocationOnIcon fontSize="small" color="error" />
@@ -156,17 +216,6 @@ const AdminBusiness = () => {
                       >
                         <PhoneIcon />
                       </IconButton>
-
-                      {/* {biz.documents && (
-                        <IconButton
-                          sx={{ bgcolor: "#f2f2f7", "&:hover": { bgcolor: "#e1e1ec" } }}
-                          onClick={() =>
-                            window.open(`${baseurl}${biz.documents}`, "_blank") // ✅ replaced baseurl
-                          }
-                        >
-                          ⬇️
-                        </IconButton>
-                      )} */}
                     </Box>
                   </Box>
                 </Card>
@@ -203,10 +252,41 @@ const AdminBusiness = () => {
 
               <Divider sx={{ my: 2 }} />
 
+              {/* Offer in Dialog */}
+              {selectedBusiness.offer_title && (
+                <Box
+                  sx={{
+                    backgroundColor: "#ff6b6b",
+                    color: "white",
+                    display: "inline-block",
+                    px: 2,
+                    py: 0.5,
+                    borderRadius: "12px",
+                    mb: 2,
+                  }}
+                >
+                  <Typography variant="subtitle2" fontWeight="bold">
+                    {selectedBusiness.offer_title}
+                  </Typography>
+                </Box>
+              )}
+
               <Typography variant="subtitle1" fontWeight="bold">About</Typography>
               <Typography variant="body2" color="text.secondary" mb={2}>
                 {selectedBusiness.description}
               </Typography>
+
+              {/* Offer Description in Dialog */}
+              {selectedBusiness.offer_description && (
+                <>
+                  <Typography variant="subtitle1" fontWeight="bold" mt={2}>
+                    Special Offer
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" mb={2}>
+                    {selectedBusiness.offer_description}
+                  </Typography>
+                </>
+              )}
 
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
@@ -236,13 +316,6 @@ const AdminBusiness = () => {
               </Grid>
 
               <Divider sx={{ my: 2 }} />
-
-              {/* <Box display="flex" justifyContent="space-between" mt={2} flexWrap="wrap" gap={1}>
-                <Button variant="contained" startIcon={<EmailIcon />} sx={{ background: "linear-gradient(90deg, #4776E6, #8E54E9)", borderRadius: "30px", px: 3, "&:hover": { background: "linear-gradient(90deg, #3b66d9, #7a46d3)" } }}>
-                  Contact Business
-                </Button>
-                <Button variant="outlined" startIcon={<ShareIcon />} sx={{ borderRadius: "30px" }}>Share</Button>
-              </Box> */}
             </DialogContent>
           )}
         </Dialog>
