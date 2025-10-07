@@ -237,31 +237,31 @@ const AssetDetail = () => {
   const [propertyTypeName, setPropertyTypeName] = useState("");
   const [tabValue, setTabValue] = useState(0);
 
-  useEffect(() => {
-    const fetchPropertyTypes = async () => {
-      try {
-        const res = await fetch("https://shrirajteam.com:81/property-types/");
-        const data = await res.json();
-        setPropertyTypes(data);
+useEffect(() => {
+  const fetchPropertyTypes = async () => {
+    try {
+      const res = await fetch(`${baseurl}/property-types/`);
+      const data = await res.json();
+      setPropertyTypes(data);
 
-        if (property) {
-          const matchedType = data.find(
-            (t) => t.property_type_id === property.property_type
-          );
-          if (matchedType) {
-            setPropertyTypeName(matchedType.name);
-            if (matchedType.name.toLowerCase() === "plot") {
-              setIsPlot(true);
-            }
+      if (property) {
+        const matchedType = data.find(
+          (t) => t.property_type_id === property.property_type
+        );
+        if (matchedType) {
+          setPropertyTypeName(matchedType.name);
+          if (matchedType.name.toLowerCase() === "plot") {
+            setIsPlot(true);
           }
         }
-      } catch (err) {
-        console.error("Error fetching property types:", err);
       }
-    };
+    } catch (err) {
+      console.error("Error fetching property types:", err);
+    }
+  };
 
-    fetchPropertyTypes();
-  }, [property]);
+  fetchPropertyTypes();
+}, [property]);
 
   if (!property) {
     return <Typography>Loading property details...</Typography>;

@@ -49,7 +49,8 @@ const Edit_Tmanagement = () => {
     roles: [],
     image: '',
     pan: '',
-    aadhaar: ''
+    aadhaar: '',
+ 
   });
 
   const [files, setFiles] = useState({

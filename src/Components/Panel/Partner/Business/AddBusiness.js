@@ -172,21 +172,7 @@ function AddBusiness() {
               />
             </Grid>
 
-            <Grid item xs={12} md={4}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={formData.is_active}
-                    onChange={(e) =>
-                      setFormData({ ...formData, is_active: e.target.checked })
-                    }
-                    color="primary"
-                  />
-                }
-                label="Active"
-              />
-            </Grid>
-
+        
 
             <Grid item xs={12}  md={4}>
               <TextField
@@ -210,31 +196,7 @@ function AddBusiness() {
               />
             </Grid>
 
-               <Grid item xs={12}  md={4}>
-              <TextField
-                fullWidth
-                label="Offer Description"
-                name="offer_description"
-                value={formData.offer_description}
-                onChange={handleChange}
-                variant="outlined"
-              />
-            </Grid>
-
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                multiline
-                rows={3}
-                label="Description"
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                variant="outlined"
-              />
-            </Grid>
-
-            {/* File Uploads */}
+             {/* File Uploads */}
             <Grid item xs={12} md={4}>
               <Button
                 variant="outlined"
@@ -268,9 +230,54 @@ function AddBusiness() {
               </Button>
               {formData.documents && <Typography mt={1}>{formData.documents.name}</Typography>}
             </Grid>
+        
+
+               <Grid item xs={12} sm={6} md={6} >
+              <TextField
+               fullWidth
+                multiline
+                rows={3}
+                label="Offer Description"
+                name="offer_description"
+                value={formData.offer_description}
+                onChange={handleChange}
+                variant="outlined"
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={6} md={6}>
+              <TextField
+                fullWidth
+                multiline
+                rows={3}
+                label="Description"
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                variant="outlined"
+              />
+            </Grid>
+
+      
 
 
           </Grid>
+
+              <Grid item xs={12} md={4}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={formData.is_active}
+                    onChange={(e) =>
+                      setFormData({ ...formData, is_active: e.target.checked })
+                    }
+                    color="primary"
+                  />
+                }
+                label="Active"
+              />
+            </Grid>
+
 
           <Box textAlign="center" mt={4}>
             <Button

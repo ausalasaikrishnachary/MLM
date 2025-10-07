@@ -14,6 +14,7 @@ import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import axios from "axios";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { baseurl } from "../../../BaseURL/BaseURL";
 
 const AboutUs = () => {
   const [videos, setVideos] = useState([]);
@@ -23,7 +24,7 @@ const AboutUs = () => {
   // ✅ Fetch videos from API
   useEffect(() => {
     axios
-      .get("https://rahul30.pythonanywhere.com/how-it-works/")
+      .get(`${baseurl}/how-it-works/`)
       .then((res) => {
         setVideos(res.data); // API returns array of { title, description, video_url }
       })

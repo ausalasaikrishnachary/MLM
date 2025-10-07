@@ -207,21 +207,7 @@ const handleSubmit = (e) => {
                                 onChange={handleChange}
                             />
                         </Grid>
-                              {/* Active Checkbox */}
-                     <Grid item xs={12} sm={4}>
-    <Box display="flex" alignItems="center" justifyContent="center" gap={1} mt={1}>
-        <input
-            type="checkbox"
-            name="is_active"
-            checked={businessData.is_active}
-            onChange={handleChange}
-            style={{ width: '20px', height: '15px', cursor: 'pointer' }} // ✅ bigger checkbox
-        />
-        <Typography variant="h5" sx={{ cursor: 'pointer' }}>
-            Active
-        </Typography>
-    </Box>
-</Grid>
+
 
                         <Grid item xs={12} sm={4}>
                             <TextField
@@ -233,39 +219,25 @@ const handleSubmit = (e) => {
                             />
                         </Grid>
 
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                fullWidth
-                                label="Offer Title"
-                                name="offer_title"
-                                value={businessData.offer_title}
-                                onChange={handleChange}
-                            />
-                        </Grid>
+<Grid
+  item
+  xs={12}
+  sm={4}
+  sx={{
+    mt: { xs: 0, sm: "40px", md: "40px" } 
+  }}
+>
+  <TextField
+    fullWidth
+    label="Offer Title"
+    name="offer_title"
+    value={businessData.offer_title}
+    onChange={handleChange}
+  />
+</Grid>
 
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                fullWidth
-                                label="Offer Description"
-                                name="offer_description"
-                                value={businessData.offer_description}
-                                onChange={handleChange}
-                            />
-                        </Grid>
 
-                             <Grid item xs={12} >
-                            <TextField
-                                fullWidth
-                             multiline
-                            rows={3}
-                                label="Description"
-                                name="description"
-                                value={businessData.description}
-                                onChange={handleChange}
-                            />
-                        </Grid>
-
-                        {/* Logo File Name */}
+                                {/* Logo File Name */}
                         <Grid item xs={12} sm={4}>
                             <Typography variant="subtitle2" mb={1}>
                                 Logo File:
@@ -317,14 +289,58 @@ const handleSubmit = (e) => {
                             </Button>
                         </Grid>
 
+<Grid item xs={12} sm={6} md={6}>
+      <TextField
+    fullWidth
+    multiline
+    rows={3}
+    label="Offer Description"
+    name="offer_description"
+    value={businessData.offer_description}
+    onChange={handleChange}
+  />
+</Grid>
+
+<Grid item xs={12}  sm={6} md={6}>
+      <TextField
+    fullWidth
+    multiline
+    rows={3}
+    label="Description"
+    name="description"
+    value={businessData.description}
+    onChange={handleChange}
+  />
+</Grid>
+
+
+                
+
                   
                     </Grid>
 
+
+
+                              {/* Active Checkbox */}
+                     <Grid item xs={12} sm={4}>
+    <Box display="flex" alignItems="center" justifyContent="start" gap={0.5} mt={3}>
+        <input
+            type="checkbox"
+            name="is_active"
+            checked={businessData.is_active}
+            onChange={handleChange}
+            style={{ width: '20px', height: '15px', cursor: 'pointer' }} // ✅ bigger checkbox
+        />
+        <Typography variant="h6" sx={{ cursor: 'pointer' }}>
+            Active
+        </Typography>
+    </Box>
+</Grid>
                     <Button
                         type="submit"
                         variant="contained"
                         color="primary"
-                        sx={{ mt: 3 }}
+                        sx={{ mt: 1.5}}
                         disabled={saving}
                     >
                         {saving ? "Saving..." : "Update Business"}

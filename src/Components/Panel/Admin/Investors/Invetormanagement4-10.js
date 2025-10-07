@@ -49,8 +49,7 @@ const Tmanagement = () => {
           referralId: user.referral_id,
           kycStatus: user.kyc_status,
           fullData: user,
-          created_at: user.created_at,
-          status:user.status
+          created_at: user.created_at
         }));
         setData(transformed);
         setLoading(false);
@@ -107,7 +106,7 @@ const handleDelete = (user_id) => {
         .then((res) => {
           if (res.status === 204 || res.status === 200) {
             setData((prevData) =>
-              prevData.filter((user) => user.id !== user_id)
+              prevData.filter((user) => user.user_id !== user_id) // <-- match backend field (user_id not id)
             );
             Swal.fire({
               icon: "success",
@@ -137,37 +136,6 @@ const handleDelete = (user_id) => {
         });
     }
   });
-};
-
-const handleStatusChange = async (userId, newStatus) => {
-  try {
-    await axios.put(`${baseurl}/users/${userId}/`, { status: newStatus });
-    setData((prevData) =>
-      prevData.map((user) =>
-        user.id === userId
-          ? {
-              ...user,
-              status: newStatus,
-              fullData: { ...user.fullData, status: newStatus },
-            }
-          : user
-      )
-    );
-    Swal.fire({
-      icon: "success",
-      title: "Updated!",
-      text: "Status updated successfully.",
-      timer: 1500,
-      showConfirmButton: false,
-    });
-  } catch (err) {
-    console.error("Error updating status:", err);
-    Swal.fire({
-      icon: "error",
-      title: "Error",
-      text: "Failed to update status.",
-    });
-  }
 };
 
 
@@ -250,7 +218,7 @@ const handleStatusChange = async (userId, newStatus) => {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={9} sx={noDataStyle}>
+                <TableCell colSpan={8} sx={noDataStyle}>
                   Loading...
                 </TableCell>
               </TableRow>
@@ -268,22 +236,7 @@ const handleStatusChange = async (userId, newStatus) => {
                   <TableCell sx={cellBodyStyle}>
                     {new Date(user.created_at).toLocaleDateString("en-IN")}
                   </TableCell>
-                <TableCell sx={cellBodyStyle}>
-  <Select
-    value={user.status}
-    onChange={(e) => handleStatusChange(user.id, e.target.value)}
-    size="small"
-    sx={{
-      minWidth: 100,
-      color: user.status === "Active" ? "green" : "red", // ✅ dynamic text color
-      fontWeight: "bold",
-    }}
-  >
-    <MenuItem value="Active" sx={{ color: "green",  }}>Active</MenuItem>
-    <MenuItem value="Inactive" sx={{ color: "red", }}>Inactive</MenuItem>
-  </Select>
-</TableCell>
-
+                    <TableCell sx={cellBodyStyle}>{user.status}</TableCell>
                   <TableCell sx={cellBodyStyle}>
                     <Box
                       sx={{
@@ -319,7 +272,7 @@ const handleStatusChange = async (userId, newStatus) => {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={9} sx={noDataStyle}>
+                <TableCell colSpan={8} sx={noDataStyle}>
                   No Data Found
                 </TableCell>
               </TableRow>

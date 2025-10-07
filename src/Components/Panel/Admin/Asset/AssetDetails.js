@@ -82,8 +82,6 @@ import {
   Dialog, IconButton, Tabs, Tab, Container
 } from '@mui/material';
 import Header from '../../../Shared/Navbar/Navbar';
-import { baseurl } from '../../../BaseURL/BaseURL';
-
 // icons
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
@@ -95,6 +93,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import DetailsIcon from '@mui/icons-material/Details';
 import PersonIcon from '@mui/icons-material/Person';
 import SettingsIcon from '@mui/icons-material/Settings';
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -116,21 +115,20 @@ const AssetDetails = () => {
   const location = useLocation();
   const { property } = location.state || {};
   const { id } = useParams();
-
   const [openMedia, setOpenMedia] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [isPlot, setIsPlot] = useState(false);
   const [tabValue, setTabValue] = useState(0);
+ 
 
   useEffect(() => {
     // fetch property types
     const fetchPropertyTypes = async () => {
       try {
-        const res = await fetch("https://shrirajteam.com:81/property-types/");
+        const res = await fetch(`${baseurl}property-types/`);
         const data = await res.json();
         setPropertyTypes(data);
-
         if (property) {
           // find matched type
           const matchedType = data.find(
@@ -144,7 +142,6 @@ const AssetDetails = () => {
         console.error("Error fetching property types:", err);
       }
     };
-
     fetchPropertyTypes();
   }, [property]);
 
@@ -209,8 +206,8 @@ const AssetDetails = () => {
         <Container maxWidth="lg">
           {/* Back button */}
           <Box mb={3}>
-            <Button 
-              variant="outlined" 
+            <Button
+              variant="outlined"
               onClick={() => navigate(-1)}
               startIcon={<ArrowBackIosNewIcon />}
               sx={{ borderRadius: 2 }}
@@ -218,7 +215,6 @@ const AssetDetails = () => {
               Back
             </Button>
           </Box>
-
           {/* Title + Status */}
           <Card sx={{ borderRadius: 2, boxShadow: 2, mb: 3 }}>
             <CardContent sx={{ p: 3 }}>
@@ -248,14 +244,13 @@ const AssetDetails = () => {
                   }}
                 />
               </Box>
-              
+             
               {/* Price */}
               <Typography variant="h5" color="text.secondary" sx={{ mt: 1 }}>
                 {formatCurrency(property.total_property_value)}
               </Typography>
             </CardContent>
           </Card>
-
           {/* Media Preview with Arrows */}
           <Card sx={{ borderRadius: 2, boxShadow: 2, mb: 3, overflow: 'hidden' }}>
             <Box
@@ -282,7 +277,6 @@ const AssetDetails = () => {
                       onClick={() => handleOpenMedia(currentIndex)}
                     />
                   )}
-
                   {/* Left Arrow */}
                   {media.length > 1 && (
                     <IconButton
@@ -300,7 +294,6 @@ const AssetDetails = () => {
                       <ArrowBackIosNewIcon />
                     </IconButton>
                   )}
-
                   {/* Right Arrow */}
                   {media.length > 1 && (
                     <IconButton
@@ -318,7 +311,6 @@ const AssetDetails = () => {
                       <ArrowForwardIosIcon />
                     </IconButton>
                   )}
-
                   {/* Media Counter */}
                   <Box
                     sx={{
@@ -337,12 +329,12 @@ const AssetDetails = () => {
                   </Box>
                 </>
               ) : (
-                <Box 
-                  sx={{ 
-                    width: "100%", 
-                    height: "100%", 
-                    display: "flex", 
-                    alignItems: "center", 
+                <Box
+                  sx={{
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    alignItems: "center",
                     justifyContent: "center",
                     backgroundColor: "#e9ecef"
                   }}
@@ -353,7 +345,6 @@ const AssetDetails = () => {
                 </Box>
               )}
             </Box>
-
             {/* Video Info */}
             {property.videos.length > 0 && (
               <Box sx={{ p: 2, textAlign: 'center', bgcolor: 'background.paper' }}>
@@ -363,7 +354,6 @@ const AssetDetails = () => {
               </Box>
             )}
           </Card>
-
           {/* Full-size Media Dialog */}
           <Dialog open={openMedia} onClose={handleClose} maxWidth="lg" fullWidth>
             <Box
@@ -382,14 +372,12 @@ const AssetDetails = () => {
               >
                 <CloseIcon />
               </IconButton>
-
               <IconButton
                 onClick={handlePrev}
                 sx={{ position: "absolute", left: 10, color: "white", zIndex: 10 }}
               >
                 <ArrowBackIosNewIcon fontSize="large" />
               </IconButton>
-
               {media[currentIndex]?.type === "video" ? (
                 <video
                   src={media[currentIndex].url}
@@ -403,7 +391,6 @@ const AssetDetails = () => {
                   style={{ maxHeight: "100%", maxWidth: "100%" }}
                 />
               )}
-
               <IconButton
                 onClick={handleNext}
                 sx={{ position: "absolute", right: 10, color: "white", zIndex: 10 }}
@@ -412,7 +399,6 @@ const AssetDetails = () => {
               </IconButton>
             </Box>
           </Dialog>
-
           {/* Tab Navigation */}
           <Card sx={{ borderRadius: 2, boxShadow: 2, mb: 3 }}>
             <Tabs
@@ -439,7 +425,6 @@ const AssetDetails = () => {
               {property.buyer_user && <Tab icon={<PersonIcon />} iconPosition="start" label="Buyer Details" />}
               <Tab icon={<SettingsIcon />} iconPosition="start" label="System Info" />
             </Tabs>
-
             {/* Tab Content */}
             <Box id="tab-content" sx={{ maxHeight: '60vh', overflow: 'auto', p: 3 }}>
               <TabPanel value={tabValue} index={0}>
@@ -488,7 +473,6 @@ const AssetDetails = () => {
                   </Grid>
                 </Grid>
               </TabPanel>
-
               <TabPanel value={tabValue} index={1}>
                 <Typography
                   variant="h5"
@@ -518,7 +502,6 @@ const AssetDetails = () => {
                   </Typography>
                 </Box>
               </TabPanel>
-
               <TabPanel value={tabValue} index={2}>
                 <Typography
                   variant="h5"
@@ -554,7 +537,6 @@ const AssetDetails = () => {
                   ))}
                 </Grid>
               </TabPanel>
-
               {!isPlot && (
                 <TabPanel value={tabValue} index={3}>
                   <Typography
@@ -601,7 +583,6 @@ const AssetDetails = () => {
                   </Grid>
                 </TabPanel>
               )}
-
               <TabPanel value={tabValue} index={isPlot ? 3 : 4}>
                 <Typography
                   variant="h5"
@@ -637,7 +618,6 @@ const AssetDetails = () => {
                   ))}
                 </Grid>
               </TabPanel>
-
               <TabPanel value={tabValue} index={isPlot ? 4 : 5}>
                 <Typography
                   variant="h5"
@@ -683,7 +663,6 @@ const AssetDetails = () => {
                   </Grid>
                 </Box>
               </TabPanel>
-
               {property.buyer_user && (
                 <TabPanel value={tabValue} index={isPlot ? 5 : 6}>
                   <Typography
@@ -724,7 +703,6 @@ const AssetDetails = () => {
                   </Box>
                 </TabPanel>
               )}
-
               <TabPanel value={tabValue} index={property.buyer_user ? (isPlot ? 6 : 7) : (isPlot ? 5 : 6)}>
                 <Typography
                   variant="h5"
@@ -768,4 +746,4 @@ const AssetDetails = () => {
   );
 };
 
-export default AssetDetails;
+export default AssetDetails;  

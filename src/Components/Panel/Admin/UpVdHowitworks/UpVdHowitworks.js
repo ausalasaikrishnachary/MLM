@@ -15,6 +15,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";     // ✅ Import added
 import DeleteIcon from "@mui/icons-material/Delete"; // ✅ Import added
+import { baseurl } from "../../../BaseURL/BaseURL";
 
 const UpVdHowitworks = () => {
   const navigate = useNavigate();
@@ -24,19 +25,18 @@ const UpVdHowitworks = () => {
   // ✅ Show 6 per page (3 per row × 2 rows)
   const itemsPerPage = 6;
 
-  // Fetch videos from API
-  useEffect(() => {
-    const fetchVideos = async () => {
-      try {
-        const res = await fetch("https://rahul30.pythonanywhere.com/how-it-works/");
-        const data = await res.json();
-        setVideos(data);
-      } catch (err) {
-        console.error("❌ Failed to fetch videos:", err);
-      }
-    };
-    fetchVideos();
-  }, []);
+useEffect(() => {
+  const fetchVideos = async () => {
+    try {
+      const res = await fetch(`${baseurl}how-it-works/`);
+      const data = await res.json();
+      setVideos(data);
+    } catch (err) {
+      console.error("❌ Failed to fetch videos:", err);
+    }
+  };
+  fetchVideos();
+}, []);
 
   // Pagination
   const totalPages = Math.ceil(videos.length / itemsPerPage);
@@ -127,31 +127,28 @@ const UpVdHowitworks = () => {
                
 
 <Tooltip title="Delete">
-  <IconButton
-    sx={{ color: "#d32f2f" }}
-    onClick={async () => {
-      if (!window.confirm("Are you sure you want to delete this video?")) return;
+ <IconButton
+  sx={{ color: "#d32f2f" }}
+  onClick={async () => {
+    if (!window.confirm("Are you sure you want to delete this video?")) return;
 
-      try {
-        const res = await fetch(
-          `https://rahul30.pythonanywhere.com/how-it-works/${video.id}/`,
-          { method: "DELETE" }
-        );
+    try {
+      const res = await fetch(`${baseurl}how-it-works/${video.id}/`, { method: "DELETE" });
 
-        if (!res.ok) throw new Error("Failed to delete video");
+      if (!res.ok) throw new Error("Failed to delete video");
 
-        // ✅ Remove deleted video from state to update UI immediately
-        setVideos(prev => prev.filter(v => v.id !== video.id));
+      // ✅ Remove deleted video from state to update UI immediately
+      setVideos(prev => prev.filter(v => v.id !== video.id));
 
-        alert("Video deleted successfully!");
-      } catch (err) {
-        console.error("❌ Error deleting video:", err);
-        alert("Error deleting video. Please try again.");
-      }
-    }}
-  >
-    <DeleteIcon />
-  </IconButton>
+      alert("Video deleted successfully!");
+    } catch (err) {
+      console.error("❌ Error deleting video:", err);
+      alert("Error deleting video. Please try again.");
+    }
+  }}
+>
+  <DeleteIcon />
+</IconButton>
 </Tooltip>
 
                   </Grid>
