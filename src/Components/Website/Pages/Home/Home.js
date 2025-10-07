@@ -54,6 +54,18 @@ const ShrirajLandingPage = () => {
   const itemsPerPage = 3;
   const totalPages = Math.ceil(properties.length / itemsPerPage);
   const paginatedProperties = properties.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+  const [businesses, setBusinesses] = useState([]);
+  const [businessPage, setBusinessPage] = useState(1);
+  const businessItemsPerPage = 3;
+  const businessTotalPages = Math.ceil(businesses.length / businessItemsPerPage);
+  const paginatedBusinesses = businesses.slice(
+    (businessPage - 1) * businessItemsPerPage,
+    businessPage * businessItemsPerPage
+  );
+
+  const handleBusinessPageChange = (event, value) => {
+    setBusinessPage(value);
+  };
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -64,6 +76,18 @@ const ShrirajLandingPage = () => {
         once: true
       });
     }
+  }, []);
+
+  useEffect(() => {
+    const fetchBusinesses = async () => {
+      try {
+        const response = await axios.get(`${baseurl}/business/`);
+        setBusinesses(response.data);
+      } catch (error) {
+        console.error("Error fetching businesses:", error);
+      }
+    };
+    fetchBusinesses();
   }, []);
 
   useEffect(() => {
@@ -124,6 +148,8 @@ const ShrirajLandingPage = () => {
     setPage(value);
   };
 
+
+
   const SearchInput = ({ activeTab }) => {
     const [query, setQuery] = useState('');
     const [suggestions, setSuggestions] = useState([]);
@@ -165,6 +191,8 @@ const ShrirajLandingPage = () => {
         }
       };
     }, []);
+
+
 
     const handleSearchClick = () => {
       if (query.trim().length >= 2) {
@@ -564,7 +592,7 @@ const ShrirajLandingPage = () => {
         )}
       </div>
 
-      <section className="py-5 bg-light">
+      <section className="py-5">
         <div className="container">
           <h2 className="section-title text-left mb-5" data-aos="fade-up">
             Featured Properties Section
@@ -703,6 +731,141 @@ const ShrirajLandingPage = () => {
           </Box>
           <div className="text-center mt-3">
             <a href="/properties" className="btn btn-primary px-4 py-2">
+              Browse All Properties
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Updated Businesses Section with Pagination */}
+      <section className="py-5 bg-light">
+        <div className="container">
+          <h2 className="section-title text-left mb-5" data-aos="fade-up">
+            Featured Businesses
+          </h2>
+
+          <div className="row">
+            {businesses.length > 0 ? (
+              paginatedBusinesses.map((business, index) => (
+                <div
+                  className="col-md-4 mb-4"
+                  key={index}
+                  data-aos="fade-up"
+                  data-aos-delay={(index + 1) * 100}
+                >
+                  <div className="card business-card h-100 shadow-sm">
+                    {/* Business Logo */}
+                    <div className="business-logo-container text-center py-3">
+                      <img
+                        src={`${baseurl}${business.logo}`}
+                        alt={`${business.business_name} logo`}
+                        className="business-logo"
+                        style={{
+                          maxHeight: '80px',
+                          maxWidth: '150px',
+                          objectFit: 'contain'
+                        }}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = 'https://via.placeholder.com/150x80?text=No+Logo';
+                        }}
+                      />
+                    </div>
+
+                    <div className="card-body">
+                      {/* Business Name and Status */}
+                      <div className="d-flex justify-content-between align-items-start mb-2">
+                        <h5 className="card-title mb-0">{business.business_name}</h5>
+                        {business.is_active && (
+                          <span className="badge bg-success">Active</span>
+                        )}
+                      </div>
+
+                      {/* Business Type */}
+                      <p className="text-muted small mb-2">
+                        <strong>Type:</strong> {business.business_type}
+                      </p>
+
+                      {/* Description */}
+                      <p className="card-text small mb-3">
+                        {business.description}
+                      </p>
+
+                      {/* Contact Information */}
+                      <div className="contact-info">
+                        {business.email && (
+                          <div className="d-flex align-items-center mb-1">
+                            <FontAwesomeIcon
+                              icon={faEnvelope}
+                              className="text-primary me-2"
+                              size="xs"
+                            />
+                            <small className="text-muted">{business.email}</small>
+                          </div>
+                        )}
+
+                        {business.phone && (
+                          <div className="d-flex align-items-center mb-1">
+                            <FontAwesomeIcon
+                              icon={faPhone}
+                              className="text-primary me-2"
+                              size="xs"
+                            />
+                            <small className="text-muted">{business.phone}</small>
+                          </div>
+                        )}
+
+                        {business.address && (
+                          <div className="d-flex align-items-center mb-2">
+                            <FontAwesomeIcon
+                              icon={faMapMarkerAlt}
+                              className="text-primary me-2"
+                              size="xs"
+                            />
+                            <small className="text-muted">{business.address}</small>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Website Link */}
+                      {business.website && (
+                        <div className="mt-3">
+                          <a
+                            href={business.website}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn btn-outline-primary btn-sm w-100"
+                          >
+                            Visit Website
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="col-12 text-center py-4">
+                <p className="text-muted">No businesses available at the moment.</p>
+              </div>
+            )}
+          </div>
+
+          {/* Business Pagination */}
+          {businesses.length > businessItemsPerPage && (
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
+              <Pagination
+                count={businessTotalPages}
+                page={businessPage}
+                onChange={handleBusinessPageChange}
+                color="primary"
+              />
+            </Box>
+          )}
+
+          {/* View All Businesses Button */}
+          <div className="text-center mt-4">
+            <a href="/business" className="btn btn-primary px-4 py-2">
               Browse All Properties
             </a>
           </div>

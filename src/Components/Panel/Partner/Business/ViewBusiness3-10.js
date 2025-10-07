@@ -32,7 +32,7 @@ function ViewBusiness() {
 
 
   useEffect(() => {
-    fetch("https://shrirajteam.com:81/business/")
+    fetch("https://rahul30.pythonanywhere.com/business/")
       .then((res) => res.json())
       .then((data) => {
         const filtered = data.filter(

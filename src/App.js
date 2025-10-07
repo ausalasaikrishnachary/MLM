@@ -151,6 +151,7 @@ import BirthdayPopup from "./Components/Panel/BirthdayPopup/BirthdayPopup";
 import UpVdHowitworks from "./Components/Panel/Admin/UpVdHowitworks/UpVdHowitworks";
 import AddVideo from "./Components/Panel/Admin/UpVdHowitworks/AddVideo";
 import EditVideo from "./Components/Panel/Admin/UpVdHowitworks/EditVideo";
+import Business from "./Components/Website/Pages/Business/Business";
 
 
 
@@ -160,8 +161,8 @@ function Layout() {
   const [showPopup, setShowPopup] = useState(false);
 
   // Define paths where Header and Footer should be visible
-  const publicPaths = ["/", "/aboutus", "/FAQ", "/contactus", "/properties", "/propertydetails", "/termsandconditions", "/privacypolicy", "/refundpolicy", "/filteredproperties", "/viewpropertiesdetails/:id"];
-  const footerPaths = ["/", "/aboutus", "/FAQ", "/contactus", "/properties", "/termsandconditions", "/privacypolicy", "/refundpolicy", "/filteredproperties", "/viewpropertiesdetails/:id"]; // Removed '/propertydetails'
+  const publicPaths = ["/", "/aboutus", "/FAQ", "/contactus", "/properties", "/propertydetails", "/termsandconditions", "/privacypolicy", "/refundpolicy", "/filteredproperties", "/viewpropertiesdetails/:id", "/business"];
+  const footerPaths = ["/", "/aboutus", "/FAQ", "/contactus", "/properties", "/termsandconditions", "/privacypolicy", "/refundpolicy", "/filteredproperties", "/viewpropertiesdetails/:id", "/business"]; // Removed '/propertydetails'
 
   // Trigger popup after 60 seconds on public pages
   useEffect(() => {
@@ -193,6 +194,7 @@ function Layout() {
           <Route path="/contactus" element={<Contact />} />
           <Route path="/properties" element={<Properties />} />
           <Route path="/propertydetails" element={<PropertyDetail />} />
+          <Route path="/business" element={<Business />} />
 
 
           <Route path="/a-trainingmaterial" element={<TrainingMaterial />} />

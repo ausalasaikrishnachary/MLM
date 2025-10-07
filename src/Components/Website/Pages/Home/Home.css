@@ -691,3 +691,40 @@ p, .card-body {
   }
 }
 
+/* Business Cards Styling */
+.business-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.business-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  border-color: #6f979b;
+}
+
+.business-logo-container {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.business-logo {
+  transition: transform 0.3s ease;
+}
+
+.business-card:hover .business-logo {
+  transform: scale(1.05);
+}
+
+.offer-section {
+  border-left: 4px solid #ffc107;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .business-card {
+    margin-bottom: 1.5rem;
+  }
+}

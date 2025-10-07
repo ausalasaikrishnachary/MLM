@@ -78,6 +78,7 @@ const navigate = useNavigate();
   },
     { label: 'Contact us', path: '/contactus' },
     { label: 'FAQs', path: '/FAQ' },
+    { label: 'Business', path: '/business' },
   ];
 
   const drawer = (
