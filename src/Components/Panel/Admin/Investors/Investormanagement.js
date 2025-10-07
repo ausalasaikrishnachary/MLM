@@ -279,8 +279,8 @@ const handleStatusChange = async (userId, newStatus) => {
       fontWeight: "bold",
     }}
   >
-    <MenuItem value="Active" sx={{ color: "green",  }}>Active</MenuItem>
-    <MenuItem value="Inactive" sx={{ color: "red", }}>Inactive</MenuItem>
+    <MenuItem value="active" sx={{ color: "green",  }}>Active</MenuItem>
+    <MenuItem value="inactive" sx={{ color: "red", }}>Inactive</MenuItem>
   </Select>
 </TableCell>
 
