@@ -866,7 +866,7 @@ const ShrirajLandingPage = () => {
           {/* View All Businesses Button */}
           <div className="text-center mt-4">
             <a href="/business" className="btn btn-primary px-4 py-2">
-              Browse All Properties
+              Browse All Businesses
             </a>
           </div>
         </div>
