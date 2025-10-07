@@ -240,7 +240,7 @@ const handleSubmit = (e) => {
                                 {/* Logo File Name */}
                         <Grid item xs={12} sm={4}>
                             <Typography variant="subtitle2" mb={1}>
-                                Logo File:
+                                Image File:
                             </Typography>
                             {logoFile ? (
                                 <Typography variant="body2">{logoFile.name}</Typography>
@@ -249,11 +249,11 @@ const handleSubmit = (e) => {
                                     {getFileName(businessData.logo)}
                                 </Typography>
                             ) : (
-                                <Typography variant="body2">No logo uploaded</Typography>
+                                <Typography variant="body2">No Image uploaded</Typography>
                             )}
 
                             <Button variant="outlined" component="label" fullWidth>
-                                Upload Logo
+                                Upload Image
                                 <input
                                     type="file"
                                     hidden

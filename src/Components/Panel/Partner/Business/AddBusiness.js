@@ -203,7 +203,7 @@ function AddBusiness() {
                 component="label"
                 fullWidth
               >
-                Upload Logo
+                Upload Image
                 <input
                   type="file"
                   hidden
