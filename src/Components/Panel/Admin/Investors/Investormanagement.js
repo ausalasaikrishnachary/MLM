@@ -275,7 +275,7 @@ const handleStatusChange = async (userId, newStatus) => {
     size="small"
     sx={{
       minWidth: 100,
-      color: user.status === "Active" ? "green" : "red", // ✅ dynamic text color
+      color: user.status === "active" ? "green" : "red", // ✅ dynamic text color
       fontWeight: "bold",
     }}
   >
