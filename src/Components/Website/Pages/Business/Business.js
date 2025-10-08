@@ -12,6 +12,7 @@ import {
   Dialog,
   DialogContent,
   Divider,
+  Dialog as LogoDialog,
 } from "@mui/material";
 import BusinessIcon from "@mui/icons-material/Business";
 import PhoneIcon from "@mui/icons-material/Phone";
@@ -21,17 +22,19 @@ import EmailIcon from "@mui/icons-material/Email";
 import CloseIcon from "@mui/icons-material/Close";
 import ShareIcon from "@mui/icons-material/Share";
 import Header from "../../../Shared/Navbar/Navbar";
-import { baseurl } from "../../../BaseURL/BaseURL"; // ✅ import baseurl
+import { baseurl } from "../../../BaseURL/BaseURL";
 
 const AdminBusiness = () => {
   const [open, setOpen] = useState(false);
+  const [logoOpen, setLogoOpen] = useState(false);
   const [selectedBusiness, setSelectedBusiness] = useState(null);
+  const [selectedLogo, setSelectedLogo] = useState(null);
   const [businesses, setBusinesses] = useState([]);
 
   useEffect(() => {
     const fetchBusinesses = async () => {
       try {
-        const response = await axios.get(`${baseurl}/business/`); // ✅ replaced baseurl
+        const response = await axios.get(`${baseurl}/business/`);
         setBusinesses(response.data);
       } catch (error) {
         console.error("Error fetching businesses:", error);
@@ -50,16 +53,26 @@ const AdminBusiness = () => {
     setSelectedBusiness(null);
   };
 
+  const handleLogoClick = (biz) => {
+    setSelectedLogo(biz);
+    setLogoOpen(true);
+  };
+
+  const handleLogoClose = () => {
+    setLogoOpen(false);
+    setSelectedLogo(null);
+  };
+
   return (
     <>
       {/* <Header /> */}
       <Box sx={{ bgcolor: "#fafbfe", minHeight: "100vh", p: { xs: 2, md: 4 }, position: "relative" }}>
         
         {/* Business Cards */}
-        <Grid container spacing={3} justifyContent="flex-start"> {/* ✅ spacing=3 adds middle gap */}
+        <Grid container spacing={3} justifyContent="flex-start">
           {businesses.length > 0 ? (
             businesses.map((biz, idx) => (
-              <Grid item xs={12} sm={6} md={4} key={idx} sx={{ display: "flex" }}> {/* left aligned */}
+              <Grid item xs={12} sm={6} md={4} key={idx} sx={{ display: "flex" }}>
                 <Card
                   sx={{
                     borderRadius: "20px",
@@ -71,8 +84,8 @@ const AdminBusiness = () => {
                     justifyContent: "space-between",
                     width: "100%",
                     height: "100%",
-                    position: "relative", // Added for ribbon positioning
-                    overflow: "visible", // Ensure ribbon is fully visible
+                    position: "relative",
+                    overflow: "visible",
                   }}
                 >
                   {/* Offer Ribbon - Top Left Corner */}
@@ -120,13 +133,22 @@ const AdminBusiness = () => {
                     <Box display="flex" justifyContent="space-between" alignItems="center">
                       {biz.logo ? (
                         <img
-                          src={`${baseurl}${biz.logo}`} // ✅ replaced baseurl
+                          src={`${baseurl}${biz.logo}`}
                           alt={`${biz.business_name} Logo`}
                           style={{
                             width: 50,
                             height: 50,
                             objectFit: "contain",
                             borderRadius: "8px",
+                            cursor: "pointer",
+                            transition: "transform 0.2s ease",
+                          }}
+                          onClick={() => handleLogoClick(biz)}
+                          onMouseEnter={(e) => {
+                            e.target.style.transform = "scale(1.1)";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.transform = "scale(1)";
                           }}
                         />
                       ) : (
@@ -165,7 +187,14 @@ const AdminBusiness = () => {
                         </Typography>
                       </Box>
                     )}
-
+<Box display="flex" alignItems="center" gap={1} mt={1}>
+                    <EmailIcon color="primary" fontSize="small" />
+                    <Typography variant="body2">{biz.email}</Typography>
+                  </Box>
+                  <Box display="flex" alignItems="center" gap={1} mt={1}>
+                    <PhoneIcon color="success" fontSize="small" />
+                    <Typography variant="body2">{biz.phone}</Typography>
+                  </Box>
                     <Box display="flex" alignItems="center" mt={2} gap={1}>
                       <LocationOnIcon fontSize="small" color="error" />
                       <Typography variant="body2">{biz.address}</Typography>
@@ -187,7 +216,7 @@ const AdminBusiness = () => {
                     mt={2}
                     gap={1}
                   >
-                    <Button
+                    {/* <Button
                       variant="contained"
                       fullWidth={false}
                       sx={{
@@ -202,7 +231,7 @@ const AdminBusiness = () => {
                       onClick={() => handleOpen(biz)}
                     >
                       View Details
-                    </Button>
+                    </Button> */}
 
                     <Box
                       display="flex"
@@ -234,9 +263,27 @@ const AdminBusiness = () => {
             <DialogContent>
               <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap">
                 <Box display="flex" alignItems="center" gap={2}>
-                  <BusinessIcon
-                    sx={{ fontSize: 40, p: 1, borderRadius: "12px", bgcolor: "#f0f0f5", color: "#4776E6" }}
-                  />
+                  {selectedBusiness.logo ? (
+                    <img
+                      src={`${baseurl}${selectedBusiness.logo}`}
+                      alt={`${selectedBusiness.business_name} Logo`}
+                      style={{
+                        width: 50,
+                        height: 50,
+                        objectFit: "contain",
+                        borderRadius: "8px",
+                        cursor: "pointer",
+                      }}
+                      onClick={() => {
+                        handleClose();
+                        handleLogoClick(selectedBusiness);
+                      }}
+                    />
+                  ) : (
+                    <BusinessIcon
+                      sx={{ fontSize: 40, p: 1, borderRadius: "12px", bgcolor: "#f0f0f5", color: "#4776E6" }}
+                    />
+                  )}
                   <Box>
                     <Typography variant="h6" fontWeight="bold">
                       {selectedBusiness.business_name}
@@ -319,6 +366,94 @@ const AdminBusiness = () => {
             </DialogContent>
           )}
         </Dialog>
+
+        {/* Logo Popup Dialog */}
+        <LogoDialog
+          open={logoOpen}
+          onClose={handleLogoClose}
+          maxWidth="md"
+          fullWidth
+          PaperProps={{
+            sx: {
+              borderRadius: "16px",
+              overflow: "hidden",
+              maxWidth: "90vw",
+              maxHeight: "90vh",
+            }
+          }}
+        >
+          {selectedLogo && (
+            <Box sx={{ position: "relative" }}>
+              {/* Close Button */}
+              <IconButton
+                onClick={handleLogoClose}
+                sx={{
+                  position: "absolute",
+                  top: 8,
+                  right: 8,
+                  zIndex: 1,
+                  backgroundColor: "rgba(0,0,0,0.5)",
+                  color: "white",
+                  "&:hover": {
+                    backgroundColor: "rgba(0,0,0,0.7)",
+                  },
+                }}
+              >
+                <CloseIcon />
+              </IconButton>
+
+              {/* Logo Image */}
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  p: 4,
+                  backgroundColor: "#f5f5f5",
+                  minHeight: "400px",
+                }}
+              >
+                <img
+                  src={`${baseurl}${selectedLogo.logo}`}
+                  alt={`${selectedLogo.business_name} Logo`}
+                  style={{
+                    maxWidth: "100%",
+                    maxHeight: "70vh",
+                    width: "auto",
+                    height: "auto",
+                    objectFit: "contain",
+                    borderRadius: "8px",
+                  }}
+                />
+                
+                {/* Business Name */}
+                <Typography
+                  variant="h6"
+                  sx={{
+                    mt: 2,
+                    textAlign: "center",
+                    fontWeight: "bold",
+                    color: "#333",
+                  }}
+                >
+                  {selectedLogo.business_name}
+                </Typography>
+                
+                {/* Business Type */}
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: "#666",
+                    textAlign: "center",
+                  }}
+                >
+                  {selectedLogo.business_type}
+                </Typography>
+              </Box>
+            </Box>
+          )}
+        </LogoDialog>
       </Box>
     </>
   );

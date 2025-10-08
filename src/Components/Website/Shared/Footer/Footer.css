@@ -290,7 +290,7 @@ section {
 
 .card-header {
     color: white;
-    background-color: var(--accent-color);
+    /* background-color: var(--accent-color); */
     font-size: 1.2rem;
 }
 
