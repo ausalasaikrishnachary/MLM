@@ -151,6 +151,7 @@ import BirthdayPopup from "./Components/Panel/BirthdayPopup/BirthdayPopup";
 import UpVdHowitworks from "./Components/Panel/Admin/UpVdHowitworks/UpVdHowitworks";
 import AddVideo from "./Components/Panel/Admin/UpVdHowitworks/AddVideo";
 import EditVideo from "./Components/Panel/Admin/UpVdHowitworks/EditVideo";
+import WishlistPage from "./Components/Panel/Partner/WishlistPage/WishlistPage";
 
 
 
@@ -290,6 +291,7 @@ function Layout() {
           <Route path="/p-report" element={<Report />} />
           <Route path="/p-addasset" element={<AssetForm />} />
           <Route path="/p-assets" element={<AssetDashboard />} />
+           <Route path="/p-wishlistpage" element={<WishlistPage />} />
           <Route path="/p-comparelist" element={<Comparelist />} />
 
           <Route path="/p-profile" element={<PartnerProfile />} />
