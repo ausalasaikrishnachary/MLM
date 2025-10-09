@@ -699,11 +699,11 @@ p, .card-body {
   overflow: hidden;
 }
 
-.business-card:hover {
+/* .business-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 25px rgba(0,0,0,0.15);
   border-color: #6f979b;
-}
+} */
 
 .business-logo-container {
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
@@ -714,9 +714,9 @@ p, .card-body {
   transition: transform 0.3s ease;
 }
 
-.business-card:hover .business-logo {
+/* .business-card:hover .business-logo {
   transform: scale(1.05);
-}
+} */
 
 .offer-section {
   border-left: 4px solid #ffc107;
@@ -814,10 +814,10 @@ p, .card-body {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.business-card:hover {
+/* .business-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
-}
+} */
 
 /* Offer Ribbon */
 .offer-ribbon {
@@ -860,7 +860,7 @@ p, .card-body {
 }
 
 .card-header {
-  display: flex;
+ 
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
@@ -1215,3 +1215,4 @@ p, .card-body {
     max-height: 60vh;
   }
 }
+

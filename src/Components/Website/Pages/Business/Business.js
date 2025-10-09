@@ -12,6 +12,7 @@ import {
   Dialog,
   DialogContent,
   Divider,
+  Pagination,
   Dialog as LogoDialog,
 } from "@mui/material";
 import BusinessIcon from "@mui/icons-material/Business";
@@ -63,131 +64,122 @@ const AdminBusiness = () => {
     setSelectedLogo(null);
   };
 
+  const [page, setPage] = useState(1); // current page
+const [rowsPerPage] = useState(6); // businesses per page
+
+const totalPages = Math.ceil(businesses.length / rowsPerPage);
+const paginatedBusinesses = businesses.slice(
+  (page - 1) * rowsPerPage,
+  page * rowsPerPage
+);
+
+const handlePageChange = (event, value) => {
+  setPage(value);
+};
+
   return (
     <>
       {/* <Header /> */}
       <Box sx={{ bgcolor: "#fafbfe", minHeight: "100vh", p: { xs: 2, md: 4 }, position: "relative" }}>
         
         {/* Business Cards */}
-        <Grid container spacing={3} justifyContent="flex-start">
-          {businesses.length > 0 ? (
-            businesses.map((biz, idx) => (
-              <Grid item xs={12} sm={6} md={4} key={idx} sx={{ display: "flex" }}>
-                <Card
-                  sx={{
-                    borderRadius: "20px",
-                    p: 2,
-                    boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
-                    bgcolor: "#fff",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                    width: "100%",
-                    height: "100%",
-                    position: "relative",
-                    overflow: "visible",
-                  }}
-                >
-                  {/* Offer Ribbon - Top Left Corner */}
-                  {biz.offer_title && (
+      <Grid container spacing={3} justifyContent="flex-start">
+        {paginatedBusinesses.length > 0 ? (
+          paginatedBusinesses.map((biz, idx) => (
+            <Grid item xs={12} sm={6} md={4} key={idx} sx={{ display: "flex" }}>
+              <Card
+                sx={{
+                  borderRadius: "20px",
+                  p: 2,
+                  boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
+                  bgcolor: "#fff",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  width: "100%",
+                  height: "100%",
+                  position: "relative",
+                  overflow: "visible",
+                }}
+              >
+                {/* Offer Ribbon */}
+                {biz.offer_title && (
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      top: -5,
+                      left: -5,
+                      zIndex: 1,
+                      transform: "rotate(-5deg)",
+                    }}
+                  >
                     <Box
                       sx={{
-                        position: "absolute",
-                        top: -5,
-                        left: -5,
-                        zIndex: 1,
-                        transform: "rotate(-5deg)",
+                        backgroundColor: "#ff6b6b",
+                        color: "white",
+                        px: 2,
+                        py: 0.5,
+                        borderRadius: "8px 8px 8px 0",
+                        fontSize: "0.75rem",
+                        fontWeight: "bold",
+                        textTransform: "uppercase",
+                        letterSpacing: "0.5px",
                       }}
                     >
-                      <Box
-                        sx={{
-                          backgroundColor: "#ff6b6b",
-                          color: "white",
-                          px: 2,
-                          py: 0.5,
-                          borderRadius: "8px 8px 8px 0",
-                          boxShadow: "2px 2px 8px rgba(0,0,0,0.2)",
-                          fontSize: "0.75rem",
-                          fontWeight: "bold",
-                          textTransform: "uppercase",
-                          letterSpacing: "0.5px",
-                          "&::after": {
-                            content: '""',
-                            position: "absolute",
-                            bottom: -5,
-                            left: 0,
-                            width: 0,
-                            height: 0,
-                            borderLeft: "5px solid transparent",
-                            borderRight: "5px solid transparent",
-                            borderTop: "5px solid #cc5555",
-                          }
-                        }}
-                      >
-                        {biz.offer_title}
-                      </Box>
+                      {biz.offer_title}
                     </Box>
-                  )}
+                  </Box>
+                )}
 
-                  <CardContent sx={{ flexGrow: 1, pt: biz.offer_title ? 1 : 0 }}>
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
-                      {biz.logo ? (
-                        <img
-                          src={`${baseurl}${biz.logo}`}
-                          alt={`${biz.business_name} Logo`}
-                          style={{
-                            width: 50,
-                            height: 50,
-                            objectFit: "contain",
-                            borderRadius: "8px",
-                            cursor: "pointer",
-                            transition: "transform 0.2s ease",
-                          }}
-                          onClick={() => handleLogoClick(biz)}
-                          onMouseEnter={(e) => {
-                            e.target.style.transform = "scale(1.1)";
-                          }}
-                          onMouseLeave={(e) => {
-                            e.target.style.transform = "scale(1)";
-                          }}
-                        />
-                      ) : (
-                        <BusinessIcon fontSize="large" sx={{ color: "#4776E6" }} />
-                      )}
-                      <Chip
-                        label={biz.is_active ? "Active" : "Inactive"}
-                        color={biz.is_active ? "success" : "default"}
-                        size="small"
-                      />
-                    </Box>
-
-                    <Typography variant="h6" fontWeight="bold" mt={1}>
-                      {biz.business_name}
-                    </Typography>
-                    <Typography color="primary" fontSize="0.9rem">
-                      {biz.business_type}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" mt={1}>
-                      {biz.description}
-                    </Typography>
-
-                    {/* Offer Description */}
-                    {biz.offer_description && (
-                      <Box
-                        sx={{
-                          backgroundColor: "#fff9e6",
-                          border: "1px solid #ffd54f",
+                {/* Card Content */}
+                <CardContent sx={{ flexGrow: 1, pt: biz.offer_title ? 1 : 0 }}>
+                  {/* Image with Active Chip */}
+                  <Box sx={{ position: "relative" }}>
+                    <Chip
+                      label={biz.is_active ? "Active" : "Inactive"}
+                      color={biz.is_active ? "success" : "default"}
+                      size="small"
+                      sx={{
+                        position: "absolute",
+                        top: 20,
+                        right: 10,
+                        zIndex: 2,
+                        fontWeight: "bold",
+                      }}
+                    />
+                    {biz.logo ? (
+                      <img
+                        src={`${baseurl}${biz.logo}`}
+                        alt={`${biz.business_name} Logo`}
+                        style={{
+                          width: "100%",
+                          height: "220px",
+                          objectFit: "cover",
                           borderRadius: "8px",
-                          p: 1.5,
-                          mt: 2,
+                          cursor: "pointer",
+                          transition: "transform 0.2s ease",
                         }}
-                      >
-                        <Typography variant="body2" color="#e65100" fontWeight="medium">
-                          {biz.offer_description}
-                        </Typography>
-                      </Box>
+                        onMouseEnter={(e) => (e.target.style.transform = "scale(1.05)")}
+                        onMouseLeave={(e) => (e.target.style.transform = "scale(1)")}
+                      />
+                    ) : (
+                      <BusinessIcon fontSize="large" sx={{ color: "#4776E6" }} />
                     )}
-<Box display="flex" alignItems="center" gap={1} mt={1}>
+                  </Box>
+
+                  {/* Business Info */}
+                  <Typography variant="h6" fontWeight="bold" mt={1}>
+                    {biz.business_name}
+                  </Typography>
+                  <Typography color="primary" fontSize="0.9rem">
+                    {biz.business_type}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" mt={1}>
+                    {biz.description}
+                  </Typography>
+
+                  {/* Contact Info */}
+                  <Box display="flex" alignItems="center" gap={1} mt={1}>
                     <EmailIcon color="primary" fontSize="small" />
                     <Typography variant="body2">{biz.email}</Typography>
                   </Box>
@@ -195,67 +187,40 @@ const AdminBusiness = () => {
                     <PhoneIcon color="success" fontSize="small" />
                     <Typography variant="body2">{biz.phone}</Typography>
                   </Box>
-                    <Box display="flex" alignItems="center" mt={2} gap={1}>
-                      <LocationOnIcon fontSize="small" color="error" />
-                      <Typography variant="body2">{biz.address}</Typography>
-                    </Box>
-                    <Box display="flex" alignItems="center" mt={1} gap={1}>
-                      <LanguageIcon fontSize="small" color="primary" />
-                      <Typography variant="body2" sx={{ wordBreak: "break-word" }}>
-                        {biz.website}
-                      </Typography>
-                    </Box>
-                  </CardContent>
-
-                  {/* Buttons */}
-                  <Box
-                    display="flex"
-                    flexDirection={{ xs: "column", sm: "row" }}
-                    justifyContent={{ xs: "center", sm: "space-between" }}
-                    alignItems={{ xs: "stretch", sm: "center" }}
-                    mt={2}
-                    gap={1}
-                  >
-                    {/* <Button
-                      variant="contained"
-                      fullWidth={false}
-                      sx={{
-                        width: { xs: "100%", sm: "auto" },
-                        borderRadius: "30px",
-                        px: 3,
-                        background: "linear-gradient(90deg, #4776E6, #8E54E9)",
-                        "&:hover": {
-                          background: "linear-gradient(90deg, #3b66d9, #7a46d3)",
-                        },
-                      }}
-                      onClick={() => handleOpen(biz)}
-                    >
-                      View Details
-                    </Button> */}
-
-                    <Box
-                      display="flex"
-                      justifyContent={{ xs: "center", sm: "flex-start" }}
-                      gap={1}
-                      mt={{ xs: 1, sm: 0 }}
-                    >
-                      <IconButton
-                        sx={{ bgcolor: "#f2f2f7", "&:hover": { bgcolor: "#e1e1ec" } }}
-                        onClick={() => (window.location.href = `tel:${biz.phone}`)}
-                      >
-                        <PhoneIcon />
-                      </IconButton>
-                    </Box>
+                  <Box display="flex" alignItems="center" mt={2} gap={1}>
+                    <LocationOnIcon fontSize="small" color="error" />
+                    <Typography variant="body2">{biz.address}</Typography>
                   </Box>
-                </Card>
-              </Grid>
-            ))
-          ) : (
-            <Typography variant="body1" color="text.secondary" mt={4}>
-              No businesses found.
-            </Typography>
-          )}
-        </Grid>
+                  <Box display="flex" alignItems="center" mt={1} gap={1}>
+                    <LanguageIcon fontSize="small" color="primary" />
+                    <Typography variant="body2" sx={{ wordBreak: "break-word" }}>
+                      {biz.website}
+                    </Typography>
+                  </Box>
+                </CardContent>
+
+                {/* Phone Icon Button */}
+                <Box
+                  display="flex"
+                  justifyContent="flex-end"
+                  mt={2}
+                >
+                  <IconButton
+                    sx={{ bgcolor: "#f2f2f7", "&:hover": { bgcolor: "#e1e1ec" } }}
+                    onClick={() => (window.location.href = `tel:${biz.phone}`)}
+                  >
+                    <PhoneIcon />
+                  </IconButton>
+                </Box>
+              </Card>
+            </Grid>
+          ))
+        ) : (
+          <Typography variant="body1" color="text.secondary" mt={4}>
+            No businesses found.
+          </Typography>
+        )}
+      </Grid>
 
         {/* Business Details Dialog */}
         <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: "20px", p: 2 } }}>
@@ -454,8 +419,19 @@ const AdminBusiness = () => {
             </Box>
           )}
         </LogoDialog>
+           <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4, mb: 4 }}>
+        <Pagination
+          count={totalPages}
+          page={page}
+          onChange={handlePageChange}
+          color="primary"
+        />
       </Box>
+
+      </Box>
+        
     </>
+    
   );
 };
 

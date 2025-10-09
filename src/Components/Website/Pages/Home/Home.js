@@ -795,58 +795,78 @@ const handleCloseLogoModal = () => {
                   </div>
                 )}
 
-                <div className="card-content">
-                  <div className="card-header">
-                    <div className="logo-section">
-                      {biz.logo ? (
-                        <img
-                          src={`${baseurl}${biz.logo}`}
-                          alt={`${biz.business_name} Logo`}
-                          className="business-logo clickable-logo"
-                          onClick={() => handleLogoClick(biz)}
-                          style={{ cursor: 'pointer' }}
-                        />
-                      ) : (
-                        <div className="business-icon">
-                          <i className="fa fa-building"></i>
-                        </div>
-                      )}
-                    </div>
-                    <div className={`status-chip ${biz.is_active ? 'active' : 'inactive'}`}>
-                      {biz.is_active ? 'Active' : 'Inactive'}
-                    </div>
-                  </div>
+                <div className="card-content" style={{ position: "relative" }}>
+  {/* Active Status Chip - Positioned on Image */}
+  <Chip
+    label={biz.is_active ? "Active" : "Inactive"}
+    color={biz.is_active ? "success" : "default"}
+    size="small"
+    sx={{
+      position: "absolute",
+      top: 20,
+      right: 10,
+      zIndex: 2,
+      fontWeight: "bold",
+    }}
+  />
 
-                  <h3 className="business-name">{biz.business_name}</h3>
-                  <p className="business-type">{biz.business_type}</p>
-                  <p className="business-description">{biz.description}</p>
+  {/* Logo Section */}
+  <div className="card-header">
+    <div className="logo-section" style={{ position: "relative" }}>
+      {biz.logo ? (
+        <img
+          src={`${baseurl}${biz.logo}`}
+          alt={`${biz.business_name} Logo`}
+          className="business-logo clickable-logo"
+          onClick={() => handleLogoClick(biz)}
+          style={{
+            width: "100%",          // Full card width
+            height: "220px",        // Adjust height to look consistent
+            objectFit: "cover",     // Maintain aspect ratio & fill space
+            borderRadius: "8px",
+            cursor: "pointer",
+            transition: "transform 0.2s ease",
+          }}
+        />
+      ) : (
+        <div className="business-icon">
+          <i className="fa fa-building"></i>
+        </div>
+      )}
+    </div>
+  </div>
 
-                  {/* Offer Description */}
-                  {biz.offer_description && (
-                    <div className="offer-description">
-                      {biz.offer_description}
-                    </div>
-                  )}
+  {/* Business Info */}
+  <h3 className="business-name">{biz.business_name}</h3>
+  <p className="business-type">{biz.business_type}</p>
+  <p className="business-description">{biz.description}</p>
 
-                  <div className="contact-info">
-                    <div className="contact-item">
-                      <i className="fa fa-envelope contact-icon email"></i>
-                      <span className="contact-text">{biz.email}</span>
-                    </div>
-                    <div className="contact-item">
-                      <i className="fa fa-phone contact-icon phone"></i>
-                      <span className="contact-text">{biz.phone}</span>
-                    </div>
-                    <div className="contact-item">
-                      <i className="fa fa-map-marker contact-icon location"></i>
-                      <span className="contact-text">{biz.address}</span>
-                    </div>
-                    <div className="contact-item">
-                      <i className="fa fa-globe contact-icon website"></i>
-                      <span className="contact-text website-text">{biz.website}</span>
-                    </div>
-                  </div>
-                </div>
+  {/* Offer Description */}
+  {biz.offer_description && (
+    <div className="offer-description">{biz.offer_description}</div>
+  )}
+
+  {/* Contact Info */}
+  <div className="contact-info">
+    <div className="contact-item">
+      <i className="fa fa-envelope contact-icon email"></i>
+      <span className="contact-text">{biz.email}</span>
+    </div>
+    <div className="contact-item">
+      <i className="fa fa-phone contact-icon phone"></i>
+      <span className="contact-text">{biz.phone}</span>
+    </div>
+    <div className="contact-item">
+      <i className="fa fa-map-marker contact-icon location"></i>
+      <span className="contact-text">{biz.address}</span>
+    </div>
+    <div className="contact-item">
+      <i className="fa fa-globe contact-icon website"></i>
+      <span className="contact-text website-text">{biz.website}</span>
+    </div>
+  </div>
+</div>
+
               </div>
             </div>
           ))
