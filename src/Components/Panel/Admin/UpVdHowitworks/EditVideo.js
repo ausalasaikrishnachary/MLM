@@ -10,6 +10,7 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "../../../Shared/Navbar/Navbar";
+import { baseurl } from "../../../BaseURL/BaseURL";
 
 const EditVideo = () => {
   const navigate = useNavigate();
@@ -22,28 +23,26 @@ const EditVideo = () => {
   });
 
   // Fetch video data by ID on component mount
-  useEffect(() => {
-    const fetchVideo = async () => {
-      try {
-        const response = await fetch(
-          `https://rahul30.pythonanywhere.com/how-it-works/${id}/`
-        );
-        if (!response.ok) throw new Error("Failed to fetch video data");
+useEffect(() => {
+  const fetchVideo = async () => {
+    try {
+      const response = await fetch(`${baseurl}how-it-works/${id}/`); // using baseurl
+      if (!response.ok) throw new Error("Failed to fetch video data");
 
-        const data = await response.json();
-        setFormData({
-          title: data.title || "",
-          description: data.description || "",
-          video_url: data.video_url || "",
-        });
-      } catch (error) {
-        console.error("Error fetching video:", error);
-        alert("Error fetching video data");
-      }
-    };
+      const data = await response.json();
+      setFormData({
+        title: data.title || "",
+        description: data.description || "",
+        video_url: data.video_url || "",
+      });
+    } catch (error) {
+      console.error("Error fetching video:", error);
+      alert("Error fetching video data");
+    }
+  };
 
-    fetchVideo();
-  }, [id]);
+  fetchVideo();
+}, [id]);
 
   // Handle input changes
   const handleChange = (e) => {
@@ -55,34 +54,34 @@ const EditVideo = () => {
 
   // Handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      const response = await fetch(
-        `https://rahul30.pythonanywhere.com/how-it-works/${id}/`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+  try {
+    const response = await fetch(
+      `${baseurl}how-it-works/${id}/`, // using baseurl
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      }
+    );
 
-      if (!response.ok) throw new Error("Failed to update video");
+    if (!response.ok) throw new Error("Failed to update video");
 
-      const result = await response.json();
-      console.log("✅ Video Updated:", result);
-      alert("Video updated successfully!");
-      navigate("/a-upvdhowitworks");
-    } catch (error) {
-      console.error("❌ Error updating:", error);
-      alert("Error updating video. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    const result = await response.json();
+    console.log("✅ Video Updated:", result);
+    alert("Video updated successfully!");
+    navigate("/a-upvdhowitworks");
+  } catch (error) {
+    console.error("❌ Error updating:", error);
+    alert("Error updating video. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <>

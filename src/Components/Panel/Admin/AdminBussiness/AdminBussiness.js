@@ -237,12 +237,12 @@ const AdminBusiness = () => {
 
               <Divider sx={{ my: 2 }} />
 
-              <Box display="flex" justifyContent="space-between" mt={2} flexWrap="wrap" gap={1}>
+              {/* <Box display="flex" justifyContent="space-between" mt={2} flexWrap="wrap" gap={1}>
                 <Button variant="contained" startIcon={<EmailIcon />} sx={{ background: "linear-gradient(90deg, #4776E6, #8E54E9)", borderRadius: "30px", px: 3, "&:hover": { background: "linear-gradient(90deg, #3b66d9, #7a46d3)" } }}>
                   Contact Business
                 </Button>
                 <Button variant="outlined" startIcon={<ShareIcon />} sx={{ borderRadius: "30px" }}>Share</Button>
-              </Box>
+              </Box> */}
             </DialogContent>
           )}
         </Dialog>

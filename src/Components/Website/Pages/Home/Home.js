@@ -15,6 +15,17 @@ import {
   Dialog,
   Pagination
 } from '@mui/material';
+import {
+  Chip,
+  DialogContent,
+  Divider,
+} from "@mui/material";
+import BusinessIcon from "@mui/icons-material/Business";
+import PhoneIcon from "@mui/icons-material/Phone";
+import LanguageIcon from "@mui/icons-material/Language";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import EmailIcon from "@mui/icons-material/Email";
+import CloseIcon from "@mui/icons-material/Close";
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -54,6 +65,30 @@ const ShrirajLandingPage = () => {
   const itemsPerPage = 3;
   const totalPages = Math.ceil(properties.length / itemsPerPage);
   const paginatedProperties = properties.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+  const [businesses, setBusinesses] = useState([]);
+  const [businessPage, setBusinessPage] = useState(1);
+    const [open, setOpen] = useState(false);
+    const [selectedBusiness, setSelectedBusiness] = useState(null);
+  const businessItemsPerPage = 3;
+  const businessTotalPages = Math.ceil(businesses.length / businessItemsPerPage);
+  const paginatedBusinesses = businesses.slice(
+    (businessPage - 1) * businessItemsPerPage,
+    businessPage * businessItemsPerPage
+  );
+
+  const handleBusinessPageChange = (event, value) => {
+    setBusinessPage(value);
+  };
+
+  const [selectedLogo, setSelectedLogo] = useState(null);
+
+const handleLogoClick = (business) => {
+  setSelectedLogo(business);
+};
+
+const handleCloseLogoModal = () => {
+  setSelectedLogo(null);
+};
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -65,6 +100,30 @@ const ShrirajLandingPage = () => {
       });
     }
   }, []);
+
+  useEffect(() => {
+    const fetchBusinesses = async () => {
+      try {
+        const response = await axios.get(`${baseurl}/business/`);
+        setBusinesses(response.data);
+      } catch (error) {
+        console.error("Error fetching businesses:", error);
+      }
+    };
+    fetchBusinesses();
+  }, []);
+
+
+    const handleOpen = (biz) => {
+    setSelectedBusiness(biz);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedBusiness(null);
+  };
+  
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -124,6 +183,8 @@ const ShrirajLandingPage = () => {
     setPage(value);
   };
 
+
+
   const SearchInput = ({ activeTab }) => {
     const [query, setQuery] = useState('');
     const [suggestions, setSuggestions] = useState([]);
@@ -165,6 +226,8 @@ const ShrirajLandingPage = () => {
         }
       };
     }, []);
+
+
 
     const handleSearchClick = () => {
       if (query.trim().length >= 2) {
@@ -564,7 +627,7 @@ const ShrirajLandingPage = () => {
         )}
       </div>
 
-      <section className="py-5 bg-light">
+      <section className="py-5">
         <div className="container">
           <h2 className="section-title text-left mb-5" data-aos="fade-up">
             Featured Properties Section
@@ -708,6 +771,136 @@ const ShrirajLandingPage = () => {
           </div>
         </div>
       </section>
+
+{/* Featured Businesses Section */}
+<section className="py-5 bg-light">
+  <div className="container">
+    <h2 className="section-title text-left mb-5" data-aos="fade-up">
+      Featured Businesses
+    </h2>
+
+    <div className="businesses-container">
+      {/* Business Cards */}
+      <div className="business-grid">
+        {businesses.length > 0 ? (
+          paginatedBusinesses.map((biz, idx) => (
+            <div className="business-card-wrapper" key={idx}>
+              <div className="business-card">
+                {/* Offer Ribbon - Top Left Corner */}
+                {biz.offer_title && (
+                  <div className="offer-ribbon">
+                    <div className="ribbon-content">
+                      {biz.offer_title}
+                    </div>
+                  </div>
+                )}
+
+                <div className="card-content">
+                  <div className="card-header">
+                    <div className="logo-section">
+                      {biz.logo ? (
+                        <img
+                          src={`${baseurl}${biz.logo}`}
+                          alt={`${biz.business_name} Logo`}
+                          className="business-logo clickable-logo"
+                          onClick={() => handleLogoClick(biz)}
+                          style={{ cursor: 'pointer' }}
+                        />
+                      ) : (
+                        <div className="business-icon">
+                          <i className="fa fa-building"></i>
+                        </div>
+                      )}
+                    </div>
+                    <div className={`status-chip ${biz.is_active ? 'active' : 'inactive'}`}>
+                      {biz.is_active ? 'Active' : 'Inactive'}
+                    </div>
+                  </div>
+
+                  <h3 className="business-name">{biz.business_name}</h3>
+                  <p className="business-type">{biz.business_type}</p>
+                  <p className="business-description">{biz.description}</p>
+
+                  {/* Offer Description */}
+                  {biz.offer_description && (
+                    <div className="offer-description">
+                      {biz.offer_description}
+                    </div>
+                  )}
+
+                  <div className="contact-info">
+                    <div className="contact-item">
+                      <i className="fa fa-envelope contact-icon email"></i>
+                      <span className="contact-text">{biz.email}</span>
+                    </div>
+                    <div className="contact-item">
+                      <i className="fa fa-phone contact-icon phone"></i>
+                      <span className="contact-text">{biz.phone}</span>
+                    </div>
+                    <div className="contact-item">
+                      <i className="fa fa-map-marker contact-icon location"></i>
+                      <span className="contact-text">{biz.address}</span>
+                    </div>
+                    <div className="contact-item">
+                      <i className="fa fa-globe contact-icon website"></i>
+                      <span className="contact-text website-text">{biz.website}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="no-businesses">
+            No businesses found.
+          </div>
+        )}
+      </div>
+
+      {/* Business Pagination */}
+      {businesses.length > businessItemsPerPage && (
+        <div className="pagination-container">
+          <div className="pagination-wrapper">
+            <Pagination
+              count={businessTotalPages}
+              page={businessPage}
+              onChange={handleBusinessPageChange}
+              color="primary"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* View All Businesses Button */}
+      <div className="text-center mt-4">
+        <a href="/business" className="btn btn-primary px-4 py-2">
+          Browse All Businesses
+        </a>
+      </div>
+    </div>
+  </div>
+
+  {/* Logo Popup Modal */}
+  {selectedLogo && (
+    <div className="logo-modal-overlay" onClick={handleCloseLogoModal}>
+      <div className="logo-modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="logo-modal-header">
+          <h4>{selectedLogo.business_name} Logo</h4>
+          <button className="close-modal-btn" onClick={handleCloseLogoModal}>
+            <i className="fa fa-times"></i>
+          </button>
+        </div>
+        <div className="logo-modal-body">
+          <img
+            src={`${baseurl}${selectedLogo.logo}`}
+            alt={`${selectedLogo.business_name} Logo`}
+            className="full-size-logo"
+          />
+        </div>
+      </div>
+    </div>
+  )}
+</section>
 
       <section className="py-5 bg-light">
         <div className="container">

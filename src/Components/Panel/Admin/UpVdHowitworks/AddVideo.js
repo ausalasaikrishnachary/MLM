@@ -10,6 +10,7 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
 import Header from "../../../Shared/Navbar/Navbar";
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 const AddVideo = () => {
   const navigate = useNavigate();
@@ -28,21 +29,18 @@ const AddVideo = () => {
     });
   };
 
- const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
   setLoading(true);
 
   try {
-    const response = await fetch(
-      "https://rahul30.pythonanywhere.com/how-it-works/",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      }
-    );
+    const response = await fetch(`${baseurl}/how-it-works/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
 
     if (!response.ok) {
       throw new Error("Failed to upload video");
@@ -63,7 +61,6 @@ const AddVideo = () => {
     setLoading(false);
   }
 };
-
 
   return (
     <>
