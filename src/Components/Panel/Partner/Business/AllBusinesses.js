@@ -28,9 +28,8 @@ import PartnerHeader from "../../../Shared/Partner/PartnerNavbar";
 import { useNavigate } from "react-router-dom";
 import { baseurl } from "../../../BaseURL/BaseURL";
 import PaginationComponent from "../../../Shared/Pagination";
-import InvestorHeader from "../../../Shared/Investor/InvestorNavbar";
 
-function InvestorBusiness() {
+function AllBusinesses() {
   const userId = localStorage.getItem("user_id");
   const [businesses, setBusinesses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -85,11 +84,11 @@ function InvestorBusiness() {
 
   return (
     <>
-      <InvestorHeader />
+      <PartnerHeader />
       <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
         <Box display="flex" justifyContent="center" mb={2}>
           <Typography variant="h2" fontWeight="bold" sx={{ textAlign: "center" }}>
-            My Businesses
+            Businesses
           </Typography>
         </Box>
 
@@ -104,7 +103,7 @@ function InvestorBusiness() {
               cursor: "pointer",
               fontWeight: "bold",
             }}
-            onClick={() => navigate("/i-addbusiness")}
+            onClick={() => navigate("/p-addbusiness")}
           >
             + Add Business
           </button>
@@ -273,14 +272,14 @@ function InvestorBusiness() {
                         <IconButton
                           color="primary"
                           onClick={() =>
-                            navigate(`/i-editbusiness/${business.business_id}`)
+                            navigate(`/p-editbusiness/${business.business_id}`)
                           }
                         >
                           <EditIcon />
                         </IconButton>
-                      </Tooltip>
+                      </Tooltip> */}
 
-                      <Tooltip title="Delete">
+                      {/* <Tooltip title="Delete">
                         <IconButton
                           color="error"
                           onClick={() => handleDelete(business.business_id)}
@@ -313,4 +312,4 @@ function InvestorBusiness() {
   );
 }
 
-export default InvestorBusiness;
+export default AllBusinesses;

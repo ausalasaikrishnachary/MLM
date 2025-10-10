@@ -37,7 +37,7 @@ export default function InvestorHeader() {
     { label: 'Add Property', path: '/i-addproperty' },
     { label: 'My Properties', path: '/i-myassets' },
     { label: 'Properties', path: '/i-asset' },
-    { label: 'Add Business', path: '/i-addbusiness' },
+    // { label: 'Add Business', path: '/i-addbusiness' },
     { label: 'Business', path: '/i-business' },
     { label: 'Transactions', path: '/i-transactions' }, // Direct link to transactions page
     { label: 'Plans', path: '/i-plans' },

@@ -157,6 +157,7 @@ import Business from "./Components/Website/Pages/Business/Business";
 import AddInvestorBusiness from "./Components/Panel/Investor/InvestorBusiness/AddInvestorBusiness";
 import InvestorBusiness from "./Components/Panel/Investor/InvestorBusiness/InvestorBusiness";
 import EditInvestorBusiness from "./Components/Panel/Investor/InvestorBusiness/EditInvestorBusiness";
+import AllBusinesses from "./Components/Panel/Partner/Business/AllBusinesses";
 
 
 
@@ -337,6 +338,7 @@ function Layout() {
           <Route path="/p-addbusiness" element={<AddBusiness />} />
           <Route path="/p-viewbusiness" element={<ViewBusiness />} />
           <Route path="/p-editbusiness/:id" element={<EditBusiness />} />
+          <Route path="/p-allbusinesses" element={<AllBusinesses />} />
 
 
           <Route path="/termsandconditions" element={<Termsandconditions />} />

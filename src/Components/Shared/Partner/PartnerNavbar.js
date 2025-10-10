@@ -115,7 +115,7 @@ export default function PartnerHeader() {
     { label: 'My Properties', path: '/p-myassets' },
     { label: 'Properties', path: '/p-assets' },
     { label: 'Add Business', path: '/p-addbusiness' },
-    { label: 'Business', path: '/p-viewbusiness' },
+    { label: 'My Business', path: '/p-viewbusiness' },
     {
       label: 'Operations',
       subItems: [
@@ -124,6 +124,7 @@ export default function PartnerHeader() {
         { label: 'Plans', path: '/p-plans' },
         { label: 'Training Material', path: '/p-trainingmaterial' },
         { label: 'My Team', path: '/p-myteam' },
+        { label: 'Businesses', path: '/p-allbusinesses' },
       ]
     },
     { label: 'Meetings', path: '/p-meetings' },

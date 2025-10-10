@@ -108,7 +108,7 @@ function AddBusiness() {
             fontWeight="bold"
             sx={{ textAlign: "center" }}
           >
-            My Businesses
+            Add Business
           </Typography>
         </Box>
 
