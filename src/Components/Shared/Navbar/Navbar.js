@@ -61,8 +61,8 @@ export default function Header() {
   // Navigation items with Operations dropdown
   const navItems = [
     { label: 'Dashboard', path: '/a-dashboard' },
-    { label: 'Properties', path: '/a-asset' },
     { label: 'Add Property', path: '/a-addasset' },
+        { label: 'Properties', path: '/a-asset' },
     { label: 'Users', path: '/a-investormanagement' },
     {
       label: 'Operations',

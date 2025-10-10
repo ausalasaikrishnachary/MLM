@@ -154,6 +154,9 @@ import EditVideo from "./Components/Panel/Admin/UpVdHowitworks/EditVideo";
 import WishlistPage from "./Components/Panel/Partner/WishlistPage/WishlistPage";
 
 import Business from "./Components/Website/Pages/Business/Business";
+import AddInvestorBusiness from "./Components/Panel/Investor/InvestorBusiness/AddInvestorBusiness";
+import InvestorBusiness from "./Components/Panel/Investor/InvestorBusiness/InvestorBusiness";
+import EditInvestorBusiness from "./Components/Panel/Investor/InvestorBusiness/EditInvestorBusiness";
 
 
 
@@ -288,6 +291,9 @@ function Layout() {
           <Route path="/i-assets/edit/:id" element={<EditMyAsset />} />
           <Route path="/i-meetings" element={<I_Meetings />} />
           <Route path="/i-meetingrequest" element={<I_MeetingRequestForm />} />
+          <Route path="/i-addbusiness" element={<AddInvestorBusiness />} />
+          <Route path="/i-business" element={<InvestorBusiness />} />
+          <Route path="/i-editbusiness/:id" element={<EditInvestorBusiness />} />
 
 
           <Route path="/p-trainingmaterial" element={<TrainingVideos />} />

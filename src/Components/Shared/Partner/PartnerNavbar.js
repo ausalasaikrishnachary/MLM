@@ -111,10 +111,11 @@ export default function PartnerHeader() {
 
   const navItems = [
     { label: 'Dashboard', path: '/p-dashboard' },
+    { label: 'Add Property', path: '/p-addasset' },
     { label: 'My Properties', path: '/p-myassets' },
     { label: 'Properties', path: '/p-assets' },
-    { label: 'Add Property', path: '/p-addasset' },
-    { label: 'My Team', path: '/p-myteam' },
+    { label: 'Add Business', path: '/p-addbusiness' },
+    { label: 'Business', path: '/p-viewbusiness' },
     {
       label: 'Operations',
       subItems: [
@@ -122,7 +123,7 @@ export default function PartnerHeader() {
         { label: 'Commission', path: '/p-commission' },
         { label: 'Plans', path: '/p-plans' },
         { label: 'Training Material', path: '/p-trainingmaterial' },
-        { label: 'Add Business', path: '/p-viewbusiness' },
+        { label: 'My Team', path: '/p-myteam' },
       ]
     },
     { label: 'Meetings', path: '/p-meetings' },
