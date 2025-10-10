@@ -476,23 +476,23 @@ const AssetsUI = () => {
       <InvestorHeader />
       <Container sx={{ py: 4 }}>
         <Box sx={{ mb: 4 }}>
-      <Typography
-                variant="h4"
-                gutterBottom
-                sx={{
-                  fontSize: {
-                    xs: "2.0rem",  
-                    sm: "2.1rem",   
-                    md: "2.3rem",     
-                  },
-                  fontWeight: "bold",  
-                  textAlign: "center",    
-                  whiteSpace: "nowrap",   
-                  overflow: "hidden",
-                  textOverflow: "ellipsis", 
-               
-                }}
-              >
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{
+              fontSize: {
+                xs: "2.0rem",
+                sm: "2.1rem",
+                md: "2.3rem",
+              },
+              fontWeight: "bold",
+              textAlign: "center",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+
+            }}
+          >
             Properties
           </Typography>
 
@@ -840,6 +840,7 @@ const AssetsUI = () => {
                                   {subscriptionPaid ? "Owner Contact" : "Office Contact"}
                                 </Typography>
                               </Grid>
+
                               <Grid item xs={6}>
                                 <Typography
                                   variant="body2"
@@ -852,9 +853,19 @@ const AssetsUI = () => {
                                   gap={1}
                                 >
                                   <CallIcon fontSize="small" />
-                                  {subscriptionPaid ? property.owner_contact : "9074307248"}
+                                  <a
+                                    href={`tel:${subscriptionPaid ? property.owner_contact : "9074307248"}`}
+                                    style={{
+                                      color: 'inherit',
+                                      textDecoration: 'none',
+                                      fontWeight: 'bold',
+                                    }}
+                                  >
+                                    {subscriptionPaid ? property.owner_contact : "9074307248"}
+                                  </a>
                                 </Typography>
                               </Grid>
+
                             </>
                           )}
                         </Grid>

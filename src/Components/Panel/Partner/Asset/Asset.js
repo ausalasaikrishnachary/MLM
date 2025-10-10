@@ -76,20 +76,20 @@ const AssetsUI = () => {
     fetchCommissions();
   }, []);
 
-const [anchorEl, setAnchorEl] = useState(null);
-const [hoveredProperty, setHoveredProperty] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [hoveredProperty, setHoveredProperty] = useState(null);
 
-const handlePopoverOpen = (event, propertyId) => {
-  setAnchorEl(event.currentTarget);
-  setHoveredProperty(propertyId);
-};
+  const handlePopoverOpen = (event, propertyId) => {
+    setAnchorEl(event.currentTarget);
+    setHoveredProperty(propertyId);
+  };
 
-const handlePopoverClose = () => {
-  setAnchorEl(null);
-  setHoveredProperty(null);
-};
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+    setHoveredProperty(null);
+  };
 
-const open = Boolean(anchorEl);
+  const open = Boolean(anchorEl);
 
   useEffect(() => {
     if (userId) {
@@ -724,6 +724,7 @@ const open = Boolean(anchorEl);
                                   {subscriptionPaid ? "Owner Contact" : "Office Contact"}
                                 </Typography>
                               </Grid>
+
                               <Grid item xs={6}>
                                 <Typography
                                   variant="body2"
@@ -736,65 +737,75 @@ const open = Boolean(anchorEl);
                                   gap={1}
                                 >
                                   <CallIcon fontSize="small" />
-                                  {subscriptionPaid ? property.owner_contact : "9074307248"}
+                                  <a
+                                    href={`tel:${subscriptionPaid ? property.owner_contact : "9074307248"}`}
+                                    style={{
+                                      color: 'inherit',
+                                      textDecoration: 'none',
+                                      fontWeight: 'bold',
+                                    }}
+                                  >
+                                    {subscriptionPaid ? property.owner_contact : "9074307248"}
+                                  </a>
                                 </Typography>
                               </Grid>
+
                             </>
                           )}
                         </Grid>
                       </Box>
 
                       <Button
-  onMouseEnter={(e) => handlePopoverOpen(e, property.property_id)}
-  onMouseLeave={handlePopoverClose}
-  fullWidth
-  variant="contained"
-  sx={{
-    color: 'white',
-    textTransform: 'none',
-    '&:hover': { color: 'rgb(5,5,5)' },
-    marginBottom: "9px"
-  }}
->
-  Payout
-</Button>
+                        onMouseEnter={(e) => handlePopoverOpen(e, property.property_id)}
+                        onMouseLeave={handlePopoverClose}
+                        fullWidth
+                        variant="contained"
+                        sx={{
+                          color: 'white',
+                          textTransform: 'none',
+                          '&:hover': { color: 'rgb(5,5,5)' },
+                          marginBottom: "9px"
+                        }}
+                      >
+                        Payout
+                      </Button>
 
 
-<Popover
-  id="mouse-over-popover"
-  sx={{ pointerEvents: "none" }}
-  open={open && hoveredProperty === property.property_id}
-  anchorEl={anchorEl}
-  anchorOrigin={{
-    vertical: "bottom",
-    horizontal: "left",
-  }}
-  transformOrigin={{
-    vertical: "top",
-    horizontal: "left",
-  }}
-  onClose={handlePopoverClose}
-  disableRestoreFocus
->
-  <Box sx={{ p: 2 }}>
-    <Typography fontWeight="bold">Commissions</Typography>
-    {commissions.length > 0 ? (
-      commissions.map((c) => {
-        const amount =
-          (parseFloat(c.percentage) * property.company_commission) / 100;
-        return (
-          <Typography key={c.id} variant="body2">
-            Team {c.level_no}: ₹{amount.toLocaleString()}
-          </Typography>
-        );
-      })
-    ) : (
-      <Typography variant="body2" color="text.secondary">
-        No commission data
-      </Typography>
-    )}
-  </Box>
-</Popover>
+                      <Popover
+                        id="mouse-over-popover"
+                        sx={{ pointerEvents: "none" }}
+                        open={open && hoveredProperty === property.property_id}
+                        anchorEl={anchorEl}
+                        anchorOrigin={{
+                          vertical: "bottom",
+                          horizontal: "left",
+                        }}
+                        transformOrigin={{
+                          vertical: "top",
+                          horizontal: "left",
+                        }}
+                        onClose={handlePopoverClose}
+                        disableRestoreFocus
+                      >
+                        <Box sx={{ p: 2 }}>
+                          <Typography fontWeight="bold">Commissions</Typography>
+                          {commissions.length > 0 ? (
+                            commissions.map((c) => {
+                              const amount =
+                                (parseFloat(c.percentage) * property.company_commission) / 100;
+                              return (
+                                <Typography key={c.id} variant="body2">
+                                  Team {c.level_no}: ₹{amount.toLocaleString()}
+                                </Typography>
+                              );
+                            })
+                          ) : (
+                            <Typography variant="body2" color="text.secondary">
+                              No commission data
+                            </Typography>
+                          )}
+                        </Box>
+                      </Popover>
 
 
 
