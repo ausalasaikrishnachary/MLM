@@ -89,7 +89,7 @@ function InvestorBusiness() {
       <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
         <Box display="flex" justifyContent="center" mb={2}>
           <Typography variant="h2" fontWeight="bold" sx={{ textAlign: "center" }}>
-            My Businesses
+            Businesses
           </Typography>
         </Box>
 
