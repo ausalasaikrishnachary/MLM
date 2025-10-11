@@ -30,6 +30,7 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import axios from 'axios';
 import { baseurl } from '../../BaseURL/BaseURL';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import './PartnerNavbar.css'
 
 export default function PartnerHeader() {
   const userId = localStorage.getItem("user_id");
@@ -192,25 +193,24 @@ export default function PartnerHeader() {
               {openOperationsMobile && (
                 <Box sx={{ pl: 4 }}>
                   {item.subItems.map((subItem) => (
-                    <ListItemButton
-                      key={subItem.label}
-                      onClick={() => {
-                        navigate(subItem.path);
-                        handleDrawerToggle();
-                      }}
-                      sx={{
-                        backgroundColor: location.pathname === subItem.path ? '#f0f0f0' : 'transparent',
-                        borderRadius: '8px',
-                      }}
-                    >
-                      <ListItemText
-                        primary={subItem.label}
-                        primaryTypographyProps={{
-                          fontWeight: 'Bold',
-                          color: location.pathname === subItem.path ? '#ffa000' : 'inherit',
-                        }}
-                      />
-                    </ListItemButton>
+                 <ListItemButton
+  key={subItem.label}
+  onClick={() => {
+    navigate(subItem.path);
+    handleDrawerToggle();
+  }}
+  className={`partner-nav-list-item ${
+    location.pathname === subItem.path ? 'active' : ''
+  }`}
+>
+  <ListItemText
+    primary={subItem.label}
+    primaryTypographyProps={{
+      fontWeight: 'Bold',
+    }}
+  />
+</ListItemButton>
+
                   ))}
                 </Box>
               )}
@@ -310,38 +310,30 @@ export default function PartnerHeader() {
                 <ArrowBackIcon />
               </IconButton>
 
-              <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', gap: 3 }}>
-                {navItems.map((item) => (
-                  item.path ? (
-                    <Button
-                      key={item.label}
-                      onClick={() => navigate(item.path)}
-                      sx={{
-                        color: location.pathname === item.path ? '#ffa000' : '#000',
-                        fontWeight: 'bold',
-                        textTransform: 'none',
-                        fontSize: "16px"
-                      }}
-                    >
-                      {item.label}
-                    </Button>
-                  ) : (
-                    <Button
-                      key={item.label}
-                      onClick={handleOperationsClick}
-                      endIcon={<ArrowDropDownIcon />}
-                      sx={{
-                        color: isOperationsActive ? '#ffa000' : '#000',
-                        fontWeight: 'bold',
-                        textTransform: 'none',
-                        fontSize: "16px"
-                      }}
-                    >
-                      {item.label}
-                    </Button>
-                  )
-                ))}
-              </Box>
+            <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', gap: 3 }}>
+  {navItems.map((item) =>
+    item.path ? (
+      <Button
+        key={item.label}
+        sx={{ color: 'black',fontWeight:'bold' }}
+        onClick={() => navigate(item.path)}
+        className={`partner-nav-btn ${location.pathname === item.path ? 'active' : ''}`}
+      >
+        {item.label}
+      </Button>
+    ) : (
+      <Button
+        key={item.label}
+        onClick={handleOperationsClick}
+        endIcon={<ArrowDropDownIcon />}
+        className={`partner-nav-btn ${isOperationsActive ? 'active' : ''}`}
+        sx={{ color: 'black', fontWeight: 'bold' }} // Add this sx prop
+      >
+        {item.label}
+      </Button>
+    )
+  )}
+</Box>
               <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
                 <Badge badgeContent={notifications.length} color="error">
                   <NotificationsNoneIcon />
@@ -382,8 +374,10 @@ export default function PartnerHeader() {
             onClick={() => {
               handleOperationsMenuClose();
               navigate(subItem.path);
+         
             }}
             sx={{
+            color:'black',
               fontWeight: 'bold',
               color: location.pathname === subItem.path ? '#ffa000' : 'inherit',
               fontSize: "16px"

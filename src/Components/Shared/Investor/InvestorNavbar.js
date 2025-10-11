@@ -28,6 +28,7 @@ import { baseurl } from '../../BaseURL/BaseURL';
 import { Badge, Menu as MuiMenu } from '@mui/material';
 import axios from 'axios';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import './InvvestorNavbar.css'
 
 
 export default function InvestorHeader() {
@@ -133,21 +134,15 @@ export default function InvestorHeader() {
       <List>
         {navItems.map((item) => (
           <ListItem key={item.label} disablePadding>
-            <ListItemButton
-              onClick={() => {
-                handleDrawerToggle();
-                navigate(item.path);
-              }}
-            >
-              <ListItemText
-                primary={item.label}
-                primaryTypographyProps={{
-                  color: location.pathname === item.path ? 'blue' : 'inherit',
-                  fontWeight: 'bold',
-                  fontSize: '16px',
-                }}
-              />
-            </ListItemButton>
+        <ListItemButton
+  onClick={() => {
+    handleDrawerToggle();
+    navigate(item.path);
+  }}
+  className={location.pathname === item.path ? 'active' : ''}
+>
+  <ListItemText primary={item.label} />
+</ListItemButton>
           </ListItem>
         ))}
       </List>
@@ -160,8 +155,8 @@ export default function InvestorHeader() {
         position="fixed"
         sx={{
           backgroundColor: 'white',
-          color: '#000',
-          boxShadow: "-moz-initial"
+    color: '#000',
+          boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.47)',
         }}
       >
         <Toolbar>
@@ -303,20 +298,21 @@ export default function InvestorHeader() {
                   <Typography sx={{ fontWeight: 'bold', fontSize: '14px' }}>Back</Typography>
                 </IconButton> */}
 
-                {navItems.map((item) => (
-                  <Button
-                    key={item.label}
-                    onClick={() => navigate(item.path)}
-                    sx={{
-                      color: location.pathname === item.path ? 'blue' : '#000',
-                      fontWeight: 'bold',
-                      textTransform: 'none',
-                      fontSize: '16px',
-                    }}
-                  >
-                    {item.label}
-                  </Button>
-                ))}
+          {navItems.map((item) => (
+  <Button
+    key={item.label}
+    onClick={() => navigate(item.path)}
+    className={location.pathname === item.path ? 'active' : ''}
+    sx={{
+      fontWeight: 'bold',
+      textTransform: 'none',
+      fontSize: '16px',
+      color:'black'
+    }}
+  >
+    {item.label}
+  </Button>
+))}
               </Box>
 
               {/* Right: Notification, Username, Profile Avatar */}
