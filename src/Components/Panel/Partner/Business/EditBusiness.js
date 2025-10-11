@@ -219,76 +219,6 @@ const handleSubmit = (e) => {
                             />
                         </Grid>
 
-<Grid
-  item
-  xs={12}
-  sm={4}
-  sx={{
-    mt: { xs: 0, sm: "40px", md: "40px" } 
-  }}
->
-  <TextField
-    fullWidth
-    label="Offer Title"
-    name="offer_title"
-    value={businessData.offer_title}
-    onChange={handleChange}
-  />
-</Grid>
-
-
-                                {/* Logo File Name */}
-                        <Grid item xs={12} sm={4}>
-                            <Typography variant="subtitle2" mb={1}>
-                                Image File:
-                            </Typography>
-                            {logoFile ? (
-                                <Typography variant="body2">{logoFile.name}</Typography>
-                            ) : businessData.logo ? (
-                                <Typography variant="body2">
-                                    {getFileName(businessData.logo)}
-                                </Typography>
-                            ) : (
-                                <Typography variant="body2">No Image uploaded</Typography>
-                            )}
-
-                            <Button variant="outlined" component="label" fullWidth>
-                                Upload Image
-                                <input
-                                    type="file"
-                                    hidden
-                                    onChange={handleLogoChange}
-                                    accept="image/*"
-                                />
-                            </Button>
-                        </Grid>
-
-                        {/* Document File Name */}
-                        <Grid item xs={12} sm={4}>
-                            <Typography variant="subtitle2" mb={1}>
-                                Document File:
-                            </Typography>
-                            {documentFile ? (
-                                <Typography variant="body2">{documentFile.name}</Typography>
-                            ) : businessData.documents ? (
-                                <Typography variant="body2">
-                                    {getFileName(businessData.documents)}
-                                </Typography>
-                            ) : (
-                                <Typography variant="body2">No document uploaded</Typography>
-                            )}
-
-                            <Button variant="outlined" component="label" fullWidth>
-                                Upload Document
-                                <input
-                                    type="file"
-                                    hidden
-                                    onChange={handleDocumentChange}
-                                    accept=".pdf,.doc,.docx"
-                                />
-                            </Button>
-                        </Grid>
-
 <Grid item xs={12} sm={6} md={6}>
       <TextField
     fullWidth
@@ -314,7 +244,87 @@ const handleSubmit = (e) => {
 </Grid>
 
 
-                
+           
+<Grid
+  item
+  xs={12}
+  sm={4}
+  
+>
+  <TextField
+    fullWidth
+    label="Offer Title"
+    name="offer_title"
+    value={businessData.offer_title}
+    onChange={handleChange}
+  />
+</Grid>
+
+
+                       {/* Logo Upload Section */}
+<Grid item xs={12} sm={4}>
+  <Button variant="outlined" component="label" fullWidth>
+    Upload Image
+    <input
+      type="file"
+      hidden
+      onChange={handleLogoChange}
+      accept="image/*"
+    />
+  </Button>
+
+  {/* Label and file name BELOW the button */}
+  <Typography variant="subtitle2" mt={1}>
+    Image File:
+  </Typography>
+
+  {logoFile ? (
+    <Typography variant="body2" mt={0.5}>
+      {logoFile.name}
+    </Typography>
+  ) : businessData.logo ? (
+    <Typography variant="body2" mt={0.5}>
+      {getFileName(businessData.logo)}
+    </Typography>
+  ) : (
+    <Typography variant="body2" mt={0.5}>
+      No image uploaded
+    </Typography>
+  )}
+</Grid>
+
+{/* Document Upload Section */}
+<Grid item xs={12} sm={4}>
+  <Button variant="outlined" component="label" fullWidth>
+    Upload Document
+    <input
+      type="file"
+      hidden
+      onChange={handleDocumentChange}
+      accept=".pdf,.doc,.docx"
+    />
+  </Button>
+
+  {/* Label and file name BELOW the button */}
+  <Typography variant="subtitle2" mt={1}>
+    Document File:
+  </Typography>
+
+  {documentFile ? (
+    <Typography variant="body2" mt={0.5}>
+      {documentFile.name}
+    </Typography>
+  ) : businessData.documents ? (
+    <Typography variant="body2" mt={0.5}>
+      {getFileName(businessData.documents)}
+    </Typography>
+  ) : (
+    <Typography variant="body2" mt={0.5}>
+      No document uploaded
+    </Typography>
+  )}
+</Grid>
+
 
                   
                     </Grid>

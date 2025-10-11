@@ -1,24 +1,21 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import axios from 'axios'; // ✨ import axios
-import './Dashboard.css'
+// PartnerDashboard.js
+import React, { useEffect, useState, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import {
   Box,
-  Container,
-  Grid,
   Card,
   CardContent,
-  CardHeader,
   Typography,
   Button,
   Chip,
-  LinearProgress,
-  Avatar,
-  Badge,
   CardMedia,
-
+  Select,
+  MenuItem,
+  CircularProgress,
+  FormControl,
+  Input,
 } from '@mui/material';
-import { faHourglassHalf, faMoneyBillWave, faUserPlus, faTags, faUserCheck, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -31,104 +28,102 @@ import {
 } from 'chart.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faArrowUp,
   faBuilding,
-  faUsers,
-  faRupeeSign,
   faHome,
-  faPhone,
-  faEnvelope
+  faUserPlus,
+  faTags,
+  faCheckCircle,
+  faUsers,
+  faUserCheck,
+  faMoneyBillWave,
+  faInstagram,
+  faFacebook,
+  faXTwitter,
+  faYoutube,
 } from '@fortawesome/free-solid-svg-icons';
-
-import BirthdayPopup from "./../../BirthdayPopup/BirthdayPopup";
-
-import { faInstagram, faFacebook, faTwitter, faYoutube } from "@fortawesome/free-brands-svg-icons";
-import { faXTwitter } from "@fortawesome/free-brands-svg-icons";
-import {
-  CurrencyRupee,
-  Group,
-  Search,
-  CalendarToday
-} from "@mui/icons-material";
-import { Call, Email } from "@mui/icons-material";
-import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
+import PartnerHeader from '../../../Shared/Partner/PartnerNavbar'; // Adjust path as needed
+import BirthdayPopup from './../../BirthdayPopup/BirthdayPopup'; // Adjust path as needed
 import { baseurl } from '../../../BaseURL/BaseURL';
-import { useNavigate } from "react-router-dom";
+import './Dashboard.css';
 
+// Register Chart.js components
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+const cardColors = [
+  '#ffecb3', '#ffecb3',
+  '#ffe082f0', '#ffe082f0',
+  '#ffd64fe7', '#ffd64fe7',
+  '#ffc928e2', '#ffc928e2',
+  '#ffbf00cd', '#ffbf00cd',
+  '#ffc007', '#ffc007',
+];
 
+const textColors = [
+  'rgba(2, 2, 2, 1)', 'rgba(2, 2, 2, 1)',
+  'rgba(9, 9, 9, 0.87)', 'rgba(9, 9, 0, 0.87)',
+  'rgba(10, 10, 10, 0.7)', 'rgba(10, 10, 10, 0.7)',
+  'rgba(0, 0, 0, 0.61)', 'rgba(0, 0, 0, 0.61)',
+  'rgba(0, 0, 0, 0.57)', 'rgba(0, 0, 0, 0.57)',
+  'rgba(0, 0, 0, 0.51)', 'rgba(0, 0, 0, 0.51)',
+];
 
-const AgentDashboard = () => {
+const fontWeights = [1000, 1000, 900, 900, 800, 800, 700, 700, 600, 600, 600, 600, 700, 700, 700, 700, 700, 700, 700, 700, 700];
+const fontSizes = ['1.7rem', '1.7rem', '1.5rem', '1.5rem', '1.4rem', '1.4rem', '1.3rem', '1.3rem', '1.2rem', '1.2rem', '1.0rem', '1.0rem', '1.2rem', '1.2rem', '1.2rem', '1.2rem', '1.2rem', '1.2rem', '1.2rem', '1.2rem', '1.2rem'];
 
+const PartnerDashboard = () => {
   const referralId = localStorage.getItem('referral_id');
-    const [userData, setUserData] = useState(null);
-    const [showBirthday, setShowBirthday] = useState(false);
-  const [totalAgents, setTotalAgents] = useState(0); // ✨ new state
-  const [totalActiveAgents, setTotalActiveAgents] = useState(0); // ✨ new state
+  const userId = localStorage.getItem('user_id');
+  const navigate = useNavigate();
+  const chartRef = useRef(null);
+
+  const [userData, setUserData] = useState(null);
+  const [showBirthday, setShowBirthday] = useState(false);
+  const [totalAgents, setTotalAgents] = useState(0);
+  const [totalActiveAgents, setTotalActiveAgents] = useState(0);
   const [counts, setCounts] = useState(null);
   const [property, setProperty] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
   const [transactionSummary, setTransactionSummary] = useState(null);
-  const userId = localStorage.getItem("user_id");
   const [commissionSummary, setCommissionSummary] = useState({
     total_agent_commission_paid: 0,
     total_company_commission_paid: 0,
   });
+  const [chartData, setChartData] = useState(null);
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('all');
 
-    useEffect(() => {
-    axios
-      .get(`${baseurl}/users/${userId}/`)
+  // Fetch user data for birthday popup
+  useEffect(() => {
+    if (!userId) return;
+    axios.get(`${baseurl}/users/${userId}/`)
       .then((response) => {
         const data = response.data;
         setUserData(data);
-
-        // ✅ Check if today is user's birthday
         if (data.date_of_birth) {
           const today = new Date();
           const dob = new Date(data.date_of_birth);
-
-          if (
-            today.getDate() === dob.getDate() &&
-            today.getMonth() === dob.getMonth()
-          ) {
+          if (today.getDate() === dob.getDate() && today.getMonth() === dob.getMonth()) {
             setShowBirthday(true);
           }
         }
       })
-      .catch((error) => console.error("Error fetching user data:", error));
+      .catch((error) => console.error('Error fetching user data:', error));
   }, [userId]);
 
+  // Fetch counts
   useEffect(() => {
-    const userId = localStorage.getItem('user_id');
-    if (!userId) return;
-
-    axios.get(`${baseurl}/commission-summary/${userId}/`)
-      .then(response => {
-        setCommissionSummary({
-          total_agent_commission_paid: response.data.total_agent_commission_paid || 0,
-          total_company_commission_paid: response.data.total_company_commission_paid || 0,
-        });
-      })
-      .catch(error => {
-        console.error('Error fetching commission summary:', error);
-      });
+    setLoading(true);
+    axios.get(`${baseurl}/counts/`)
+      .then((response) => setCounts(response.data))
+      .catch((error) => console.error('Error fetching counts:', error))
+      .finally(() => setLoading(false));
   }, []);
 
-
+  // Fetch property stats and chart data
   useEffect(() => {
     if (!userId) return;
-
-    axios
-      .get(`${baseurl}/property-stats/user-id/${userId}/`)
+    setLoading(true);
+    axios.get(`${baseurl}/property-stats/user-id/${userId}/`)
       .then((response) => {
         const data = response.data;
         setProperty({
@@ -136,525 +131,236 @@ const AgentDashboard = () => {
           total_latest_properties: data.latest.properties.count,
           total_sold_properties: data.sold.properties.count,
         });
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching counts:", error);
-        setLoading(false);
-      });
-  }, []);
 
+        const gradientPairs = {
+          Listing: ['#3f51b5', '#7986cb6d'],
+          Latest: ['#899600ff', '#a9b6006d'],
+          Sold: ['#a40037ff', '#ff6f6f6d'],
+        };
+
+        const createGradients = (dataset, colors) => {
+          const ctx = chartRef.current?.ctx;
+          if (!ctx) return colors[1];
+          const gradient = ctx.createLinearGradient(0, 400, 0, 0);
+          gradient.addColorStop(0, colors[0]);
+          gradient.addColorStop(1, colors[1]);
+          return Array(dataset.length).fill(gradient);
+        };
+
+        setChartData({
+          labels: ['Properties'],
+          datasets: [
+            { label: 'Listing Properties', data: [data.listing.properties.count], backgroundColor: createGradients([data.listing.properties.count], gradientPairs.Listing) },
+            { label: 'Latest Properties', data: [data.latest.properties.count], backgroundColor: createGradients([data.latest.properties.count], gradientPairs.Latest) },
+            { label: 'Sold', data: [data.sold.properties.count], backgroundColor: createGradients([data.sold.properties.count], gradientPairs.Sold) },
+          ],
+        });
+      })
+      .catch((error) => console.error('Error fetching property stats:', error))
+      .finally(() => setLoading(false));
+  }, [userId]);
+
+  // Fetch transaction summary
   useEffect(() => {
+    if (!userId) return;
     fetch(`${baseurl}/transactions/grouped/user-id/${userId}/`)
       .then((res) => res.json())
-      .then((data) => {
-        setTransactionSummary(data);
+      .then((data) => setTransactionSummary(data))
+      .catch((err) => console.error('Error fetching transaction summary:', err));
+  }, [userId]);
+
+  // Fetch commission summary
+  useEffect(() => {
+    if (!userId) return;
+    axios.get(`${baseurl}/commission-summary/${userId}/`)
+      .then(response => {
+        setCommissionSummary({
+          total_agent_commission_paid: response.data.total_agent_commission_paid || 0,
+          total_company_commission_paid: response.data.total_company_commission_paid || 0,
+        });
       })
-      .catch((err) => {
-        console.error("Error fetching transaction summary:", err);
-      });
-  }, []);
+      .catch(error => console.error('Error fetching commission summary:', error));
+  }, [userId]);
 
-
+  // Fetch total agents
   useEffect(() => {
     if (referralId) {
       axios.get(`${baseurl}/agents/referral-id/${referralId}/`)
         .then(response => {
-          setTotalAgents(response.data.total_agents || 0); // ✨ set the real count
-          setTotalActiveAgents(response.data.total_active_agents || 0); // ✨ set the real count
+          setTotalAgents(response.data.total_agents || 0);
+          setTotalActiveAgents(response.data.total_active_agents || 0);
         })
         .catch(error => {
           console.error('Error fetching total agents:', error);
-          setTotalAgents(0); // fallback
+          setTotalAgents(0);
           setTotalActiveAgents(0);
         });
     }
   }, [referralId]);
 
-  useEffect(() => {
-    axios
-      .get(`${baseurl}/counts/`)
-      .then((response) => {
-        setCounts(response.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching counts:", error);
-        setLoading(false);
-      });
-  }, []);
-
-  const [chartData, setChartData] = useState(null);
-
-  useEffect(() => {
-    const userId = localStorage.getItem("user_id");
-    if (!userId) return;
-
-    fetch(`${baseurl}/property-stats/user-id/${userId}/`)
-      .then(res => res.json())
-      .then(data => {
-        const listingCount = data.listing.properties.count;
-        const latestCount = data.latest.properties.count;
-        const soldCount = data.sold.properties.count;
-
-        setChartData({
-          labels: ['Properties'],
-          datasets: [
-            {
-              label: 'Listing Properties',
-              data: [listingCount],
-              backgroundColor: 'rgba(0, 51, 12, 0.6)',
-            },
-            {
-              label: 'Latest Properties',
-              data: [latestCount],
-              backgroundColor: 'rgba(0, 123, 255, 0.6)',
-            },
-          ],
-        });
-      })
-      .catch(err => console.error('Error fetching property stats:', err));
-  }, []);
-
-  const [properties, setProperties] = useState([]);
-
+  // Fetch latest properties
   useEffect(() => {
     const fetchProperties = async () => {
-      const userId = localStorage.getItem("user_id");
-
       try {
         const response = await fetch(`${baseurl}/latest-properties/`);
         const data = await response.json();
-
-        const filteredProperties = data.filter(
-          (property) => property.user_id?.toString() !== userId
-        );
-
-        const formatted = filteredProperties.map((property) => {
-          const imagePath = property.images?.[0]?.image;
-          const imageUrl = imagePath
-            ? `${baseurl}${imagePath}`
-            : "https://via.placeholder.com/400x200?text=No+Image";
-
-          // Safely format price
-          const priceValue = Number(property.total_property_value);
-          const formattedPrice = !isNaN(priceValue)
-            ? `₹${priceValue}`
-            : "₹0";
-
-          return {
-            title: property.property_title || "No Title",
-            price: formattedPrice,
-            badges: [
-              property.status || "N/A",
-              property.approval_status || "N/A",
-              property.looking_to?.toUpperCase() || "N/A",
-            ],
-            img: imageUrl,
-          };
-        });
-
-        setProperties(formatted.slice(0, 2)); // Show only 2 latest properties
+        const filteredProperties = data.filter(p => p.user_id?.toString() !== userId);
+        const formatted = filteredProperties.map((p) => ({
+          title: p.property_title || 'No Title',
+          price: Number(p.total_property_value) ? `₹${Number(p.total_property_value).toLocaleString('en-IN')}` : '₹0',
+          badges: [p.status || 'N/A', p.approval_status || 'N/A', p.looking_to?.toUpperCase() || 'N/A'],
+          img: p.images?.[0]?.image ? `${baseurl}${p.images[0].image}` : 'https://via.placeholder.com/400x200?text=No+Image',
+        }));
+        setProperties(formatted.slice(0, 3));
       } catch (error) {
-        console.error("Error fetching properties:", error);
+        console.error('Error fetching properties:', error);
       }
     };
-
     fetchProperties();
-  }, []);
+  }, [userId]);
 
+  const metrics = [
+    { label: 'Listing Properties', value: property?.total_properties ?? 0, icon: <FontAwesomeIcon icon={faBuilding} />, path: '/p-listingassets', bgColor: cardColors[0 % cardColors.length] },
+    { label: 'Team', value: totalAgents, icon: <FontAwesomeIcon icon={faUsers} />, path: '/p-team', bgColor: cardColors[1 % cardColors.length] },
+    { label: 'Active Team', value: totalActiveAgents, icon: <FontAwesomeIcon icon={faUserCheck} />, path: '/p-activeagents', bgColor: cardColors[2 % cardColors.length] },
+    { label: 'Latest Properties', value: property?.total_latest_properties ?? 0, icon: <FontAwesomeIcon icon={faHome} />, path: '/p-latestProperties', bgColor: cardColors[3 % cardColors.length] },
+    { label: 'Bookings', value: transactionSummary?.bookings?.properties?.count ?? 0, icon: <FontAwesomeIcon icon={faUserPlus} />, path: '/p-bookedassets', bgColor: cardColors[4 % cardColors.length] },
+    { label: 'Purchased', value: transactionSummary?.purchased?.properties?.count ?? 0, icon: <FontAwesomeIcon icon={faTags} />, path: '/p-purchasedassets', bgColor: cardColors[5 % cardColors.length] },
+    { label: 'Sold', value: property?.total_sold_properties ?? 0, icon: <FontAwesomeIcon icon={faCheckCircle} />, path: '/p-soldassets', bgColor: cardColors[6 % cardColors.length] },
+    { label: 'Team Commissions Paid', value: `₹${commissionSummary.total_agent_commission_paid.toLocaleString('en-IN')}`, icon: <FontAwesomeIcon icon={faMoneyBillWave} />, path: '/p-commission', bgColor: cardColors[7 % cardColors.length] },
+    { label: 'Company Commissions Paid', value: `₹${commissionSummary.total_company_commission_paid.toLocaleString('en-IN')}`, icon: <FontAwesomeIcon icon={faMoneyBillWave} />, path: '/p-commission', bgColor: cardColors[8 % cardColors.length] },
+  ];
 
+  const options = {
+    responsive: true,
+    plugins: { legend: { position: 'bottom' } },
+    scales: { y: { beginAtZero: true } },
+    maintainAspectRatio: false,
+  };
 
-
+  const getFilteredChart = () => {
+    if (!chartData) return null;
+    if (filter === 'all') return chartData;
+    return { labels: chartData.labels, datasets: chartData.datasets.filter(d => d.label === filter) };
+  };
 
   return (
     <>
       <PartnerHeader />
-      <Container maxWidth="xl" sx={{ py: 4 }}>
-        {/* Header */}
-        <Box sx={{ mb: 4, display: "flex", justifyContent: "center" }}>
-          <Typography
-            variant="h4"
-            gutterBottom
-            sx={{
-              fontWeight: "bold",
-              color: "primary.main",
-              letterSpacing: 1,
-              position: "relative",
-              display: "inline-block",
-              '&::after': {
-                content: '""',
-                display: 'block',
-                width: '60%',
-                height: '4px',
-                backgroundColor: 'primary.main',
-                margin: '8px auto 0',
-                borderRadius: '2px',
-              },
-            }}
-          >
-            Dashboard
-          </Typography>
-        </Box>
-
-{/* Top Metrics Row */}
-<Grid container spacing={3} sx={{ mb: 3 }}>
-  {[
-    {
-      title: 'Listing Properties',
-      value: property?.total_properties ?? 0,
-      icon: faBuilding,
-      path: '/p-listingassets',
-      bgColor: '#054ea2ff'
-    },
-    {
-      title: 'Team',
-      value: totalAgents.toString(),
-      icon: faUsers,
-      path: '/p-team',
-      bgColor: '#aa280bff'
-    },
-    {
-      title: 'Active Team',
-      value: totalActiveAgents,
-      icon: faUserCheck,
-      path: '/p-activeagents',
-      bgColor: '#274f05ff'
-    },
-    {
-      title: 'Latest Properties',
-      value: property?.total_latest_properties ?? 0,
-      icon: faHome,
-      path: '/p-latestProperties',
-      bgColor: '#5a4400ff'
-    },
-    {
-      title: 'Bookings',
-      value: transactionSummary?.bookings?.properties?.count ?? 0,
-      icon: faUserPlus,
-      path: '/p-bookedassets',
-      bgColor: '#E74C3C' 
-    },
-  ].map((metric, index) => (
-    <Grid
-      key={index}
-      item
-      xs={6}    
-      sm={6}
-      md={2.4}  
-    >
-      <Link to={metric.path} style={{ textDecoration: 'none' }}>
-        <Card
-          sx={{
-            borderRadius: 3,
-            background: metric.bgColor,
-            color: '#fff',
-            boxShadow: 4,
-            transition: 'transform 0.3s',
-            '&:hover': { transform: 'translateY(-5px)' },
-            cursor: 'pointer',
-            height: { xs: 165, sm: 160, md: 160 },
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-        >
-          <CardContent sx={{ textAlign: 'center' }}>
-            <FontAwesomeIcon icon={metric.icon} size="2x" color="#fff" />
-            <Typography variant="h4" sx={{ my: 1, color: '#fff' }}>
-              {metric.value}
-            </Typography>
-            <Typography sx={{ mt: 1, color: '#fff' }}>
-              {metric.title}
-            </Typography>
-          </CardContent>
-        </Card>
-      </Link>
-    </Grid>
-  ))}
-</Grid>
-
-
-
-        {transactionSummary && (
-          <Grid container spacing={3} sx={{ mb: 3, display: 'flex', flexWrap: 'wrap' }}>
-            {[
-              {
-                title: 'Purchased',
-                value: transactionSummary.purchased.properties.count,
-                icon: faTags,
-                onClick: () => navigate('/p-purchasedassets'),
-                bgColor: '#37288eff'
-              },
-              {
-                title: 'Sold',
-                value: property?.total_sold_properties ?? 0,
-                icon: faCheckCircle,
-                onClick: () => navigate('/p-soldassets'),
-                bgColor: '#bd7500ff'
-              },
-              {
-                title: ' Team Commissions Paid',
-                value: `₹${commissionSummary.total_agent_commission_paid?.toLocaleString('en-IN')}`,
-                icon: faMoneyBillWave,
-                onClick: () => navigate('/p-commission'),
-                bgColor: '#005893ff'
-              },
-              {
-                title: 'Company Commissions Paid',
-                value: `₹${commissionSummary.total_company_commission_paid?.toLocaleString('en-IN')}`,
-                icon: faMoneyBillWave,
-                onClick: () => navigate('/p-commission'),
-                bgColor: '#9B59B6'
-              },
-            ].map((card, index) => (
-              <Grid
-                key={index}
-                item
-                xs={12}
-                sm={6}
-                md={2.4} // ✅ match first row (5 per row)
-                sx={{ flex: '1 1 20%' }}
-              >
-                <Card
-                  sx={{
-                    borderRadius: 3,
-                    background: card.bgColor,
-                    color: '#fff',
-                    boxShadow: 4,
-                    cursor: 'pointer',
-                    minHeight: 160, // ✅ force equal height
-                    transition: 'transform 0.2s',
-                    '&:hover': { transform: 'translateY(-4px)' },
-                  }}
-                  onClick={card.onClick}
-                >
-                  <CardContent sx={{ textAlign: 'center' }}>
-                    <FontAwesomeIcon icon={card.icon} size="2x" color="#fff" />
-                    <Typography variant="h4" sx={{ my: 1, color: '#fff' }}>{card.value}</Typography>
-                    <Typography sx={{ mt: 1, color: '#fff' }}>{card.title}</Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-
-
-
-
-
-
-
-
-            {/* <Grid item xs={12} sm={6} md={3}>
-              <Card sx={{ borderRadius: "15px", boxShadow: 3 }}>
-                <CardContent sx={{ textAlign: 'center' }}>
-                  <FontAwesomeIcon icon={faMoneyBillWave} size="2x" color="#28a745" />
-                  <Typography sx={{ mt: 1 }}>Agent Paid Commission</Typography>
-                  <Typography variant="h4">
-                    ₹{transactionSummary.totals.total_agent_commission_paid}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-
-            <Grid item xs={12} sm={6} md={3}>
-              <Card sx={{ borderRadius: "15px", boxShadow: 3 }}>
-                <CardContent sx={{ textAlign: 'center' }}>
-                  <FontAwesomeIcon icon={faMoneyBillWave} size="2x" color="#dc3545" />
-                  <Typography sx={{ mt: 1 }}>Agent Balance Commission</Typography>
-                  <Typography variant="h4">
-                    ₹{transactionSummary.totals.total_agent_commission_balance}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid> */}
-          </Grid>
-        )}
-
-        {/* Graphs */}
-
-        <Box sx={{ mb: 4, display: "flex", justifyContent: "center" }}>
-          <Typography
-            variant="h4"
-            gutterBottom
-            sx={{
-              fontWeight: "bold",
-              color: "primary.main",
-              letterSpacing: 1,
-              position: "relative",
-              display: "inline-block",
-              '&::after': {
-                content: '""',
-                display: 'block',
-                width: '60%',
-                height: '4px',
-                backgroundColor: 'primary.main',
-                margin: '8px auto 0',
-                borderRadius: '2px',
-              },
-            }}
-          >
-            Overview
-          </Typography>
-        </Box>
-        <Grid container spacing={3} sx={{ mb: 3 }}>
-          {/* Property Statistics */}
-          <Grid item xs={12} lg={6} sx={{ height: '100%' }}>
-            <Card sx={{ height: 500, boxShadow: 3 }}>
-              <CardContent sx={{ textAlign: 'center' }}>
-                <Typography variant="h6" fontWeight="bold">
-                  Property Statistics
-                </Typography>
-              </CardContent>
-              <CardContent sx={{ height: 400, pt: 0 }}>
-                {chartData ? (
-                  <Bar
-                    data={chartData}
-                    options={{
-                      responsive: true,
-                      maintainAspectRatio: false,
-                      plugins: {
-                        legend: {
-                          position: 'top',
-                        },
-                      },
-                    }}
-                  />
-                ) : (
-                  <div>Loading chart...</div>
-                )}
-              </CardContent>
-            </Card>
-          </Grid>
-
-          {/* Latest Property Listings */}
-          <Grid item xs={12} lg={6} sx={{ height: '100%' }}>
-            <Card sx={{ height: 500, boxShadow: 3, display: 'flex', flexDirection: 'column' }}>
-              <CardContent sx={{ textAlign: "center", pb: 1 }}>
-                <Typography variant="h6" fontWeight="bold">
-                  Latest Property Listings
-                </Typography>
-              </CardContent>
-
-              <CardContent sx={{ display: "flex", justifyContent: "flex-end", pt: 0, pb: 1 }}>
-                <Button variant="outlined" size="small" onClick={() => navigate('/p-latestassets')}>
-                  View All
-                </Button>
-              </CardContent>
-
-              {/* Scrollable property list */}
-              <CardContent sx={{ p: 2, pt: 0, overflowY: 'auto', flexGrow: 1 }}>
-                <Grid container spacing={2}>
-                  {properties.map((property, index) => (
-                    <Grid item xs={12} sm={6} key={index}>
-                      <Card
-                        sx={{
-                          height: '100%',
-                          backgroundColor: '#f9f9f9',
-                          border: '1px solid #ddd',
-                          transition: '0.3s',
-                          boxShadow: 1,
-                          '&:hover': {
-                            boxShadow: 6,
-                            backgroundColor: '#f1f1f1',
-                            transform: 'scale(1.02)',
-                          },
+      <Box className="partner_dashboard_container">
+        <Box className="partner_dashboard_content">
+          {loading ? (
+            <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <>
+              <Box className="partner_dashboard_top_row">
+                <Box className="partner_dashboard_metrics_grid">
+                  {metrics.map((metric, index) => (
+                    <Card
+                      key={index}
+                      className="partner_dashboard_metric_card"
+                      style={{ backgroundColor: metric.bgColor }}
+                      onClick={() => navigate(metric.path)}
+                    >
+                      <Box className="partner_dashboard_icon">
+                        {React.cloneElement(metric.icon, { sx: { fontSize: 20, color: textColors[index % textColors.length], fontWeight: fontWeights[index % fontWeights.length] } })}
+                        <Typography
+                          className="partner_dashboard_metric_label"
+                          style={{
+                            color: textColors[index % textColors.length],
+                            fontWeight: fontWeights[index % fontWeights.length],
+                            fontSize: fontSizes[index % fontSizes.length],
+                          }}
+                        >
+                          {metric.label}
+                        </Typography>
+                      </Box>
+                      <Typography
+                        className="partner_dashboard_metric_value"
+                        style={{
+                          color: textColors[index % textColors.length],
+                          fontWeight: fontWeights[index % fontWeights.length],
+                          fontSize: fontSizes[index % fontSizes.length],
                         }}
                       >
+                        {metric.value}
+                      </Typography>
+                    </Card>
+                  ))}
+                </Box>
+                <Box className="partner_dashboard_chart_card">
+                  <Box className="partner_dashboard_chart_header">
+                    <Typography className="partner_dashboard_chart_title">Property Statistics</Typography>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0, minWidth: 200 }}>
+                      <Input
+                        value="Select Category"
+                        readOnly
+                        disableUnderline
+                        sx={{ fontSize: 16, color: '#555', px: 1, ml: -2 }}
+                      />
+                      <FormControl size="small" sx={{ borderRadius: '50px' }}>
+                        <Select
+                          value={filter}
+                          onChange={(e) => setFilter(e.target.value)}
+                          displayEmpty
+                          sx={{ borderRadius: '50px' }}
+                        >
+                          <MenuItem value="all">Select All</MenuItem>
+                          <MenuItem value="Listing Properties">Listing Properties</MenuItem>
+                          <MenuItem value="Latest Properties">Latest Properties</MenuItem>
+                          <MenuItem value="Sold">Sold</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Box>
+                  </Box>
+                  <Box className="partner_dashboard_chart_body">
+                    {chartData && <Bar ref={chartRef} data={getFilteredChart()} options={options} />}
+                  </Box>
+                </Box>
+              </Box>
+              <Box className="partner_dashboard_property_listings">
+                <Box className="partner_dashboard_chart_header">
+                  <Typography className="partner_dashboard_chart_title">Latest Property Listings</Typography>
+                  <Button variant="outlined" size="small" onClick={() => navigate('/p-latestProperties')}>
+                    View All
+                  </Button>
+                </Box>
+                <Box sx={{ p: 2 }}>
+                  <Box className="partner_dashboard_property_grid">
+                    {properties.map((p, i) => (
+                      <Card key={i} className="partner_dashboard_property_card">
                         <Box sx={{ px: 1, pt: 1 }}>
-                          <CardMedia
-                            component="img"
-                            height="120"
-                            image={property.img}
-                            alt={property.title}
-                            sx={{ borderRadius: 1, objectFit: 'cover' }}
-                          />
+                          <CardMedia component="img" height="220" image={p.img} alt={p.title} sx={{ borderRadius: 1, objectFit: 'cover' }} />
                         </Box>
                         <CardContent>
-                          <Typography fontWeight="bold">{property.title}</Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            {property.price}
-                          </Typography>
+                          <Typography fontWeight="bold">{p.title}</Typography>
+                          <Typography variant="body2" color="text.secondary">{p.price}</Typography>
                           <Box mt={1}>
-                            {property.badges.map((badge, i) => (
-                              <Chip
-                                key={i}
-                                label={badge}
-                                color={i === 0 ? "success" : "info"}
-                                size="small"
-                                sx={{ mr: 0.5 }}
-                              />
+                            {p.badges.map((badge, idx) => (
+                              <Chip key={idx} label={badge} color={idx === 0 ? 'success' : 'info'} size="small" sx={{ mr: 0.5 }} />
                             ))}
                           </Box>
                         </CardContent>
                       </Card>
-                    </Grid>
-                  ))}
-                </Grid>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-   
-
-         {/* Social Links */}
-               <Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, mt: 4 }}>
-                 {[
-                   { icon: faInstagram, url: "https://www.instagram.com/shrirajteam/?igsh=YzhjcjVuMGIxZzJq#" },
-                   { icon: faFacebook, url: "https://www.facebook.com/shrirajteam/" },
-                   { icon: faXTwitter, url: "https://x.com/shrirajteam" },
-                   { icon: faYoutube, url: "https://www.youtube.com/@Shrirajteam" },
-                 ].map((item, i) => (
-                   <a
-                     key={i}
-                     href={item.url}
-                     target="_blank"
-                     rel="noopener noreferrer"
-                     style={{ textDecoration: "none" }}
-                   >
-                     <Box
-                       sx={{
-                         width: 48,
-                         height: 48,
-                         display: 'flex',
-                         alignItems: 'center',
-                         justifyContent: 'center',
-                         borderRadius: '50%',
-                         backgroundColor: '#000',
-                         boxShadow: 2,
-                         transition: 'all 0.3s ease',
-                         cursor: 'pointer',
-                         '&:hover': {
-                           backgroundColor: 'primary.main',
-                           transform: 'scale(1.1)',
-                         },
-                         '& svg': {
-                           fontSize: 24,
-                           color: '#fff',
-                           transition: 'transform 0.3s ease',
-                         },
-                       }}
-                     >
-                       <FontAwesomeIcon icon={item.icon} />
-                     </Box>
-                   </a>
-                 ))}
-               </Box>
-      </Container>
-
-        {/* ✅ Birthday Popup with Confetti */}
-           {/* ✅ Birthday Popup with Confetti */}
-{userData && (
-  <BirthdayPopup
-    open={showBirthday}
-    onClose={() => setShowBirthday(false)}
-    userName={userData.first_name || "User"}
-  />
-)}
-
-    
+                    ))}
+                  </Box>
+                </Box>
+              </Box>
+            </>
+          )}
+          {userData && (
+            <BirthdayPopup
+              open={showBirthday}
+              onClose={() => setShowBirthday(false)}
+              userName={userData.first_name || 'User'}
+            />
+          )}
+        </Box>
+      </Box>
     </>
   );
 };
 
-export default AgentDashboard;
+export default PartnerDashboard;
