@@ -39,23 +39,25 @@ function AllBusinesses() {
   const [page, setPage] = useState(1);
   const itemsPerPage = 6;
 
-// Fetch businesses
-useEffect(() => {
-  const userId = localStorage.getItem("user_id");
+  // Fetch businesses
+  useEffect(() => {
+    const userId = localStorage.getItem("user_id");
 
-  fetch(`${baseurl}/business/`)
-    .then((res) => res.json())
-    .then((data) => {
-      // Filter out businesses where user_id matches current userId
-      const filtered = data.filter((business) => business.user_id !== userId);
-      setBusinesses(filtered);
-      setLoading(false);
-    })
-    .catch((error) => {
-      console.error("Error fetching businesses:", error);
-      setLoading(false);
-    });
-}, []);
+    fetch(`${baseurl}/business/`)
+      .then((res) => res.json())
+      .then((data) => {
+        // Filter out businesses where user_id matches current userId
+        const filtered = data.filter(
+          (business) => String(business.user_id) !== String(userId)
+        );
+        setBusinesses(filtered);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching businesses:", error);
+        setLoading(false);
+      });
+  }, []);
 
 
   const handleDelete = (id) => {
