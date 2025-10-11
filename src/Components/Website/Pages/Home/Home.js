@@ -821,7 +821,7 @@ const handleCloseLogoModal = () => {
           onClick={() => handleLogoClick(biz)}
           style={{
             width: "100%",          // Full card width
-            height: "220px",        // Adjust height to look consistent
+            height: "Auto",        // Adjust height to look consistent
             objectFit: "cover",     // Maintain aspect ratio & fill space
             borderRadius: "8px",
             cursor: "pointer",

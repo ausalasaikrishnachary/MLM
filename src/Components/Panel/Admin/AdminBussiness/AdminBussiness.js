@@ -11,6 +11,7 @@ import {
   IconButton,
   Dialog,
   DialogContent,
+  Pagination,
   Divider,
 } from "@mui/material";
 import BusinessIcon from "@mui/icons-material/Business";
@@ -22,11 +23,13 @@ import CloseIcon from "@mui/icons-material/Close";
 import ShareIcon from "@mui/icons-material/Share";
 import Header from "../../../Shared/Navbar/Navbar";
 import { baseurl } from "../../../BaseURL/BaseURL"; // ✅ import baseurl
+import DownloadIcon from "@mui/icons-material/Download";
 
 const AdminBusiness = () => {
   const [open, setOpen] = useState(false);
   const [selectedBusiness, setSelectedBusiness] = useState(null);
   const [businesses, setBusinesses] = useState([]);
+  
 
   useEffect(() => {
     const fetchBusinesses = async () => {
@@ -48,6 +51,19 @@ const AdminBusiness = () => {
   const handleClose = () => {
     setOpen(false);
     setSelectedBusiness(null);
+  };
+
+  const [page, setPage] = useState(1); // current page
+  const [rowsPerPage] = useState(6); // businesses per page
+  
+  const totalPages = Math.ceil(businesses.length / rowsPerPage);
+  const paginatedBusinesses = businesses.slice(
+    (page - 1) * rowsPerPage,
+    page * rowsPerPage
+  );
+  
+  const handlePageChange = (event, value) => {
+    setPage(value);
   };
 
   return (
@@ -74,27 +90,49 @@ const AdminBusiness = () => {
                   }}
                 >
                   <CardContent sx={{ flexGrow: 1 }}>
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
-                      {biz.logo ? (
-                        <img
-                          src={`${baseurl}${biz.logo}`} // ✅ replaced baseurl
-                          alt={`${biz.business_name} Logo`}
-                          style={{
-                            width: 50,
-                            height: 50,
-                            objectFit: "contain",
-                            borderRadius: "8px",
-                          }}
-                        />
-                      ) : (
-                        <BusinessIcon fontSize="large" sx={{ color: "#4776E6" }} />
-                      )}
-                      <Chip
-                        label={biz.is_active ? "Active" : "Inactive"}
-                        color={biz.is_active ? "success" : "default"}
-                        size="small"
-                      />
-                    </Box>
+                  <Box sx={{ position: "relative" }}>
+  {/* Active Status Chip - Positioned Above Image */}
+  <Chip
+    label={biz.is_active ? "Active" : "Inactive"}
+    color={biz.is_active ? "success" : "default"}
+    size="small"
+    sx={{
+      position: "absolute",
+      top: 20,
+      right: 10,
+      zIndex: 2,
+      fontWeight: "bold",
+    }}
+  />
+
+  {/* Business Logo or Fallback Icon */}
+  {biz.logo ? (
+    <img
+      src={`${baseurl}${biz.logo}`}
+      alt={`${biz.business_name} Logo`}
+      style={{
+        width: "100%",
+        height: "220px",
+        objectFit: "cover",
+        borderRadius: "8px",
+        cursor: "pointer",
+        transition: "transform 0.2s ease",
+      }}
+      onMouseEnter={(e) => (e.target.style.transform = "scale(1.05)")}
+      onMouseLeave={(e) => (e.target.style.transform = "scale(1)")}
+    />
+  ) : (
+    <BusinessIcon
+      fontSize="large"
+      sx={{
+        color: "#4776E6",
+        width: "100%",
+        height: "220px",
+      }}
+    />
+  )}
+</Box>
+
 
                     <Typography variant="h6" fontWeight="bold" mt={1}>
                       {biz.business_name}
@@ -158,14 +196,21 @@ const AdminBusiness = () => {
                       </IconButton>
 
                       {biz.documents && (
-                        <IconButton
-                          sx={{ bgcolor: "#f2f2f7", "&:hover": { bgcolor: "#e1e1ec" } }}
-                          onClick={() =>
-                            window.open(`${baseurl}${biz.documents}`, "_blank") // ✅ replaced baseurl
-                          }
-                        >
-                          ⬇️
-                        </IconButton>
+                     
+
+                     <IconButton
+                       sx={{
+                         bgcolor: "#f2f2f7",
+                         "&:hover": { bgcolor: "#e1e1ec" },
+                         borderRadius: "12px",
+                         padding: "8px",
+                         boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)",
+                       }}
+                       onClick={() => window.open(`${baseurl}${biz.documents}`, "_blank")}
+                     >
+                       <DownloadIcon sx={{ color: "#4776E6", fontSize: 24 }} />
+                     </IconButton>
+                     
                       )}
                     </Box>
                   </Box>
@@ -246,6 +291,14 @@ const AdminBusiness = () => {
             </DialogContent>
           )}
         </Dialog>
+        <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4, mb: 4 }}>
+        <Pagination
+          count={totalPages}
+          page={page}
+          onChange={handlePageChange}
+          color="primary"
+        />
+      </Box>
       </Box>
     </>
   );
