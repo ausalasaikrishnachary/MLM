@@ -484,7 +484,7 @@ const handleCloseLogoModal = () => {
           <Carousel
             fade={false}
             interval={2000}
-            indicators={true}
+            indicators={false}
             prevIcon={
               <span
                 className="custom-arrow left-arrow"
