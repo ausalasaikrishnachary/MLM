@@ -151,13 +151,14 @@ import BirthdayPopup from "./Components/Panel/BirthdayPopup/BirthdayPopup";
 import UpVdHowitworks from "./Components/Panel/Admin/UpVdHowitworks/UpVdHowitworks";
 import AddVideo from "./Components/Panel/Admin/UpVdHowitworks/AddVideo";
 import EditVideo from "./Components/Panel/Admin/UpVdHowitworks/EditVideo";
-import WishlistPage from "./Components/Panel/Partner/WishlistPage/WishlistPage";
 
 import Business from "./Components/Website/Pages/Business/Business";
 import AddInvestorBusiness from "./Components/Panel/Investor/InvestorBusiness/AddInvestorBusiness";
 import InvestorBusiness from "./Components/Panel/Investor/InvestorBusiness/InvestorBusiness";
 import EditInvestorBusiness from "./Components/Panel/Investor/InvestorBusiness/EditInvestorBusiness";
 import AllBusinesses from "./Components/Panel/Partner/Business/AllBusinesses";
+import Wishlist from "./Components/Panel/Partner/Asset/Wishlist ";
+
 
 
 
@@ -302,7 +303,8 @@ function Layout() {
           <Route path="/p-report" element={<Report />} />
           <Route path="/p-addasset" element={<AssetForm />} />
           <Route path="/p-assets" element={<AssetDashboard />} />
-           <Route path="/p-wishlistpage" element={<WishlistPage />} />
+          <Route path="/p-wishlist" element={<Wishlist/>} />
+           
           <Route path="/p-comparelist" element={<Comparelist />} />
 
           <Route path="/p-profile" element={<PartnerProfile />} />

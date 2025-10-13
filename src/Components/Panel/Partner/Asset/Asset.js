@@ -38,6 +38,14 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import VideocamIcon from '@mui/icons-material/Videocam';
 
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+
+import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
+import ThumbUpAltOutlinedIcon from '@mui/icons-material/ThumbUpAltOutlined';
+
+
+
 
 
 
@@ -62,6 +70,110 @@ const AssetsUI = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortOption, setSortOption] = useState("");
   const [commissions, setCommissions] = useState([]);
+
+  const [likedProperties, setLikedProperties] = useState([]);
+  useEffect(() => {
+    const fetchLikes = async () => {
+      try {
+        const res = await axios.get(`${baseurl}/likes/`);
+        const userLikes = res.data
+          .filter(item => item.user === parseInt(userId))
+          .map(item => item.property);
+        setLikedProperties(userLikes);
+      } catch (err) {
+        console.error("Error fetching likes:", err);
+      }
+    };
+  
+    if (userId) fetchLikes();
+  }, [userId]);
+
+  const handleLikeToggle = async (propertyId) => {
+    if (!userId) {
+      alert("Please log in to like a property.");
+      return;
+    }
+  
+    try {
+      if (likedProperties.includes(propertyId)) {
+        // Remove like
+        const res = await axios.get(`${baseurl}/likes/`);
+        const item = res.data.find(
+          (entry) => entry.user === parseInt(userId) && entry.property === propertyId
+        );
+        if (item) {
+          await axios.delete(`${baseurl}/likes/${item.id}/`);
+          setLikedProperties(prev => prev.filter(id => id !== propertyId));
+        }
+      } else {
+        // Add like
+        await axios.post(`${baseurl}/likes/`, {
+          user: parseInt(userId),
+          property: propertyId
+        });
+        setLikedProperties(prev => [...prev, propertyId]);
+      }
+    } catch (error) {
+      console.error("Error updating likes:", error);
+    }
+  };
+  
+  
+
+
+
+
+  const [wishlist, setWishlist] = useState([]);
+
+  // ✅ Fetch user's existing wishlist on page load
+  useEffect(() => {
+    const fetchWishlist = async () => {
+      try {
+        const res = await axios.get(`${baseurl}/wishlist/`);
+        const userWishlist = res.data
+          .filter(item => item.user === parseInt(userId)) // Only user's wishlist
+          .map(item => item.property);
+        setWishlist(userWishlist);
+      } catch (err) {
+        console.error("Error fetching wishlist:", err);
+      }
+    };
+  
+    if (userId) fetchWishlist();
+  }, [userId]);
+  
+  // ✅ Toggle wishlist state and API call
+  const handleWishlistToggle = async (propertyId) => {
+    if (!userId) {
+      alert("Please log in to add to wishlist.");
+      return;
+    }
+  
+    try {
+      if (wishlist.includes(propertyId)) {
+        // Remove from wishlist (DELETE)
+        const res = await axios.get(`${baseurl}/wishlist/`);
+        const item = res.data.find(
+          (entry) => entry.user === parseInt(userId) && entry.property === propertyId
+        );
+  
+        if (item) {
+          await axios.delete(`${baseurl}/wishlist/${item.id}/`);
+          setWishlist((prev) => prev.filter((id) => id !== propertyId));
+        }
+      } else {
+        // Add to wishlist (POST)
+        await axios.post(`${baseurl}/wishlist/`, {
+          user: parseInt(userId),
+          property: propertyId,
+        });
+        setWishlist((prev) => [...prev, propertyId]);
+      }
+    } catch (error) {
+      console.error("Error updating wishlist:", error);
+    }
+  };
+  
 
   useEffect(() => {
     const fetchCommissions = async () => {
@@ -478,6 +590,7 @@ const AssetsUI = () => {
                             }}
                           />
                         </Box>
+                        
                       ) : (
                         <CardMedia
                           component="img"
@@ -487,7 +600,27 @@ const AssetsUI = () => {
                           sx={{ objectFit: 'cover', borderRadius: '12px 12px 0 0', cursor: 'pointer' }}
                           onClick={() => handleImageClick(property)}
                         />
+                        
                       )}
+                      {/* ❤️ Wishlist Icon */}
+<IconButton
+  onClick={() => handleWishlistToggle(property.property_id)}
+  sx={{
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    backgroundColor: 'rgba(255,255,255,0.8)',
+    '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
+    zIndex: 2,
+  }}
+>
+  {wishlist.includes(property.property_id) ? (
+    <FavoriteIcon sx={{ color: 'red' }} />
+  ) : (
+    <FavoriteBorderIcon sx={{ color: 'red' }} />
+  )}
+</IconButton>
+
 
                       {/* Navigation arrows when there are multiple media items */}
                       {totalMedia > 1 && (
@@ -599,17 +732,29 @@ const AssetsUI = () => {
                         </Typography>
 
                         {/* Checkbox + Text */}
-                        <Box display="flex" alignItems="center" gap={0.5}>
-                          <Checkbox
-                            checked={compareList.some(p => p.property_id === property.property_id)}
-                            onChange={() => handleCompareToggle(property)}
-                            size="small"
-                            color="primary"
-                          />
-                          <Typography variant="body2" color="textSecondary">
-                            Compare
-                          </Typography>
-                        </Box>
+                        <Box display="flex" alignItems="center" gap={1}>
+  {/* Like Button (Thumb Up) */}
+  <IconButton
+    onClick={() => handleLikeToggle(property.property_id)}
+    size="small"
+    sx={{ color: likedProperties.includes(property.property_id) ? '#1a73e8' : 'grey' }}
+  >
+    {likedProperties.includes(property.property_id) ? <ThumbUpAltIcon /> : <ThumbUpAltOutlinedIcon />}
+  </IconButton>
+
+  {/* Compare Checkbox */}
+  <Checkbox
+    checked={compareList.some(p => p.property_id === property.property_id)}
+    onChange={() => handleCompareToggle(property)}
+    size="small"
+    color="primary"
+  />
+  <Typography variant="body2" color="textSecondary">
+    Compare
+  </Typography>
+</Box>
+
+
                       </Box>
 
 
