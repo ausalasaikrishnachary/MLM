@@ -157,7 +157,11 @@ import AddInvestorBusiness from "./Components/Panel/Investor/InvestorBusiness/Ad
 import InvestorBusiness from "./Components/Panel/Investor/InvestorBusiness/InvestorBusiness";
 import EditInvestorBusiness from "./Components/Panel/Investor/InvestorBusiness/EditInvestorBusiness";
 import AllBusinesses from "./Components/Panel/Partner/Business/AllBusinesses";
+
+import AdminBussinessEdit from "./Components/Panel/Admin/AdminBussiness/AdminBussinessEdit";
+
 import Wishlist from "./Components/Panel/Partner/Asset/Wishlist ";
+
 
 
 
@@ -196,7 +200,7 @@ function Layout() {
 
           <Route path="/" element={<Home />} />
           <Route path="/popup" element={<Popup />} />
-           <Route path="/birthdaypopup" element={<BirthdayPopup/>} />
+          <Route path="/birthdaypopup" element={<BirthdayPopup />} />
           <Route path="/aboutus" element={<Aboutus />} />
           <Route path="/FAQ" element={<FAQAccordion />} />
           <Route path="/contactus" element={<Contact />} />
@@ -207,8 +211,8 @@ function Layout() {
 
           <Route path="/a-trainingmaterial" element={<TrainingMaterial />} />
           <Route path="/a-upvdhowitworks" element={<UpVdHowitworks />} />
-          <Route path="/a-editvideo/:id" element={<EditVideo/>} />
-           <Route path="/a-addvideo" element={<AddVideo />} />
+          <Route path="/a-editvideo/:id" element={<EditVideo />} />
+          <Route path="/a-addvideo" element={<AddVideo />} />
           <Route path="/a-addtrainingmaterial" element={<AddTrainingMaterial />} />
           {/* <Route path="/home" element={<LandingPage />} /> */}
           <Route path="/a-dashboard" element={<AdminDashboard />} />
@@ -263,8 +267,8 @@ function Layout() {
           <Route path="/a-add-commissionmaster" element={<AddCommissionLevels />} />
           <Route path="/a-edit-commissionmaster/:id" element={<EditCommissionLevels />} />
           <Route path="/a-category" element={<Category />} />
-          <Route path="/a-business" element={<AdminBussiness/>} />
-
+          <Route path="/a-business" element={<AdminBussiness />} />
+          <Route path="/a-editbusiness/:id" element={<AdminBussinessEdit />} />
 
 
           <Route path="/i-dashboard" element={<InvestorDashboard />} />
@@ -298,11 +302,15 @@ function Layout() {
           <Route path="/i-editbusiness/:id" element={<EditInvestorBusiness />} />
 
 
+
           <Route path="/p-trainingmaterial" element={<TrainingVideos />} />
           <Route path="/p-dashboard" element={<PartnerDashboard />} />
           <Route path="/p-report" element={<Report />} />
           <Route path="/p-addasset" element={<AssetForm />} />
           <Route path="/p-assets" element={<AssetDashboard />} />
+
+          {/* <Route path="/p-wishlistpage" element={<WishlistPage />} /> */}
+
           <Route path="/p-wishlist" element={<Wishlist/>} />
            
           <Route path="/p-comparelist" element={<Comparelist />} />

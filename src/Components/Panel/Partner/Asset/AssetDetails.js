@@ -754,4 +754,3 @@ useEffect(() => {
 };
 
 export default AssetDetail;
-
