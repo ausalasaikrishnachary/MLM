@@ -13,6 +13,12 @@ import {
   Link,
   IconButton,
   Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
 } from "@mui/material";
 import BusinessIcon from "@mui/icons-material/Business";
 import LanguageIcon from "@mui/icons-material/Language";
@@ -23,6 +29,7 @@ import DescriptionIcon from "@mui/icons-material/Description";
 import DownloadIcon from "@mui/icons-material/Download";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
 
 import PartnerHeader from "../../../Shared/Partner/PartnerNavbar";
 import { useNavigate } from "react-router-dom";
@@ -38,6 +45,29 @@ function ViewBusiness() {
   // Pagination states
   const [page, setPage] = useState(1);
   const itemsPerPage = 6;
+
+  // Dialog + Form states
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedBusiness, setSelectedBusiness] = useState(null);
+  const [formData, setFormData] = useState({
+    agent_id: userId,
+    business_id: "",
+    product_name: "",
+    sku: "",
+    description: "",
+    price: "",
+    selling_price: "",
+    mrp: "",
+    units: "",
+    tax_percent: "",
+    cgst_percent: "",
+    cgst_amount: "",
+    sgst_percent: "",
+    sgst_amount: "",
+    available_qty: "",
+    company_commission: "",
+    product_commission: "",
+  });
 
   // Fetch businesses
   useEffect(() => {
@@ -76,13 +106,68 @@ function ViewBusiness() {
     setPage(value);
   };
 
-  // Paginated data
   const totalPages = Math.ceil(businesses.length / itemsPerPage);
   const startIndex = (page - 1) * itemsPerPage;
   const paginatedBusinesses = businesses.slice(
     startIndex,
     startIndex + itemsPerPage
   );
+
+  // Handle dialog open
+  const handleOpenDialog = (business) => {
+    setSelectedBusiness(business);
+    setFormData({ ...formData, business_id: business.business_id });
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setSelectedBusiness(null);
+    setFormData({
+      agent_id: userId,
+      business_id: "",
+      product_name: "",
+      sku: "",
+      description: "",
+      price: "",
+      selling_price: "",
+      mrp: "",
+      units: "",
+      tax_percent: "",
+      cgst_percent: "",
+      cgst_amount: "",
+      sgst_percent: "",
+      sgst_amount: "",
+      available_qty: "",
+      company_commission: "",
+      product_commission: "",
+    });
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Submit Product
+  const handleSubmit = async () => {
+    try {
+      const res = await fetch(`${baseurl}/products/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      if (res.ok) {
+        alert("Product added successfully!");
+        handleCloseDialog();
+      } else {
+        const error = await res.text();
+        alert("Failed to add product: " + error);
+      }
+    } catch (err) {
+      console.error("Error posting product:", err);
+    }
+  };
 
   return (
     <>
@@ -172,7 +257,9 @@ function ViewBusiness() {
                         component="img"
                         alt={business.business_name || "Business Logo"}
                         image={
-                          business.logo ? `${baseurl}/${business.logo}` : "/default-logo.png"
+                          business.logo
+                            ? `${baseurl}/${business.logo}`
+                            : "/default-logo.png"
                         }
                         sx={{ objectFit: "contain" }}
                       />
@@ -190,9 +277,31 @@ function ViewBusiness() {
 
                     {/* Business Info */}
                     <CardContent sx={{ flexGrow: 1 }}>
-                      <Typography variant="h6" fontWeight="bold" gutterBottom>
-                        {business.business_name}
-                      </Typography>
+                      <Box
+                        display="flex"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        mb={1}
+                      >
+                        <Typography variant="h6" fontWeight="bold">
+                          {business.business_name}
+                        </Typography>
+
+                        {/* Add Product Button */}
+                        
+                        <Tooltip title="Add Product">
+                          <IconButton
+                            color="primary"
+                            size="small"
+                            onClick={() =>
+                              navigate("/p-addproduct", { state: { business } })
+                            }
+                          >
+                            <AddIcon />
+                          </IconButton>
+                        </Tooltip>
+
+                      </Box>
 
                       <Chip
                         label={business.business_type}
@@ -203,7 +312,6 @@ function ViewBusiness() {
 
                       <Divider sx={{ my: 1.5 }} />
 
-                      {/* Website */}
                       <Box display="flex" alignItems="center" gap={1} mb={1}>
                         <LanguageIcon fontSize="small" color="primary" />
                         <Link
@@ -216,19 +324,16 @@ function ViewBusiness() {
                         </Link>
                       </Box>
 
-                      {/* Email */}
                       <Box display="flex" alignItems="center" gap={1} mb={1}>
                         <EmailIcon fontSize="small" color="primary" />
                         <Typography variant="body2">{business.email}</Typography>
                       </Box>
 
-                      {/* Phone */}
                       <Box display="flex" alignItems="center" gap={1} mb={1}>
                         <PhoneIcon fontSize="small" color="primary" />
                         <Typography variant="body2">{business.phone}</Typography>
                       </Box>
 
-                      {/* Location */}
                       {business.address && (
                         <Box display="flex" alignItems="center" gap={1} mb={1}>
                           <LocationOnIcon fontSize="small" color="primary" />
@@ -238,7 +343,6 @@ function ViewBusiness() {
                         </Box>
                       )}
 
-                      {/* Description */}
                       {business.description && (
                         <Box display="flex" alignItems="flex-start" mb={1}>
                           <DescriptionIcon
@@ -255,7 +359,6 @@ function ViewBusiness() {
 
                     {/* Action Buttons */}
                     <Box display="flex" justifyContent="flex-end" p={1}>
-                      {/* Download Document */}
                       {business.documents && (
                         <Tooltip title="Download">
                           <IconButton
@@ -295,20 +398,20 @@ function ViewBusiness() {
               ))}
             </Grid>
 
-            {/* Pagination */}
-        {/* Pagination */}
-{totalPages >= 1 && (
-  <Box display="flex" justifyContent="flex-end" mt={2}>
-    <PaginationComponent
-      count={totalPages || 1} // ensure at least 1 page
-      page={page}
-      onChange={handlePageChange}
-    />
-  </Box>
-)}
-
+            {totalPages >= 1 && (
+              <Box display="flex" justifyContent="flex-end" mt={2}>
+                <PaginationComponent
+                  count={totalPages || 1}
+                  page={page}
+                  onChange={handlePageChange}
+                />
+              </Box>
+            )}
           </>
         )}
+
+
+
       </Container>
     </>
   );

@@ -161,6 +161,7 @@ import AllBusinesses from "./Components/Panel/Partner/Business/AllBusinesses";
 import AdminBussinessEdit from "./Components/Panel/Admin/AdminBussiness/AdminBussinessEdit";
 
 import Wishlist from "./Components/Panel/Partner/Asset/Wishlist ";
+import AddProduct from "./Components/Panel/Partner/Business/AddProduct";
 
 
 
@@ -346,6 +347,7 @@ function Layout() {
           <Route path="/p-latestProperties" element={<LatestProperties />} />
           <Route path="/subscriptionplans" element={<Subcrptionplan />} />
           <Route path="/p-addbusiness" element={<AddBusiness />} />
+          <Route path="/p-addproduct" element={<AddProduct />} />
           <Route path="/p-viewbusiness" element={<ViewBusiness />} />
           <Route path="/p-editbusiness/:id" element={<EditBusiness />} />
           <Route path="/p-allbusinesses" element={<AllBusinesses />} />
