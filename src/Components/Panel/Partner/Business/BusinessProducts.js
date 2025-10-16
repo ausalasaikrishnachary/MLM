@@ -147,7 +147,7 @@ function BusinessProducts() {
                       <strong>Units:</strong> {product.units}
                     </Typography>
 
-                    <Divider sx={{ my: 1.5 }} />
+                    {/* <Divider sx={{ my: 1.5 }} />
 
                     <Typography variant="body2">
                       <strong>Tax %:</strong> {product.tax_percent}%
@@ -159,7 +159,7 @@ function BusinessProducts() {
                     <Typography variant="body2">
                       <strong>SGST %:</strong> {product.sgst_percent}% (
                       ₹{product.sgst_amount})
-                    </Typography>
+                    </Typography> */}
 
                     <Divider sx={{ my: 1.5 }} />
 
@@ -191,7 +191,7 @@ function BusinessProducts() {
                     <Box sx={{ mt: 2 }}>
                       <Button
                         onMouseEnter={(e) =>
-                          handlePopoverOpen(e, product.business_id)
+                          handlePopoverOpen(e, product.id)
                         }
                         onMouseLeave={handlePopoverClose}
                         fullWidth
@@ -209,7 +209,7 @@ function BusinessProducts() {
                       <Popover
                         id="mouse-over-popover"
                         sx={{ pointerEvents: "none" }}
-                        open={open && hoveredProduct === product.business_id}
+                        open={open && hoveredProduct === product.id}
                         anchorEl={anchorEl}
                         anchorOrigin={{
                           vertical: "bottom",
