@@ -163,6 +163,8 @@ import AdminBussinessEdit from "./Components/Panel/Admin/AdminBussiness/AdminBus
 import Wishlist from "./Components/Panel/Partner/Asset/Wishlist ";
 import AddProduct from "./Components/Panel/Partner/Business/AddProduct";
 import BusinessProducts from "./Components/Panel/Partner/Business/BusinessProducts";
+import AdminBussinessProducts from "./Components/Panel/Admin/AdminBussiness/AdminBussinessProducts";
+import EditBussinessProducts from "./Components/Panel/Admin/AdminBussiness/EditBussinessProducts";
 
 
 
@@ -271,7 +273,8 @@ function Layout() {
           <Route path="/a-category" element={<Category />} />
           <Route path="/a-business" element={<AdminBussiness />} />
           <Route path="/a-editbusiness/:id" element={<AdminBussinessEdit />} />
-
+          <Route path="/a-businessproducts/:id" element={<AdminBussinessProducts />} />
+          <Route path="/a-editbusinessproducts/:id" element={<EditBussinessProducts />} />
 
           <Route path="/i-dashboard" element={<InvestorDashboard />} />
 
@@ -313,8 +316,8 @@ function Layout() {
 
           {/* <Route path="/p-wishlistpage" element={<WishlistPage />} /> */}
 
-          <Route path="/p-wishlist" element={<Wishlist/>} />
-           
+          <Route path="/p-wishlist" element={<Wishlist />} />
+
           <Route path="/p-comparelist" element={<Comparelist />} />
 
           <Route path="/p-profile" element={<PartnerProfile />} />
@@ -352,7 +355,7 @@ function Layout() {
           <Route path="/p-viewbusiness" element={<ViewBusiness />} />
           <Route path="/p-editbusiness/:id" element={<EditBusiness />} />
           <Route path="/p-allbusinesses" element={<AllBusinesses />} />
-<Route path="/p-businessproducts/:id" element={<BusinessProducts />} />
+          <Route path="/p-businessproducts/:id" element={<BusinessProducts />} />
 
 
           <Route path="/termsandconditions" element={<Termsandconditions />} />

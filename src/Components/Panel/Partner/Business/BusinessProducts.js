@@ -122,20 +122,17 @@ function BusinessProducts() {
                     <Typography variant="h6" fontWeight="bold" gutterBottom>
                       {product.product_name}
                     </Typography>
-
+{/* 
                     <Typography variant="body2" color="text.secondary">
                       <strong>Agent:</strong> {product.agent_name || "N/A"}
-                    </Typography>
+                    </Typography> */}
 
-                    <Typography variant="body2" color="text.secondary">
+                    {/* <Typography variant="body2" color="text.secondary">
                       <strong>SKU:</strong> {product.sku || "N/A"}
-                    </Typography>
+                    </Typography> */}
 
                     <Divider sx={{ my: 1.5 }} />
 
-                    <Typography variant="body2">
-                      <strong>Price:</strong> ₹{product.price}
-                    </Typography>
                     <Typography variant="body2">
                       <strong>Selling Price:</strong> ₹{product.selling_price}
                     </Typography>
@@ -143,9 +140,9 @@ function BusinessProducts() {
                       <strong>MRP:</strong> ₹{product.mrp}
                     </Typography>
 
-                    <Typography variant="body2" sx={{ mt: 1 }}>
+                    {/* <Typography variant="body2" sx={{ mt: 1 }}>
                       <strong>Units:</strong> {product.units}
-                    </Typography>
+                    </Typography> */}
 
                     {/* <Divider sx={{ my: 1.5 }} />
 
@@ -163,11 +160,11 @@ function BusinessProducts() {
 
                     <Divider sx={{ my: 1.5 }} />
 
-                    <Typography variant="body2">
+                    {/* <Typography variant="body2">
                       <strong>Available Qty:</strong> {product.available_qty}
-                    </Typography>
+                    </Typography> */}
 
-                    <Typography variant="body2" sx={{ mt: 1 }}>
+                    {/* <Typography variant="body2" sx={{ mt: 1 }}>
                       <strong>Company Commission:</strong> ₹
                       {product.company_commission}
                     </Typography>
@@ -175,7 +172,7 @@ function BusinessProducts() {
                     <Typography variant="body2">
                       <strong>Product Commission:</strong> ₹
                       {product.product_commission}
-                    </Typography>
+                    </Typography> */}
 
                     {product.description && (
                       <Typography
@@ -228,7 +225,7 @@ function BusinessProducts() {
                             commissions.map((c) => {
                               const amount =
                                 (parseFloat(c.percentage) *
-                                  product.company_commission) /
+                                  product.distribution_commission) /
                                 100;
                               return (
                                 <Typography key={c.id} variant="body2">
