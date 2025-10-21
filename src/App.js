@@ -1,5 +1,8 @@
 import React, { Profiler, useEffect, useState, } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
+import { IconButton, Box } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import './App.css';
 import AdminDashboard from "./Components/Panel/Admin/Dashboard/Dashboard";
 import AdminAsset from "./Components/Panel/Admin/Asset/Asset";
@@ -165,16 +168,16 @@ import AddProduct from "./Components/Panel/Partner/Business/AddProduct";
 import BusinessProducts from "./Components/Panel/Partner/Business/BusinessProducts";
 import AdminBussinessProducts from "./Components/Panel/Admin/AdminBussiness/AdminBussinessProducts";
 import EditBussinessProducts from "./Components/Panel/Admin/AdminBussiness/EditBussinessProducts";
-
-
-
-
-
+import Chatbot from "./Components/Panel/Admin/Chatbot/Chatbot";
+import CreateQA from "./Components/Panel/Admin/Chatbot/CreateQA";
+import ChatbotPopup from "./Components/Website/Shared/ChatbotPopup/ChatbotPopup";
 
 
 function Layout() {
-  const location = useLocation();
+   const location = useLocation();
+  const navigate = useNavigate();
   const [showPopup, setShowPopup] = useState(false);
+  const [showChat, setShowChat] = useState(false);
 
   // Define paths where Header and Footer should be visible
   const publicPaths = ["/", "/aboutus", "/FAQ", "/contactus", "/properties", "/propertydetails", "/termsandconditions", "/privacypolicy", "/refundpolicy", "/filteredproperties", "/viewpropertiesdetails/:id", "/business"];
@@ -247,7 +250,6 @@ function Layout() {
           <Route path="/a-addsubscriptions" element={<AddSubscription />} />
           <Route path="/a-edit-subscription/:id" element={<EditSubscription />} />
           <Route path="/a-assets/:id" element={<AssetDetails />} />
-          <Route path="/viewpropertiesdetails/:id" element={<ViewPropertiesDetails />} />
 
           <Route path="/a-assets/edit/:id" element={<EditAsset />} />
           <Route path="/a-commission/:transactionId" element={<CommissionView />} />
@@ -262,7 +264,6 @@ function Layout() {
           <Route path="/a-rejectedassets" element={<RejectedAssets />} />
           <Route path="/a-soldassets" element={<SoldAssets />} />
           <Route path="/a-approvedassets" element={<ApprovedAssets />} />
-
           <Route path="/a-activeagents" element={<ActiveAgents />} />
           <Route path="/a-Inactiveagents" element={<InactiveAgents />} />
           <Route path="/a-Newproperties" element={<NewProperties />} />
@@ -275,10 +276,12 @@ function Layout() {
           <Route path="/a-editbusiness/:id" element={<AdminBussinessEdit />} />
           <Route path="/a-businessproducts/:id" element={<AdminBussinessProducts />} />
           <Route path="/a-editbusinessproducts/:id" element={<EditBussinessProducts />} />
+          <Route path="/a-chatbot" element={<Chatbot />} />
+          <Route path="/a-createq&a" element={<CreateQA />} />
+
+
 
           <Route path="/i-dashboard" element={<InvestorDashboard />} />
-
-
           <Route path="/i-listingassets" element={<I_ListingProperties />} />
           <Route path="/i-latestProperties" element={<I_LatestProperties />} />
           <Route path="/i-bookedassets" element={<I_BookedAssets />} />
@@ -313,13 +316,9 @@ function Layout() {
           <Route path="/p-report" element={<Report />} />
           <Route path="/p-addasset" element={<AssetForm />} />
           <Route path="/p-assets" element={<AssetDashboard />} />
-
           {/* <Route path="/p-wishlistpage" element={<WishlistPage />} /> */}
-
           <Route path="/p-wishlist" element={<Wishlist />} />
-
           <Route path="/p-comparelist" element={<Comparelist />} />
-
           <Route path="/p-profile" element={<PartnerProfile />} />
           <Route path="/p-profiledetails" element={<PartnerKyc />} />
           <Route path="/editprofile" element={<EditProfile />} />
@@ -373,6 +372,21 @@ function Layout() {
       </div>
       {footerPaths.includes(location.pathname) && <Footer />}
       {showPopup && <Popup onClose={() => setShowPopup(false)} />}
+
+       {/* Chatbot Floating Button */}
+      {publicPaths.includes(location.pathname) && !showChat && (
+        <Box sx={{ position: "fixed", bottom: 20, right: 20, zIndex: 1000 }}>
+          <IconButton
+            sx={{ bgcolor: "#1976d2", "&:hover": { bgcolor: "#1565c0" }, width: 60, height: 60 }}
+            onClick={() => setShowChat(true)}
+          >
+            <ChatBubbleIcon sx={{ fontSize: 30, color: "white" }} />
+          </IconButton>
+        </Box>
+      )}
+
+      {/* Chatbot Popup */}
+      {showChat && <ChatbotPopup onClose={() => setShowChat(false)} />}
     </>
 
 

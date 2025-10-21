@@ -77,6 +77,7 @@ export default function Header() {
         { label: 'Commission Master', path: '/a-commissionmaster' },
         { label: 'Create Category', path: '/a-category' },
         { label: 'Business', path: '/a-business' },
+        { label: 'Chatbot', path: '/a-chatbot' },
       ]
     },
     { label: 'Meetings', path: '/a-meetings' },
