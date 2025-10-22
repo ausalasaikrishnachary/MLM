@@ -16,9 +16,10 @@ import {
 } from "@mui/material";
 import PartnerHeader from "../../../Shared/Partner/PartnerNavbar";
 import { baseurl } from "../../../BaseURL/BaseURL";
+import PaginationComponent from "../../../Shared/Pagination";
 
 function BusinessProducts() {
-  const { id } = useParams(); // get business_id from URL
+  const { id } = useParams();
   const [products, setProducts] = useState([]);
   const [commissions, setCommissions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,35 +27,39 @@ function BusinessProducts() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [hoveredProduct, setHoveredProduct] = useState(null);
 
+  // ✅ Fetch Products by Business ID
   useEffect(() => {
-    fetch(`${baseurl}/products/`)
-      .then((res) => res.json())
-      .then((data) => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch(`${baseurl}/products/`);
+        const data = await res.json();
         const filtered = data.filter(
           (item) => String(item.business_id) === String(id)
         );
         setProducts(filtered);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      } finally {
         setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching products:", err);
-        setLoading(false);
-      });
+      }
+    };
+    fetchProducts();
   }, [id]);
 
+  // ✅ Fetch Commission Master
   useEffect(() => {
     const fetchCommissions = async () => {
       try {
         const response = await axios.get(`${baseurl}/commissions-master/`);
-        setCommissions(response.data); // assuming response.data is an array
+        setCommissions(response.data);
       } catch (error) {
         console.error("Error fetching commissions:", error);
       }
     };
-
     fetchCommissions();
   }, []);
 
+  // ✅ Popover Handlers
   const handlePopoverOpen = (event, productId) => {
     setAnchorEl(event.currentTarget);
     setHoveredProduct(productId);
@@ -66,6 +71,18 @@ function BusinessProducts() {
   };
 
   const open = Boolean(anchorEl);
+
+  // ✅ Pagination
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 6;
+
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
+
+  const totalPages = Math.ceil(products.length / itemsPerPage) || 1;
+  const startIndex = (page - 1) * itemsPerPage;
+  const paginatedProducts = products.slice(startIndex, startIndex + itemsPerPage);
 
   return (
     <>
@@ -85,8 +102,8 @@ function BusinessProducts() {
           </Typography>
         ) : (
           <Grid container spacing={3} sx={{ mt: 2 }}>
-            {products.map((product, index) => (
-              <Grid item xs={12} sm={6} md={4} key={index}>
+            {paginatedProducts.map((product, index) => (
+              <Grid item xs={12} sm={6} md={4} key={product.id || index}>
                 <Card
                   sx={{
                     borderRadius: 3,
@@ -122,14 +139,6 @@ function BusinessProducts() {
                     <Typography variant="h6" fontWeight="bold" gutterBottom>
                       {product.product_name}
                     </Typography>
-{/* 
-                    <Typography variant="body2" color="text.secondary">
-                      <strong>Agent:</strong> {product.agent_name || "N/A"}
-                    </Typography> */}
-
-                    {/* <Typography variant="body2" color="text.secondary">
-                      <strong>SKU:</strong> {product.sku || "N/A"}
-                    </Typography> */}
 
                     <Divider sx={{ my: 1.5 }} />
 
@@ -140,39 +149,7 @@ function BusinessProducts() {
                       <strong>MRP:</strong> ₹{product.mrp}
                     </Typography>
 
-                    {/* <Typography variant="body2" sx={{ mt: 1 }}>
-                      <strong>Units:</strong> {product.units}
-                    </Typography> */}
-
-                    {/* <Divider sx={{ my: 1.5 }} />
-
-                    <Typography variant="body2">
-                      <strong>Tax %:</strong> {product.tax_percent}%
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>CGST %:</strong> {product.cgst_percent}% (
-                      ₹{product.cgst_amount})
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>SGST %:</strong> {product.sgst_percent}% (
-                      ₹{product.sgst_amount})
-                    </Typography> */}
-
                     <Divider sx={{ my: 1.5 }} />
-
-                    {/* <Typography variant="body2">
-                      <strong>Available Qty:</strong> {product.available_qty}
-                    </Typography> */}
-
-                    {/* <Typography variant="body2" sx={{ mt: 1 }}>
-                      <strong>Company Commission:</strong> ₹
-                      {product.company_commission}
-                    </Typography>
-
-                    <Typography variant="body2">
-                      <strong>Product Commission:</strong> ₹
-                      {product.product_commission}
-                    </Typography> */}
 
                     {product.description && (
                       <Typography
@@ -187,9 +164,7 @@ function BusinessProducts() {
                     {/* ✅ Payout Button with Hover Popover */}
                     <Box sx={{ mt: 2 }}>
                       <Button
-                        onMouseEnter={(e) =>
-                          handlePopoverOpen(e, product.id)
-                        }
+                        onMouseEnter={(e) => handlePopoverOpen(e, product.id)}
                         onMouseLeave={handlePopoverClose}
                         fullWidth
                         variant="contained"
@@ -197,7 +172,7 @@ function BusinessProducts() {
                           color: "white",
                           textTransform: "none",
                           "&:hover": { color: "rgb(5,5,5)" },
-                          marginBottom: "9px",
+                          mb: 1,
                         }}
                       >
                         Payout
@@ -225,7 +200,7 @@ function BusinessProducts() {
                             commissions.map((c) => {
                               const amount =
                                 (parseFloat(c.percentage) *
-                                  product.distribution_commission) /
+                                  (product.distribution_commission || 0)) /
                                 100;
                               return (
                                 <Typography key={c.id} variant="body2">
@@ -249,6 +224,16 @@ function BusinessProducts() {
               </Grid>
             ))}
           </Grid>
+        )}
+
+        {products.length > 0 && (
+          <Box display="flex" justifyContent="flex-end" mt={4}>
+            <PaginationComponent
+              count={totalPages > 0 ? totalPages : 1}
+              page={page}
+              onChange={handlePageChange}
+            />
+          </Box>
         )}
       </Container>
     </>

@@ -19,8 +19,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-
-import Header from "../../../Shared/Navbar/Navbar";
+import PaginationComponent from "../../../Shared/Pagination";
+import InvestorHeader from "../../../Shared/Investor/InvestorNavbar";
 import { baseurl } from "../../../BaseURL/BaseURL";
 
 function AdminBussinessProducts() {
@@ -28,6 +28,7 @@ function AdminBussinessProducts() {
     const [products, setProducts] = useState([]);
     const [commissions, setCommissions] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [businesses, setBusinesses] = useState([]);
 
     const [anchorEl, setAnchorEl] = useState(null);
     const [hoveredProduct, setHoveredProduct] = useState(null);
@@ -96,9 +97,23 @@ function AdminBussinessProducts() {
 
     const open = Boolean(anchorEl);
 
+    // ✅ Pagination for products
+    const [page, setPage] = useState(1);
+    const itemsPerPage = 6;
+
+    const handlePageChange = (event, value) => {
+        setPage(value);
+    };
+
+    // ✅ Calculate pagination based on products, not businesses
+    const totalPages = Math.ceil(products.length / itemsPerPage);
+    const startIndex = (page - 1) * itemsPerPage;
+    const paginatedProducts = products.slice(startIndex, startIndex + itemsPerPage);
+
+
     return (
         <>
-            <Header />
+            <InvestorHeader />
             <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
                 <Typography variant="h4" fontWeight="bold" align="center" gutterBottom>
                     Products for Business
@@ -114,7 +129,7 @@ function AdminBussinessProducts() {
                     </Typography>
                 ) : (
                     <Grid container spacing={3} sx={{ mt: 2 }}>
-                        {products.map((product) => (
+                        {paginatedProducts.map((product) => (
                             <Grid item xs={12} sm={6} md={4} key={product.id}>
                                 <Card
                                     sx={{
@@ -156,7 +171,7 @@ function AdminBussinessProducts() {
                                                 {product.product_name}
                                             </Typography>
 
-                                            <Box display="flex" alignItems="center" gap={1}>
+                                            {/* <Box display="flex" alignItems="center" gap={1}>
                                                 <Button
                                                     size="small"
                                                     color="primary"
@@ -175,7 +190,7 @@ function AdminBussinessProducts() {
                                                     <DeleteIcon fontSize="small" />
                                                 </Button>
 
-                                            </Box>
+                                            </Box> */}
                                         </Box>
 
                                         <Divider sx={{ my: 1.5 }} />
@@ -259,10 +274,25 @@ function AdminBussinessProducts() {
                                     </CardContent>
                                 </Card>
                             </Grid>
+
                         ))}
                     </Grid>
+
+
+
+                )}
+                {/* Pagination */}
+                {totalPages >= 1 && (
+                    <Box display="flex" justifyContent="flex-end" mt={2}>
+                        <PaginationComponent
+                            count={totalPages || 1} // ensure at least 1 page
+                            page={page}
+                            onChange={handlePageChange}
+                        />
+                    </Box>
                 )}
             </Container>
+
         </>
     );
 }

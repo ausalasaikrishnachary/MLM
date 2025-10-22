@@ -130,15 +130,18 @@ function InvestorBusiness() {
                 <Grid item xs={12} sm={6} md={4} key={business.business_id}>
                   <Card
                     sx={{
-                      borderRadius: 3,
-                      boxShadow: 4,
-                      height: "100%",
-                      display: "flex",
-                      flexDirection: "column",
-                      position: "relative",
-                      overflow: "hidden",
-                      borderTopLeftRadius: "15px",
-                      borderTopRightRadius: "15px",
+                         borderRadius: "20px",
+                  p: 2,
+                  boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
+                  bgcolor: "#fff",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  width: "100%",
+                  height: "100%",
+                  position: "relative",
+                  overflow: "visible",
+                      cursor: "pointer",
                     }}
                      onClick={() => navigate(`/i-businessproducts/${business.business_id}`)}
                   >
