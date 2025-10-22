@@ -149,32 +149,37 @@ function AllBusinesses() {
                       '&:hover': {
                         transform: 'translateY(-5px)',
                         boxShadow: '0 4px 15px rgba(0,0,0,0.749)',
-                        
+
                       }
                     }}
-                    onClick={() => navigate(`/p-businessproducts/${business.business_id}`)}
+                    onClick={() => navigate(`/i-businessproducts/${business.business_id}`)}
                   >
                     {/* Offer Ribbon */}
                     {business.offer_title && (
                       <Box
                         sx={{
                           position: "absolute",
-                          top: 16,
-                          left: -25,
-                          width: "120px",
-                          transform: "rotate(-45deg)",
-                          backgroundColor: "#2ECC71",
-                          color: "white",
-                          textAlign: "center",
-                          fontSize: "12px",
-                          fontWeight: "bold",
-                          textTransform: "uppercase",
-                          py: "3px",
-                          boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                          top: -5,
+                          left: -5,
                           zIndex: 1,
+                          transform: "rotate(-5deg)",
                         }}
                       >
-                        {business.offer_title.toUpperCase()}
+                        <Box
+                          sx={{
+                            backgroundColor: "#ff6b6b",
+                            color: "white",
+                            px: 2,
+                            py: 0.5,
+                            borderRadius: "8px 8px 8px 0",
+                            fontSize: "0.75rem",
+                            fontWeight: "bold",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.5px",
+                          }}
+                        >
+                          {business.offer_title.toUpperCase()}
+                        </Box>
                       </Box>
                     )}
 
@@ -308,16 +313,16 @@ function AllBusinesses() {
             </Grid>
 
             {/* Pagination */}
-        {/* Pagination */}
-{totalPages >= 1 && (
-  <Box display="flex" justifyContent="flex-end" mt={2}>
-    <PaginationComponent
-      count={totalPages || 1} // ensure at least 1 page
-      page={page}
-      onChange={handlePageChange}
-    />
-  </Box>
-)}
+            {/* Pagination */}
+            {totalPages >= 1 && (
+              <Box display="flex" justifyContent="flex-end" mt={2}>
+                <PaginationComponent
+                  count={totalPages || 1} // ensure at least 1 page
+                  page={page}
+                  onChange={handlePageChange}
+                />
+              </Box>
+            )}
 
           </>
         )}

@@ -472,19 +472,19 @@ function ViewBusiness() {
                       <Box
                         sx={{
                           position: "absolute",
-                          top: 16,
-                          left: -25,
-                          width: "120px",
-                          transform: "rotate(-45deg)",
-                          backgroundColor: "#2ECC71",
+                          top: -5,
+                          left: -5,
+                          zIndex: 1,
+                          transform: "rotate(-5deg)",
+                          backgroundColor: "#ff6b6b",
                           color: "white",
-                          textAlign: "center",
-                          fontSize: "12px",
+                          px: 2,
+                          py: 0.5,
+                          borderRadius: "8px 8px 8px 0",
+                          fontSize: "0.75rem",
                           fontWeight: "bold",
                           textTransform: "uppercase",
-                          py: "3px",
-                          boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-                          zIndex: 1,
+                          letterSpacing: "0.5px",
                         }}
                       >
                         {business.offer_title.toUpperCase()}

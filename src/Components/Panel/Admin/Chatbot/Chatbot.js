@@ -8,7 +8,6 @@ import {
   TableHead,
   TableRow,
   Typography,
-  Pagination,
   Button,
   TableContainer,
   Paper,
@@ -16,15 +15,19 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { baseurl } from '../../../BaseURL/BaseURL';
+import { baseurl } from "../../../BaseURL/BaseURL";
+import PaginationComponent from "../../../Shared/Pagination";
 
 function Chatbot() {
   const navigate = useNavigate();
-  const [data, setData] = useState([]); // API data
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState(null); // Error handling
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // ✅ Fetch Q&A data from API
+  // ✅ Pagination states
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 5;
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -37,20 +40,23 @@ function Chatbot() {
         setLoading(false);
       }
     };
-
     fetchData();
   }, []);
 
-  // ✅ Handle Create Q&A click
   const handleCreate = () => {
-    navigate("/a-createq&a"); // Change this route as needed
+    navigate("/a-createq&a");
   };
+
+  // ✅ Pagination logic
+  const startIndex = (page - 1) * itemsPerPage;
+  const paginatedData = data.slice(startIndex, startIndex + itemsPerPage);
+  const totalPages = Math.ceil(data.length / itemsPerPage);
 
   return (
     <>
       <Header />
       <Box sx={{ p: 4 }}>
-        {/* ✅ Title & Button Row */}
+        {/* Header */}
         <Box
           sx={{
             display: "flex",
@@ -59,24 +65,22 @@ function Chatbot() {
             mb: 2,
           }}
         >
-          <Typography variant="h4"
-        gutterBottom  sx={{
-          fontSize: {
-            xs: "2.0rem",
-            sm: "2.1rem",
-            md: "2.2rem",
-          },
-          fontWeight: "bold",
-          textAlign: "center",
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          marginBottom: "15px",
-        }}>
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{
+              fontSize: { xs: "2.0rem", sm: "2.1rem", md: "2.2rem" },
+              fontWeight: "bold",
+              textAlign: "center",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              marginBottom: "15px",
+            }}
+          >
             Chatbot Q&A Table
           </Typography>
 
-          {/* ✅ Create Button */}
           <Button
             variant="contained"
             color="primary"
@@ -87,7 +91,7 @@ function Chatbot() {
           </Button>
         </Box>
 
-        {/* ✅ Loading and Error Handling */}
+        {/* Loader / Error */}
         {loading ? (
           <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
             <CircularProgress />
@@ -97,40 +101,48 @@ function Chatbot() {
             {error}
           </Typography>
         ) : (
-          <TableContainer component={Paper} sx={{ borderRadius: 2, overflow: "hidden" }}>
-            <Table>
-              <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
-                <TableRow>
-                  <TableCell sx={{ fontWeight: "bold" }}>Question No.</TableCell>
-                  <TableCell sx={{ fontWeight: "bold" }}>Question</TableCell>
-                  <TableCell sx={{ fontWeight: "bold" }}>Answer</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {data.length > 0 ? (
-                  data.map((item, index) => (
-                    <TableRow key={index} hover>
-                      <TableCell>{item.question_number}</TableCell>
-                      <TableCell>{item.question}</TableCell>
-                      <TableCell>{item.answer}</TableCell>
-                    </TableRow>
-                  ))
-                ) : (
+          <>
+            <TableContainer component={Paper} sx={{ borderRadius: 2, overflow: "hidden" }}>
+              <Table>
+                <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
                   <TableRow>
-                    <TableCell colSpan={3} align="center">
-                      No data available
-                    </TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>Question No.</TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>Question</TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>Answer</TableCell>
                   </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        )}
+                </TableHead>
+                <TableBody>
+                  {paginatedData.length > 0 ? (
+                    paginatedData.map((item, index) => (
+                      <TableRow key={index} hover>
+                        <TableCell>{item.question_number}</TableCell>
+                        <TableCell>{item.question}</TableCell>
+                        <TableCell>{item.answer}</TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={3} align="center">
+                        No data available
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
 
-        {/* ✅ Optional Pagination */}
-        <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-          <Pagination count={1} color="primary" />
-        </Box>
+            {/* ✅ Pagination */}
+            {!loading && data.length > 0 && (
+              <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
+                <PaginationComponent
+                  count={totalPages}
+                  page={page}
+                  onChange={(event, value) => setPage(value)}
+                />
+              </Box>
+            )}
+          </>
+        )}
       </Box>
     </>
   );

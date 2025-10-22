@@ -19,7 +19,7 @@ import { baseurl } from "../../../BaseURL/BaseURL";
 const AboutUs = () => {
   const [videos, setVideos] = useState([]);
   const [page, setPage] = useState(1);
-  const videosPerPage = 6; // ✅ 2 rows × 3 videos
+  const videosPerPage = 3; // ✅ 2 rows × 3 videos
 
   // ✅ Fetch videos from API
   useEffect(() => {
@@ -143,7 +143,8 @@ const AboutUs = () => {
               </Grid>
 
               {/* ✅ Pagination */}
-              {totalPages > 1 && (
+              {totalPages >= 1 && (
+
                 <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 4, mb: 4 }}>
                   <Pagination
                     count={totalPages}
