@@ -555,6 +555,7 @@ const AssetsUI = () => {
                       borderRadius: 2,
                       transition: 'all 0.3s ease',
                       position: 'relative',
+                      cursor: 'pointer',
                       '&:hover': {
                         transform: 'translateY(-5px)',
                         boxShadow: '0 4px 15px rgba(0,0,0,0.749)',

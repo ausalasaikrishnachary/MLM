@@ -115,7 +115,7 @@ const handleSubmit = (e) => {
         .then((res) => res.json())
         .then((data) => {
             alert("Business updated successfully!");
-            navigate("/p-viewbusiness");
+            navigate("/a-business");
         })
         .catch((err) => {
             console.error("Error updating business:", err);

@@ -28,6 +28,7 @@ import PartnerHeader from "../../../Shared/Partner/PartnerNavbar";
 import { useNavigate } from "react-router-dom";
 import { baseurl } from "../../../BaseURL/BaseURL";
 import PaginationComponent from "../../../Shared/Pagination";
+import { Pointer } from "lucide-react";
 
 function AllBusinesses() {
   const userId = localStorage.getItem("user_id");
@@ -144,7 +145,14 @@ function AllBusinesses() {
                       overflow: "hidden",
                       borderTopLeftRadius: "15px",
                       borderTopRightRadius: "15px",
+                      cursor: 'pointer',
+                      '&:hover': {
+                        transform: 'translateY(-5px)',
+                        boxShadow: '0 4px 15px rgba(0,0,0,0.749)',
+                        
+                      }
                     }}
+                    onClick={() => navigate(`/p-businessproducts/${business.business_id}`)}
                   >
                     {/* Offer Ribbon */}
                     {business.offer_title && (

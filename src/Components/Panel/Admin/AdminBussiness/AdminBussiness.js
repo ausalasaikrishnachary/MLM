@@ -458,7 +458,14 @@ function ViewBusiness() {
                       overflow: "hidden",
                       borderTopLeftRadius: "15px",
                       borderTopRightRadius: "15px",
+                      cursor: 'pointer',
+                      '&:hover': {
+                        transform: 'translateY(-5px)',
+                        boxShadow: '0 4px 15px rgba(0,0,0,0.749)',
+
+                      }
                     }}
+                    onClick={() => navigate(`/a-businessproducts/${business.business_id}`)}
                   >
                     {/* Offer Ribbon */}
                     {business.offer_title && (
@@ -582,6 +589,7 @@ function ViewBusiness() {
                             target="_blank"
                             rel="noopener"
                             color="primary"
+                            onClick={(e) => e.stopPropagation()}
                           >
                             <DownloadIcon />
                           </IconButton>
@@ -591,9 +599,10 @@ function ViewBusiness() {
                       <Tooltip title="Edit">
                         <IconButton
                           color="primary"
-                          onClick={() =>
-                            navigate(`/a-editbusiness/${business.business_id}`)
-                          }
+                          onClick={(e) => {
+                            e.stopPropagation(); // ✅ prevent navigation
+                            navigate(`/a-editbusiness/${business.business_id}`);
+                          }}
                         >
                           <EditIcon />
                         </IconButton>
@@ -602,7 +611,10 @@ function ViewBusiness() {
                       <Tooltip title="Delete">
                         <IconButton
                           color="error"
-                          onClick={() => handleDelete(business.business_id)}
+                          onClick={(e) => {
+                            e.stopPropagation(); // ✅ prevent navigation
+                            handleDelete(business.business_id);
+                          }}
                         >
                           <DeleteIcon />
                         </IconButton>
@@ -614,16 +626,16 @@ function ViewBusiness() {
             </Grid>
 
             {/* Pagination */}
-        {/* Pagination */}
-{totalPages >= 1 && (
-  <Box display="flex" justifyContent="flex-end" mt={2}>
-    <PaginationComponent
-      count={totalPages || 1} // ensure at least 1 page
-      page={page}
-      onChange={handlePageChange}
-    />
-  </Box>
-)}
+            {/* Pagination */}
+            {totalPages >= 1 && (
+              <Box display="flex" justifyContent="flex-end" mt={2}>
+                <PaginationComponent
+                  count={totalPages || 1} // ensure at least 1 page
+                  page={page}
+                  onChange={handlePageChange}
+                />
+              </Box>
+            )}
 
           </>
         )}

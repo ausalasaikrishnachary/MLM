@@ -113,6 +113,8 @@ const AssetForm = () => {
     rent_amount: '',
     deposit_amount: '',
     available_from: '',
+    agreement_video: null,
+  agreement_file: null,
   });
 
   const [showResidentialFields, setShowResidentialFields] = useState(false);
@@ -227,6 +229,51 @@ const AssetForm = () => {
     });
   };
 
+  // Add these handler functions:
+const handleAgreementVideoUpload = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    setFormData(prev => ({
+      ...prev,
+      agreement_video: {
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        file: file
+      }
+    }));
+  }
+};
+
+const handleAgreementFileUpload = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    setFormData(prev => ({
+      ...prev,
+      agreement_file: {
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        file: file
+      }
+    }));
+  }
+};
+
+const removeAgreementVideo = () => {
+  setFormData(prev => ({
+    ...prev,
+    agreement_video: null
+  }));
+};
+
+const removeAgreementFile = () => {
+  setFormData(prev => ({
+    ...prev,
+    agreement_file: null
+  }));
+};
+
   const handleSubmit = async () => {
     setIsSubmitting(true);
 
@@ -324,6 +371,15 @@ const AssetForm = () => {
           payload.append('files', doc.file, doc.name);
         }
       });
+
+      // In the handleSubmit function, add these before the payload.append files section:
+if (formData.agreement_video?.file) {
+  payload.append('agreement_video', formData.agreement_video.file, formData.agreement_video.name);
+}
+
+if (formData.agreement_file?.file) {
+  payload.append('agreement_file', formData.agreement_file.file, formData.agreement_file.name);
+}
 
       // Debug: Log FormData contents
       for (let pair of payload.entries()) {
@@ -1017,6 +1073,59 @@ const AssetForm = () => {
               ))}
             </Box>
           </Grid>
+<Grid item xs={12}>
+  <Typography variant="h6" gutterBottom>Agreement Video</Typography>
+  <Button
+    component="label"
+    variant="contained"
+    startIcon={<UploadFileIcon />}
+    sx={{ mb: 2 }}
+  >
+    Upload Agreement Video
+    <VisuallyHiddenInput
+      type="file"
+      accept="video/*"
+      onChange={handleAgreementVideoUpload}
+    />
+  </Button>
+
+  {formData.agreement_video && (
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <Chip
+        label={formData.agreement_video.name}
+        onDelete={removeAgreementVideo}
+        sx={{ m: 0.5 }}
+      />
+    </Box>
+  )}
+</Grid>
+
+<Grid item xs={12}>
+  <Typography variant="h6" gutterBottom>Agreement Document</Typography>
+  <Button
+    component="label"
+    variant="contained"
+    startIcon={<UploadFileIcon />}
+    sx={{ mb: 2 }}
+  >
+    Upload Agreement Document
+    <VisuallyHiddenInput
+      type="file"
+      accept=".pdf,.doc,.docx,.xls,.xlsx,.txt"
+      onChange={handleAgreementFileUpload}
+    />
+  </Button>
+
+  {formData.agreement_file && (
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <Chip
+        label={formData.agreement_file.name}
+        onDelete={removeAgreementFile}
+        sx={{ m: 0.5 }}
+      />
+    </Box>
+  )}
+</Grid>
 
         </Grid>
       );
