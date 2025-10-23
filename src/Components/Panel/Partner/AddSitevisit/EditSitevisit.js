@@ -32,7 +32,6 @@ function EditSitevisit() {
     site_photo: null,
   });
 
-  // Fetch existing site visit data
   const fetchSiteVisit = async () => {
     try {
       const response = await axios.get(`${baseurl}/site-visits/${id}/`);
@@ -49,13 +48,14 @@ function EditSitevisit() {
         customer_name: data.customer_name || "",
         customer_mobile_number: data.customer_mobile_number || "",
         remarks: data.remarks || "",
-        site_photo: null, // keep null initially, user can re-upload
+        site_photo: data.site_photo || null, // ✅ keep existing photo
       });
     } catch (error) {
       console.error("Error fetching site visit:", error);
       alert("Failed to fetch site visit data");
     }
   };
+
 
   useEffect(() => {
     fetchSiteVisit();
@@ -215,14 +215,6 @@ function EditSitevisit() {
             </Grid>
 
             <Grid item xs={12} md={4}>
-              <Button variant="outlined" component="label" fullWidth>
-                Upload Site Photo
-                <input type="file" hidden name="site_photo" onChange={handleChange} />
-              </Button>
-              {formData.site_photo && <Typography mt={1}>{formData.site_photo.name}</Typography>}
-            </Grid>
-
-            <Grid item xs={12}>
               <TextField
                 fullWidth
                 multiline
@@ -233,6 +225,39 @@ function EditSitevisit() {
                 onChange={handleChange}
                 variant="outlined"
               />
+            </Grid>
+
+            <Grid item xs={12} md={4}>
+              <Button variant="outlined" component="label" fullWidth>
+                {formData.site_photo && typeof formData.site_photo === "string"
+                  ? "Change Site Photo"
+                  : "Upload Site Photo"}
+                <input type="file" hidden name="site_photo" onChange={handleChange} />
+              </Button>
+
+              {/* ✅ Show existing image if it's a URL */}
+              {formData.site_photo && typeof formData.site_photo === "string" && (
+                <Box mt={2} textAlign="center">
+                  <Typography variant="body2" mb={1}>Existing Photo:</Typography>
+                  <img
+                    src={formData.site_photo.startsWith("http")
+                      ? formData.site_photo
+                      : `${baseurl}${formData.site_photo}`}
+                    alt="Site"
+                    style={{
+                      // width: "100%",
+                      maxWidth: 300,
+                      borderRadius: 8,
+                      border: "1px solid #ccc",
+                    }}
+                  />
+                </Box>
+              )}
+
+              {/* ✅ Show file name if a new one is uploaded */}
+              {formData.site_photo && typeof formData.site_photo === "object" && (
+                <Typography mt={1}>{formData.site_photo.name}</Typography>
+              )}
             </Grid>
           </Grid>
 
