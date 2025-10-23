@@ -1,17 +1,18 @@
 import React, { useState } from "react";
 import Header from "../../../Shared/Navbar/Navbar";
 import axios from "axios";
-import Swal from "sweetalert2"; // ✅ Import SweetAlert2
+import Swal from "sweetalert2";
 import {
+  Container,
   Box,
+  Grid,
   TextField,
   Button,
   Typography,
-  Paper,
   CircularProgress,
 } from "@mui/material";
 import { baseurl } from "../../../BaseURL/BaseURL";
-import { useNavigate } from "react-router-dom"; // ✅ For navigation
+import { useNavigate } from "react-router-dom";
 
 function CreateQA() {
   const [formData, setFormData] = useState({
@@ -21,14 +22,14 @@ function CreateQA() {
   });
 
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate(); // ✅ Initialize navigation
+  const navigate = useNavigate();
 
-  // ✅ Handle input changes
+  // Handle input changes
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // ✅ Handle form submission (POST API)
+  // Handle form submission (POST API)
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -36,22 +37,19 @@ function CreateQA() {
     try {
       await axios.post(`${baseurl}/responses/`, formData);
 
-      // ✅ SweetAlert on success
       Swal.fire({
         icon: "success",
         title: "Q&A Created!",
         text: "Your Q&A has been added successfully.",
-        confirmButtonColor: "#1976d2",
+        timer: 2000,
+        showConfirmButton: false,
       }).then(() => {
-        navigate("/a-chatbot"); // ✅ Navigate after alert confirmation
+        navigate("/a-chatbot");
       });
 
-      // Reset form
       setFormData({ question_number: "", question: "", answer: "" });
     } catch (error) {
       console.error("Error creating Q&A:", error);
-
-      // ❌ SweetAlert on error
       Swal.fire({
         icon: "error",
         title: "Failed!",
@@ -66,73 +64,106 @@ function CreateQA() {
   return (
     <>
       <Header />
-      <Box
-        sx={{
-          p: 4,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          flexDirection: "column",
-        }}
-      >
-        <Paper
+      <Container maxWidth="lg" sx={{ padding: 4 }}>
+        {/* Page Title */}
+        <Typography
+          variant="h4"
           sx={{
-            p: 4,
-            maxWidth: 600,
-            width: "100%",
-            borderRadius: 2,
-            boxShadow: 3,
+            fontSize: {
+              xs: "2.0rem",
+              sm: "2.1rem",
+              md: "2.2rem",
+            },
+            fontWeight: "bold",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            textAlign: "center",
+            marginBottom: "15px",
           }}
         >
-          <Typography variant="h5" fontWeight={600} gutterBottom>
-            Create New Q&A
-          </Typography>
+          Create New Q&A
+        </Typography>
 
-          <form onSubmit={handleSubmit}>
-            <TextField
-              fullWidth
-              label="Question Number"
-              name="question_number"
-              type="number"
-              value={formData.question_number}
-              onChange={handleChange}
-              sx={{ mb: 2 }}
-              required
-            />
-            <TextField
-              fullWidth
-              label="Question"
-              name="question"
-              value={formData.question}
-              onChange={handleChange}
-              sx={{ mb: 2 }}
-              required
-            />
-            <TextField
-              fullWidth
-              label="Answer"
-              name="answer"
-              multiline
-              rows={4}
-              value={formData.answer}
-              onChange={handleChange}
-              sx={{ mb: 3 }}
-              required
-            />
+        {/* Form Box */}
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{
+            width: "100%",
+          }}
+        >
+          <Grid container spacing={3} justifyContent="center">
+            {/* All three fields in one row on large screens */}
+            <Grid container item spacing={3} xs={12}>
+              {/* Question Number */}
+              <Grid item xs={12} md={4}>
+                <TextField
+                  fullWidth
+                  label="Question Number"
+                  name="question_number"
+                  type="number"
+                  value={formData.question_number}
+                  onChange={handleChange}
+                  variant="outlined"
+                  required
+                />
+              </Grid>
 
-            <Button
-              variant="contained"
-              color="primary"
-              type="submit"
-              fullWidth
-              disabled={loading}
-              sx={{ borderRadius: 2, textTransform: "none", fontWeight: 500 }}
-            >
-              {loading ? <CircularProgress size={24} color="inherit" /> : "Submit"}
-            </Button>
-          </form>
-        </Paper>
-      </Box>
+              {/* Question */}
+              <Grid item xs={12} md={4}>
+                <TextField
+                  fullWidth
+                  label="Question"
+                  name="question"
+                  value={formData.question}
+                  onChange={handleChange}
+                  variant="outlined"
+                  required
+                />
+              </Grid>
+
+              {/* Answer */}
+              <Grid item xs={12} md={4}>
+                <TextField
+                  fullWidth
+                  label="Answer"
+                  name="answer"
+                  value={formData.answer}
+                  onChange={handleChange}
+                  variant="outlined"
+                  required
+                  multiline
+                  rows={1}
+                />
+              </Grid>
+            </Grid>
+
+            {/* Submit Button */}
+            <Grid container justifyContent="center">
+              <Grid item xs="auto">
+                <Button
+                  type="submit"
+                  variant="contained"
+                  disabled={loading}
+                  sx={{
+                    height: "46px",
+                    fontSize: "1rem",
+                    mt: 2,
+                    px: 4,
+                  }}
+                >
+                  {loading ? (
+                    <CircularProgress size={24} color="inherit" />
+                  ) : (
+                    "Add Q&A"
+                  )}
+                </Button>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Box>
+      </Container>
     </>
   );
 }

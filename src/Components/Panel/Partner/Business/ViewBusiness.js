@@ -174,7 +174,7 @@ function ViewBusiness() {
       <PartnerHeader />
       <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
         <Box display="flex" justifyContent="center" mb={2}>
-          <Typography variant="h2" fontWeight="bold" sx={{ textAlign: "center" }}>
+          <Typography variant="h2" fontWeight="bold" sx={{ textAlign: "center",mt:5 }}>
             My Businesses
           </Typography>
         </Box>

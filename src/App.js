@@ -171,6 +171,7 @@ import EditBussinessProducts from "./Components/Panel/Admin/AdminBussiness/EditB
 import Chatbot from "./Components/Panel/Admin/Chatbot/Chatbot";
 import CreateQA from "./Components/Panel/Admin/Chatbot/CreateQA";
 import ChatbotPopup from "./Components/Website/Shared/ChatbotPopup/ChatbotPopup";
+import InvestorBusinessproducts from "./Components/Panel/Investor/InvestorBusiness/InvestorBusinessproducts";
 
 
 function Layout() {
@@ -307,6 +308,9 @@ function Layout() {
           <Route path="/i-meetingrequest" element={<I_MeetingRequestForm />} />
           <Route path="/i-addbusiness" element={<AddInvestorBusiness />} />
           <Route path="/i-business" element={<InvestorBusiness />} />
+          <Route path="/i-businessproducts/:id" element={<InvestorBusinessproducts />} />
+          
+          
           <Route path="/i-editbusiness/:id" element={<EditInvestorBusiness />} />
 
 

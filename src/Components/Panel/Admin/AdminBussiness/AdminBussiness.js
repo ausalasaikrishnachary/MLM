@@ -449,21 +449,19 @@ function ViewBusiness() {
                 <Grid item xs={12} sm={6} md={4} key={business.business_id}>
                   <Card
                     sx={{
-                      borderRadius: 3,
-                      boxShadow: 4,
-                      height: "100%",
+                   borderRadius: "20px",
+                      p: 2,
+                      boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
+                      bgcolor: "#fff",
                       display: "flex",
                       flexDirection: "column",
+                      justifyContent: "space-between",
+                      width: "100%",
+                      height: "100%",
                       position: "relative",
-                      overflow: "hidden",
-                      borderTopLeftRadius: "15px",
-                      borderTopRightRadius: "15px",
+                      overflow: "visible",
                       cursor: 'pointer',
-                      '&:hover': {
-                        transform: 'translateY(-5px)',
-                        boxShadow: '0 4px 15px rgba(0,0,0,0.749)',
 
-                      }
                     }}
                     onClick={() => navigate(`/a-businessproducts/${business.business_id}`)}
                   >
@@ -472,19 +470,19 @@ function ViewBusiness() {
                       <Box
                         sx={{
                           position: "absolute",
-                          top: 16,
-                          left: -25,
-                          width: "120px",
-                          transform: "rotate(-45deg)",
-                          backgroundColor: "#2ECC71",
+                          top: -5,
+                          left: -5,
+                          zIndex: 1,
+                          transform: "rotate(-5deg)",
+                          backgroundColor: "#ff6b6b",
                           color: "white",
-                          textAlign: "center",
-                          fontSize: "12px",
+                          px: 2,
+                          py: 0.5,
+                          borderRadius: "8px 8px 8px 0",
+                          fontSize: "0.75rem",
                           fontWeight: "bold",
                           textTransform: "uppercase",
-                          py: "3px",
-                          boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-                          zIndex: 1,
+                          letterSpacing: "0.5px",
                         }}
                       >
                         {business.offer_title.toUpperCase()}
