@@ -979,7 +979,7 @@ const AddPropertyForm = () => {
               startIcon={<UploadFileIcon />}
               sx={{ mb: 2 }}
             >
-              Upload Images
+              Upload Property Images
               <VisuallyHiddenInput
                 type="file"
                 accept="image/*"
@@ -1008,7 +1008,7 @@ const AddPropertyForm = () => {
               startIcon={<UploadFileIcon />}
               sx={{ mb: 2 }}
             >
-              Upload Videos
+              Upload Property Videos
               <VisuallyHiddenInput
                 type="file"
                 accept="video/*"
@@ -1037,7 +1037,7 @@ const AddPropertyForm = () => {
               startIcon={<UploadFileIcon />}
               sx={{ mb: 2 }}
             >
-              Upload Documents
+              Upload Property Documents
               <VisuallyHiddenInput
                 type="file"
                 accept=".pdf,.doc,.docx,.xls,.xlsx,.txt" // Specify accepted document types
