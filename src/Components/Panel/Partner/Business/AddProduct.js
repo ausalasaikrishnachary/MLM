@@ -35,6 +35,7 @@ const AddProduct = () => {
     available_qty: "",
     company_commission: "",
     product_commission: "",
+    discount_percent:"",
     product_image: null,
   });
 
@@ -265,6 +266,18 @@ const AddProduct = () => {
                 label="Product Commission (%)"
                 name="product_commission"
                 value={formData.product_commission}
+                onChange={handleChange}
+                variant="outlined"
+              />
+            </Grid>
+
+            <Grid item xs={12} md={4}>
+              <TextField
+                fullWidth
+                type="number"
+                label="Discount (%)"
+                name="discount_percent"
+                value={formData.discount_percent}
                 onChange={handleChange}
                 variant="outlined"
               />

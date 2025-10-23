@@ -30,6 +30,7 @@ const EditAsset = () => {
     agent_commission: '',
     owner_name: '',
     company_commission: '',
+    distribution_commission:"",
     owner_contact: '',
     owner_email: '',
     images: [],
@@ -179,6 +180,7 @@ const EditAsset = () => {
     { name: 'property_value', label: 'Property Value' },
     { name: 'agent_commission', label: 'Agent Commission' },
     { name: 'company_commission', label: 'Company Commission' },
+    { name: 'distribution_commission', label: 'Distribution Commission' },
     { name: 'total_property_value', label: 'Total Property Value'},
     { name: 'description', label: 'Description', },
   ];

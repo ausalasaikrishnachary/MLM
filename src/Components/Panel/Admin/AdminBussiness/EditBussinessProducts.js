@@ -31,6 +31,7 @@ const EditBussinessProducts = () => {
         available_qty: "",
         company_commission: "",
         distribution_commission: "",
+        discount_percent:"",
         product_image: null,
     });
     const [loading, setLoading] = useState(true);
@@ -54,7 +55,9 @@ const EditBussinessProducts = () => {
         "available_qty",
         "company_commission",
         "distribution_commission",
+        "discount_percent",
         "product_image",
+        
     ];
 
     useEffect(() => {
