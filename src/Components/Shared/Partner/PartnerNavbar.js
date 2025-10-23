@@ -126,7 +126,8 @@ export default function PartnerHeader() {
         { label: 'Plans', path: '/p-plans' },
         { label: 'Training Material', path: '/p-trainingmaterial' },
         { label: 'My Team', path: '/p-myteam' },
-        // { label: 'Add Business', path: '/p-addbusiness' },
+        { label: 'Site Visits', path: '/p-sitevisits' },
+       
       ]
     },
     { label: 'Meetings', path: '/p-meetings' },

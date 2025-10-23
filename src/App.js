@@ -172,6 +172,9 @@ import Chatbot from "./Components/Panel/Admin/Chatbot/Chatbot";
 import CreateQA from "./Components/Panel/Admin/Chatbot/CreateQA";
 import ChatbotPopup from "./Components/Website/Shared/ChatbotPopup/ChatbotPopup";
 import InvestorBusinessproducts from "./Components/Panel/Investor/InvestorBusiness/InvestorBusinessproducts";
+import Sitevisit from "./Components/Panel/Partner/Sitevisit/Sitevisit";
+import AddSitevisit from "./Components/Panel/Partner/AddSitevisit/AddSitevisit";
+import EditSitevisit from "./Components/Panel/Partner/AddSitevisit/EditSitevisit";
 
 
 function Layout() {
@@ -334,6 +337,10 @@ function Layout() {
           <Route path="/p-myassets" element={<PartnerMyAssets />} />
           <Route path="/audio" element={<SearchBox />} />
           <Route path="/p-myteam" element={<MyTeam />} />
+          <Route path="/p-sitevisits" element={<Sitevisit />} />
+          <Route path="/p-addsitevisit" element={<AddSitevisit/>} />
+          <Route path="/p-editsitevisit/:id" element={<EditSitevisit />} />
+
           <Route path="/p-latestassets" element={<LatestAssets />} />
           <Route path="/p-activeagents" element={<MyAgents />} />
           <Route path="/p-view-activeagents/:id" element={<ActiveUserView />} />
