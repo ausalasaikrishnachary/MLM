@@ -175,6 +175,7 @@ import InvestorBusinessproducts from "./Components/Panel/Investor/InvestorBusine
 import Sitevisit from "./Components/Panel/Partner/Sitevisit/Sitevisit";
 import AddSitevisit from "./Components/Panel/Partner/AddSitevisit/AddSitevisit";
 import EditSitevisit from "./Components/Panel/Partner/AddSitevisit/EditSitevisit";
+import EditQA from "./Components/Panel/Admin/Chatbot/EditQA";
 
 
 function Layout() {
@@ -282,6 +283,7 @@ function Layout() {
           <Route path="/a-editbusinessproducts/:id" element={<EditBussinessProducts />} />
           <Route path="/a-chatbot" element={<Chatbot />} />
           <Route path="/a-createq&a" element={<CreateQA />} />
+           <Route path="/a-editqa/:id" element={<EditQA/>} />
 
 
 

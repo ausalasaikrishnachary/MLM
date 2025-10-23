@@ -17,6 +17,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { baseurl } from "../../../BaseURL/BaseURL";
 import PaginationComponent from "../../../Shared/Pagination";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 function Chatbot() {
   const navigate = useNavigate();
@@ -51,6 +53,19 @@ function Chatbot() {
   const startIndex = (page - 1) * itemsPerPage;
   const paginatedData = data.slice(startIndex, startIndex + itemsPerPage);
   const totalPages = Math.ceil(data.length / itemsPerPage);
+
+  const handleDelete = async (id) => {
+  if (window.confirm("Are you sure you want to delete this Q&A?")) {
+    try {
+      await axios.delete(`${baseurl}/responses/${id}/`);
+      setData(data.filter((item) => item.id !== id));
+    } catch (err) {
+      console.error("Error deleting Q&A:", err);
+      alert("Failed to delete Q&A");
+    }
+  }
+};
+
 
   return (
     <>
@@ -105,29 +120,41 @@ function Chatbot() {
             <TableContainer component={Paper} sx={{ borderRadius: 2, overflow: "hidden" }}>
               <Table>
                 <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
-                  <TableRow>
-                    <TableCell sx={{ fontWeight: "bold" }}>Question No.</TableCell>
-                    <TableCell sx={{ fontWeight: "bold" }}>Question</TableCell>
-                    <TableCell sx={{ fontWeight: "bold" }}>Answer</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {paginatedData.length > 0 ? (
-                    paginatedData.map((item, index) => (
-                      <TableRow key={index} hover>
-                        <TableCell>{item.question_number}</TableCell>
-                        <TableCell>{item.question}</TableCell>
-                        <TableCell>{item.answer}</TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={3} align="center">
-                        No data available
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
+  <TableRow>
+    <TableCell sx={{ fontWeight: "bold" }}>Question No.</TableCell>
+    <TableCell sx={{ fontWeight: "bold" }}>Question</TableCell>
+    <TableCell sx={{ fontWeight: "bold" }}>Answer</TableCell>
+    <TableCell sx={{ fontWeight: "bold" }}>Actions</TableCell>
+  </TableRow>
+</TableHead>
+<TableBody>
+  {paginatedData.length > 0 ? (
+    paginatedData.map((item, index) => (
+      <TableRow key={index} hover>
+        <TableCell>{item.question_number}</TableCell>
+        <TableCell>{item.question}</TableCell>
+        <TableCell>{item.answer}</TableCell>
+        <TableCell>
+          <EditIcon
+            sx={{ cursor: "pointer", color: "#1976d2", mr: 2 }}
+            onClick={() => navigate(`/a-editqa/${item.id}`)}
+          />
+          <DeleteIcon
+            sx={{ cursor: "pointer", color: "#d32f2f" }}
+            onClick={() => handleDelete(item.id)}
+          />
+        </TableCell>
+      </TableRow>
+    ))
+  ) : (
+    <TableRow>
+      <TableCell colSpan={4} align="center">
+        No data available
+      </TableCell>
+    </TableRow>
+  )}
+</TableBody>
+
               </Table>
             </TableContainer>
 
