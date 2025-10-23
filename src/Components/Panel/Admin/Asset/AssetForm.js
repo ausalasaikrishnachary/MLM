@@ -109,6 +109,7 @@ const AddPropertyForm = () => {
     userId: userId,
     agent_commission: "",
     company_commission: "",
+    distribution_commission:"",
     agent_commission_paid: "",
     agent_commission_balance: "",
     total_property_value: "",
@@ -412,6 +413,7 @@ const AddPropertyForm = () => {
         furnishing_status: formData.furnishing_status,
         agent_commission: formData.agent_commission,
         company_commission: formData.company_commission,
+        distribution_commission:formData.distribution_commission,
         agent_commission_paid: formData.agent_commission_paid,
         agent_commission_balance: formData.agent_commission_balance,
         total_property_value: Number(formData.price) + Number(formData.company_commission),
@@ -1322,6 +1324,17 @@ const AddPropertyForm = () => {
                   name="company_commission"
                   type="number"
                   value={formData.company_commission}
+                  onChange={handleChange}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Distribution Commission"
+                  name="distribution_commission"
+                  type="number"
+                  value={formData.distribution_commission}
                   onChange={handleChange}
                 />
               </Grid>
