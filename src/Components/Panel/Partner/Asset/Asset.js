@@ -938,7 +938,7 @@ const AssetsUI = () => {
                           {commissions.length > 0 ? (
                             commissions.map((c) => {
                               const amount =
-                                (parseFloat(c.percentage) * property.company_commission) / 100;
+                                (parseFloat(c.percentage) * property.distribution_commission) / 100;
                               return (
                                 <Typography key={c.id} variant="body2">
                                   Team {c.level_no}: ₹{amount.toLocaleString()}

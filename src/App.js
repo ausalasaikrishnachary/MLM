@@ -218,6 +218,7 @@ function Layout() {
           <Route path="/contactus" element={<Contact />} />
           <Route path="/properties" element={<Properties />} />
           <Route path="/propertydetails" element={<PropertyDetail />} />
+          <Route path="/viewpropertiesdetails/:id" element={<ViewPropertiesDetails />} />
           <Route path="/business" element={<Business />} />
 
 
