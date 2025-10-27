@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Country, State, City } from "country-state-city";
 import {
   Box,
   Typography,
@@ -121,6 +122,14 @@ const AddPropertyForm = () => {
     agreement_video: null,
     agreement_file: null,
   });
+
+   const countries = Country.getAllCountries();
+  const states = formData.country
+    ? State.getStatesOfCountry(formData.country)
+    : [];
+  const cities = formData.state
+    ? City.getCitiesOfState(formData.country, formData.state)
+    : [];
 
   useEffect(() => {
     fetchInitialData();
@@ -776,35 +785,75 @@ const AddPropertyForm = () => {
             />
           </Grid>
 
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="City"
-              name="city"
-              value={formData.city}
-              onChange={handleChange}
-            />
-          </Grid>
+        <Grid item xs={12} sm={6}>
+        <TextField
+          select
+          fullWidth
+          label="Country"
+          value={formData.country}
+          onChange={(e) => {
+            setFormData({
+              ...formData,
+              country: e.target.value,
+              state: "",
+              city: "",
+            });
+          }}
+        >
+          {countries.map((country) => (
+            <MenuItem key={country.isoCode} value={country.isoCode}>
+              {country.name}
+            </MenuItem>
+          ))}
+        </TextField>
+      </Grid>
 
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="State"
-              name="state"
-              value={formData.state}
-              onChange={handleChange}
-            />
-          </Grid>
+      {/* State Dropdown */}
+      <Grid item xs={12} sm={6}>
+        <TextField
+          select
+          fullWidth
+          label="State"
+          value={formData.state}
+          onChange={(e) => {
+            setFormData({
+              ...formData,
+              state: e.target.value,
+              city: "",
+            });
+          }}
+          disabled={!formData.country}
+        >
+          {states.map((state) => (
+            <MenuItem key={state.isoCode} value={state.isoCode}>
+              {state.name}
+            </MenuItem>
+          ))}
+        </TextField>
+      </Grid>
 
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Country"
-              name="country"
-              value={formData.country}
-              onChange={handleChange}
-            />
-          </Grid>
+      {/* City Dropdown */}
+      <Grid item xs={12} sm={6}>
+        <TextField
+          select
+          fullWidth
+          label="City"
+          value={formData.city}
+          onChange={(e) => {
+            setFormData({
+              ...formData,
+              city: e.target.value,
+            });
+          }}
+          disabled={!formData.state}
+        >
+          {cities.map((city) => (
+            <MenuItem key={city.name} value={city.name}>
+              {city.name}
+            </MenuItem>
+          ))}
+        </TextField>
+      </Grid>
 
           <Grid item xs={12} sm={6}>
             <TextField

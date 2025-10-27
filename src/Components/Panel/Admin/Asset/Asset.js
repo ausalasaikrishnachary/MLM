@@ -14,6 +14,7 @@ import {
   Select,
   MenuItem,
   Dialog,
+  Chip,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -662,172 +663,147 @@ const updateApprovalStatus = async (propertyId, newStatus) => {
           </Grid>
         </Box>
 
-        {/* Cards Section */}
-        {filteredProperties.length > 0 ? (
-          <Grid container spacing={3}>
-            {paginatedProperties.map((property) => {
-              const media = getAllMedia(property);
-              const currentIndex = currentImageIndices[property.property_id] || 0;
-              const totalMedia = media.length;
+       {/* Cards Section */}
+{filteredProperties.length > 0 ? (
+  <Grid container spacing={3}>
+    {paginatedProperties.map((property) => {
+      const media = getAllMedia(property);
+      const currentIndex = currentImageIndices[property.property_id] || 0;
+      const totalMedia = media.length;
 
-              return (
-                <Grid item xs={12} md={6} lg={4} key={property.id}>
-                  <Card
+      return (
+        <Grid item xs={12} md={6} lg={4} key={property.id}>
+          <Card
+            sx={{
+              height: 770,
+              borderRadius: 2,
+              transition: 'all 0.3s ease',
+              position: 'relative',
+              '&:hover': {
+                transform: 'translateY(-5px)',
+                boxShadow: '0 4px 15px rgba(0,0,0,0.749)',
+              }
+            }}
+          >
+            <Box sx={{ position: 'relative' }}>
+              {isCurrentMediaVideo(property) ? (
+                <Box sx={{ height: '220px', position: 'relative' }}>
+                  <video
+                    controls
+                    style={{
+                      width: '100%',
+                      height: '220px',
+                      objectFit: 'cover',
+                      borderRadius: '12px 12px 0 0',
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => handleImageClick(property)}
+                  >
+                    <source src={getCurrentMediaUrl(property)} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                  <VideocamIcon
                     sx={{
-                      height: 770,
-                      borderRadius: 2,
-                      transition: 'all 0.3s ease',
-                      position: 'relative',
+                      position: 'absolute',
+                      top: 8,
+                      left: 8,
+                      color: 'white',
+                      backgroundColor: 'rgba(0,0,0,0.5)',
+                      borderRadius: '50%',
+                      padding: '4px'
+                    }}
+                  />
+                </Box>
+              ) : (
+                <CardMedia
+                  component="img"
+                  height="220"
+                  image={getCurrentMediaUrl(property)}
+                  alt={property.property_title}
+                  sx={{ objectFit: 'cover', borderRadius: '12px 12px 0 0', cursor: 'pointer' }}
+                  onClick={() => handleImageClick(property)}
+                />
+              )}
+
+              {/* Navigation arrows when there are multiple media items */}
+              {totalMedia > 1 && (
+                <>
+                  <IconButton
+                    sx={{
+                      position: 'absolute',
+                      left: 10,
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      backgroundColor: 'rgba(36, 36, 36, 0.5)',
+                      color: 'white',
                       '&:hover': {
-                        transform: 'translateY(-5px)',
-                        boxShadow: '0 4px 15px rgba(0,0,0,0.749)',
+                        backgroundColor: 'rgba(0,0,0,0.7)'
                       }
                     }}
+                    onClick={handlePrevImage(property.property_id, totalMedia)}
                   >
-                    <Box sx={{ position: 'relative' }}>
-                      {isCurrentMediaVideo(property) ? (
-                        <Box sx={{ height: '220px', position: 'relative' }}>
-                          <video
-                            controls
-                            style={{
-                              width: '100%',
-                              height: '220px',
-                              objectFit: 'cover',
-                              borderRadius: '12px 12px 0 0',
-                              cursor: 'pointer'
-                            }}
-                            onClick={() => handleImageClick(property)}
-                          >
-                            <source src={getCurrentMediaUrl(property)} type="video/mp4" />
-                            Your browser does not support the video tag.
-                          </video>
-                          <VideocamIcon
-                            sx={{
-                              position: 'absolute',
-                              top: 8,
-                              left: 8,
-                              color: 'white',
-                              backgroundColor: 'rgba(0,0,0,0.5)',
-                              borderRadius: '50%',
-                              padding: '4px'
-                            }}
-                          />
-                        </Box>
-                      ) : (
-                        <CardMedia
-                          component="img"
-                          height="220"
-                          image={getCurrentMediaUrl(property)}
-                          alt={property.property_title}
-                          sx={{ objectFit: 'cover', borderRadius: '12px 12px 0 0', cursor: 'pointer' }}
-                          onClick={() => handleImageClick(property)}
-                        />
-                      )}
-
-                      {/* Navigation arrows when there are multiple media items */}
-                      {totalMedia > 1 && (
-                        <>
-                          <IconButton
-                            sx={{
-                              position: 'absolute',
-                              left: 10,
-                              top: '50%',
-                              transform: 'translateY(-50%)',
-                              backgroundColor: 'rgba(36, 36, 36, 0.5)',
-                              color: 'white',
-                              '&:hover': {
-                                backgroundColor: 'rgba(0,0,0,0.7)'
-                              }
-                            }}
-                            onClick={handlePrevImage(property.property_id, totalMedia)}
-                          >
-                            <ChevronLeftIcon />
-                          </IconButton>
-                          <IconButton
-                            sx={{
-                              position: 'absolute',
-                              right: 10,
-                              top: '50%',
-                              transform: 'translateY(-50%)',
-                              backgroundColor: 'rgba(90, 81, 81, 0.5)',
-                              color: 'white',
-                              '&:hover': {
-                                backgroundColor: 'rgba(0,0,0,0.7)'
-                              }
-                            }}
-                            onClick={handleNextImage(property.property_id, totalMedia)}
-                          >
-                            <ChevronRightIcon />
-                          </IconButton>
-                          {/* Media counter */}
-                          <Box
-                            sx={{
-                              position: 'absolute',
-                              bottom: 10,
-                              right: 10,
-                              backgroundColor: 'rgba(0,0,0,0.5)',
-                              color: 'white',
-                              px: 1,
-                              borderRadius: '4px',
-                              fontSize: '0.75rem'
-                            }}
-                          >
-                            {`${currentIndex + 1}/${totalMedia}`}
-                          </Box>
-                        </>
-                      )}
-                      {/* {property.status !== 'sold' && (
-                        <Box
-                          sx={{
-                            position: 'absolute',
-                            top: 15,
-                            right: -30,
-                            width: '150px',
-                            transform: 'rotate(45deg)',
-                            backgroundColor: "red",
-                            color: 'white',
-                            textAlign: 'center',
-                            fontSize: '12px',
-                            fontWeight: 'bold',
-                            textTransform: 'uppercase',
-                            py: '4px',
-                            boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-                          }}
-                        >
-                          {property.looking_to === 'sell' ? 'Sell' : 'Rent'}
-                        </Box>
-                      )} */}
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          top: 15,
-                          left: -30,
-                          width: '150px',
-                          transform: 'rotate(-45deg)',
-                          backgroundColor:
-                            property.status === 'available'
-                              ? '#2ECC71'
-                              : property.status === 'booked'
-                                ? '#E67E22'
-                                : '#E74C3C',
-                          color: 'white',
-                          textAlign: 'center',
-                          fontSize: '12px',
-                          fontWeight: 'bold',
-                          textTransform: 'uppercase',
-                          py: '4px',
-                          boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-                        }}
-                      >
-                        {property.status}
-                      </Box>
-                    </Box>
-                    <CardContent>
-                      <Typography fontWeight="bold" mb={1}>
-                        {property.property_title}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" mb={2}>
-                        {property.city}, {property.state}
+                    <ChevronLeftIcon />
+                  </IconButton>
+                  <IconButton
+                    sx={{
+                      position: 'absolute',
+                      right: 10,
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      backgroundColor: 'rgba(90, 81, 81, 0.5)',
+                      color: 'white',
+                      '&:hover': {
+                        backgroundColor: 'rgba(0,0,0,0.7)'
+                      }
+                    }}
+                    onClick={handleNextImage(property.property_id, totalMedia)}
+                  >
+                    <ChevronRightIcon />
+                  </IconButton>
+                  {/* Media counter */}
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      bottom: 10,
+                      right: 10,
+                      backgroundColor: 'rgba(0,0,0,0.5)',
+                      color: 'white',
+                      px: 1,
+                      borderRadius: '4px',
+                      fontSize: '0.75rem'
+                    }}
+                  >
+                    {`${currentIndex + 1}/${totalMedia}`}
+                  </Box>
+                </>
+              )}
+            </Box>
+            <CardContent>
+              {/* Property title with status badge */}
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                <Typography fontWeight="bold" sx={{ flex: 1, mr: 1 }}>
+                  {property.property_title}
+                </Typography>
+                <Chip 
+                  label={property.status} 
+                  size="small"
+                  sx={{
+                    backgroundColor: 
+                      property.status === 'available'
+                        ? '#2ECC71'
+                        : property.status === 'booked'
+                          ? '#E67E22'
+                          : '#E74C3C',
+                    color: 'white',
+                    fontWeight: 'bold',
+                    textTransform: 'uppercase',
+                    fontSize: '0.7rem',
+                    minWidth: '70px'
+                  }}
+                />
+              </Box>
+              <Typography variant="body2" color="text.secondary" mb={2}>
+                {property.city}, {property.state}
                       </Typography>
                       {/* <Typography variant="body2" color="text.secondary" mb={1}>
                         Added By: <strong>{property.first_name}</strong>
