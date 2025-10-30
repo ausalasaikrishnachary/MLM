@@ -143,6 +143,7 @@ import CommissionLevels from "./Components/Panel/Admin/CommissionLevels/Commissi
 import AddCommissionLevels from "./Components/Panel/Admin/CommissionLevels/AddCommissionLevels";
 import EditCommissionLevels from "./Components/Panel/Admin/CommissionLevels/EditCommissionLevels";
 import Category from "./Components/Panel/Admin/Category/Category";
+import AdminEdit from "./Components/Panel/Admin/SiteVisits/AdminEdit"
 import Subcrptionplan from "./Components/Panel/Partner/Plans/Subcrptionplan";
 import SearchBox from "./Components/Website/Pages/Home/SearchBox";
 import AddBusiness from "./Components/Panel/Partner/Business/AddBusiness";
@@ -176,6 +177,7 @@ import Sitevisit from "./Components/Panel/Partner/Sitevisit/Sitevisit";
 import AddSitevisit from "./Components/Panel/Partner/AddSitevisit/AddSitevisit";
 import EditSitevisit from "./Components/Panel/Partner/AddSitevisit/EditSitevisit";
 import EditQA from "./Components/Panel/Admin/Chatbot/EditQA";
+import SiteVisits from "./Components/Panel/Admin/SiteVisits/SiteVisits";
 
 
 function Layout() {
@@ -285,6 +287,8 @@ function Layout() {
           <Route path="/a-chatbot" element={<Chatbot />} />
           <Route path="/a-createq&a" element={<CreateQA />} />
            <Route path="/a-editqa/:id" element={<EditQA/>} />
+           <Route path="/a-sitevisit" element={<SiteVisits/>} />
+           <Route path="/a-admiteditsite/:id" element={<AdminEdit/>} />
 
 
 
