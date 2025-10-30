@@ -22,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import { IconButton, Tooltip } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { baseurl } from "../../../BaseURL/BaseURL";
 
 
 function ViewBusiness() {
@@ -32,7 +33,7 @@ function ViewBusiness() {
 
 
   useEffect(() => {
-    fetch("https://shrirajteam.com:81/business/")
+    fetch(`${baseurl}/business/`)
       .then((res) => res.json())
       .then((data) => {
         const filtered = data.filter(
@@ -49,7 +50,7 @@ function ViewBusiness() {
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this business?")) {
-      fetch(`https://shrirajteam.com:81/business/${id}/`, {
+      fetch(`${baseurl}/business/${id}/`, {
         method: "DELETE",
       })
         .then((res) => {
@@ -136,7 +137,7 @@ function ViewBusiness() {
                       alt={business.business_name || "Business Logo"}
                       image={
                         business.logo
-                          ? `https://shrirajteam.com:81/${business.logo}`
+                          ? `${baseurl}/${business.logo}`
                           : "/default-logo.png"
                       }
                       sx={{ objectFit: "contain", p: 2 }}

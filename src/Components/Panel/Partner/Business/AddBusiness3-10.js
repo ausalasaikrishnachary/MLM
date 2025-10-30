@@ -14,6 +14,7 @@ import PartnerHeader from "../../../Shared/Partner/PartnerNavbar";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { baseurl } from "../../../BaseURL/BaseURL";
 
 
 function AddBusiness() {
@@ -58,13 +59,13 @@ function AddBusiness() {
           }
         });
 
-        await axios.post("https://shrirajteam.com:81/business/", payload, {
+        await axios.post(`${baseurl}/business/`, payload, {
           headers: { "Content-Type": "multipart/form-data" },
         });
       } else {
         // Otherwise → send as JSON
         const { logo, documents, ...jsonData } = formData;
-        await axios.post("https://shrirajteam.com:81/business/", jsonData, {
+        await axios.post(`${baseurl}/business/`, jsonData, {
           headers: { "Content-Type": "application/json" },
         });
       }

@@ -73,7 +73,7 @@
 //   useEffect(() => {
 //     const fetchPropertyTypes = async () => {
 //       try {
-//         const res = await fetch("https://shrirajteam.com:81/property-types/");
+//         const res = await fetch(`${baseurl}/property-types/`);
 //         const data = await res.json();
 //         setPropertyTypes(data);
 
@@ -377,7 +377,7 @@ const AssetDetail = () => {
   useEffect(() => {
     const fetchPropertyTypes = async () => {
       try {
-        const res = await fetch("https://shrirajteam.com:81/property-types/");
+        const res = await fetch(`${baseurl}/property-types/`);
         const data = await res.json();
         setPropertyTypes(data);
 
@@ -486,7 +486,7 @@ const AssetDetail = () => {
             >
               {property.images.length > 0 ? (
                 <img
-                  src={`${baseurl}${property.images[0].image}`}
+                  src={`${baseurl}/${property.images[0].image}`}
                   alt={property.property_title}
                   style={{ width: "100%", height: "100%", objectFit: "cover" }}
                 />
