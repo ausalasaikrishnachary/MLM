@@ -49,7 +49,7 @@ const VisuallyHiddenInput = styled('input')({
   width: 1,
 });
 
-const AddPropertyForm = () => { 
+const AddPropertyForm = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [propertyCategories, setPropertyCategories] = useState([]);
   const [propertyTypes, setPropertyTypes] = useState([]);
@@ -95,7 +95,7 @@ const AddPropertyForm = () => {
     ownershipType: 'Freehold',
     price: '',
     maintenance: '',
-    amenities: [1], // Default amenity
+    amenities: [], // Default amenity
     propertyUniqueness: '',
     locationAdvantages: '',
     otherFeatures: '',
@@ -139,19 +139,25 @@ const AddPropertyForm = () => {
 
   // Fetch initial data
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [categoriesRes, amenitiesRes] = await Promise.all([
-          axios.get(`${baseurl}/property-categories/`),
-          axios.get(`${baseurl}/amenities/`)
-        ]);
-        setPropertyCategories(categoriesRes.data);
-        setAmenities(amenitiesRes.data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-    fetchData();
+     const fetchData = async () => {
+        try {
+          const [categoriesRes, amenitiesRes] = await Promise.all([
+            axios.get(`${baseurl}/property-categories/`),
+            axios.get(`${baseurl}/amenities/`)
+          ]);
+          setPropertyCategories(categoriesRes.data);
+          
+          // Convert amenity IDs to numbers
+          const formattedAmenities = amenitiesRes.data.map(amenity => ({
+            ...amenity,
+            amenity_id: parseInt(amenity.amenity_id)
+          }));
+          setAmenities(formattedAmenities);
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      };
+        fetchData();
   }, []);
 
   useEffect(() => {
@@ -214,14 +220,15 @@ const AddPropertyForm = () => {
     }));
   };
 
-  const handleAmenityChange = (amenityId) => {
-    setFormData(prev => {
-      const newAmenities = prev.amenities.includes(amenityId)
-        ? prev.amenities.filter(id => id !== amenityId)
-        : [...prev.amenities, amenityId];
-      return { ...prev, amenities: newAmenities };
-    });
-  };
+   const handleAmenityChange = (amenityId) => {
+  setFormData(prev => {
+    const numericId = parseInt(amenityId);
+    const newAmenities = prev.amenities.includes(numericId)
+      ? prev.amenities.filter(id => id !== numericId)
+      : [...prev.amenities, numericId];
+    return { ...prev, amenities: newAmenities };
+  });
+};
 
   // Add these handler functions:
   const handleAgreementVideoUpload = (e) => {
@@ -316,7 +323,6 @@ const AddPropertyForm = () => {
         owner_contact: formData.ownerContact,
         owner_email: formData.ownerEmail,
         is_featured: formData.isFeatured,
-        // amenities: JSON.stringify(formData.amenities),
         category: formData.category,
         property_type: formData.propertyType,
         user_id: userId,
@@ -340,6 +346,13 @@ const AddPropertyForm = () => {
           payload.append(key, value);
         }
       });
+
+       // With this dynamic version:
+if (formData.amenities && formData.amenities.length > 0) {
+  formData.amenities.forEach((id) => {
+    payload.append("amenities", id.toString()); // Ensure it's string for FormData
+  });
+}
 
       // Append files
       formData.images.forEach((img) => {
@@ -606,18 +619,6 @@ const AddPropertyForm = () => {
 
       case 1: return (
         <Grid container spacing={3} sx={{ mt: 2 }}>
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              multiline
-              rows={2}
-              label="Full Address"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-            />
-          </Grid>
-
           <Grid item xs={12} sm={6}>
                          <TextField
                            select
@@ -699,6 +700,18 @@ const AddPropertyForm = () => {
             />
           </Grid>
 
+ <Grid item xs={12}>
+            <TextField
+              fullWidth
+              multiline
+              rows={2}
+              label="Full Address"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+            />
+          </Grid>
+          
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
@@ -829,8 +842,10 @@ const AddPropertyForm = () => {
               >
                 <MenuItem value="sq.ft.">Square Feet</MenuItem>
                 <MenuItem value="sq.m.">Square Meters</MenuItem>
+                  <MenuItem value="sq.yd.">Square Yards</MenuItem>
                 <MenuItem value="acres">Acres</MenuItem>
                 <MenuItem value="hectares">Hectares</MenuItem>
+                 <MenuItem value="cents">Cents</MenuItem>
               </Select>
             </FormControl>
           </Grid>
