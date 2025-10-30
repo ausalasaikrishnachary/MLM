@@ -28,7 +28,7 @@ const UpVdHowitworks = () => {
 useEffect(() => {
   const fetchVideos = async () => {
     try {
-      const res = await fetch(`${baseurl}how-it-works/`);
+      const res = await fetch(`${baseurl}/how-it-works/`);
       const data = await res.json();
       setVideos(data);
     } catch (err) {
@@ -133,7 +133,7 @@ useEffect(() => {
     if (!window.confirm("Are you sure you want to delete this video?")) return;
 
     try {
-      const res = await fetch(`${baseurl}how-it-works/${video.id}/`, { method: "DELETE" });
+      const res = await fetch(`${baseurl}/how-it-works/${video.id}/`, { method: "DELETE" });
 
       if (!res.ok) throw new Error("Failed to delete video");
 

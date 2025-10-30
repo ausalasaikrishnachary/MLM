@@ -26,7 +26,7 @@ const EditVideo = () => {
 useEffect(() => {
   const fetchVideo = async () => {
     try {
-      const response = await fetch(`${baseurl}how-it-works/${id}/`); // using baseurl
+      const response = await fetch(`${baseurl}/how-it-works/${id}/`); // using baseurl
       if (!response.ok) throw new Error("Failed to fetch video data");
 
       const data = await response.json();
@@ -59,7 +59,7 @@ useEffect(() => {
 
   try {
     const response = await fetch(
-      `${baseurl}how-it-works/${id}/`, // using baseurl
+      `${baseurl}/how-it-works/${id}/`, // using baseurl
       {
         method: "PUT",
         headers: {
