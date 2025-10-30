@@ -49,7 +49,7 @@ const VisuallyHiddenInput = styled('input')({
   width: 1,
 });
 
-const AssetForm = () => { 
+const AssetForm = () => {  
   const [activeStep, setActiveStep] = useState(0);
   const [propertyCategories, setPropertyCategories] = useState([]);
   const [propertyTypes, setPropertyTypes] = useState([]);
@@ -79,6 +79,7 @@ const AssetForm = () => {
     latitude: '',
     longitude: '',
     plotArea: '',
+    pricePerUnit: '',
     areaUnit: 'sq.ft.',
     length: '',
     breadth: '',
@@ -196,20 +197,32 @@ const AssetForm = () => {
     return regex.test(value);
   };
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
-    if (name === "description") {
-      setErrors(prev => ({
-        ...prev,
-        description: !validateDescription(value),
-      }));
+ const handleChange = (e) => {
+  const { name, value, type, checked } = e.target;
+  const newValue = type === 'checkbox' ? checked : value;
+
+  setFormData((prev) => {
+    const updated = { ...prev, [name]: newValue };
+
+    // Auto-calculate price when pricePerUnit or plotArea changes
+    if (name === "pricePerUnit" || name === "plotArea") {
+      const pricePerUnit = parseFloat(updated.pricePerUnit) || 0;
+      const plotArea = parseFloat(updated.plotArea) || 0;
+      updated.price = pricePerUnit * plotArea;
     }
 
-  };
+    return updated;
+  });
+
+  // Validate description
+  if (name === "description") {
+    setErrors((prev) => ({
+      ...prev,
+      description: !validateDescription(value),
+    }));
+  }
+};
+
 
   const handleFileUpload = async (e, type) => {
     const files = e.target.files;
@@ -295,13 +308,13 @@ const AssetForm = () => {
 
     try {
       // Convert plot area to sq.ft based on selected unit
-      let plotAreaSqft = parseFloat(formData.plotArea) || 0;
-      switch (formData.areaUnit) {
-        case 'sq.m.': plotAreaSqft *= 10.7639; break;
-        case 'acres': plotAreaSqft *= 43560; break;
-        case 'hectares': plotAreaSqft *= 107639; break;
-        default: break; // Already in sq.ft
-      }
+      // let plotAreaSqft = parseFloat(formData.plotArea) || 0;
+      // switch (formData.areaUnit) {
+      //   case 'sq.m.': plotAreaSqft *= 10.7639; break;
+      //   case 'acres': plotAreaSqft *= 43560; break;
+      //   case 'hectares': plotAreaSqft *= 107639; break;
+      //   default: break; // Already in sq.ft
+      // }
 
       // Prepare form data for API
       const payload = new FormData();
@@ -319,8 +332,11 @@ const AssetForm = () => {
         pin_code: formData.pinCode,
         latitude: formData.latitude || '12.120000',
         longitude: formData.longitude || '12.120000',
-        plot_area_sqft: plotAreaSqft.toFixed(2),
-        builtup_area_sqft: formData.builtupArea || '0.00',
+         area: formData.plotArea,
+        // area: plotAreaSqft.toFixed(2),
+        area_unit: formData.areaUnit,
+        price_per_unit: formData.pricePerUnit || '0.00',
+        builtup_area: formData.builtupArea || '0.00',
         length_ft: formData.length || '0.00',
         breadth_ft: formData.breadth || '0.00',
         number_of_floors: formData.numberOfFloors,
@@ -846,17 +862,6 @@ if (formData.amenities && formData.amenities.length > 0) {
             </>
           )}
           <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Area"
-              name="plotArea"
-              type="number"
-              value={formData.plotArea}
-              onChange={handleChange}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
             <FormControl fullWidth>
               <InputLabel>Area Unit</InputLabel>
               <Select
@@ -874,6 +879,28 @@ if (formData.amenities && formData.amenities.length > 0) {
               </Select>
             </FormControl>
           </Grid>
+
+            <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        label="Area"
+                        name="plotArea"
+                        type="number"
+                        value={formData.plotArea}
+                        onChange={handleChange}
+                      />
+                    </Grid>
+          
+                     <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        label="Price Per Unit"
+                        name="pricePerUnit"
+                        type="number"
+                        value={formData.pricePerUnit}
+                        onChange={handleChange}
+                      />
+                    </Grid>
 
           <Grid item xs={12} sm={6}>
             <TextField
@@ -900,7 +927,7 @@ if (formData.amenities && formData.amenities.length > 0) {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              label="Built-up Area (sq.ft)"
+              label="Built-up Area"
               name="builtupArea"
               type="number"
               value={formData.builtupArea}
@@ -1260,7 +1287,8 @@ if (formData.amenities && formData.amenities.length > 0) {
                   name="price"
                   type="number"
                   value={formData.price}
-                  onChange={handleChange}
+                  // onChange={handleChange}
+                   InputProps={{ readOnly: true }}
                 />
               </Grid>
 
