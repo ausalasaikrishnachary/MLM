@@ -112,8 +112,8 @@ const Properties = () => {
         property.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
         property.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
         property.total_property_value.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        property.plot_area_sqft.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        property.builtup_area_sqft.toLowerCase().includes(searchTerm.toLowerCase());
+        property.area.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        property.builtup_area.toLowerCase().includes(searchTerm.toLowerCase());
 
       const matchesType = !selectedTypeId || property.property_type === selectedTypeId;
       return matchesSearch && matchesType;
@@ -272,10 +272,10 @@ const Properties = () => {
                   <Grid container spacing={1}>
                     <Grid item xs={6}>
                       <Typography variant="caption" color="text.secondary">
-                        Plot Area
+                        Area
                       </Typography>
                       <Typography fontWeight="600" color="#4A90E2">
-                        {property.plot_area_sqft || 'N/A'} sqft
+                        {property.area || 'N/A'} {property.area_unit}
                       </Typography>
                     </Grid>
                     <Grid item xs={6}>
@@ -283,7 +283,7 @@ const Properties = () => {
                         Built-up Area
                       </Typography>
                       <Typography fontWeight="600" color="#4A90E2">
-                        {property.builtup_area_sqft || 'N/A'} sqft
+                        {property.builtup_area || 'N/A'} {property.area_unit}
                       </Typography>
                     </Grid>
                     <Grid item xs={6}>

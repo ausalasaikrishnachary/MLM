@@ -611,10 +611,10 @@ const handleImageClick = (property) => {
                         <Grid container spacing={2} sx={{ mt: 2 }}>
                           <Grid item xs={6}>
                             <Typography variant="caption" color="text.secondary">
-                              Plot Area
+                              Area
                             </Typography>
                             <Typography fontWeight="600" color="#4A90E2">
-                              {property.plot_area_sqft || 'N/A'} sqft
+                              {property.area || 'N/A'} {property.area_unit}
                             </Typography>
                           </Grid>
                           <Grid item xs={6}>
@@ -622,7 +622,7 @@ const handleImageClick = (property) => {
                               Built-up Area
                             </Typography>
                             <Typography fontWeight="600" color="#4A90E2">
-                              {property.builtup_area_sqft || 'N/A'} sqft
+                              {property.builtup_area || 'N/A'} {property.area_unit}
                             </Typography>
                           </Grid>
                           <Grid item xs={6}>
@@ -868,10 +868,10 @@ const handleImageClick = (property) => {
                         <Grid container spacing={2} sx={{ mt: 2 }}>
                           <Grid item xs={6}>
                             <Typography variant="caption" color="text.secondary">
-                              Plot Area
+                              Area
                             </Typography>
                             <Typography fontWeight="600" color="#4A90E2">
-                              {property.plot_area_sqft || 'N/A'} sqft
+                              {property.area || 'N/A'} {property.area_unit}
                             </Typography>
                           </Grid>
                           <Grid item xs={6}>
@@ -879,7 +879,7 @@ const handleImageClick = (property) => {
                               Built-up Area
                             </Typography>
                             <Typography fontWeight="600" color="#4A90E2">
-                              {property.builtup_area_sqft || 'N/A'} sqft
+                              {property.builtup_area || 'N/A'} {property.area_unit}
                             </Typography>
                           </Grid>
                           <Grid item xs={6}>

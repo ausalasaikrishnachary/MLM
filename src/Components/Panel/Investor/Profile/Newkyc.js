@@ -133,7 +133,7 @@ const Newkyc = () => {
         return (
           <Grid container spacing={3} sx={{ mt: 1 }}>
             <Grid item xs={12} sm={6}>
-              <TextField fullWidth size="small" label="Plot Area" value={plotArea} onChange={(e) => setPlotArea(e.target.value)} />
+              <TextField fullWidth size="small" label="Area" value={plotArea} onChange={(e) => setPlotArea(e.target.value)} />
             </Grid>
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth size="small">

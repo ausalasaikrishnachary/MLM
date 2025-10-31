@@ -136,10 +136,10 @@
 //             <Divider sx={{ mb: 2 }} />
 //             <Grid container spacing={2} mb={3}>
 //               <Grid item xs={6}>
-//                 <Typography><strong>Plot Area:</strong> {property.plot_area_sqft} sq.ft</Typography>
+//                 <Typography><strong>Area:</strong> {property.area} {property.area_unit}</Typography>
 //               </Grid>
 //               <Grid item xs={6}>
-//                 <Typography><strong>Built-up Area:</strong> {property.builtup_area_sqft} sq.ft</Typography>
+//                 <Typography><strong>Built-up Area:</strong> {property.builtup_area} {property.area_unit}</Typography>
 //               </Grid>
 //               <Grid item xs={6}>
 //                 <Typography><strong>Length:</strong> {property.length_ft} ft</Typography>
@@ -502,8 +502,8 @@ useEffect(() => {
                 </Typography>
                 <Grid container spacing={3}>
                   {[
-                    ['Plot Area', `${property.plot_area_sqft} sq.ft`],
-                    ['Built-up Area', `${property.builtup_area_sqft} sq.ft`],
+                    ['Area', `${property.area} ${property.area_unit}`],
+                    ['Built-up Area', `${property.builtup_area} ${property.area_unit}`],
                     ['Length', `${property.length_ft} ft`],
                     ['Breadth', `${property.breadth_ft} ft`],
                   ].map(([label, value], index) => (

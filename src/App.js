@@ -178,6 +178,7 @@ import AddSitevisit from "./Components/Panel/Partner/AddSitevisit/AddSitevisit";
 import EditSitevisit from "./Components/Panel/Partner/AddSitevisit/EditSitevisit";
 import EditQA from "./Components/Panel/Admin/Chatbot/EditQA";
 import SiteVisits from "./Components/Panel/Admin/SiteVisits/SiteVisits";
+import EditTrainingMaterial from "./Components/Panel/Admin/TrainingMaterial/EditTrainingMaterial";
 
 
 function Layout() {
@@ -229,6 +230,7 @@ function Layout() {
           <Route path="/a-editvideo/:id" element={<EditVideo />} />
           <Route path="/a-addvideo" element={<AddVideo />} />
           <Route path="/a-addtrainingmaterial" element={<AddTrainingMaterial />} />
+          <Route path="/a-edittrainingmaterial" element={<EditTrainingMaterial />} />
           {/* <Route path="/home" element={<LandingPage />} /> */}
           <Route path="/a-dashboard" element={<AdminDashboard />} />
           <Route path="/admin-meetings" element={<AdminMeetings />} />

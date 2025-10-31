@@ -307,7 +307,7 @@ const AssetForm = () => {
     setIsSubmitting(true);
 
     try {
-      // Convert plot area to sq.ft based on selected unit
+      // Convert Area to sq.ft based on selected unit
       // let plotAreaSqft = parseFloat(formData.plotArea) || 0;
       // switch (formData.areaUnit) {
       //   case 'sq.m.': plotAreaSqft *= 10.7639; break;

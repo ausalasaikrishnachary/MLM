@@ -263,8 +263,8 @@
 
 //                   <Grid container spacing={2} mb={3}>
 //                     {[
-//                       ['Plot Area', `${property.plot_area_sqft} sq.ft`],
-//                       ['Built-up Area', `${property.builtup_area_sqft} sq.ft`],
+//                       ['Area', `${property.area} {property.area_unit}`],
+//                       ['Built-up Area', `${property.builtup_area} {property.area_unit}`],
 //                       ['Length', `${property.length_ft} ft`],
 //                       ['Breadth', `${property.breadth_ft} ft`],
 //                     ].map(([label, value], index) => (
@@ -639,8 +639,8 @@ const AssetDetail = () => {
                 </Typography>
                 <Grid container spacing={3}>
                   {[
-                    ['Plot Area', `${property.plot_area_sqft} sq.ft`],
-                    ['Built-up Area', `${property.builtup_area_sqft} sq.ft`],
+                    ['Area', `${property.area} ${property.area_unit}`],
+                    ['Built-up Area', `${property.builtup_area} ${property.area_unit}`],
                     ['Length', `${property.length_ft} ft`],
                     ['Breadth', `${property.breadth_ft} ft`],
                   ].map(([label, value], index) => (
