@@ -30,7 +30,7 @@ const EditMyAsset = () => {
     total_property_value: '',
     agent_commission: '',
     owner_name: '',
-    company_commission: '',
+    // company_commission: '',
     owner_contact: '',
     owner_email: '',
     images: [],
@@ -129,11 +129,12 @@ const EditMyAsset = () => {
 
       const propertyValue = parseFloat(updated.property_value) || 0;
       const agentCommission = parseFloat(updated.agent_commission) || 0;
-      const companyCommission = parseFloat(updated.company_commission) || 0;
+      // const companyCommission = parseFloat(updated.company_commission) || 0;
 
       return {
         ...updated,
-        total_property_value: propertyValue + agentCommission + companyCommission,
+        // total_property_value: propertyValue + agentCommission + companyCommission,
+         total_property_value: propertyValue + agentCommission,
       };
     });
   };
@@ -254,7 +255,7 @@ const EditMyAsset = () => {
     { name: 'facing', label: 'Facing'},
     { name: 'property_value', label: 'Property Value' },
     { name: 'agent_commission', label: 'Agent Commission' },
-    { name: 'company_commission', label: 'Company Commission' },
+    // { name: 'company_commission', label: 'Company Commission' },
     { name: 'total_property_value', label: 'Total Property Value'},
     { name: 'description', label: 'Description'},
   ];
@@ -283,21 +284,7 @@ const EditMyAsset = () => {
                   multiline={field.multiline || false}
                   rows={field.multiline ? 3 : 1}
                 />
-                {/* Add Update Button after Company Commission */}
-                {field.name === 'total_property_value' && (
-                  <Button 
-                    type="submit" 
-                    variant="contained" 
-                    fullWidth
-                    sx={{ 
-                      mt: 2,
-                      height: '56px',
-                      fontSize: '1rem'
-                    }}
-                  >
-                    Update Property
-                  </Button>
-                )}
+               
               </Grid>
             ))}
 
@@ -409,6 +396,18 @@ const EditMyAsset = () => {
                   </Box>
                 </Box>
               )}
+                <Button 
+                    type="submit" 
+                    variant="contained" 
+                    fullWidth
+                    sx={{ 
+                      mt: 2,
+                      height: '56px',
+                      fontSize: '1rem'
+                    }}
+                  >
+                    Update Property
+                  </Button>
             </Grid>
           </Grid>
         </Box>
