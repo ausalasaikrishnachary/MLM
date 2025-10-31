@@ -38,8 +38,8 @@
 //             <Typography><strong>Longitude:</strong> {property.longitude}</Typography>
 //             <Typography><strong>Looking to:</strong> {property.looking_to}</Typography>
 //             <Typography><strong>Property Value:</strong> {property.property_value}</Typography>
-//             <Typography><strong>Area:</strong> {property.area} {property.area_unit}</Typography>
-//             <Typography><strong>Built-up Area:</strong> {property.builtup_area} {property.area_unit}</Typography>
+//             <Typography><strong>Plot Area:</strong> {property.plot_area_sqft} sq.ft</Typography>
+//             <Typography><strong>Built-up Area:</strong> {property.builtup_area_sqft} sq.ft</Typography>
 //             <Typography><strong>Length:</strong> {property.length_ft} ft</Typography>
 //             <Typography><strong>Breadth:</strong> {property.breadth_ft} ft</Typography>
 //             <Typography><strong>Number of Floors:</strong> {property.number_of_floors}</Typography>
@@ -94,6 +94,8 @@ import DetailsIcon from '@mui/icons-material/Details';
 import PersonIcon from '@mui/icons-material/Person';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { baseurl } from '../../../BaseURL/BaseURL';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
+
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -112,15 +114,52 @@ const TabPanel = (props) => {
 
 const AssetDetails = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { property } = location.state || {};
-  const { id } = useParams();
+
+
   const [openMedia, setOpenMedia] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [isPlot, setIsPlot] = useState(false);
   const [tabValue, setTabValue] = useState(0);
- 
+  const [formData, setFormData] = useState({
+  files: [],
+  agreement_video: null,
+  agreement_file: null,
+});
+ const [uploading, setUploading] = useState(false);
+
+
+const { id } = useParams();
+const location = useLocation();
+const { property: passedProperty } = location.state || {};
+
+// ✅ State
+const [property, setProperty] = useState(passedProperty || null);
+
+// ✅ Fetch Property (including files, video, agreement)
+useEffect(() => {
+  if (!passedProperty) {
+    const fetchPropertyById = async () => {
+      try {
+        const response = await fetch(`${baseurl}properties/${id}/`);
+        const data = await response.json();
+
+        // Ensure 'files' is always an array
+        setProperty({
+          ...data,
+          files: Array.isArray(data.files) ? data.files : [],
+        });
+      } catch (error) {
+        console.error("Error fetching property:", error);
+      }
+    };
+
+    fetchPropertyById();
+  }
+}, [id, passedProperty]);
+
+
+
 
   useEffect(() => {
     // fetch property types
@@ -198,6 +237,142 @@ const AssetDetails = () => {
     "linear-gradient(135deg, #b786e5, #d1c4e9)",
     "linear-gradient(135deg, #f77062, #ff8a80)",
   ];
+
+  const VisuallyHiddenInput = (props) => (
+  <input
+    {...props}
+    style={{
+      clip: 'rect(0 0 0 0)',
+      clipPath: 'inset(50%)',
+      height: 1,
+      overflow: 'hidden',
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      whiteSpace: 'nowrap',
+      width: 1,
+    }}
+  />
+);
+
+// Handle agreement document upload
+const handleAgreementFileUpload = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    setFormData(prev => ({
+      ...prev,
+      agreement_file: file,
+    }));
+  }
+};
+
+// Remove agreement document
+const removeAgreementFile = () => {
+  setFormData(prev => ({
+    ...prev,
+    agreement_file: null,
+  }));
+};
+
+
+// Handle property documents upload
+const handleFileUpload = (e, field) => {
+  const selectedFiles = Array.from(e.target.files);
+  setFormData(prev => ({
+    ...prev,
+    [field]: [...prev[field], ...selectedFiles],
+  }));
+};
+
+// Remove uploaded document
+const removeFile = (index, field) => {
+  setFormData(prev => ({
+    ...prev,
+    [field]: prev[field].filter((_, i) => i !== index),
+  }));
+};
+
+const handleSaveFiles = async () => {
+  if (!id) {
+    alert("Property ID missing!");
+    return;
+  }
+
+  const formDataToSend = new FormData();
+
+  // Add property documents
+  formData.files.forEach((file) => {
+    formDataToSend.append("files", file);
+  });
+
+  // Add agreement video
+  if (formData.agreement_video) {
+    formDataToSend.append("agreement_video", formData.agreement_video);
+  }
+
+  // Add agreement document
+  if (formData.agreement_file) {
+    formDataToSend.append("agreement_file", formData.agreement_file);
+  }
+
+  try {
+    const response = await fetch(`${baseurl}properties/${id}/`, {
+      method: "PUT",
+      body: formDataToSend,
+    });
+
+    if (response.ok) {
+      alert("Files uploaded successfully!");
+    } else {
+      const errorData = await response.json();
+      console.error("Upload failed:", errorData);
+      alert("Upload failed. Check console for details.");
+    }
+  } catch (error) {
+    console.error("Error uploading files:", error);
+    alert("Something went wrong while uploading files.");
+  }
+};
+
+// Handle agreement video upload
+const handleAgreementVideoUpload = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    setFormData(prev => ({
+      ...prev,
+      agreement_video: file,
+    }));
+  }
+};
+
+// Remove agreement video
+const removeAgreementVideo = () => {
+  setFormData(prev => ({
+    ...prev,
+    agreement_video: null,
+  }));
+};
+
+
+
+// // Handle agreement document upload
+// const handleAgreementFileUpload = (e) => {
+//   const file = e.target.files[0];
+//   if (file) {
+//     setFormData(prev => ({
+//       ...prev,
+//       agreement_file: file,
+//     }));
+//   }
+// };
+
+// Remove agreement document
+// const removeAgreementFile = () => {
+//   setFormData(prev => ({
+//     ...prev,
+//     agreement_file: null,
+//   }));
+// };
 
   return (
     <>
@@ -424,6 +599,8 @@ const AssetDetails = () => {
               <Tab icon={<PersonIcon />} iconPosition="start" label="Owner Details" />
               {property.buyer_user && <Tab icon={<PersonIcon />} iconPosition="start" label="Buyer Details" />}
               <Tab icon={<SettingsIcon />} iconPosition="start" label="System Info" />
+              <Tab icon={<UploadFileIcon />} iconPosition="start" label="File Info" />
+
             </Tabs>
             {/* Tab Content */}
             <Box id="tab-content" sx={{ maxHeight: '60vh', overflow: 'auto', p: 3 }}>
@@ -738,6 +915,116 @@ const AssetDetails = () => {
                   </Grid>
                 </Box>
               </TabPanel>
+<TabPanel
+  value={tabValue}
+  index={
+    property?.buyer_user
+      ? (isPlot ? 7 : 8)
+      : (isPlot ? 6 : 7)
+  }
+>
+  <Typography
+    variant="h5"
+    fontWeight={600}
+    gutterBottom
+    sx={{
+      background: "linear-gradient(135deg, #673ab7, #9575cd)",
+      color: "white",
+      px: 2,
+      py: 1,
+      borderRadius: 1,
+      mb: 3,
+    }}
+  >
+    File Information
+  </Typography>
+
+  {!property ? (
+    <Typography>Loading property details...</Typography>
+  ) : (
+    <Grid container spacing={3}>
+      {/* Uploaded Property Documents */}
+      {property.files && property.files.length > 0 && (
+        <Grid item xs={12}>
+          <Typography variant="h6" gutterBottom>
+            Uploaded Documents
+          </Typography>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+            {property.files.map((fileObj, index) => {
+              const filePath = fileObj.file || fileObj;
+              const fileName = filePath.split("/").pop();
+
+              return (
+                <Button
+                  key={index}
+                  variant="text"
+                  color="secondary"
+                  href={`${baseurl}${filePath}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{ textTransform: "none", justifyContent: "flex-start" }}
+                >
+                  📄 {fileName}
+                </Button>
+              );
+            })}
+          </Box>
+        </Grid>
+      )}
+
+      {/* Agreement Video */}
+      {property.agreement_video && (
+        <Grid item xs={12}>
+          <Typography variant="h6" gutterBottom>
+            Agreement Video
+          </Typography>
+          <video
+            src={`${baseurl}${property.agreement_video}`}
+            controls
+            style={{
+              width: "100%",
+              maxWidth: 600,
+              borderRadius: 8,
+              boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+            }}
+          />
+        </Grid>
+      )}
+
+      {/* Agreement Document */}
+      {property.agreement_file && (
+        <Grid item xs={12}>
+          <Typography variant="h6" gutterBottom>
+            Agreement Document
+          </Typography>
+          <Button
+            variant="outlined"
+            color="primary"
+            href={`${baseurl}${property.agreement_file}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View Agreement File
+          </Button>
+        </Grid>
+      )}
+
+      {/* No files fallback */}
+      {!property.agreement_video &&
+        !property.agreement_file &&
+        (!property.files || property.files.length === 0) && (
+          <Grid item xs={12}>
+            <Typography variant="body1" color="text.secondary">
+              No files available for this property.
+            </Typography>
+          </Grid>
+        )}
+    </Grid>
+  )}
+</TabPanel>
+
+
+
             </Box>
           </Card>
         </Container>
