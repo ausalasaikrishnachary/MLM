@@ -10,7 +10,7 @@ import Swal from 'sweetalert2';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { baseurl } from '../../../BaseURL/BaseURL';
 
-const EditMyAsset = () => {
+const EditMyAsset = () => { 
   const { state } = useLocation();
   const { property } = state || {}; 
   const { id } = useParams();
@@ -192,7 +192,7 @@ const EditMyAsset = () => {
         });
       } else {
         // If no amenities selected, send empty array
-        submitData.append('amenities', '[]');
+        // submitData.append('amenities', '[]');
       }
 
       // Append new image uploads

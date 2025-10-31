@@ -249,7 +249,7 @@ const EditAsset = () => {
         });
       } else {
         // If no amenities selected, send empty array
-        submitData.append('amenities', '[]');
+        // submitData.append('amenities', '[]');
       }
 
       // Append new image uploads
