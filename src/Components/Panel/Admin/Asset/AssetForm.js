@@ -590,7 +590,7 @@ const AddPropertyForm = () => {
           formData.city?.trim() &&
           formData.state?.trim() &&
           formData.country?.trim() &&
-          formData.pinCode?.trim() &&
+          // formData.pinCode?.trim() &&
           formData.latitude !== undefined &&
           formData.longitude !== undefined
         );
@@ -891,7 +891,7 @@ const AddPropertyForm = () => {
             />
           </Grid>
 
-          <Grid item xs={12} sm={6}>
+          {/* <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label="Latitude"
@@ -901,9 +901,9 @@ const AddPropertyForm = () => {
               onChange={handleChange}
               placeholder="12.120000"
             />
-          </Grid>
+          </Grid> */}
 
-          <Grid item xs={12} sm={6}>
+          {/* <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label="Longitude"
@@ -913,7 +913,7 @@ const AddPropertyForm = () => {
               onChange={handleChange}
               placeholder="12.120000"
             />
-          </Grid>
+          </Grid> */}
         </Grid>
       );
 

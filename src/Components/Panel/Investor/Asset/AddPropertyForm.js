@@ -456,7 +456,7 @@ if (formData.amenities && formData.amenities.length > 0) {
           formData.city?.trim() &&
           formData.state?.trim() &&
           formData.country?.trim() &&
-          formData.pinCode?.trim() &&
+          // formData.pinCode?.trim() &&
           formData.latitude !== undefined &&
           formData.longitude !== undefined
         );
@@ -727,7 +727,7 @@ if (formData.amenities && formData.amenities.length > 0) {
             />
           </Grid>
           
-          <Grid item xs={12} sm={6}>
+          {/* <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label="Latitude"
@@ -737,9 +737,9 @@ if (formData.amenities && formData.amenities.length > 0) {
               onChange={handleChange}
               placeholder="12.120000"
             />
-          </Grid>
+          </Grid> */}
 
-          <Grid item xs={12} sm={6}>
+          {/* <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label="Longitude"
@@ -749,7 +749,7 @@ if (formData.amenities && formData.amenities.length > 0) {
               onChange={handleChange}
               placeholder="12.120000"
             />
-          </Grid>
+          </Grid> */}
         </Grid>
       );
 
