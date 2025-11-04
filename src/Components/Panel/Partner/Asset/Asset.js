@@ -605,7 +605,7 @@ const AssetsUI = () => {
                         
                       )}
                       {/* ❤️ Wishlist Icon */}
-<IconButton
+{/* <IconButton
   onClick={() => handleWishlistToggle(property.property_id)}
   sx={{
     position: 'absolute',
@@ -621,7 +621,7 @@ const AssetsUI = () => {
   ) : (
     <FavoriteBorderIcon sx={{ color: 'red' }} />
   )}
-</IconButton>
+</IconButton> */}
 
 
                       {/* Navigation arrows when there are multiple media items */}
@@ -731,13 +731,13 @@ const AssetsUI = () => {
                         {/* Checkbox + Text */}
                         <Box display="flex" alignItems="center" gap={1}>
   {/* Like Button (Thumb Up) */}
-  <IconButton
+  {/* <IconButton
     onClick={() => handleLikeToggle(property.property_id)}
     size="small"
     sx={{ color: likedProperties.includes(property.property_id) ? '#1a73e8' : 'grey' }}
   >
     {likedProperties.includes(property.property_id) ? <ThumbUpAltIcon /> : <ThumbUpAltOutlinedIcon />}
-  </IconButton>
+  </IconButton> */}
 
   {/* Compare Checkbox */}
   <Checkbox
@@ -861,41 +861,81 @@ const AssetsUI = () => {
                                 </Typography>
                               </Grid>
 
-                              <Grid item xs={6}>
-                                <Typography variant="body2" color="text.secondary">
-                                  {subscriptionPaid ? "Owner Contact" : "Office Contact"}
-                                </Typography>
-                              </Grid>
 
-                              <Grid item xs={6}>
-                                <Typography
-                                  variant="body2"
-                                  fontWeight="bold"
-                                  color="text.secondary"
-                                  align="right"
-                                  display="flex"
-                                  justifyContent="flex-end"
-                                  alignItems="center"
-                                  gap={1}
-                                >
-                                  <CallIcon fontSize="small" />
-                                  <a
-                                    href={`tel:${subscriptionPaid ? property.owner_contact : "9074307248"}`}
-                                    style={{
-                                      color: 'inherit',
-                                      textDecoration: 'none',
-                                      fontWeight: 'bold',
-                                    }}
-                                  >
-                                    {subscriptionPaid ? property.owner_contact : "9074307248"}
-                                  </a>
-                                </Typography>
-                              </Grid>
+
+
+
+{/* New Row for Action Icons */}
+<Grid item xs={12}>
+  <Box
+    sx={{
+      display: 'flex',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+      gap: 1.5,
+      mt: 0.5,
+    }}
+  >
+    {/* Wishlist Button */}
+    <IconButton
+      onClick={() => handleWishlistToggle(property.property_id)}
+      sx={{
+        backgroundColor: 'rgba(255,255,255,0.8)',
+        '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
+      }}
+    >
+      {wishlist.includes(property.property_id) ? (
+        <FavoriteIcon sx={{ color: 'red' }} />
+      ) : (
+        <FavoriteBorderIcon sx={{ color: 'red' }} />
+      )}
+    </IconButton>
+
+    {/* Like Button */}
+    <IconButton
+      onClick={() => handleLikeToggle(property.property_id)}
+      size="small"
+      sx={{
+        backgroundColor: 'rgba(255,255,255,0.8)',
+        '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
+        color: likedProperties.includes(property.property_id)
+          ? '#1a73e8'
+          : 'grey',
+      }}
+    >
+      {likedProperties.includes(property.property_id) ? (
+        <ThumbUpAltIcon />
+      ) : (
+        <ThumbUpAltOutlinedIcon />
+      )}
+    </IconButton>
+
+    {/* Call Button */}
+    <IconButton
+      component="a"
+      href={`tel:${subscriptionPaid ? property.owner_contact : '9074307248'}`}
+      size="small"
+      sx={{
+        backgroundColor: 'rgba(255,255,255,0.8)',
+        '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
+        color: '#4caf50',
+      }}
+    >
+      <CallIcon />
+    </IconButton>
+  </Box>
+</Grid>
+
+
+                          
+
+                              
 
                             </>
                           )}
                         </Grid>
                       </Box>
+                      
 
                       <Button
                         onMouseEnter={(e) => handlePopoverOpen(e, property.property_id)}
