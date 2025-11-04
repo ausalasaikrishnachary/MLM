@@ -179,6 +179,7 @@ import EditSitevisit from "./Components/Panel/Partner/AddSitevisit/EditSitevisit
 import EditQA from "./Components/Panel/Admin/Chatbot/EditQA";
 import SiteVisits from "./Components/Panel/Admin/SiteVisits/SiteVisits";
 import EditTrainingMaterial from "./Components/Panel/Admin/TrainingMaterial/EditTrainingMaterial";
+import VerifyOtp from "./Components/Login/VerifyOtp";
 
 
 function Layout() {
@@ -382,6 +383,7 @@ function Layout() {
           <Route path="/refundpolicy" element={<Refundpolicy />} />
           <Route path="/legalnavbar" element={<LegalNavbar />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/verify-otp" element={<VerifyOtp />} />
 
           <Route path="/filteredproperties" element={<FilteredProperties />} />
           <Route path="/payment-callback" element={<PaymentCallback />} />
