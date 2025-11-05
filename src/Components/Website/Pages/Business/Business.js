@@ -13,6 +13,7 @@ import {
   DialogContent,
   Divider,
   Pagination,
+  TextField,
   Dialog as LogoDialog,
 } from "@mui/material";
 import BusinessIcon from "@mui/icons-material/Business";
@@ -26,11 +27,12 @@ import Header from "../../../Shared/Navbar/Navbar";
 import { baseurl } from "../../../BaseURL/BaseURL";
 
 const AdminBusiness = () => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false); 
   const [logoOpen, setLogoOpen] = useState(false);
   const [selectedBusiness, setSelectedBusiness] = useState(null);
   const [selectedLogo, setSelectedLogo] = useState(null);
   const [businesses, setBusinesses] = useState([]);
+  const [searchTerm, setSearchTerm] = useState(''); // Added search term state
 
   useEffect(() => {
     const fetchBusinesses = async () => {
@@ -64,14 +66,21 @@ const AdminBusiness = () => {
     setSelectedLogo(null);
   };
 
-  const [page, setPage] = useState(1); // current page
-const [rowsPerPage] = useState(6); // businesses per page
+   // Filter businesses based on business_type
+  const filteredBusinesses = businesses.filter(business => {
+    if (!searchTerm) return true; // Show all if no search term
+    
+    return business.business_type?.toLowerCase().includes(searchTerm.toLowerCase());
+  });
 
-const totalPages = Math.ceil(businesses.length / rowsPerPage);
-const paginatedBusinesses = businesses.slice(
-  (page - 1) * rowsPerPage,
-  page * rowsPerPage
-);
+   const [page, setPage] = useState(1); // current page
+  const [rowsPerPage] = useState(6); // businesses per page
+
+  const totalPages = Math.ceil(filteredBusinesses.length / rowsPerPage);
+  const paginatedBusinesses = filteredBusinesses.slice(
+    (page - 1) * rowsPerPage,
+    page * rowsPerPage
+  );
 
 const handlePageChange = (event, value) => {
   setPage(value);
@@ -81,6 +90,26 @@ const handlePageChange = (event, value) => {
     <>
       {/* <Header /> */}
       <Box sx={{ bgcolor: "#fafbfe", minHeight: "100vh", p: { xs: 2, md: 4 }, position: "relative" }}>
+
+         {/* Search Bar */}
+        <Box sx={{ mb: 3, maxWidth: 400 }}>
+          <TextField
+            fullWidth
+            label="Search by business category or type..."
+            variant="outlined"
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setPage(1); // Reset to first page when searching
+            }}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '12px',
+                backgroundColor: 'white',
+              }
+            }}
+          />
+        </Box>
         
         {/* Business Cards */}
       <Grid container spacing={3} justifyContent="flex-start">

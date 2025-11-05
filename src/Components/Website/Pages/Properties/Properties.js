@@ -21,7 +21,7 @@ import { Carousel } from 'react-responsive-carousel';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
-
+ 
 const Properties = () => {
   const navigate = useNavigate();
   const [properties, setProperties] = useState([]);
@@ -106,18 +106,19 @@ const Properties = () => {
   };
 
   const filteredAndSortedProperties = [...properties]
-    .filter(property => {
-      const matchesSearch =
-        property.property_title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        property.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        property.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        property.total_property_value.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        property.area.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        property.builtup_area.toLowerCase().includes(searchTerm.toLowerCase());
+   .filter(property => {
+  const searchLower = searchTerm.toLowerCase();
+  const matchesSearch =
+    (property.property_title?.toLowerCase() || '').includes(searchLower) ||
+    (property.address?.toLowerCase() || '').includes(searchLower) ||
+    (property.city?.toLowerCase() || '').includes(searchLower) ||
+    (property.total_property_value?.toString().toLowerCase() || '').includes(searchLower) ||
+    (property.area?.toLowerCase() || '').includes(searchLower) ||
+    (property.builtup_area?.toLowerCase() || '').includes(searchLower);
 
-      const matchesType = !selectedTypeId || property.property_type === selectedTypeId;
-      return matchesSearch && matchesType;
-    })
+  const matchesType = !selectedTypeId || property.property_type === selectedTypeId;
+  return matchesSearch && matchesType;
+})
     .sort((a, b) => {
       if (selectedSort === 'Latest') {
         return new Date(b.created_at) - new Date(a.created_at);

@@ -42,69 +42,15 @@ const Login = () => {
     else if (!emailRegex.test(value)) setEmailError("Enter a valid email address");
     else setEmailError("");
   };
+  
 
-  //  const handleLogin = async (e) => {
-  //   e.preventDefault();
-  //   setError("");
-  //   setSpinnerTarget("login");
-  //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  //   if (!email) {
-  //     setEmailError("Email is required");
-  //     setSpinnerTarget("");
-  //     return;
-  //   } else if (!emailRegex.test(email)) {
-  //     setEmailError("Enter a valid email address");
-  //     setSpinnerTarget("");
-  //     return;
-  //   } else setEmailError("");
+  //Normal Login Implementation
 
-  //   if (!password) {
-  //     setError("Password is required");
-  //     setSpinnerTarget("");
-  //     return;
-  //   }
-
-  //   try {
-  //     const response = await fetch(`${baseurl}/login/`, {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ email, password }),
-  //     });
-
-  //     const data = await response.json();
-  //     if (response.ok) {
-  //       localStorage.setItem("user_id", data.user_id);
-  //       localStorage.setItem("email", data.email);
-  //       localStorage.setItem("username", data.username);
-  //       localStorage.setItem("phone_number", data.phone_number);
-  //       localStorage.setItem("referral_id", data.referral_id);
-  //       localStorage.setItem("referred_by", data.referred_by);
-  //       localStorage.setItem("user_name", data.first_name);
-
-  //       const userRoles = data.roles || [];
-  //       if (userRoles.length > 1) {
-  //         selectUserRole(userRoles);
-  //       } else if (userRoles.length === 1) {
-  //         navigateToDashboard(userRoles[0]);
-  //       } else {
-  //         setError("No roles assigned. Please contact support.");
-  //       }
-  //     } else {
-  //       setError(data.error || "Invalid credentials");
-  //     }
-  //   } catch {
-  //     setError("Something went wrong. Please try again.");
-  //   } finally {
-  //     setSpinnerTarget("");
-  //   }
-  // };
-
- const handleLogin = async (e) => {
+   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
     setSpinnerTarget("login");
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    
     if (!email) {
       setEmailError("Email is required");
       setSpinnerTarget("");
@@ -122,46 +68,106 @@ const Login = () => {
     }
 
     try {
-      const response = await fetch(`${baseurl}/login1/`, {
+      const response = await fetch(`${baseurl}/login/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
-      if (response.ok) {   
-        Swal.fire("Success", "OTP sent to your registered mobile number", "success");
-        navigate("/verify-otp");
+      if (response.ok) {
+        localStorage.setItem("user_id", data.user_id);
+        localStorage.setItem("email", data.email);
+        localStorage.setItem("username", data.username);
+        localStorage.setItem("phone_number", data.phone_number);
+        localStorage.setItem("referral_id", data.referral_id);
+        localStorage.setItem("referred_by", data.referred_by);
+        localStorage.setItem("user_name", data.first_name);
+
+        const userRoles = data.roles || [];
+        if (userRoles.length > 1) {
+          selectUserRole(userRoles);
+        } else if (userRoles.length === 1) {
+          navigateToDashboard(userRoles[0]);
+        } else {
+          setError("No roles assigned. Please contact support.");
+        }
       } else {
         setError(data.error || "Invalid credentials");
       }
-    } catch (error) {
+    } catch {
       setError("Something went wrong. Please try again.");
     } finally {
       setSpinnerTarget("");
     }
   };
 
-  // const selectUserRole = async (roles) => {
-  //   const { value: selectedRole } = await Swal.fire({
-  //     title: "Select Your Role",
-  //     input: "select",
-  //     inputOptions: roles.reduce((acc, role) => ({ ...acc, [role]: role }), {}),
-  //     inputPlaceholder: "Choose your role",
-  //     showCancelButton: true,
-  //     confirmButtonText: "Proceed",
-  //     cancelButtonText: "Cancel",
-  //   });
-  //   if (selectedRole) navigateToDashboard(selectedRole);
-  // };
+  // OTP Based Login Implementation
 
-  // const navigateToDashboard = (role) => {
-  //   if (role === "Admin") navigate("/a-dashboard");
-  //   else if (role === "Agent") navigate("/p-dashboard");
-  //   else if (role === "Client") navigate("/i-dashboard");
-  //   else if (role === "Super Admin") navigate("/s-dashboard");
-  //   else setError("Invalid role assigned. Please contact support.");
-  // };
+//  const handleLogin = async (e) => {
+//     e.preventDefault();
+//     setError("");
+//     setSpinnerTarget("login");
+//     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+//     if (!email) {
+//       setEmailError("Email is required");
+//       setSpinnerTarget("");
+//       return;
+//     } else if (!emailRegex.test(email)) {
+//       setEmailError("Enter a valid email address");
+//       setSpinnerTarget("");
+//       return;
+//     } else setEmailError("");
+
+//     if (!password) {
+//       setError("Password is required");
+//       setSpinnerTarget("");
+//       return;
+//     }
+
+//     try {
+//       const response = await fetch(`${baseurl}/login1/`, {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({ email, password }),
+//       });
+
+//       const data = await response.json();
+//       if (response.ok) {   
+//         Swal.fire("Success", "OTP sent to your registered mobile number", "success");
+//         navigate("/verify-otp");
+//       } else {
+//         setError(data.error || "Invalid credentials");
+//       }
+//     } catch (error) {
+//       setError("Something went wrong. Please try again.");
+//     } finally {
+//       setSpinnerTarget("");
+//     }
+//   };
+
+
+  const selectUserRole = async (roles) => {
+    const { value: selectedRole } = await Swal.fire({
+      title: "Select Your Role",
+      input: "select",
+      inputOptions: roles.reduce((acc, role) => ({ ...acc, [role]: role }), {}),
+      inputPlaceholder: "Choose your role",
+      showCancelButton: true,
+      confirmButtonText: "Proceed",
+      cancelButtonText: "Cancel",
+    });
+    if (selectedRole) navigateToDashboard(selectedRole);
+  };
+
+  const navigateToDashboard = (role) => {
+    if (role === "Admin") navigate("/a-dashboard");
+    else if (role === "Agent") navigate("/p-dashboard");
+    else if (role === "Client") navigate("/i-dashboard");
+    else if (role === "Super Admin") navigate("/s-dashboard");
+    else setError("Invalid role assigned. Please contact support.");
+  };
 
   const handleSendOTP = async () => {
     if (!email || emailError) {
