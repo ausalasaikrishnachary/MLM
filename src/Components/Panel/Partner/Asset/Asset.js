@@ -50,7 +50,7 @@ import ThumbUpAltOutlinedIcon from '@mui/icons-material/ThumbUpAltOutlined';
 
 
 
-const AssetsUI = () => { 
+const AssetsUI = () => {
   const [sortBy, setSortBy] = useState('latest');
   const [properties, setProperties] = useState([]);
   const [selectedProperty, setSelectedProperty] = useState(null);
@@ -85,7 +85,7 @@ const AssetsUI = () => {
         console.error("Error fetching likes:", err);
       }
     };
-  
+
     if (userId) fetchLikes();
   }, [userId]);
 
@@ -94,7 +94,7 @@ const AssetsUI = () => {
       alert("Please log in to like a property.");
       return;
     }
-  
+
     try {
       if (likedProperties.includes(propertyId)) {
         // Remove like
@@ -118,8 +118,8 @@ const AssetsUI = () => {
       console.error("Error updating likes:", error);
     }
   };
-  
-  
+
+
 
 
 
@@ -139,17 +139,17 @@ const AssetsUI = () => {
         console.error("Error fetching wishlist:", err);
       }
     };
-  
+
     if (userId) fetchWishlist();
   }, [userId]);
-  
+
   // ✅ Toggle wishlist state and API call
   const handleWishlistToggle = async (propertyId) => {
     if (!userId) {
       alert("Please log in to add to wishlist.");
       return;
     }
-  
+
     try {
       if (wishlist.includes(propertyId)) {
         // Remove from wishlist (DELETE)
@@ -157,7 +157,7 @@ const AssetsUI = () => {
         const item = res.data.find(
           (entry) => entry.user === parseInt(userId) && entry.property === propertyId
         );
-  
+
         if (item) {
           await axios.delete(`${baseurl}/wishlist/${item.id}/`);
           setWishlist((prev) => prev.filter((id) => id !== propertyId));
@@ -174,7 +174,7 @@ const AssetsUI = () => {
       console.error("Error updating wishlist:", error);
     }
   };
-  
+
 
   useEffect(() => {
     const fetchCommissions = async () => {
@@ -592,7 +592,7 @@ const AssetsUI = () => {
                             }}
                           />
                         </Box>
-                        
+
                       ) : (
                         <CardMedia
                           component="img"
@@ -602,10 +602,10 @@ const AssetsUI = () => {
                           sx={{ objectFit: 'cover', borderRadius: '12px 12px 0 0', cursor: 'pointer' }}
                           onClick={() => handleImageClick(property)}
                         />
-                        
+
                       )}
                       {/* ❤️ Wishlist Icon */}
-{/* <IconButton
+                      {/* <IconButton
   onClick={() => handleWishlistToggle(property.property_id)}
   sx={{
     position: 'absolute',
@@ -697,31 +697,31 @@ const AssetsUI = () => {
                           {property.looking_to}
                         </Box>
                       )} */}
-                    
+
                     </Box>
                     <CardContent>
-                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                                      <Typography fontWeight="bold" sx={{ flex: 1, mr: 1 }}>
-                                        {/* {property.property_title} */}
-                                      </Typography>
-                                      <Chip 
-                                        label={property.status} 
-                                        size="small"
-                                        sx={{
-                                          backgroundColor: 
-                                            property.status === 'available'
-                                              ? '#2ECC71'
-                                              : property.status === 'booked'
-                                                ? '#E67E22'
-                                                : '#E74C3C',
-                                          color: 'white',
-                                          fontWeight: 'bold',
-                                          textTransform: 'uppercase',
-                                          fontSize: '0.7rem',
-                                          minWidth: '70px'
-                                        }}
-                                      />
-                                    </Box>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                        <Typography fontWeight="bold" sx={{ flex: 1, mr: 1 }}>
+                          {/* {property.property_title} */}
+                        </Typography>
+                        <Chip
+                          label={property.status}
+                          size="small"
+                          sx={{
+                            backgroundColor:
+                              property.status === 'available'
+                                ? '#2ECC71'
+                                : property.status === 'booked'
+                                  ? '#E67E22'
+                                  : '#E74C3C',
+                            color: 'white',
+                            fontWeight: 'bold',
+                            textTransform: 'uppercase',
+                            fontSize: '0.7rem',
+                            minWidth: '70px'
+                          }}
+                        />
+                      </Box>
                       {/* ✅ Title row with checkbox and label */}
                       <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
                         <Typography fontWeight="bold">
@@ -730,8 +730,8 @@ const AssetsUI = () => {
 
                         {/* Checkbox + Text */}
                         <Box display="flex" alignItems="center" gap={1}>
-  {/* Like Button (Thumb Up) */}
-  {/* <IconButton
+                          {/* Like Button (Thumb Up) */}
+                          {/* <IconButton
     onClick={() => handleLikeToggle(property.property_id)}
     size="small"
     sx={{ color: likedProperties.includes(property.property_id) ? '#1a73e8' : 'grey' }}
@@ -739,17 +739,17 @@ const AssetsUI = () => {
     {likedProperties.includes(property.property_id) ? <ThumbUpAltIcon /> : <ThumbUpAltOutlinedIcon />}
   </IconButton> */}
 
-  {/* Compare Checkbox */}
-  <Checkbox
-    checked={compareList.some(p => p.property_id === property.property_id)}
-    onChange={() => handleCompareToggle(property)}
-    size="small"
-    color="primary"
-  />
-  <Typography variant="body2" color="textSecondary">
-    Compare
-  </Typography>
-</Box>
+                          {/* Compare Checkbox */}
+                          <Checkbox
+                            checked={compareList.some(p => p.property_id === property.property_id)}
+                            onChange={() => handleCompareToggle(property)}
+                            size="small"
+                            color="primary"
+                          />
+                          <Typography variant="body2" color="textSecondary">
+                            Compare
+                          </Typography>
+                        </Box>
 
 
                       </Box>
@@ -865,77 +865,77 @@ const AssetsUI = () => {
 
 
 
-{/* New Row for Action Icons */}
-<Grid item xs={12}>
-  <Box
-    sx={{
-      display: 'flex',
-      justifyContent: 'flex-end',
-      alignItems: 'center',
-      gap: 1.5,
-      mt: 0.5,
-    }}
-  >
-    {/* Wishlist Button */}
-    <IconButton
-      onClick={() => handleWishlistToggle(property.property_id)}
-      sx={{
-        backgroundColor: 'rgba(255,255,255,0.8)',
-        '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
-      }}
-    >
-      {wishlist.includes(property.property_id) ? (
-        <FavoriteIcon sx={{ color: 'red' }} />
-      ) : (
-        <FavoriteBorderIcon sx={{ color: 'red' }} />
-      )}
-    </IconButton>
+                              {/* New Row for Action Icons */}
+                              <Grid item xs={12}>
+                                <Box
+                                  sx={{
+                                    display: 'flex',
+                                    justifyContent: 'flex-end',
+                                    alignItems: 'center',
+                                    gap: 1.5,
+                                    mt: 0.5,
+                                  }}
+                                >
+                                  {/* Wishlist Button */}
+                                  <IconButton
+                                    onClick={() => handleWishlistToggle(property.property_id)}
+                                    sx={{
+                                      backgroundColor: 'rgba(255,255,255,0.8)',
+                                      '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
+                                    }}
+                                  >
+                                    {wishlist.includes(property.property_id) ? (
+                                      <FavoriteIcon sx={{ color: 'red' }} />
+                                    ) : (
+                                      <FavoriteBorderIcon sx={{ color: 'red' }} />
+                                    )}
+                                  </IconButton>
 
-    {/* Like Button */}
-    <IconButton
-      onClick={() => handleLikeToggle(property.property_id)}
-      size="small"
-      sx={{
-        backgroundColor: 'rgba(255,255,255,0.8)',
-        '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
-        color: likedProperties.includes(property.property_id)
-          ? '#1a73e8'
-          : 'grey',
-      }}
-    >
-      {likedProperties.includes(property.property_id) ? (
-        <ThumbUpAltIcon />
-      ) : (
-        <ThumbUpAltOutlinedIcon />
-      )}
-    </IconButton>
+                                  {/* Like Button */}
+                                  <IconButton
+                                    onClick={() => handleLikeToggle(property.property_id)}
+                                    size="small"
+                                    sx={{
+                                      backgroundColor: 'rgba(255,255,255,0.8)',
+                                      '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
+                                      color: likedProperties.includes(property.property_id)
+                                        ? '#1a73e8'
+                                        : 'grey',
+                                    }}
+                                  >
+                                    {likedProperties.includes(property.property_id) ? (
+                                      <ThumbUpAltIcon />
+                                    ) : (
+                                      <ThumbUpAltOutlinedIcon />
+                                    )}
+                                  </IconButton>
 
-    {/* Call Button */}
-    <IconButton
-      component="a"
-      href={`tel:${subscriptionPaid ? property.owner_contact : '9074307248'}`}
-      size="small"
-      sx={{
-        backgroundColor: 'rgba(255,255,255,0.8)',
-        '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
-        color: '#4caf50',
-      }}
-    >
-      <CallIcon />
-    </IconButton>
-  </Box>
-</Grid>
+                                  {/* Call Button */}
+                                  <IconButton
+                                    component="a"
+                                    href={`tel:${subscriptionPaid ? property.owner_contact : '9074307248'}`}
+                                    size="small"
+                                    sx={{
+                                      backgroundColor: 'rgba(255,255,255,0.8)',
+                                      '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
+                                      color: '#4caf50',
+                                    }}
+                                  >
+                                    <CallIcon />
+                                  </IconButton>
+                                </Box>
+                              </Grid>
 
 
-                          
 
-                              
+
+
 
                             </>
                           )}
                         </Grid>
                       </Box>
-                      
+
 
                       <Button
                         onMouseEnter={(e) => handlePopoverOpen(e, property.property_id)}

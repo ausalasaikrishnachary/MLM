@@ -99,108 +99,108 @@ const AssetsUI = () => {
     { id: 'builtup_area', label: 'Built-up Area', checked: false },
   ]);
 
-    const [likedProperties, setLikedProperties] = useState([]);
-    useEffect(() => {
-      const fetchLikes = async () => {
-        try {
-          const res = await axios.get(`${baseurl}/likes/`);
-          const userLikes = res.data
-            .filter(item => item.user === parseInt(userId))
-            .map(item => item.property);
-          setLikedProperties(userLikes);
-        } catch (err) {
-          console.error("Error fetching likes:", err);
-        }
-      };
-    
-      if (userId) fetchLikes();
-    }, [userId]);
-  
-    const handleLikeToggle = async (propertyId) => {
-      if (!userId) {
-        alert("Please log in to like a property.");
-        return;
-      }
-    
+  const [likedProperties, setLikedProperties] = useState([]);
+  useEffect(() => {
+    const fetchLikes = async () => {
       try {
-        if (likedProperties.includes(propertyId)) {
-          // Remove like
-          const res = await axios.get(`${baseurl}/likes/`);
-          const item = res.data.find(
-            (entry) => entry.user === parseInt(userId) && entry.property === propertyId
-          );
-          if (item) {
-            await axios.delete(`${baseurl}/likes/${item.id}/`);
-            setLikedProperties(prev => prev.filter(id => id !== propertyId));
-          }
-        } else {
-          // Add like
-          await axios.post(`${baseurl}/likes/`, {
-            user: parseInt(userId),
-            property: propertyId
-          });
-          setLikedProperties(prev => [...prev, propertyId]);
-        }
-      } catch (error) {
-        console.error("Error updating likes:", error);
+        const res = await axios.get(`${baseurl}/likes/`);
+        const userLikes = res.data
+          .filter(item => item.user === parseInt(userId))
+          .map(item => item.property);
+        setLikedProperties(userLikes);
+      } catch (err) {
+        console.error("Error fetching likes:", err);
       }
     };
-    
-    
-  
-  
-  
-  
-    const [wishlist, setWishlist] = useState([]);
-  
-    // ✅ Fetch user's existing wishlist on page load
-    useEffect(() => {
-      const fetchWishlist = async () => {
-        try {
-          const res = await axios.get(`${baseurl}/wishlist/`);
-          const userWishlist = res.data
-            .filter(item => item.user === parseInt(userId)) // Only user's wishlist
-            .map(item => item.property);
-          setWishlist(userWishlist);
-        } catch (err) {
-          console.error("Error fetching wishlist:", err);
+
+    if (userId) fetchLikes();
+  }, [userId]);
+
+  const handleLikeToggle = async (propertyId) => {
+    if (!userId) {
+      alert("Please log in to like a property.");
+      return;
+    }
+
+    try {
+      if (likedProperties.includes(propertyId)) {
+        // Remove like
+        const res = await axios.get(`${baseurl}/likes/`);
+        const item = res.data.find(
+          (entry) => entry.user === parseInt(userId) && entry.property === propertyId
+        );
+        if (item) {
+          await axios.delete(`${baseurl}/likes/${item.id}/`);
+          setLikedProperties(prev => prev.filter(id => id !== propertyId));
         }
-      };
-    
-      if (userId) fetchWishlist();
-    }, [userId]);
-    
-    // ✅ Toggle wishlist state and API call
-    const handleWishlistToggle = async (propertyId) => {
-      if (!userId) {
-        alert("Please log in to add to wishlist.");
-        return;
+      } else {
+        // Add like
+        await axios.post(`${baseurl}/likes/`, {
+          user: parseInt(userId),
+          property: propertyId
+        });
+        setLikedProperties(prev => [...prev, propertyId]);
       }
-    
+    } catch (error) {
+      console.error("Error updating likes:", error);
+    }
+  };
+
+
+
+
+
+
+  const [wishlist, setWishlist] = useState([]);
+
+  // ✅ Fetch user's existing wishlist on page load
+  useEffect(() => {
+    const fetchWishlist = async () => {
       try {
-        if (wishlist.includes(propertyId)) {
-          // Remove from wishlist (DELETE)
-          const res = await axios.get(`${baseurl}/wishlist/`);
-          const item = res.data.find(
-            (entry) => entry.user === parseInt(userId) && entry.property === propertyId
-          );
-    
-          if (item) {
-            await axios.delete(`${baseurl}/wishlist/${item.id}/`);
-            setWishlist((prev) => prev.filter((id) => id !== propertyId));
-          }
-        } else {
-          // Add to wishlist (POST)
-          await axios.post(`${baseurl}/wishlist/`, {
-            user: parseInt(userId),
-            property: propertyId,
-          });
-          setWishlist((prev) => [...prev, propertyId]);
-        }
-      } catch (error) {
-        console.error("Error updating wishlist:", error);
+        const res = await axios.get(`${baseurl}/wishlist/`);
+        const userWishlist = res.data
+          .filter(item => item.user === parseInt(userId)) // Only user's wishlist
+          .map(item => item.property);
+        setWishlist(userWishlist);
+      } catch (err) {
+        console.error("Error fetching wishlist:", err);
       }
     };
+
+    if (userId) fetchWishlist();
+  }, [userId]);
+
+  // ✅ Toggle wishlist state and API call
+  const handleWishlistToggle = async (propertyId) => {
+    if (!userId) {
+      alert("Please log in to add to wishlist.");
+      return;
+    }
+
+    try {
+      if (wishlist.includes(propertyId)) {
+        // Remove from wishlist (DELETE)
+        const res = await axios.get(`${baseurl}/wishlist/`);
+        const item = res.data.find(
+          (entry) => entry.user === parseInt(userId) && entry.property === propertyId
+        );
+
+        if (item) {
+          await axios.delete(`${baseurl}/wishlist/${item.id}/`);
+          setWishlist((prev) => prev.filter((id) => id !== propertyId));
+        }
+      } else {
+        // Add to wishlist (POST)
+        await axios.post(`${baseurl}/wishlist/`, {
+          user: parseInt(userId),
+          property: propertyId,
+        });
+        setWishlist((prev) => [...prev, propertyId]);
+      }
+    } catch (error) {
+      console.error("Error updating wishlist:", error);
+    }
+  };
 
   useEffect(() => {
     if (userId) {
@@ -732,7 +732,7 @@ const AssetsUI = () => {
                         />
                       )}
 
-                                            {/* ❤️ Wishlist Icon */}
+                      {/* ❤️ Wishlist Icon */}
                       {/* <IconButton
                         onClick={() => handleWishlistToggle(property.property_id)}
                         sx={{
@@ -834,8 +834,8 @@ const AssetsUI = () => {
 
                         {/* Checkbox + Text */}
                         <Box display="flex" alignItems="center" gap={1}>
-  {/* Like Button (Thumb Up) */}
-  {/* <IconButton
+                          {/* Like Button (Thumb Up) */}
+                          {/* <IconButton
     onClick={() => handleLikeToggle(property.property_id)}
     size="small"
     sx={{ color: likedProperties.includes(property.property_id) ? '#1a73e8' : 'grey' }}
@@ -843,8 +843,8 @@ const AssetsUI = () => {
     {likedProperties.includes(property.property_id) ? <ThumbUpAltIcon /> : <ThumbUpAltOutlinedIcon />}
   </IconButton> */}
 
-  {/* Compare Checkbox */}
-  {/* <Checkbox
+                          {/* Compare Checkbox */}
+                          {/* <Checkbox
     checked={compareList.some(p => p.property_id === property.property_id)}
     onChange={() => handleCompareToggle(property)}
     size="small"
@@ -853,27 +853,27 @@ const AssetsUI = () => {
   <Typography variant="body2" color="textSecondary">
     Compare
   </Typography> */}
-</Box>
- <Chip 
-                                                              label={property.status} 
-                                                              size="small"
-                                                              sx={{
-                                                                backgroundColor: 
-                                                                  property.status === 'available'
-                                                                    ? '#2ECC71'
-                                                                    : property.status === 'booked'
-                                                                      ? '#E67E22'
-                                                                      : '#E74C3C',
-                                                                color: 'white',
-                                                                fontWeight: 'bold',
-                                                                textTransform: 'uppercase',
-                                                                fontSize: '0.7rem',
-                                                                minWidth: '70px'
-                                                              }}
-                                                            />
+                        </Box>
+                        <Chip
+                          label={property.status}
+                          size="small"
+                          sx={{
+                            backgroundColor:
+                              property.status === 'available'
+                                ? '#2ECC71'
+                                : property.status === 'booked'
+                                  ? '#E67E22'
+                                  : '#E74C3C',
+                            color: 'white',
+                            fontWeight: 'bold',
+                            textTransform: 'uppercase',
+                            fontSize: '0.7rem',
+                            minWidth: '70px'
+                          }}
+                        />
 
                       </Box>
-                      
+
                       <Typography variant="body2" color="text.secondary" mb={2}>
                         {property.city}, {property.state}
                       </Typography>
@@ -979,67 +979,67 @@ const AssetsUI = () => {
                                 </Typography>
                               </Grid> */}
 
-{/* Row for Call, Like, and Wishlist icons */}
-<Grid item xs={12}>
-  <Box
-    sx={{
-      display: 'flex',
-      justifyContent: 'flex-end',
-      alignItems: 'center',
-      gap: 1.5,
-      mt: 0.5,
-    }}
-  >
-    {/* Call Button */}
-    <IconButton
-      component="a"
-      href={`tel:${subscriptionPaid ? property.owner_contact : '9074307248'}`}
-      size="small"
-      sx={{
-        backgroundColor: 'rgba(255,255,255,0.9)',
-        '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
-        color: '#4caf50',
-      }}
-    >
-      <CallIcon />
-    </IconButton>
+                              {/* Row for Call, Like, and Wishlist icons */}
+                              <Grid item xs={12}>
+                                <Box
+                                  sx={{
+                                    display: 'flex',
+                                    justifyContent: 'flex-end',
+                                    alignItems: 'center',
+                                    gap: 1.5,
+                                    mt: 0.5,
+                                  }}
+                                >
+                                  {/* Wishlist Button */}
+                                  <IconButton
+                                    onClick={() => handleWishlistToggle(property.property_id)}
+                                    size="small"
+                                    sx={{
+                                      backgroundColor: 'rgba(255,255,255,0.9)',
+                                      '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
+                                    }}
+                                  >
+                                    {wishlist.includes(property.property_id) ? (
+                                      <FavoriteIcon sx={{ color: 'red' }} />
+                                    ) : (
+                                      <FavoriteBorderIcon sx={{ color: 'red' }} />
+                                    )}
+                                  </IconButton>
 
-    {/* Like Button */}
-    <IconButton
-      onClick={() => handleLikeToggle(property.property_id)}
-      size="small"
-      sx={{
-        backgroundColor: 'rgba(255,255,255,0.9)',
-        '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
-        color: likedProperties.includes(property.property_id)
-          ? '#1a73e8'
-          : 'grey',
-      }}
-    >
-      {likedProperties.includes(property.property_id) ? (
-        <ThumbUpAltIcon />
-      ) : (
-        <ThumbUpAltOutlinedIcon />
-      )}
-    </IconButton>
+                                  {/* Like Button */}
+                                  <IconButton
+                                    onClick={() => handleLikeToggle(property.property_id)}
+                                    size="small"
+                                    sx={{
+                                      backgroundColor: 'rgba(255,255,255,0.9)',
+                                      '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
+                                      color: likedProperties.includes(property.property_id)
+                                        ? '#1a73e8'
+                                        : 'grey',
+                                    }}
+                                  >
+                                    {likedProperties.includes(property.property_id) ? (
+                                      <ThumbUpAltIcon />
+                                    ) : (
+                                      <ThumbUpAltOutlinedIcon />
+                                    )}
+                                  </IconButton>
 
-    {/* Wishlist Button */}
-    <IconButton
-      onClick={() => handleWishlistToggle(property.property_id)}
-      size="small"
-      sx={{
-        backgroundColor: 'rgba(255,255,255,0.9)',
-        '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
-      }}
-    >
-      {wishlist.includes(property.property_id) ? (
-        <FavoriteIcon sx={{ color: 'red' }} />
-      ) : (
-        <FavoriteBorderIcon sx={{ color: 'red' }} />
-      )}
-    </IconButton>
-  </Box>
-</Grid>
+                                  {/* Call Button */}
+                                  <IconButton
+                                    component="a"
+                                    href={`tel:${subscriptionPaid ? property.owner_contact : '9074307248'}`}
+                                    size="small"
+                                    sx={{
+                                      backgroundColor: 'rgba(255,255,255,0.9)',
+                                      '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
+                                      color: '#4caf50',
+                                    }}
+                                  >
+                                    <CallIcon />
+                                  </IconButton>
+                                </Box>
+                              </Grid>
 
 
                             </>

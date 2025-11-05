@@ -165,6 +165,7 @@ import AllBusinesses from "./Components/Panel/Partner/Business/AllBusinesses";
 import AdminBussinessEdit from "./Components/Panel/Admin/AdminBussiness/AdminBussinessEdit";
 
 import Wishlist from "./Components/Panel/Partner/Asset/Wishlist ";
+
 import AddProduct from "./Components/Panel/Partner/Business/AddProduct";
 import BusinessProducts from "./Components/Panel/Partner/Business/BusinessProducts";
 import AdminBussinessProducts from "./Components/Panel/Admin/AdminBussiness/AdminBussinessProducts";
@@ -180,6 +181,7 @@ import EditQA from "./Components/Panel/Admin/Chatbot/EditQA";
 import SiteVisits from "./Components/Panel/Admin/SiteVisits/SiteVisits";
 import EditTrainingMaterial from "./Components/Panel/Admin/TrainingMaterial/EditTrainingMaterial";
 import VerifyOtp from "./Components/Login/VerifyOtp";
+import InvestorWishlist from "./Components/Panel/Investor/InvestorWishlist";
 
 
 function Layout() {
@@ -322,9 +324,11 @@ function Layout() {
           <Route path="/i-addbusiness" element={<AddInvestorBusiness />} />
           <Route path="/i-business" element={<InvestorBusiness />} />
           <Route path="/i-businessproducts/:id" element={<InvestorBusinessproducts />} />
+           <Route path="/i-wishlist" element={<InvestorWishlist/>} />
           
           
           <Route path="/i-editbusiness/:id" element={<EditInvestorBusiness />} />
+
 
 
 
@@ -333,7 +337,7 @@ function Layout() {
           <Route path="/p-report" element={<Report />} />
           <Route path="/p-addasset" element={<AssetForm />} />
           <Route path="/p-assets" element={<AssetDashboard />} />
-          {/* <Route path="/p-wishlistpage" element={<WishlistPage />} /> */}
+          {/* <Route path="/p-wishlistpage" element={<wishlistpage />} /> */}
           <Route path="/p-wishlist" element={<Wishlist />} />
           <Route path="/p-comparelist" element={<Comparelist />} />
           <Route path="/p-profile" element={<PartnerProfile />} />

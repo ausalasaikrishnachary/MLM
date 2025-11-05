@@ -509,7 +509,7 @@ const AddPropertyForm = () => {
       });
 
       console.log('Submission successful:', response.data);
-      Swal.fire('Success', 'Property updated successfully!', 'success');
+      Swal.fire('Success', 'Property Added successfully!', 'success');
       navigate("/a-asset");
 
       // Optionally reset form or redirect here
