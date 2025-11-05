@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Box, Paper, Typography, IconButton, TextField, CircularProgress, Button } from "@mui/material";
+import {
+  Box,
+  Paper,
+  Typography,
+  IconButton,
+  TextField,
+  CircularProgress,
+  Button,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import SendIcon from "@mui/icons-material/Send";
 import axios from "axios";
@@ -11,11 +19,12 @@ const ChatbotPopup = ({ onClose }) => {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isOtherMode, setIsOtherMode] = useState(false); // ✅ Track if user selected "Other"
 
   const handleSend = async (text = input, questionId = null) => {
     if (!text && !questionId) return;
 
-    // Add user message if text
+    // Add user message
     if (text) {
       const userMessage = { id: Date.now(), text, fromBot: false };
       setMessages((prev) => [...prev, userMessage]);
@@ -26,22 +35,38 @@ const ChatbotPopup = ({ onClose }) => {
 
     try {
       let response;
-      if (questionId) {
-        // Send questionId to get answer
+
+      // ✅ If user is typing a custom question after selecting "Other"
+      if (isOtherMode && !questionId) {
+        response = await axios.post(`${baseurl}/chatbot/`, {
+          message: text,
+          is_other: true,
+        });
+        setIsOtherMode(false); // reset mode after sending
+      } 
+      else if (questionId) {
+        // Regular flow: send question ID
         response = await axios.post(`${baseurl}/chatbot/`, {
           message: String(questionId),
         });
-      } else {
-        // Send user text
+      } 
+      else {
+        // Regular flow: send text
         response = await axios.post(`${baseurl}/chatbot/`, {
           message: text,
         });
       }
 
       const botResponse = response.data.response || "Sorry, I didn't understand that.";
-      const questions = response.data.questions || [];
+      let questions = response.data.questions || [];
 
-      // Add bot message
+      // ✅ Reorder questions: move "Other" to the end
+      questions = [
+        ...questions.filter((q) => q.question.toLowerCase() !== "other"),
+        ...questions.filter((q) => q.question.toLowerCase() === "other"),
+      ];
+
+      // Add bot response message
       setMessages((prev) => [
         ...prev,
         { id: Date.now() + 1, text: botResponse, fromBot: true, questions },
@@ -58,8 +83,21 @@ const ChatbotPopup = ({ onClose }) => {
   };
 
   const handleQuestionClick = (question) => {
-    // Send questionId to get answer
-    handleSend("", question.id);
+    if (question.question.toLowerCase() === "other") {
+      // ✅ Trigger "Other" mode
+      setIsOtherMode(true);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now(),
+          text: "Please type your question, and we'll send it to our support team.",
+          fromBot: true,
+        },
+      ]);
+    } else {
+      // Regular question click
+      handleSend("", question.id);
+    }
   };
 
   return (
@@ -114,7 +152,7 @@ const ChatbotPopup = ({ onClose }) => {
                 {msg.text}
               </Paper>
 
-              {/* Display questions as buttons */}
+              {/* Display question buttons */}
               {msg.questions &&
                 msg.questions.map((q) => (
                   <Button
