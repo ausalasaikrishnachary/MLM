@@ -840,7 +840,7 @@ const AssetsUI = () => {
 
                           ) : (
                             <>
-                              <Grid item xs={6}>
+                              {/* <Grid item xs={6}>
                                 <Typography variant="body2" color="text.secondary">
                                   {subscriptionPaid ? "Owner Email" : "Office Email"}
                                 </Typography>
@@ -859,7 +859,7 @@ const AssetsUI = () => {
                                   <EmailIcon fontSize="small" />
                                   {subscriptionPaid ? property.owner_email : "sriraj@gmail.com"}
                                 </Typography>
-                              </Grid>
+                              </Grid> */}
 
 
 

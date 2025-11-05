@@ -125,6 +125,23 @@ const AddPropertyForm = () => {
         : [];
 
   const [showResidentialFields, setShowResidentialFields] = useState(false);
+  const [showBuiltupArea, setShowBuiltupArea] = useState(true);
+  useEffect(() => {
+  if (formData.propertyType) {
+    const selectedType = propertyTypes.find(type => type.property_type_id === formData.propertyType);
+    if (selectedType) {
+      const typeName = selectedType.name.toLowerCase();
+      
+      const shouldShowResidential = typeName.includes('flat') || typeName.includes('villa') ||
+        typeName.includes('apartment') || typeName.includes('house');
+      setShowResidentialFields(shouldShowResidential);
+      
+      // Hide built-up area for plot types
+      const shouldShowBuiltupArea = !typeName.includes('plot');
+      setShowBuiltupArea(shouldShowBuiltupArea);
+    }
+  }
+}, [formData.propertyType, propertyTypes]);
 
   useEffect(() => {
     if (formData.propertyType) {
@@ -411,7 +428,7 @@ if (formData.amenities && formData.amenities.length > 0) {
       });
 
       console.log('Submission successful:', response.data);
-      Swal.fire('Success', 'Property updated successfully!', 'success');
+      Swal.fire('Success', 'Property Added successfully!', 'success');
       navigate("/i-myassets");
 
       // Optionally reset form or redirect here
@@ -898,16 +915,18 @@ if (formData.amenities && formData.amenities.length > 0) {
             />
           </Grid>
 
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Built-up Area"
-              name="builtupArea"
-              type="number"
-              value={formData.builtupArea}
-              onChange={handleChange}
-            />
-          </Grid>
+        {showBuiltupArea && (  // ✅ CORRECT - wraps entire Grid
+  <Grid item xs={12} sm={6}>
+    <TextField
+      fullWidth
+      label="Built-up Area"
+      name="builtupArea"
+      type="number"
+      value={formData.builtupArea}
+      onChange={handleChange}
+    />
+  </Grid>
+)}
 
           <Grid item xs={12} sm={6}>
             <TextField
