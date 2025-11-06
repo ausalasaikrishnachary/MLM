@@ -332,6 +332,7 @@ import {
   Link,
   IconButton,
   Tooltip,
+  TextField
 } from "@mui/material";
 import BusinessIcon from "@mui/icons-material/Business";
 import LanguageIcon from "@mui/icons-material/Language";
@@ -349,11 +350,12 @@ import { baseurl } from "../../../BaseURL/BaseURL";
 import PaginationComponent from "../../../Shared/Pagination";
 import Header from "../../../Shared/Navbar/Navbar";
 
-function ViewBusiness() {
+function ViewBusiness() { 
   const userId = localStorage.getItem("user_id");
   const [businesses, setBusinesses] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+   const [searchTerm, setSearchTerm] = useState(''); // Added search term state
 
   // Pagination states
   const [page, setPage] = useState(1);
@@ -394,10 +396,17 @@ function ViewBusiness() {
     setPage(value);
   };
 
+   // Filter businesses based on business_type
+  const filteredBusinesses = businesses.filter(business => {
+    if (!searchTerm) return true; // Show all if no search term
+    
+    return business.business_type?.toLowerCase().includes(searchTerm.toLowerCase());
+  });
+
   // Paginated data
-  const totalPages = Math.ceil(businesses.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredBusinesses.length / itemsPerPage);
   const startIndex = (page - 1) * itemsPerPage;
-  const paginatedBusinesses = businesses.slice(
+  const paginatedBusinesses = filteredBusinesses.slice(
     startIndex,
     startIndex + itemsPerPage
   );
@@ -411,6 +420,26 @@ function ViewBusiness() {
             Businesses
           </Typography>
         </Box>
+
+          {/* Search Bar */}
+                <Box sx={{ mb: 3, maxWidth: 400 }}>
+                  <TextField
+                    fullWidth
+                    label="Search by business category or type..."
+                    variant="outlined"
+                    value={searchTerm}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value);
+                      setPage(1); // Reset to first page when searching
+                    }}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: '12px',
+                        backgroundColor: 'white',
+                      }
+                    }}
+                  />
+                </Box>
 
         {/* <Box display="flex" justifyContent="flex-end" mb={3}>
           <button
