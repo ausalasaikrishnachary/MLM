@@ -182,6 +182,8 @@ import SiteVisits from "./Components/Panel/Admin/SiteVisits/SiteVisits";
 import EditTrainingMaterial from "./Components/Panel/Admin/TrainingMaterial/EditTrainingMaterial";
 import VerifyOtp from "./Components/Login/VerifyOtp";
 import InvestorWishlist from "./Components/Panel/Investor/InvestorWishlist";
+import AdminReportsPage from "./Components/Panel/Admin/Reports/AdminReportsPage";
+import InvestorReportsPage from "./Components/Panel/Investor/Reports/InvestorReportPage";
 
 
 function Layout() {
@@ -248,6 +250,7 @@ function Layout() {
 
           <Route path="/a-transactionmoniter" element={<Tmoniter />} />
           <Route path="/a-investment-page" element={<InvestmentPage />} />
+          <Route path="/a-reports" element={<AdminReportsPage />} />
           <Route path="/a-add-lead" element={<AddLead />} />
           <Route path="/a-partners" element={<PartnersDashboard />} />
           <Route path="/a-profile" element={<AdminProfile />} />
@@ -308,6 +311,7 @@ function Layout() {
           <Route path="/i-transaction-details" element={<Tdetails />} />
           <Route path="/i-payment-form" element={<Payment />} />
           <Route path="/i-profile" element={<InvestorProfile />} />
+           <Route path="/i-reports" element={<InvestorReportsPage />} />
           <Route path="/clienteditprofile" element={<ClientEditProfile />} />
           <Route path="/i-servies" element={<Services />} />
           <Route path="/i-profiledetails" element={<Kyc />} />

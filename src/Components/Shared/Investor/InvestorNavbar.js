@@ -44,6 +44,7 @@ export default function InvestorHeader() {
     { label: 'Wishlist', path: '/i-wishlist' }, // Direct link to transactions page
     { label: 'Plans', path: '/i-plans' },
     { label: 'Meetings', path: '/i-meetings' },
+    // { label: 'Reports', path: '/i-reports' },
   ];
 
   const userId = localStorage.getItem("user_id");

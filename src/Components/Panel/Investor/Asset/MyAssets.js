@@ -521,7 +521,7 @@ const PartnerMyAssets = () => {
             Properties
           </Typography>
 
-          <Button
+          {/* <Button
             variant="contained"
             color="secondary"
             onClick={openReportConfiguration}
@@ -535,7 +535,7 @@ const PartnerMyAssets = () => {
             }}
           >
             Generate Report
-          </Button>
+          </Button> */}
 
 
         </Box>
