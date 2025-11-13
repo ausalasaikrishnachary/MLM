@@ -5,7 +5,7 @@ import {
 } from '@mui/material';
 import Swal from 'sweetalert2';
 import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
-import { baseurl } from '../../../BaseURL/BaseURL';
+import { baseurl, redirecturl } from '../../../BaseURL/BaseURL';
 
 const Subcrptionplan = () => {
   const [variantData, setVariantData] = useState([]);
@@ -104,7 +104,7 @@ const Subcrptionplan = () => {
         body: JSON.stringify({
           user_id: Number(userId),
           variant_id: selectedVariantId,
-          redirect_url: "https://shrirajteam.com/p-plans",
+          redirect_url: `${redirecturl}/p-plans`,
         }),
       });
 

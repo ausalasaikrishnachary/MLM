@@ -9,6 +9,8 @@ import {
   Grid,
   IconButton,
   InputAdornment,
+  Tabs,
+  Tab,
 } from "@mui/material";
 import Swal from "sweetalert2";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
@@ -20,17 +22,30 @@ import { baseurl } from "../BaseURL/BaseURL";
 
 const Login = () => {
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState(0);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [mobile, setMobile] = useState("");
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [error, setError] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [mobileError, setMobileError] = useState("");
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [showResetPassword, setShowResetPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [spinnerTarget, setSpinnerTarget] = useState(""); // "login", "forgot", "register"
+
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
+    setError("");
+    setEmailError("");
+    setMobileError("");
+    setEmail("");
+    setPassword("");
+    setMobile("");
+  };
 
   const handleTogglePassword = () => setShowPassword((prev) => !prev);
 
@@ -42,15 +57,23 @@ const Login = () => {
     else if (!emailRegex.test(value)) setEmailError("Enter a valid email address");
     else setEmailError("");
   };
-  
 
-  //Normal Login Implementation
+  const handleMobileChange = (e) => {
+    const value = e.target.value;
+    setMobile(value);
+    const mobileRegex = /^[0-9]{10}$/;
+    if (!value) setMobileError("Mobile number is required");
+    else if (!mobileRegex.test(value)) setMobileError("Enter a valid 10-digit mobile number");
+    else setMobileError("");
+  };
 
-   const handleLogin = async (e) => {
+  // Normal Login Implementation
+  const handleNormalLogin = async (e) => {
     e.preventDefault();
     setError("");
     setSpinnerTarget("login");
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
     if (!email) {
       setEmailError("Email is required");
       setSpinnerTarget("");
@@ -103,50 +126,40 @@ const Login = () => {
   };
 
   // OTP Based Login Implementation
-
-//  const handleLogin = async (e) => {
-//     e.preventDefault();
-//     setError("");
-//     setSpinnerTarget("login");
-//     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const handleOtpLogin = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSpinnerTarget("login");
     
-//     if (!email) {
-//       setEmailError("Email is required");
-//       setSpinnerTarget("");
-//       return;
-//     } else if (!emailRegex.test(email)) {
-//       setEmailError("Enter a valid email address");
-//       setSpinnerTarget("");
-//       return;
-//     } else setEmailError("");
+    if (!mobile) {
+      setMobileError("Mobile number is required");
+      setSpinnerTarget("");
+      return;
+    } else if (mobileError) {
+      setSpinnerTarget("");
+      return;
+    }
 
-//     if (!password) {
-//       setError("Password is required");
-//       setSpinnerTarget("");
-//       return;
-//     }
+    try {
+      const response = await fetch(`${baseurl}/login1/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone_number: mobile }),
+      });
 
-//     try {
-//       const response = await fetch(`${baseurl}/login1/`, {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({ email, password }),
-//       });
-
-//       const data = await response.json();
-//       if (response.ok) {   
-//         Swal.fire("Success", "OTP sent to your registered mobile number", "success");
-//         navigate("/verify-otp");
-//       } else {
-//         setError(data.error || "Invalid credentials");
-//       }
-//     } catch (error) {
-//       setError("Something went wrong. Please try again.");
-//     } finally {
-//       setSpinnerTarget("");
-//     }
-//   };
-
+      const data = await response.json();
+      if (response.ok) {   
+        Swal.fire("Success", "OTP sent to your registered mobile number", "success");
+        navigate("/verify-otp");
+      } else {
+        setError(data.error || "Invalid mobile number");
+      }
+    } catch (error) {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setSpinnerTarget("");
+    }
+  };
 
   const selectUserRole = async (roles) => {
     const { value: selectedRole } = await Swal.fire({
@@ -162,9 +175,9 @@ const Login = () => {
   };
 
   const navigateToDashboard = (role) => {
-    if (role === "Admin") navigate("/a-dashboard");
-    else if (role === "Agent") navigate("/p-dashboard");
-    else if (role === "Client") navigate("/i-dashboard");
+    if (role === "Admin") navigate("/a-asset");
+    else if (role === "Agent") navigate("/p-assets");
+    else if (role === "Client") navigate("/i-asset");
     else if (role === "Super Admin") navigate("/s-dashboard");
     else setError("Invalid role assigned. Please contact support.");
   };
@@ -287,33 +300,32 @@ const Login = () => {
                   Forgot Password
                 </Typography>
 
-    <Typography
-  variant="body2"
-  color="error"
-  sx={{
-    mb: -1.5,
-    mt: 0,
-    ml: 1,
-    textAlign: "left",
-    minHeight: "2em",   // reserves space
-    fontSize: "0.6rem", // small text
-    lineHeight: 1.2,
-  }}
->
-  {emailError || " "}  {/* keeps placeholder space so no shake */}
-</Typography>
+                <Typography
+                  variant="body2"
+                  color="error"
+                  sx={{
+                    mb: -1.5,
+                    mt: 0,
+                    ml: 1,
+                    textAlign: "left",
+                    minHeight: "2em",
+                    fontSize: "0.6rem",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  {emailError || " "}
+                </Typography>
 
-<TextField
-  fullWidth
-  label="Email"
-  variant="outlined"
-  margin="normal"
-  value={email}
-  onChange={handleEmailChange}
-  error={!!emailError}
-  helperText=""   // disable default helperText
-/>
-
+                <TextField
+                  fullWidth
+                  label="Email"
+                  variant="outlined"
+                  margin="normal"
+                  value={email}
+                  onChange={handleEmailChange}
+                  error={!!emailError}
+                  helperText=""
+                />
 
                 <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2, gap: 2 }}>
                   <Button
@@ -396,96 +408,161 @@ const Login = () => {
                   Login
                 </Typography>
 
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 0 }}>
-                  <Box sx={{ minHeight: "25px", ml: 1 }}>
-                    {emailError && (
-                      <Typography variant="caption" color="error">
-                        {emailError}
-                      </Typography>
-                    )}
-                  </Box>
-
-                  <TextField
-                    fullWidth
-                    label="Email"
-                    variant="outlined"
-                    value={email}
-                    onChange={handleEmailChange}
-                    error={!!emailError}
-                    margin="dense"
-                    sx={{ mt: 0.5 }}
-                  />
-
-                  <TextField
-                    fullWidth
-                    label="Password"
-                    type={showPassword ? "text" : "password"}
-                    variant="outlined"
-                    margin="normal"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    error={!password && error === "Password is required"}
-                    helperText={!password && error === "Password is required" ? "Password is required" : ""}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            onClick={handleTogglePassword}
-                            edge="end"
-                            sx={{ color: "#ffa000" }}
-                          >
-                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                </Box>
-
-                <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: 2, gap: 1 }}>
-                  <Typography variant="body2">Forgot Password?</Typography>
-                  <Link
-                    onClick={async () => {
-                      setSpinnerTarget("forgot");
-                      setShowForgotPassword(true);
-                      setTimeout(() => setSpinnerTarget(""), 500); // optional quick spinner
-                    }}
-                    sx={{ cursor: "pointer", color: "#004080", display: "inline-flex", alignItems: "center", gap: 1 }}
-                  >
-                    {spinnerTarget === "forgot" && (
-                      <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    )}
-                    Reset Here
-                  </Link>
-                </Box>
-
-                <Button
-                  fullWidth
-                  variant="contained"
-                  sx={{
-                    mt: 3,
-                    borderRadius: '50px',
-                    bgcolor: spinnerTarget === "login" ? "#004080" : "#ffa000",
-                    color: spinnerTarget === "login" ? "#fff" : "inherit",
-                    border: "2px solid transparent",
-                    "&:hover": {
-                      bgcolor: "#fff",
-                      color: "#ffa000",
-                      border: "2px solid #ffa000",
-                    },
-                  }}
-                  onClick={handleLogin}
-                  disabled={spinnerTarget === "login"}
+                {/* Tabs for Login Methods */}
+                <Tabs
+                  value={activeTab}
+                  onChange={handleTabChange}
+                  centered
+                  sx={{ mb: 3 }}
                 >
-                  {spinnerTarget === "login" ? (
-                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
-                      <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                      Logging In...
+                  <Tab label="Normal Login" />
+                  <Tab label="OTP Login" />
+                </Tabs>
+
+                {activeTab === 0 ? (
+                  // Normal Login Form
+                  <Box sx={{ display: "flex", flexDirection: "column", gap: 0 }}>
+                    <Box sx={{ minHeight: "25px", ml: 1 }}>
+                      {emailError && (
+                        <Typography variant="caption" color="error">
+                          {emailError}
+                        </Typography>
+                      )}
                     </Box>
-                  ) : (
-                    "Login"
-                  )}
-                </Button>
+
+                    <TextField
+                      fullWidth
+                      label="Email"
+                      variant="outlined"
+                      value={email}
+                      onChange={handleEmailChange}
+                      error={!!emailError}
+                      margin="dense"
+                      sx={{ mt: 0.5 }}
+                    />
+
+                    <TextField
+                      fullWidth
+                      label="Password"
+                      type={showPassword ? "text" : "password"}
+                      variant="outlined"
+                      margin="normal"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      error={!password && error === "Password is required"}
+                      helperText={!password && error === "Password is required" ? "Password is required" : ""}
+                      InputProps={{
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            <IconButton
+                              onClick={handleTogglePassword}
+                              edge="end"
+                              sx={{ color: "#ffa000" }}
+                            >
+                              {showPassword ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                          </InputAdornment>
+                        ),
+                      }}
+                    />
+
+                    <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: 2, gap: 1 }}>
+                      <Typography variant="body2">Forgot Password?</Typography>
+                      <Link
+                        onClick={async () => {
+                          setSpinnerTarget("forgot");
+                          setShowForgotPassword(true);
+                          setTimeout(() => setSpinnerTarget(""), 500);
+                        }}
+                        sx={{ cursor: "pointer", color: "#004080", display: "inline-flex", alignItems: "center", gap: 1 }}
+                      >
+                        {spinnerTarget === "forgot" && (
+                          <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        )}
+                        Reset Here
+                      </Link>
+                    </Box>
+
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      sx={{
+                        mt: 3,
+                        borderRadius: '50px',
+                        bgcolor: spinnerTarget === "login" ? "#004080" : "#ffa000",
+                        color: spinnerTarget === "login" ? "#fff" : "inherit",
+                        border: "2px solid transparent",
+                        "&:hover": {
+                          bgcolor: "#fff",
+                          color: "#ffa000",
+                          border: "2px solid #ffa000",
+                        },
+                      }}
+                      onClick={handleNormalLogin}
+                      disabled={spinnerTarget === "login"}
+                    >
+                      {spinnerTarget === "login" ? (
+                        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
+                          <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                          Logging In...
+                        </Box>
+                      ) : (
+                        "Login"
+                      )}
+                    </Button>
+                  </Box>
+                ) : (
+                  // OTP Login Form
+                  <Box sx={{ display: "flex", flexDirection: "column", gap: 0 }}>
+                    <Box sx={{ minHeight: "25px", ml: 1 }}>
+                      {mobileError && (
+                        <Typography variant="caption" color="error">
+                          {mobileError}
+                        </Typography>
+                      )}
+                    </Box>
+
+                    <TextField
+                      fullWidth
+                      label="Mobile Number"
+                      variant="outlined"
+                      value={mobile}
+                      onChange={handleMobileChange}
+                      error={!!mobileError}
+                      margin="normal"
+                      placeholder="Enter 10-digit mobile number"
+                      inputProps={{ maxLength: 10 }}
+                    />
+
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      sx={{
+                        mt: 3,
+                        borderRadius: '50px',
+                        bgcolor: spinnerTarget === "login" ? "#004080" : "#ffa000",
+                        color: spinnerTarget === "login" ? "#fff" : "inherit",
+                        border: "2px solid transparent",
+                        "&:hover": {
+                          bgcolor: "#fff",
+                          color: "#ffa000",
+                          border: "2px solid #ffa000",
+                        },
+                      }}
+                      onClick={handleOtpLogin}
+                      disabled={spinnerTarget === "login"}
+                    >
+                      {spinnerTarget === "login" ? (
+                        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
+                          <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                          Sending OTP...
+                        </Box>
+                      ) : (
+                        "Send OTP"
+                      )}
+                    </Button>
+                  </Box>
+                )}
 
                 <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mt: 4 }}>
                   <Typography variant="body2">Don't have an account?</Typography>
@@ -494,7 +571,7 @@ const Login = () => {
                     sx={{ cursor: "pointer", color: "primary.main", ml: 1, display: "inline-flex", alignItems: "center", gap: 1 }}
                     onClick={(e) => {
                       setSpinnerTarget("register");
-                      setTimeout(() => setSpinnerTarget(""), 1000); // simulate spinner
+                      setTimeout(() => setSpinnerTarget(""), 1000);
                     }}
                   >
                     {spinnerTarget === "register" && (

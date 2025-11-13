@@ -141,7 +141,7 @@
 //         body: JSON.stringify({
 //           user_id: Number(userId),
 //           variant_id: variant,
-//           redirect_url: "https://shrirajteam.com/i-plans" // redirect back here after payment
+//           redirect_url: `${redirecturl}/i-plans` // redirect back here after payment
 //         })
 //       });
 
@@ -333,7 +333,7 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import InvestorHeader from "../../../Shared/Investor/InvestorNavbar";
-import { baseurl } from '../../../BaseURL/BaseURL';
+import { baseurl, redirecturl } from '../../../BaseURL/BaseURL';
 import Swal from 'sweetalert2';
 import { useSearchParams } from 'react-router-dom';
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -468,7 +468,7 @@ const pageCount = Math.ceil(variantData.length / rowsPerPage);
         body: JSON.stringify({
           user_id: Number(userId),
           variant_id: variant,
-          redirect_url: "https://shrirajteam.com/i-plans" // redirect back here after payment
+          redirect_url: `${redirecturl}/i-plans` // redirect back here after payment
         })
       });
 

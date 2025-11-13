@@ -17,16 +17,16 @@ import { baseurl } from "../BaseURL/BaseURL";
 
 const VerifyOTP = () => {
   const navigate = useNavigate();
-  const [phoneNumber, setPhoneNumber] = useState("");
+  // const [phoneNumber, setPhoneNumber] = useState("");
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [spinnerTarget, setSpinnerTarget] = useState("");
 
   const navigateToDashboard = (role) => {
-    if (role === "Admin") navigate("/a-dashboard");
-    else if (role === "Agent") navigate("/p-dashboard");
-    else if (role === "Client") navigate("/i-dashboard");
+    if (role === "Admin") navigate("/a-asset");
+    else if (role === "Agent") navigate("/p-assets");
+    else if (role === "Client") navigate("/i-asset");
     else if (role === "Super Admin") navigate("/s-dashboard");
     else setError("Invalid role assigned. Please contact support.");
   };
@@ -36,11 +36,11 @@ const VerifyOTP = () => {
     setError("");
     setSpinnerTarget("verify");
     
-    if (!phoneNumber) {
-      setError("Phone number is required");
-      setSpinnerTarget("");
-      return;
-    }
+    // if (!phoneNumber) {
+    //   setError("Phone number is required");
+    //   setSpinnerTarget("");
+    //   return;
+    // }
     
     if (!otp) {
       setError("OTP is required");
@@ -53,7 +53,7 @@ const VerifyOTP = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
-          phone_number: phoneNumber, 
+          // phone_number: phoneNumber, 
           otp: otp 
         }),
       });
@@ -168,7 +168,7 @@ const VerifyOTP = () => {
             </Typography>
 
             <Box sx={{ display: "flex", flexDirection: "column", gap: 0 }}>
-              <TextField
+              {/* <TextField
                 fullWidth
                 label="Phone Number"
                 variant="outlined"
@@ -176,7 +176,7 @@ const VerifyOTP = () => {
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 margin="dense"
                 sx={{ mt: 0.5 }}
-              />
+              /> */}
 
               <TextField
                 fullWidth

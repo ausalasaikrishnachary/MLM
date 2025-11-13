@@ -14,7 +14,7 @@ import {
   Select,
   MenuItem,
   Stack,
-  FormGroup,
+  FormGroup, 
   FormControlLabel,
   Checkbox,
   Table,
@@ -24,7 +24,10 @@ import {
   TableHead,
   TableRow,
   Paper,
-  InputAdornment
+  InputAdornment,
+  Grid,
+  Card,
+  CardContent
 } from '@mui/material'; 
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import EventIcon from '@mui/icons-material/Event';
@@ -35,14 +38,21 @@ import { baseurl } from '../../../BaseURL/BaseURL';
 import PrintIcon from '@mui/icons-material/Print';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import Header from '../../../Shared/Navbar/Navbar';
+import SellIcon from '@mui/icons-material/Sell';
+import BookIcon from '@mui/icons-material/Book';
+import PeopleIcon from '@mui/icons-material/People';
 
 const AdminReportsPage = () => {
   const [properties, setProperties] = useState([]);
+  const [soldProperties, setSoldProperties] = useState([]);
+  const [bookedProperties, setBookedProperties] = useState([]);
+  const [users, setUsers] = useState([]);
   const [openReportDialog, setOpenReportDialog] = useState(false);
   const [openReportConfigDialog, setOpenReportConfigDialog] = useState(false);
   const [startDate, setStartDate] = useState(new Date(new Date().setMonth(new Date().getMonth() - 1)));
   const [endDate, setEndDate] = useState(new Date());
   const [reportType, setReportType] = useState('monthly');
+  const [currentReport, setCurrentReport] = useState('all'); // 'all', 'sold', 'booked', 'users'
   const [reportData, setReportData] = useState([]);
   const [reportColumns, setReportColumns] = useState([
     { id: 'property_title', label: 'Property Title', checked: true },
@@ -55,6 +65,16 @@ const AdminReportsPage = () => {
     { id: 'owner_contact', label: 'Contact', checked: false },
     { id: 'area', label: 'Area', checked: false },
     { id: 'builtup_area', label: 'Built-up Area', checked: false },
+  ]);
+  const [userReportColumns, setUserReportColumns] = useState([
+    { id: 'username', label: 'Username', checked: true },
+    { id: 'email', label: 'Email', checked: true },
+    { id: 'first_name', label: 'First Name', checked: true },
+    { id: 'last_name', label: 'Last Name', checked: true },
+    { id: 'phone_number', label: 'Phone', checked: true },
+    { id: 'date_joined', label: 'Date Joined', checked: true },
+    { id: 'is_active', label: 'Active', checked: true },
+    { id: 'user_type', label: 'User Type', checked: false },
   ]);
 
   useEffect(() => {
@@ -70,7 +90,54 @@ const AdminReportsPage = () => {
     fetchProperties();
   }, []);
 
-  const openReportConfiguration = () => {
+  const fetchSoldProperties = async () => {
+    try {
+      const response = await fetch(`${baseurl}/properties/status/sold/`);
+      const data = await response.json();
+      setSoldProperties(data);
+      return data;
+    } catch (error) {
+      console.error('Error fetching sold properties:', error);
+      return [];
+    }
+  };
+
+  const fetchBookedProperties = async () => {
+    try {
+      const response = await fetch(`${baseurl}/properties/status/booked/`);
+      const data = await response.json();
+      setBookedProperties(data);
+      return data;
+    } catch (error) {
+      console.error('Error fetching booked properties:', error);
+      return [];
+    }
+  };
+
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch(`${baseurl}/users/`);
+      const data = await response.json();
+      setUsers(data);
+      return data;
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      return [];
+    }
+  };
+
+  const openReportConfiguration = (reportType) => {
+    setCurrentReport(reportType);
+    
+    // Pre-fetch data based on report type
+    if (reportType === 'sold') {
+      fetchSoldProperties();
+    } else if (reportType === 'booked') {
+      fetchBookedProperties();
+    } else if (reportType === 'users') {
+      fetchUsers();
+    }
+    
     setOpenReportConfigDialog(true);
   };
 
@@ -78,51 +145,79 @@ const AdminReportsPage = () => {
     setOpenReportConfigDialog(false);
   };
 
-  const generateReport = () => {
-    let filtered = [...properties];
-    
-    filtered = filtered.filter(property => {
-      const propertyDate = new Date(property.created_at);
-      return propertyDate >= startDate && propertyDate <= endDate;
-    });
+  const generateReport = async () => {
+    let data = [];
+    let filtered = [];
 
+    // Get data based on report type
+    switch (currentReport) {
+      case 'all':
+        data = properties;
+        break;
+      case 'sold':
+        data = await fetchSoldProperties();
+        break;
+      case 'booked':
+        data = await fetchBookedProperties();
+        break;
+      case 'users':
+        data = await fetchUsers();
+        break;
+      default:
+        data = properties;
+    }
+
+    // Filter by date range
+    if (currentReport === 'users') {
+      filtered = data.filter(user => {
+        const userDate = new Date(user.date_joined || user.created_at);
+        return userDate >= startDate && userDate <= endDate;
+      });
+    } else {
+      filtered = data.filter(property => {
+        const propertyDate = new Date(property.created_at);
+        return propertyDate >= startDate && propertyDate <= endDate;
+      });
+    }
+
+    // Group data based on report type
     if (reportType === 'monthly') {
-      const grouped = filtered.reduce((acc, property) => {
-        const date = new Date(property.created_at);
+      const grouped = filtered.reduce((acc, item) => {
+        const date = new Date(currentReport === 'users' ? (item.date_joined || item.created_at) : item.created_at);
         const monthYear = `${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
         
         if (!acc[monthYear]) {
           acc[monthYear] = [];
         }
-        acc[monthYear].push(property);
+        acc[monthYear].push(item);
         return acc;
       }, {});
 
-      const report = Object.entries(grouped).map(([monthYear, properties]) => ({
+      const report = Object.entries(grouped).map(([monthYear, items]) => ({
         period: monthYear,
-        count: properties.length,
-        totalValue: properties.reduce((sum, p) => sum + (p.property_value || 0), 0),
-        properties
+        count: items.length,
+        totalValue: currentReport === 'users' ? 0 : items.reduce((sum, p) => sum + (p.property_value || 0), 0),
+        properties: items
       }));
 
       setReportData(report);
     } else if (reportType === 'yearly') {
-      const grouped = filtered.reduce((acc, property) => {
-        const date = new Date(property.created_at);
+      const grouped = filtered.reduce((acc, item) => {
+        const date = new Date(currentReport === 'users' ? (item.date_joined || item.created_at) : item.created_at);
         const year = date.getFullYear().toString();
         
         if (!acc[year]) {
           acc[year] = [];
         }
-        acc[year].push(property);
+        acc[year].push(item);
         return acc;
       }, {});
 
-      const report = Object.entries(grouped).map(([year, properties]) => ({
+      const report = Object.entries(grouped).map(([year, items]) => ({
         period: year,
-        count: properties.length,
-        totalValue: properties.reduce((sum, p) => sum + (p.property_value || 0), 0),
-        properties
+        count: items.length,
+        totalValue: currentReport === 'users' ? 0 : items.reduce((sum, p) => sum + (p.property_value || 0), 0),
+        properties: items
       }));
 
       setReportData(report);
@@ -130,7 +225,7 @@ const AdminReportsPage = () => {
       setReportData([{
         period: `${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}`,
         count: filtered.length,
-        totalValue: filtered.reduce((sum, p) => sum + (p.property_value || 0), 0),
+        totalValue: currentReport === 'users' ? 0 : filtered.reduce((sum, p) => sum + (p.property_value || 0), 0),
         properties: filtered
       }]);
     }
@@ -139,20 +234,30 @@ const AdminReportsPage = () => {
     setOpenReportDialog(true);
   };
 
+  const getCurrentColumns = () => {
+    return currentReport === 'users' ? userReportColumns : reportColumns;
+  };
+
   const exportToCSV = () => {
-    const activeColumns = reportColumns.filter(col => col.checked).map(col => col.id);
+    const activeColumns = getCurrentColumns().filter(col => col.checked).map(col => col.id);
     
     let csv = activeColumns.map(col => 
-      reportColumns.find(rc => rc.id === col)?.label || col
+      getCurrentColumns().find(rc => rc.id === col)?.label || col
     ).join(',') + '\n';
     
     reportData.forEach(group => {
-      group.properties.forEach(property => {
+      group.properties.forEach(item => {
         const row = activeColumns.map(col => {
-          if (col === 'created_at') {
-            return `"${new Date(property[col]).toLocaleDateString()}"`;
+          if (col === 'created_at' || col === 'date_joined') {
+            return `"${new Date(item[col] || item.created_at).toLocaleDateString()}"`;
           }
-          return `"${property[col] || ''}"`;
+          if (col === 'property_value') {
+            return `"${item[col] ? '₹' + item[col].toLocaleString() : '-'}"`;
+          }
+          if (col === 'is_active') {
+            return `"${item[col] ? 'Yes' : 'No'}"`;
+          }
+          return `"${item[col] || ''}"`;
         }).join(',');
         csv += row + '\n';
       });
@@ -163,27 +268,34 @@ const AdminReportsPage = () => {
     const a = document.createElement('a');
     a.setAttribute('hidden', '');
     a.setAttribute('href', url);
-    a.setAttribute('download', `property_report_${new Date().toISOString().slice(0,10)}.csv`);
+    a.setAttribute('download', `${currentReport}_report_${new Date().toISOString().slice(0,10)}.csv`);
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
   };
 
   const exportToPDF = () => {
-    // This is a placeholder - in a real implementation you would use jsPDF or similar
+    const reportTitle = `${currentReport.charAt(0).toUpperCase() + currentReport.slice(1)} Report`;
     const pdfContent = `
-      Property Report\n\n
+      ${reportTitle}\n\n
       Period: ${reportData[0]?.period || ''}\n
-      Total Properties: ${reportData.reduce((sum, group) => sum + group.count, 0)}\n
-      Total Value: ₹${reportData.reduce((sum, group) => sum + group.totalValue, 0).toLocaleString()}\n\n
-      ${reportColumns.filter(col => col.checked).map(col => col.label).join(' | ')}\n
+      Total ${currentReport === 'users' ? 'Users' : 'Properties'}: ${reportData.reduce((sum, group) => sum + group.count, 0)}\n
+      ${currentReport !== 'users' ? `Total Value: ₹${reportData.reduce((sum, group) => sum + group.totalValue, 0).toLocaleString()}\n\n` : '\n'}
+      ${getCurrentColumns().filter(col => col.checked).map(col => col.label).join(' | ')}\n
       ${reportData.flatMap(group => 
-        group.properties.map(property => 
-          reportColumns.filter(col => col.checked).map(col => 
-            col.id === 'created_at' 
-              ? new Date(property[col.id]).toLocaleDateString() 
-              : property[col.id] || ''
-          ).join(' | ')
+        group.properties.map(item => 
+          getCurrentColumns().filter(col => col.checked).map(col => {
+            if (col === 'created_at' || col === 'date_joined') {
+              return new Date(item[col] || item.created_at).toLocaleDateString();
+            }
+            if (col === 'property_value') {
+              return item[col] ? '₹' + item[col].toLocaleString() : '-';
+            }
+            if (col === 'is_active') {
+              return item[col] ? 'Yes' : 'No';
+            }
+            return item[col] || '';
+          }).join(' | ')
         ).join('\n')
       ).join('\n')}
     `;
@@ -191,69 +303,147 @@ const AdminReportsPage = () => {
     alert('In a real implementation, this would generate a PDF with the following content:\n\n' + pdfContent);
   };
 
-  const printReport = () => {
-    const printContent = `
-      <html>
-        <head>
-          <title>Property Report</title>
-          <style>
-            body { font-family: Arial, sans-serif; margin: 20px; }
-            h1 { color: #333; }
-            .report-header { margin-bottom: 20px; }
-            .report-summary { margin-bottom: 30px; }
-            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-            th { background-color: #f2f2f2; }
-            .period { font-weight: bold; margin-top: 20px; }
-            .summary-item { margin: 5px 0; }
-          </style>
-        </head>
-        <body>
-          <h1>Property Report</h1>
-          <div class="report-header">
-            <div class="summary-item">Generated on: ${new Date().toLocaleDateString()}</div>
-            <div class="summary-item">Report period: ${reportData[0]?.period || ''}</div>
-          </div>
-          <div class="report-summary">
-            <h3>Summary</h3>
-            <div class="summary-item">Total properties: ${reportData.reduce((sum, group) => sum + group.count, 0)}</div>
-            <div class="summary-item">Total value: ₹${reportData.reduce((sum, group) => sum + group.totalValue, 0).toLocaleString()}</div>
-          </div>
-          <table>
-            <thead>
-              <tr>
-                ${reportColumns.filter(col => col.checked).map(col => `<th>${col.label}</th>`).join('')}
-              </tr>
-            </thead>
-            <tbody>
-              ${reportData.flatMap(group => 
-                group.properties.map(property => 
-                  `<tr>
-                    ${reportColumns.filter(col => col.checked).map(col => 
-                      `<td>${
-                        col.id === 'created_at' 
-                          ? new Date(property[col.id]).toLocaleDateString() 
-                          : property[col.id] || ''
-                      }</td>`
-                    ).join('')}
-                  </tr>`
-                ).join('')
-              ).join('')}
-            </tbody>
-          </table>
-          <script>
-            window.onload = function() {
-              window.print();
-              setTimeout(function() { window.close(); }, 1000);
-            };
-          </script>
-        </body>
-      </html>
-    `;
+ const printReport = () => {
+  const reportTitle = `${currentReport.charAt(0).toUpperCase() + currentReport.slice(1)} Report`;
+  
+  // Get all items (properties/users) from all groups
+  const allItems = reportData.flatMap(group => group.properties || []);
+  
+  // Calculate total value for properties (not for users)
+  const totalValue = currentReport !== 'users' 
+    ? reportData.reduce((sum, group) => sum + (group.totalValue || 0), 0)
+    : 0;
+
+  const printContent = `
+    <html>
+      <head>
+        <title>${reportTitle}</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 20px; }
+          h1 { color: #333; text-align: center; }
+          .report-header { 
+            margin-bottom: 20px; 
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+          }
+          .report-summary { 
+            margin-bottom: 30px; 
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+          }
+          table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 10px; 
+            font-size: 14px;
+          }
+          th, td { 
+            border: 1px solid #ddd; 
+            padding: 10px; 
+            text-align: left; 
+          }
+          th { 
+            background-color: #4A90E2; 
+            color: white;
+            font-weight: bold;
+          }
+          tr:nth-child(even) {
+            background-color: #f9f9f9;
+          }
+          .summary-item { 
+            margin: 8px 0; 
+            font-size: 14px;
+          }
+          .summary-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 16px;
+          }
+        </style>
+      </head>
+      <body>
+        <h1>${reportTitle}</h1>
+        
+        <div class="report-header">
+          <div class="summary-item"><strong>Generated on:</strong> ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</div>
+          <div class="summary-item"><strong>Report Type:</strong> ${reportType.charAt(0).toUpperCase() + reportType.slice(1)}</div>
+          <div class="summary-item"><strong>Date Range:</strong> ${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}</div>
+        </div>
+        
+        <div class="report-summary">
+          <div class="summary-title">Summary</div>
+          <div class="summary-item"><strong>Total ${currentReport === 'users' ? 'Users' : 'Properties'}:</strong> ${allItems.length}</div>
     
-    const printWindow = window.open('', '_blank');
+        </div>
+
+        ${allItems.length > 0 ? `
+        <table>
+          <thead>
+            <tr>
+            <th>S.no</th>
+              ${getCurrentColumns().filter(col => col.checked).map(col => `<th>${col.label}</th>`).join('')}
+            </tr>
+          </thead>
+          <tbody>
+            ${allItems.map((item, index) => {
+              const row = getCurrentColumns()
+                .filter(col => col.checked)
+                .map(col => {
+                  let value = '';
+                  if (col.id === 'created_at' || col.id === 'date_joined') {
+                    value = new Date(item[col.id] || item.created_at).toLocaleDateString();
+                  } else if (col.id === 'property_value') {
+                    value = item[col.id] ? `₹${item[col.id].toLocaleString()}` : '-';
+                  } else if (col.id === 'is_active') {
+                    value = item[col.id] ? 'Yes' : 'No';
+                  } else {
+                    value = item[col.id] || item[col.label?.toLowerCase().replace(/ /g, '_')] || '-';
+                  }
+                  return `<td>${value}</td>`;
+                }).join('');
+              
+                return `<tr><td>${index + 1}</td>${row}</tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+        ` : `
+        <div style="text-align: center; padding: 40px; color: #666;">
+          <h3>No data available for the selected criteria</h3>
+          <p>Please adjust your date range or filters and try again.</p>
+        </div>
+        `}
+
+        <script>
+          document.addEventListener('DOMContentLoaded', function() {
+            window.print();
+          });
+        </script>
+      </body>
+    </html>
+  `;
+  
+  const printWindow = window.open('', '_blank', 'width=1000,height=600');
+  if (printWindow) {
     printWindow.document.write(printContent);
     printWindow.document.close();
+    
+    // Fallback in case DOMContentLoaded doesn't fire
+    printWindow.onload = function() {
+      printWindow.print();
+    };
+  }
+};
+
+  const getReportTitle = () => {
+    const titles = {
+      all: 'All Properties Report',
+      sold: 'Sold Properties Report',
+      booked: 'Booked Properties Report',
+      users: 'Users Report'
+    };
+    return titles[currentReport] || 'Report';
   };
 
   return (
@@ -271,21 +461,106 @@ const AdminReportsPage = () => {
           <Typography variant="h4" fontWeight="bold">
             Reports
           </Typography>
-
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={openReportConfiguration}
-            startIcon={<DescriptionIcon />}
-            sx={{
-              px: 3,
-              py: 1,
-              height: "55px",
-            }}
-          >
-            Generate Properties Report
-          </Button>
         </Box>
+
+        {/* Report Cards */}
+        <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card 
+              sx={{ 
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  boxShadow: 6
+                }
+              }}
+              onClick={() => openReportConfiguration('all')}
+            >
+              <CardContent sx={{ textAlign: 'center', py: 4 }}>
+                <DescriptionIcon sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />
+                <Typography variant="h6" gutterBottom>
+                  All Properties Report
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Generate comprehensive report for all properties
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <Card 
+              sx={{ 
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  boxShadow: 6
+                }
+              }}
+              onClick={() => openReportConfiguration('sold')}
+            >
+              <CardContent sx={{ textAlign: 'center', py: 4 }}>
+                <SellIcon sx={{ fontSize: 48, color: 'success.main', mb: 2 }} />
+                <Typography variant="h6" gutterBottom>
+                  Sold Properties Report
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Report for properties marked as sold
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <Card 
+              sx={{ 
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  boxShadow: 6
+                }
+              }}
+              onClick={() => openReportConfiguration('booked')}
+            >
+              <CardContent sx={{ textAlign: 'center', py: 4 }}>
+                <BookIcon sx={{ fontSize: 48, color: 'warning.main', mb: 2 }} />
+                <Typography variant="h6" gutterBottom>
+                  Booked Properties Report
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Report for properties that are booked
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <Card 
+              sx={{ 
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  boxShadow: 6
+                }
+              }}
+              onClick={() => openReportConfiguration('users')}
+            >
+              <CardContent sx={{ textAlign: 'center', py: 4 }}>
+                <PeopleIcon sx={{ fontSize: 48, color: 'info.main', mb: 2 }} />
+                <Typography variant="h6" gutterBottom>
+                  Users Report
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Generate report for all registered users
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
 
         <Box
           sx={{
@@ -300,13 +575,13 @@ const AdminReportsPage = () => {
             Property Reports Dashboard
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            Generate comprehensive reports for your properties with various filters and export options.
+            Generate comprehensive reports for properties and users with various filters and export options.
           </Typography>
         </Box>
 
         {/* Report Configuration Dialog */}
         <Dialog open={openReportConfigDialog} onClose={closeReportConfiguration} maxWidth="sm" fullWidth>
-          <DialogTitle>Generate Property Report</DialogTitle>
+          <DialogTitle>{getReportTitle()}</DialogTitle>
           <DialogContent dividers>
             <Stack spacing={3} sx={{ mt: 2 }}>
               <FormControl fullWidth>
@@ -382,17 +657,21 @@ const AdminReportsPage = () => {
                   Select Columns to Include
                 </Typography>
                 <FormGroup>
-                  {reportColumns.map((column) => (
+                  {getCurrentColumns().map((column) => (
                     <FormControlLabel
                       key={column.id}
                       control={
                         <Checkbox
                           checked={column.checked}
                           onChange={(e) => {
-                            const updatedColumns = reportColumns.map(col => 
+                            const updatedColumns = getCurrentColumns().map(col => 
                               col.id === column.id ? { ...col, checked: e.target.checked } : col
                             );
-                            setReportColumns(updatedColumns);
+                            if (currentReport === 'users') {
+                              setUserReportColumns(updatedColumns);
+                            } else {
+                              setReportColumns(updatedColumns);
+                            }
                           }}
                         />
                       }
@@ -415,13 +694,13 @@ const AdminReportsPage = () => {
 
         {/* Report Display Dialog */}
         <Dialog open={openReportDialog} onClose={() => setOpenReportDialog(false)} maxWidth="lg" fullWidth>
-          <DialogTitle>Property Report</DialogTitle>
+          <DialogTitle>{getReportTitle()}</DialogTitle>
           <DialogContent dividers>
             <TableContainer component={Paper} sx={{ maxHeight: '60vh', overflow: 'auto' }}>
               <Table stickyHeader>
                 <TableHead>
                   <TableRow>
-                    {reportColumns.filter(col => col.checked).map(column => (
+                    {getCurrentColumns().filter(col => col.checked).map(column => (
                       <TableCell key={column.id} sx={{ fontWeight: 'bold', color: "#4A90E2" }} >
                         {column.label}
                       </TableCell>
@@ -430,15 +709,17 @@ const AdminReportsPage = () => {
                 </TableHead>
                 <TableBody>
                   {reportData.flatMap(group => 
-                    group.properties.map((property, idx) => (
+                    group.properties.map((item, idx) => (
                       <TableRow key={`${group.period}-${idx}`}>
-                        {reportColumns.filter(col => col.checked).map(column => (
-                          <TableCell key={`${property.id}-${column.id}`}>
-                            {column.id === 'created_at' 
-                              ? new Date(property[column.id]).toLocaleDateString() 
+                        {getCurrentColumns().filter(col => col.checked).map(column => (
+                          <TableCell key={`${item.id}-${column.id}`}>
+                            {column.id === 'created_at' || column.id === 'date_joined'
+                              ? new Date(item[column.id] || item.created_at).toLocaleDateString()
                               : column.id === 'property_value'
-                                ? `₹${property[column.id]?.toLocaleString() || '-'}`
-                                : property[column.id] || '-'}
+                                ? `₹${item[column.id]?.toLocaleString() || '-'}`
+                                : column.id === 'is_active'
+                                  ? item[column.id] ? 'Yes' : 'No'
+                                  : item[column.id] || '-'}
                           </TableCell>
                         ))}
                       </TableRow>

@@ -585,7 +585,7 @@ const updateApprovalStatus = async (propertyId, newStatus) => {
     width: { xs: "93%", sm: "auto" } // full width only on mobile
   }}
 >
-  Generate Report
+  Generate All Properties Report
 </Button>
 
 
