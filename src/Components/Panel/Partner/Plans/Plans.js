@@ -71,7 +71,7 @@ const Subcrptionplan = () => {
       acc[variant.plan_id] = {
         name: plan.plan_name,
         description: plan.description,
-        type: plan.plan_type || 'Self service',
+        type: plan.plan_type,
         highlight: plan.plan_name === 'Advanced Plus' ? 'Most Bought' : null,
         color: ['#E3F2FD', '#F3E5F5', '#FFF3E0'][Object.keys(acc).length % 3], // cycle colors
         options: []
