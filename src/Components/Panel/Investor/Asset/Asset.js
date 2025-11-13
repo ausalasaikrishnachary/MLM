@@ -919,6 +919,65 @@ const AssetsUI = () => {
                           </Typography>
                         </Grid>
                       </Grid>
+                        <Grid item xs={12}>
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              justifyContent: 'flex-end',
+                              alignItems: 'center',
+                              gap: 1.5,
+                              mt: 0.5,
+                            }}
+                          >
+                            {/* Wishlist Button */}
+                            <IconButton
+                              onClick={() => handleWishlistToggle(property.property_id)}
+                              sx={{
+                                backgroundColor: 'rgba(255,255,255,0.8)',
+                                '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
+                              }}
+                            >
+                              {wishlist.includes(property.property_id) ? (
+                                <FavoriteIcon sx={{ color: 'red' }} />
+                              ) : (
+                                <FavoriteBorderIcon sx={{ color: 'red' }} />
+                              )}
+                            </IconButton>
+                      
+                            {/* Like Button */}
+                            <IconButton
+                              onClick={() => handleLikeToggle(property.property_id)}
+                              size="small"
+                              sx={{
+                                backgroundColor: 'rgba(255,255,255,0.8)',
+                                '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
+                                color: likedProperties.includes(property.property_id)
+                                  ? '#1a73e8'
+                                  : 'grey',
+                              }}
+                            >
+                              {likedProperties.includes(property.property_id) ? (
+                                <ThumbUpAltIcon />
+                              ) : (
+                                <ThumbUpAltOutlinedIcon />
+                              )}
+                            </IconButton>
+                      
+                            {/* Call Button */}
+                            <IconButton
+                              component="a"
+                              href={`tel:${subscriptionPaid ? property.owner_contact : '9074307248'}`}
+                              size="small"
+                              sx={{
+                                backgroundColor: 'rgba(255,255,255,0.8)',
+                                '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
+                                color: '#4caf50',
+                              }}
+                            >
+                              <CallIcon />
+                            </IconButton>
+                          </Box>
+                        </Grid>
                       <Box
                         sx={{
                           backgroundColor: '#F8F9FA',
@@ -979,67 +1038,7 @@ const AssetsUI = () => {
                                 </Typography>
                               </Grid> */}
 
-                              {/* Row for Call, Like, and Wishlist icons */}
-                              <Grid item xs={12}>
-                                <Box
-                                  sx={{
-                                    display: 'flex',
-                                    justifyContent: 'flex-end',
-                                    alignItems: 'center',
-                                    gap: 1.5,
-                                    mt: 0.5,
-                                  }}
-                                >
-                                  {/* Wishlist Button */}
-                                  <IconButton
-                                    onClick={() => handleWishlistToggle(property.property_id)}
-                                    size="small"
-                                    sx={{
-                                      backgroundColor: 'rgba(255,255,255,0.9)',
-                                      '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
-                                    }}
-                                  >
-                                    {wishlist.includes(property.property_id) ? (
-                                      <FavoriteIcon sx={{ color: 'red' }} />
-                                    ) : (
-                                      <FavoriteBorderIcon sx={{ color: 'red' }} />
-                                    )}
-                                  </IconButton>
-
-                                  {/* Like Button */}
-                                  <IconButton
-                                    onClick={() => handleLikeToggle(property.property_id)}
-                                    size="small"
-                                    sx={{
-                                      backgroundColor: 'rgba(255,255,255,0.9)',
-                                      '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
-                                      color: likedProperties.includes(property.property_id)
-                                        ? '#1a73e8'
-                                        : 'grey',
-                                    }}
-                                  >
-                                    {likedProperties.includes(property.property_id) ? (
-                                      <ThumbUpAltIcon />
-                                    ) : (
-                                      <ThumbUpAltOutlinedIcon />
-                                    )}
-                                  </IconButton>
-
-                                  {/* Call Button */}
-                                  <IconButton
-                                    component="a"
-                                    href={`tel:${subscriptionPaid ? property.owner_contact : '9074307248'}`}
-                                    size="small"
-                                    sx={{
-                                      backgroundColor: 'rgba(255,255,255,0.9)',
-                                      '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
-                                      color: '#4caf50',
-                                    }}
-                                  >
-                                    <CallIcon />
-                                  </IconButton>
-                                </Box>
-                              </Grid>
+                              
 
 
                             </>

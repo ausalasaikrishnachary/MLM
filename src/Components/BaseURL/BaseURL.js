@@ -8,6 +8,5 @@ export const baseurl = "https://rahul30.pythonanywhere.com";
 
 
 
-
-
 export const redirecturl = "https://shrirajteam.com";
+
