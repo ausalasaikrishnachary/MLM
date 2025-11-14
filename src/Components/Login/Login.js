@@ -11,7 +11,7 @@ import {
   InputAdornment,
   Tabs,
   Tab,
-} from "@mui/material";
+} from "@mui/material"; 
 import Swal from "sweetalert2";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
@@ -49,7 +49,7 @@ const Login = () => {
 
   const handleTogglePassword = () => setShowPassword((prev) => !prev);
 
-  const handleEmailChange = (e) => {
+   const handleForgotEmailChange = (e) => {
     const value = e.target.value;
     setEmail(value);
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -57,6 +57,23 @@ const Login = () => {
     else if (!emailRegex.test(value)) setEmailError("Enter a valid email address");
     else setEmailError("");
   };
+
+  const handleEmailChange = (e) => {
+  const value = e.target.value;
+  setEmail(value);
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const mobileRegex = /^[6-9]\d{9}$/; // Indian 10-digit numbers
+
+  if (!value) {
+    setEmailError("Email or Mobile Number is required");
+  } else if (!emailRegex.test(value) && !mobileRegex.test(value)) {
+    setEmailError("Enter a valid Email or Mobile Number");
+  } else {
+    setEmailError("");
+  }
+};
+
 
   const handleMobileChange = (e) => {
     const value = e.target.value;
@@ -69,61 +86,69 @@ const Login = () => {
 
   // Normal Login Implementation
   const handleNormalLogin = async (e) => {
-    e.preventDefault();
-    setError("");
-    setSpinnerTarget("login");
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    
-    if (!email) {
-      setEmailError("Email is required");
-      setSpinnerTarget("");
-      return;
-    } else if (!emailRegex.test(email)) {
-      setEmailError("Enter a valid email address");
-      setSpinnerTarget("");
-      return;
-    } else setEmailError("");
+  e.preventDefault();
+  setError("");
+  setSpinnerTarget("login");
 
-    if (!password) {
-      setError("Password is required");
-      setSpinnerTarget("");
-      return;
-    }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const mobileRegex = /^[6-9]\d{9}$/;
 
-    try {
-      const response = await fetch(`${baseurl}/login/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+  if (!email) {
+    setEmailError("Email or Mobile Number is required");
+    setSpinnerTarget("");
+    return;
+  } else if (!emailRegex.test(email) && !mobileRegex.test(email)) {
+    setEmailError("Enter a valid Email or Mobile Number");
+    setSpinnerTarget("");
+    return;
+  } else {
+    setEmailError("");
+  }
 
-      const data = await response.json();
-      if (response.ok) {
-        localStorage.setItem("user_id", data.user_id);
-        localStorage.setItem("email", data.email);
-        localStorage.setItem("username", data.username);
-        localStorage.setItem("phone_number", data.phone_number);
-        localStorage.setItem("referral_id", data.referral_id);
-        localStorage.setItem("referred_by", data.referred_by);
-        localStorage.setItem("user_name", data.first_name);
+  if (!password) {
+    setError("Password is required");
+    setSpinnerTarget("");
+    return;
+  }
 
-        const userRoles = data.roles || [];
-        if (userRoles.length > 1) {
-          selectUserRole(userRoles);
-        } else if (userRoles.length === 1) {
-          navigateToDashboard(userRoles[0]);
-        } else {
-          setError("No roles assigned. Please contact support.");
-        }
+  try {
+    const response = await fetch(`${baseurl}/login/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email_or_phonenumber: email,  // ⬅ updated payload
+        password,
+      }),
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      localStorage.setItem("user_id", data.user_id);
+      localStorage.setItem("email", data.email);
+      localStorage.setItem("username", data.username);
+      localStorage.setItem("phone_number", data.phone_number);
+      localStorage.setItem("referral_id", data.referral_id);
+      localStorage.setItem("referred_by", data.referred_by);
+      localStorage.setItem("user_name", data.first_name);
+
+      const userRoles = data.roles || [];
+      if (userRoles.length > 1) {
+        selectUserRole(userRoles);
+      } else if (userRoles.length === 1) {
+        navigateToDashboard(userRoles[0]);
       } else {
-        setError(data.error || "Invalid credentials");
+        setError("No roles assigned. Please contact support.");
       }
-    } catch {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setSpinnerTarget("");
+    } else {
+      setError(data.error || "Invalid credentials");
     }
-  };
+  } catch {
+    setError("Something went wrong. Please try again.");
+  } finally {
+    setSpinnerTarget("");
+  }
+};
+
 
   // OTP Based Login Implementation
   const handleOtpLogin = async (e) => {
@@ -322,7 +347,7 @@ const Login = () => {
                   variant="outlined"
                   margin="normal"
                   value={email}
-                  onChange={handleEmailChange}
+                  onChange={handleForgotEmailChange}
                   error={!!emailError}
                   helperText=""
                 />
@@ -432,7 +457,7 @@ const Login = () => {
 
                     <TextField
                       fullWidth
-                      label="Email"
+                      label="Email/Mobile Number"
                       variant="outlined"
                       value={email}
                       onChange={handleEmailChange}
