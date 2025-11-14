@@ -20,7 +20,7 @@ const SignUp = () => {
     const [acceptedTC, setAcceptedTC] = useState(false);
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        username: "",
+        // username: "",
         first_name: "",
         last_name: "",
         role_ids: [],
@@ -76,8 +76,8 @@ const SignUp = () => {
         "nominee_reference_to",
         "referral_id",
         "referred_by",
-        "phone_number",
-        "email"
+        // "phone_number",
+        // "email"
     ];
 
 
@@ -351,7 +351,7 @@ const handleLoginClick = () => {
                     >
                         <img src={image2} alt="Company Logo" style={{ maxWidth: "100%", height: "auto",  }} />
                     </Grid>
-                    <Grid item xs={12} md={6} sx={{ p: 4 }}>
+                    <Grid item xs={12} md={6} sx={{ p: 4, mt:2 }}>
                         <Typography variant="h4" align="center" gutterBottom>
                             Registration
                         </Typography>
@@ -396,7 +396,7 @@ const handleLoginClick = () => {
                                             </Grid>
                                         )
                                 )}
-                                <Grid item xs={12} sm={6}>
+                                {/* <Grid item xs={12} sm={6}>
                                     <TextField
                                         fullWidth
                                         label="Email"
@@ -406,8 +406,8 @@ const handleLoginClick = () => {
                                         error={Boolean(errors.email)}
                                         helperText={errors.email}
                                     />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
+                                </Grid> */}
+                                {/* <Grid item xs={12} sm={6}>
                                     <TextField
                                         fullWidth
                                         label="Phone Number"
@@ -417,7 +417,7 @@ const handleLoginClick = () => {
                                         error={Boolean(errors.phone_number)}
                                         helperText={errors.phone_number}
                                     />
-                                </Grid>
+                                </Grid> */}
 
                                 <Grid item xs={12} sm={6}>
                                     <TextField
