@@ -228,6 +228,7 @@ const AssetsUI = () => {
       try {
         const response = await fetch(`${baseurl}/properties/approval-status/approved/`);
         const data = await response.json();
+        
 
         // Filter out properties where user_id matches the current user's id
         const filteredProperties = data.filter(
@@ -312,10 +313,10 @@ const AssetsUI = () => {
     setSortBy(event.target.value);
   };
 
-  const handleViewDetails = (property) => {
-    setSelectedProperty(property);
-    setOpenDialog(true);
-  };
+  // const handleViewDetails = (property) => {
+  //   setSelectedProperty(property);
+  //   setOpenDialog(true);
+  // };
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
@@ -578,6 +579,27 @@ const AssetsUI = () => {
     printWindow.document.write(printContent);
     printWindow.document.close();
   };
+
+   const handleViewDetails = async (property) => {
+  try {
+    await fetch(`${baseurl}/property/${property.property_id}/`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        view_count: (property.view_count || 0) + 1
+      })
+    });
+
+    console.log("View count updated");
+  } catch (error) {
+    console.log("Error updating view count:", error);
+  }
+
+  // navigate after update
+  navigate(`/i-assets/${property.property_id}`, {
+    state: { property }
+  });
+};
 
   return (
     <>
@@ -1057,7 +1079,7 @@ const AssetsUI = () => {
                               '&:hover': { color: 'rgb(5,5,5)' }
                             }}
                             disabled={!subscriptionPaid}
-                            onClick={() => navigate(`/i-assets/${property.property_id}`, { state: { property } })}
+                             onClick={() => handleViewDetails(property)}
                           >
                             VIEW DETAILS
                           </Button>

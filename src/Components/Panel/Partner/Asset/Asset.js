@@ -231,11 +231,13 @@ const AssetsUI = () => {
       try {
         const response = await fetch(`${baseurl}/properties/approval-status/approved/`);
         const data = await response.json();
+        console.log('Fetched properties:', data);
 
         // Filter out properties where user_id matches the current user's id
         const filteredProperties = data.filter(
           (property) => property.user_id?.toString() !== userId
         );
+        console.log('Filtered properties:', filteredProperties);
 
         setProperties(filteredProperties);
         setFilteredProperties(filteredProperties);
@@ -320,9 +322,29 @@ const AssetsUI = () => {
     setSortBy(event.target.value);
   };
 
-  const handleViewDetails = (property) => {
-    setSelectedProperty(property);
-    setOpenDialog(true);
+  // const handleViewDetails = (property) => {
+  //   setSelectedProperty(property);
+  //   setOpenDialog(true);
+  // };
+  const handleViewDetails = async (property) => {
+    try {
+      await fetch(`${baseurl}/property/${property.property_id}/`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          view_count: (property.view_count || 0) + 1
+        })
+      });
+  
+      console.log("View count updated");
+    } catch (error) {
+      console.log("Error updating view count:", error);
+    }
+  
+    // navigate after update
+    navigate(`/p-assets/${property.property_id}`, {
+      state: { property }
+    });
   };
 
   const handleCloseDialog = () => {
@@ -954,7 +976,7 @@ const AssetsUI = () => {
                               '&:hover': { color: 'rgb(5,5,5)' }
                             }}
                             disabled={!subscriptionPaid}
-                            onClick={() => navigate(`/p-assets/${property.property_id}`, { state: { property } })}
+                              onClick={() => handleViewDetails(property)}
                           >
                             VIEW DETAILS
                           </Button>

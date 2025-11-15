@@ -81,24 +81,29 @@ function TableLayout({
                   sx={{ cursor: onRowClick ? 'pointer' : 'default' }}
                   onClick={onRowClick ? () => onRowClick(row) : undefined}
                 >
-                  {headers.map(({ key }, i) => (
-                    <TableCell key={i} sx={cellBodyStyle}>
-                      {key === 'document_file' && row[key] ? (
-                        <a
-                          href={`${baseurl}${row[key]}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{ color: '#1976d2', textDecoration: 'underline' }}
-                        >
-                          View PDF
-                        </a>
-                      ) : typeof row[key] === 'number' ? (
-                        parseFloat(row[key]).toLocaleString()
-                      ) : (
-                        row[key] || '-'
-                      )}
-                    </TableCell>
-                  ))}
+                  {headers.map((header, i) => (
+  <TableCell key={i} sx={cellBodyStyle}>
+    {/* Use render if available */}
+    {header.render
+      ? header.render(row)
+      : header.key === "document_file" && row[header.key]
+      ? (
+          <a
+            href={`${baseurl}${row[header.key]}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "#1976d2", textDecoration: "underline" }}
+          >
+            View PDF
+          </a>
+        )
+      : typeof row[header.key] === "number"
+      ? parseFloat(row[header.key]).toLocaleString()
+      : row[header.key] || "-"
+    }
+  </TableCell>
+))}
+
                   {showActions && (
                     <TableCell sx={cellBodyStyle}>
                       <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>

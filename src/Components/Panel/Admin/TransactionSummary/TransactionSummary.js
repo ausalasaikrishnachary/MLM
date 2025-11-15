@@ -19,11 +19,32 @@ function TransactionSummary() {
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('all');
 
+    const formatDateTime = (dateString) => {
+  const d = new Date(dateString);
+
+  const day = d.getDate().toString().padStart(2, "0");
+  const month = (d.getMonth() + 1).toString().padStart(2, "0");
+  const year = d.getFullYear();
+
+  const hours = d.getHours().toString().padStart(2, "0");
+  const minutes = d.getMinutes().toString().padStart(2, "0");
+
+  return `${day}-${month}-${year} ${hours}:${minutes}`;
+};
+
+
     const [page, setPage] = useState(1);
     const itemsPerPage = 10;
 
     const headers = [
         { key: 'transaction_id', label: 'Transaction ID' },
+  {
+  key: "transaction_date",
+  label: "Transaction Date",
+  render: (row) => formatDateTime(row.transaction_date),
+},
+
+
         { key: 'property_name', label: 'Property Name' },
         { key: 'plan_name', label: 'Plan Name' },
         { key: 'payment_type', label: 'Payment Type' },
