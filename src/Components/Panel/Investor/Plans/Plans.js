@@ -316,409 +316,370 @@
 // export default PartnerPlans
 
 
+
+
 import React, { useEffect, useState, useRef } from 'react';
 import {
-  Container,
-  Typography,
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Box,
-  CircularProgress,
-  TableContainer,
-  IconButton,
+  Grid, Card, CardContent, Typography, Radio, RadioGroup,
+  FormControlLabel, Button, Box, Chip, CircularProgress
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import InvestorHeader from "../../../Shared/Investor/InvestorNavbar";
-import { baseurl, redirecturl } from '../../../BaseURL/BaseURL';
 import Swal from 'sweetalert2';
-import { useSearchParams } from 'react-router-dom';
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+ import InvestorHeader from "../../../Shared/Investor/InvestorNavbar";
+import { baseurl, redirecturl } from '../../../BaseURL/BaseURL';
 
-function PartnerPlans() {
+const Subcrptionplan = () => {
   const [variantData, setVariantData] = useState([]);
   const [planDataMap, setPlanDataMap] = useState({});
   const [loading, setLoading] = useState(true);
-   const [page, setPage] = useState(1);
-
   const [subscribedVariants, setSubscribedVariants] = useState([]);
-  const navigate = useNavigate();
+  const [selectedVariantId, setSelectedVariantId] = useState(null);
+  const [selectedPlan, setSelectedPlan] = useState({ name: '', duration: '', price: 0 });
   const userId = localStorage.getItem("user_id");
-
- 
   
-  // Pagination setup
-const rowsPerPage = 5;
-const startIndex = (page - 1) * rowsPerPage;
-const paginatedData = variantData.slice(startIndex, startIndex + rowsPerPage);
-const pageCount = Math.ceil(variantData.length / rowsPerPage);
-
-
-  const cellStyle = {
-    fontWeight: 'bold',
-    textAlign: 'center',
-    border: '1px solid #000',
-    backgroundColor: '#f0f0f0',
-  };
-
-  const cellBodyStyle = {
-    textAlign: 'center',
-    border: '1px solid #000',
-  };
-
-  const noDataStyle = {
-    textAlign: 'center',
-    border: '1px solid #000',
-    padding: 2,
-  };
-
-  // useEffect(() => {
-  //   const fetchUserSubscription = async () => {
-  //     try {
-  //       const res = await fetch(`${baseurl}/user-subscriptions/user-id/${userId}/`);
-  //       if (res.ok) {
-  //         const data = await res.json();
-
-  //         // If the user has an active (paid) subscription
-  //         if (data[0]?.latest_status === "paid" && data[1]?.subscription_variant) {
-  //           setSubscribedVariants([Number(data[1].subscription_variant)]);
-  //         }
-  //       }
-  //     } catch (err) {
-  //       console.error("Error fetching user subscription:", err);
-  //     }
-  //   };
-
-  //   if (userId) {
-  //     fetchUserSubscription();
-  //   }
-  // }, [userId]);
 
   const fetchUserSubscription = async () => {
-  try {
-    const res = await fetch(`${baseurl}/user-subscriptions/user-id/${userId}/`);
-    if (res.ok) {
-      const data = await res.json();
-
-      // If the user has an active (paid) subscription
-      if (data[0]?.latest_status === "paid" && data[1]?.subscription_variant) {
-        setSubscribedVariants([Number(data[1].subscription_variant)]);
+    try {
+      const res = await fetch(`${baseurl}/user-subscriptions/user-id/${userId}/`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data[0]?.latest_status === "paid" && data[1]?.subscription_variant) {
+          setSubscribedVariants([Number(data[1].subscription_variant)]);
+        }
       }
+    } catch (err) {
+      console.error("Error fetching user subscription:", err);
     }
-  } catch (err) {
-    console.error("Error fetching user subscription:", err);
-  }
-};
-
+  };
 
   useEffect(() => {
-    const fetchVariantsAndPlans = async () => {
+    const fetchPlans = async () => {
       try {
         const variantRes = await fetch(`${baseurl}/subscription/plan-variants/client/`);
         const variants = await variantRes.json();
         setVariantData(variants);
 
         const planIds = [...new Set(variants.map(v => v.plan_id))];
-        const plansMap = {};
+        const planMap = {};
 
-        await Promise.all(
-          planIds.map(async (id) => {
-            try {
-              const res = await fetch(`${baseurl}/subscription/plans/${id}/`);
-              const plan = await res.json();
-              plansMap[id] = plan;
-            } catch (err) {
-              console.error(`Error fetching plan with ID ${id}`, err);
-            }
-          })
-        );
-        setPlanDataMap(plansMap);
-      } catch (error) {
-        console.error('Error fetching variant data:', error);
+        await Promise.all(planIds.map(async (id) => {
+          const res = await fetch(`${baseurl}/subscription/plans/${id}/`);
+          const plan = await res.json();
+          planMap[id] = plan;
+        }));
+
+        setPlanDataMap(planMap);
+      } catch (err) {
+        console.error("Error:", err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchVariantsAndPlans();
+    fetchPlans();
+    fetchUserSubscription();
   }, []);
 
-  const handleBuy = async (variant) => {
-    const confirmResult = await Swal.fire({
-      title: "Are you sure?",
-      text: "Do you want to subscribe to this plan?",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Yes, subscribe!",
-      cancelButtonText: "Cancel"
+  const handleSelection = (planName, durationText, price, variant_id) => {
+    setSelectedVariantId(variant_id);
+    setSelectedPlan({ name: planName, duration: durationText, price });
+  };
+
+  const groupedPlans = variantData.reduce((acc, variant) => {
+    const plan = planDataMap[variant.plan_id];
+    if (!plan) return acc;
+
+    if (!acc[variant.plan_id]) {
+      acc[variant.plan_id] = {
+        name: plan.plan_name,
+        description: plan.description,
+        type: plan.plan_type,
+        highlight: plan.plan_name === 'Advanced Plus' ? 'Most Bought' : null,
+        color: ['#E3F2FD', '#F3E5F5', '#FFF3E0'][Object.keys(acc).length % 3], // cycle colors
+        options: []
+      };
+    }
+
+    acc[variant.plan_id].options.push({
+      duration: `${variant.duration_in_days} Days`,
+      price: variant.price,
+      perMonth: `₹${Math.round(variant.price / (variant.duration_in_days / 30))}/month`,
+      variant_id: variant.variant_id
     });
 
-    if (!confirmResult.isConfirmed) return;
+    return acc;
+  }, {});
+
+
+  const plansArray = Object.values(groupedPlans);
+
+  const handleBuy = async () => {
+    if (!selectedVariantId) {
+      Swal.fire("Select a plan first", "", "warning");
+      return;
+    }
 
     try {
-      const initiateRes = await fetch(`${baseurl}/subscription/initiate-payment/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+      const res = await fetch(`${baseurl}/subscription/initiate-payment/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           user_id: Number(userId),
-          variant_id: variant,
-          redirect_url: `${redirecturl}/i-plans` // redirect back here after payment
-        })
+          variant_id: selectedVariantId,
+          redirect_url: `${redirecturl}/p-plans`,
+        }),
       });
 
-      if (!initiateRes.ok) throw new Error('Failed to initiate payment');
-
-      const initiateData = await initiateRes.json();
-      const { payment_url, merchant_order_id } = initiateData;
-
-      // 👉 Save merchant_order_id in localStorage or append in redirect_url
-      localStorage.setItem("merchant_order_id", merchant_order_id);
-      localStorage.setItem("variant_id", variant);
-
-      // 👉 Now redirect to payment page
-      window.location.href = payment_url;
-
-    } catch (error) {
-      console.error('Subscription process failed:', error);
-      Swal.fire("Error", "Something went wrong while processing your subscription.", "error");
+      const data = await res.json();
+      localStorage.setItem("merchant_order_id", data.merchant_order_id);
+      localStorage.setItem("variant_id", selectedVariantId);
+      window.location.href = data.payment_url;
+    } catch (err) {
+      Swal.fire("Error", "Something went wrong", "error");
     }
   };
 
   const hasPostedStatus = useRef(false); // flag to prevent duplicate calls
-
+  
+    useEffect(() => {
+      const userId = localStorage.getItem("user_id");
+      const merchant_order_id = localStorage.getItem("merchant_order_id");
+      const variant_id = localStorage.getItem("variant_id");
+  
+      const updatePaymentStatus = async () => {
+        if (
+          hasPostedStatus.current || // already posted
+          !userId || !merchant_order_id || !variant_id
+        ) return;
+  
+        try {
+          hasPostedStatus.current = true; // set flag before making the request
+  
+          await fetch(`${baseurl}/subscription/confirm-payment/`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              user_id: Number(userId),
+              variant_id: Number(variant_id),
+              merchant_order_id
+            })
+          });
+  
+          // Clean up storage to avoid future duplicates
+          localStorage.removeItem("merchant_order_id");
+          localStorage.removeItem("variant_id");
+  
+           // ✅ REFRESH subscription status
+        fetchUserSubscription();
+  
+        } catch (err) {
+          console.error("Error sending payment status:", err);
+          hasPostedStatus.current = false; // allow retry if it failed
+        }
+      };
+  
+      updatePaymentStatus();
+    }, []);
+  
   useEffect(() => {
-    const userId = localStorage.getItem("user_id");
-    const merchant_order_id = localStorage.getItem("merchant_order_id");
-    const variant_id = localStorage.getItem("variant_id");
-
-    const updatePaymentStatus = async () => {
-      if (
-        hasPostedStatus.current || // already posted
-        !userId || !merchant_order_id || !variant_id
-      ) return;
-
-      try {
-        hasPostedStatus.current = true; // set flag before making the request
-
-        await fetch(`${baseurl}/subscription/confirm-payment/`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            user_id: Number(userId),
-            variant_id: Number(variant_id),
-            merchant_order_id
-          })
-        });
-
-        // Clean up storage to avoid future duplicates
-        localStorage.removeItem("merchant_order_id");
-        localStorage.removeItem("variant_id");
-
-         // ✅ REFRESH subscription status
+    if (userId) {
       fetchUserSubscription();
-
-      } catch (err) {
-        console.error("Error sending payment status:", err);
-        hasPostedStatus.current = false; // allow retry if it failed
-      }
-    };
-
-    updatePaymentStatus();
-  }, []);
-
-useEffect(() => {
-  if (userId) {
-    fetchUserSubscription();
-  }
-}, [userId]);
+    }
+  }, [userId]);
 
   return (
     <>
       <InvestorHeader />
-      <Container>
-        <div style={{ textAlign: 'center', marginTop: "10%" }}>
-           <Box
-            sx={{
-              textAlign: "center",
-              marginTop: {
-                xs: "8%",   
-                sm: "10%", 
-                md: "8%",  
-              },
-            }}
-          >
-            <Typography
-              variant="h4"
-              gutterBottom
-              sx={{
-                fontSize: {
-                  xs: "1.6rem",
-                  sm: "2.1rem",
-                  md: "2.2rem",
-                },
-                fontWeight: "bold",
-                textAlign: "center",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                marginBottom: "15px",
-              }}
-            >
-              Subscription Plan Variants
-            </Typography>
-          </Box>
-        </div>
+      <Box sx={{ p: 4, pb: 16 }}>
+        <Typography
+          variant="h4"
+          sx={{
+            textAlign: 'center',
+            fontWeight: 'bold',
+            mb: 4,
+            mt: 2,
+            color: '#001e3c',
+          }}
+        >
+          Subscription Plans
+        </Typography>
 
         {loading ? (
-          <Box display="flex" justifyContent="center" mt={5}>
-            <CircularProgress />
-          </Box>
+          <Box textAlign="center" py={10}><CircularProgress /></Box>
         ) : (
-          <TableContainer sx={{ overflowX: 'auto' }}>
-          <Table sx={{ border: '1px solid black', width: '100%', mt: 3 }}>
-            <TableHead>
-              <TableRow>
-                <TableCell sx={cellStyle}>Plan Name</TableCell>
-                <TableCell sx={cellStyle}>Description</TableCell>
-                <TableCell sx={cellStyle}>Duration (Days)</TableCell>
-                <TableCell sx={cellStyle}>Price</TableCell>
-                <TableCell sx={cellStyle}>Action</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-            {paginatedData.length > 0 ? (
-  paginatedData.map((variant, index) => {
 
-                  const plan = planDataMap[variant.plan_id] || {};
-                  const isSubscribed = subscribedVariants.includes(variant.variant_id);
-                  console.log("id",variant.variant_id)
+          <Grid container spacing={4}>
+            {plansArray.map((plan, index) => {
+              // Define gradient background options
+              const gradients = [
+                'linear-gradient(135deg, #E3F2FD, #BBDEFB)',    // Light blue
+                'linear-gradient(135deg, #F3E5F5, #CE93D8)',    // Purple
+                'linear-gradient(135deg, #FFF3E0, #FFCC80)',    // Orange
+                'linear-gradient(135deg, #E8F5E9, #A5D6A7)',    // Green
+                'linear-gradient(135deg, #FBE9E7, #FFAB91)',    // Peach
+                'linear-gradient(135deg, #E1F5FE, #81D4FA)'     // Sky blue
+              ];
+              const gradientBg = gradients[index % gradients.length];
 
-                  return (
-                    <TableRow key={index}>
-                      <TableCell sx={cellBodyStyle}>{plan.plan_name || '—'}</TableCell>
-                      <TableCell sx={cellBodyStyle}>{plan.description || '—'}</TableCell>
-                      <TableCell sx={cellBodyStyle}>{variant.duration_in_days}</TableCell>
-                      <TableCell sx={cellBodyStyle}>₹{variant.price}</TableCell>
-                      <TableCell sx={cellBodyStyle}>
-                        <Button
-                          variant="contained"
-                          size="small"
-                          onClick={() => handleBuy(variant.variant_id)}
-                          // disabled={isSubscribed}
-                          disabled={subscribedVariants.length > 0}
+              return (
+                <Grid item xs={12} md={6} lg={4} key={plan.name}>
+                  <Card
+                    sx={{
+                      background: gradientBg,
+                      transition: 'transform 0.2s ease-in-out, box-shadow 0.2s',
+                      '&:hover': {
+                        transform: 'translateY(-4px)',
+                        boxShadow: '0 6px 20px rgba(0,0,0,0.1)',
+                      },
+                      borderRadius: '16px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      height: '100%',
+                    }}
+                  >
+                    <CardContent sx={{ flexGrow: 1 }}>
+                      <Box
+                        display="flex"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        sx={{
+                          pb: 1.5,
+                          mb: 2,
+                          borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
+                        }}
+                      >
+                        <Typography
                           sx={{
-                            textTransform: 'none',
-                            backgroundColor: isSubscribed ? '#4caf50' : '#1976d2',
-                            '&:disabled': {
-                              backgroundColor: '#e0e0e0',
-                              color: '#9e9e9e'
-                            },
+                            fontSize: '1.9rem',        // Increased font size for header feel
+                            fontWeight: 800,           // Stronger weight for prominence
+                            color: '#1a1a1a',
+                            background: 'transparent',
                           }}
                         >
-                          {isSubscribed ? "Subscribed" : "Subscribe"}
-                        </Button>
+                          {plan.name}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {plan.type}
+                        </Typography>
+                      </Box>
 
 
 
 
-                      </TableCell>
-                    </TableRow>
-                  );
-                })
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={5} sx={noDataStyle}>
-                    No subscription plans available
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-          </TableContainer>
+                      {plan.highlight && (
+                        <Chip label={plan.highlight} size="small" color="warning" sx={{ mt: 1, mb: 1 }} />
+                      )}
 
-          
+                      <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 2, minHeight: 50 }}>
+                        {plan.description}
+                      </Typography>
+
+                      <RadioGroup value={String(selectedVariantId)}>
+                        {plan.options.map((opt) => {
+                          const isBought = subscribedVariants.includes(opt.variant_id);
+                          return (
+                            <FormControlLabel
+                              key={opt.variant_id}
+                              value={String(opt.variant_id)}
+                              control={<Radio />}
+                              onClick={() =>
+                                !subscribedVariants.length &&
+                                handleSelection(plan.name, opt.duration, opt.price, opt.variant_id)
+                              }
+                              label={
+                                <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+                                  <Box>
+                                    <Typography variant="body2" fontWeight={500}>
+                                      {opt.duration}
+                                    </Typography>
+                                    <Typography variant="caption" color="text.secondary">
+                                      {opt.perMonth}
+                                    </Typography>
+                                  </Box>
+                                  <Box>
+                                    <Typography variant="body2" fontWeight={600}>
+                                      ₹{opt.price}
+                                    </Typography>
+                                    {isBought && <Chip label="Bought" size="small" color="success" sx={{ ml: 1 }} />}
+                                  </Box>
+                                </Box>
+                              }
+                              disabled={!!subscribedVariants.length}
+                              sx={{
+                                mx: 0,
+                                my: 1,
+                                pl: 1,
+                                pr: 2,
+                                borderRadius: '8px',
+                                '&.Mui-disabled': {
+                                  opacity: 0.7,
+                                },
+                              }}
+                            />
+                          );
+                        })}
+                      </RadioGroup>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              );
+            })}
+          </Grid>
+
+
         )}
 
-{/* ✅ Pagination always visible */}
-<Box display="flex" justifyContent="flex-end" mt={2}>
-  <Box display="flex" alignItems="center" gap={1}>
-    {/* Prev Button */}
-    <IconButton
-      disabled={page === 1}
-      onClick={() => setPage(page - 1)}
-      sx={{
-        borderRadius: "4px", // square button
-        width: { xs: 32, sm: 36, md: 40 },
-        height: { xs: 32, sm: 36, md: 40 },
-      }}
-    >
-      <ChevronLeftIcon
-        fontSize="small"
-        sx={{ fontSize: { xs: 18, sm: 20, md: 22 } }}
-      />
-    </IconButton>
-
-    {/* Show only 3 pages (prev, current, next) */}
-    {[...Array(pageCount)].map((_, i) => {
-      const pageNum = i + 1;
-      if (
-        pageNum === page ||
-        pageNum === page - 1 ||
-        pageNum === page + 1
-      ) {
-        return (
-          <IconButton
-            key={pageNum}
-            onClick={() => setPage(pageNum)}
+        {/* Fixed Footer */}
+        {selectedPlan.name && (
+          <Box
             sx={{
-              borderRadius: "4px", // square
-              width: { xs: 32, sm: 36, md: 35 },
-              height: { xs: 32, sm: 36, md: 38 },
-              fontSize: { xs: "0.8rem", sm: "0.9rem", md: "1rem" },
-              backgroundColor: page === pageNum ? "primary.main" : "transparent",
-              color: page === pageNum ? "#fff" : "inherit",
-              "&:hover": {
-                backgroundColor:
-                  page === pageNum ? "primary.dark" : "#f0f0f0",
-              },
+              position: 'fixed',
+              bottom: 0,
+              left: 0,
+              width: '100%',
+              backgroundColor: 'white',
+              boxShadow: '0 -2px 6px rgba(0, 0, 0, 0.1)',
+              px: 4,
+              py: 2,
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              zIndex: 1000,
             }}
           >
-            {pageNum}
-          </IconButton>
-        );
-      }
-      return null;
-    })}
-
-    {/* Next Button */}
-    <IconButton
-      disabled={page === pageCount || pageCount === 0}
-      onClick={() => setPage(page + 1)}
-      sx={{
-        borderRadius: "4px", // square button
-        width: { xs: 32, sm: 36, md: 40 },
-        height: { xs: 32, sm: 36, md: 40 },
-      }}
-    >
-      <ChevronRightIcon
-        fontSize="small"
-        sx={{ fontSize: { xs: 18, sm: 20, md: 22 } }}
-      />
-    </IconButton>
-  </Box>
-</Box>
-
-      </Container>
+            <Box>
+              <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
+                {selectedPlan.name} • {selectedPlan.duration}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                ₹{selectedPlan.price} incl tax
+              </Typography>
+            </Box>
+            <Box display="flex" alignItems="center" gap={2}>
+              <Typography variant="subtitle1">Total</Typography>
+              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                ₹{selectedPlan.price}
+              </Typography>
+              <Button
+                variant="contained"
+                sx={{
+                  backgroundColor: '#001e3c',
+                  '&:hover': { backgroundColor: '#003060' },
+                  borderRadius: '8px',
+                  px: 3,
+                }}
+                onClick={handleBuy}
+              >
+                Buy Now &nbsp; →
+              </Button>
+            </Box>
+          </Box>
+        )}
+      </Box>
     </>
   );
-}
+};
 
-export default PartnerPlans;
+export default Subcrptionplan;
+
