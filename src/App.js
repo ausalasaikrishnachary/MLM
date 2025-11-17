@@ -184,6 +184,8 @@ import VerifyOtp from "./Components/Login/VerifyOtp";
 import InvestorWishlist from "./Components/Panel/Investor/InvestorWishlist";
 import AdminReportsPage from "./Components/Panel/Admin/Reports/AdminReportsPage";
 import InvestorReportsPage from "./Components/Panel/Investor/Reports/InvestorReportPage";
+import TableCategory from "./Components/Panel/Admin/Category/TableCategory";
+import EditCategory from "./Components/Panel/Admin/Category/EditCategory";
 
 
 function Layout() {
@@ -288,6 +290,8 @@ function Layout() {
           <Route path="/a-add-commissionmaster" element={<AddCommissionLevels />} />
           <Route path="/a-edit-commissionmaster/:id" element={<EditCommissionLevels />} />
           <Route path="/a-category" element={<Category />} />
+           <Route path="/tablecategory" element={<TableCategory/>} />
+           <Route path="/editcategory/:id" element={<EditCategory/>} />
           <Route path="/a-business" element={<AdminBussiness />} />
           <Route path="/a-editbusiness/:id" element={<AdminBussinessEdit />} />
           <Route path="/a-businessproducts/:id" element={<AdminBussinessProducts />} />

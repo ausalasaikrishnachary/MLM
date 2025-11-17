@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Button, Tabs, Tab, Box, Pagination, Select, MenuItem } from '@mui/material';
+import { Button, Tabs, Tab, Box, Pagination, Select, MenuItem, IconButton } from '@mui/material';
 import Header from '../../../Shared/Navbar/Navbar';
 import { useNavigate } from 'react-router-dom';
-import TableLayout from '../../../Shared/TableLayout'; // Adjust path as needed
+import TableLayout from '../../../Shared/TableLayout';
 import { baseurl } from '../../../BaseURL/BaseURL';
 import Swal from 'sweetalert2';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 function MeetingRequests() {
   const [tabValue, setTabValue] = useState(0);
@@ -23,7 +24,8 @@ function MeetingRequests() {
 
   const fetchMeetingRequests = () => {
     setLoading(true);
-    axios.get(`${baseurl}/meeting-requests/`)
+    axios
+      .get(`${baseurl}/meeting-requests/`)
       .then((response) => {
         setMeetingData(response.data);
         setLoading(false);
@@ -36,7 +38,8 @@ function MeetingRequests() {
 
   const fetchScheduledMeetings = () => {
     setLoading(true);
-    axios.get(`${baseurl}/scheduled-meetings/`)
+    axios
+      .get(`${baseurl}/scheduled-meetings/`)
       .then((response) => {
         setScheduledData(response.data);
         setLoading(false);
@@ -45,62 +48,88 @@ function MeetingRequests() {
         console.error('Error fetching scheduled meetings:', error);
         setLoading(false);
       });
-  }
+  };
+
+  // ⭐ DELETE API
+  const deleteMeetingRequest = (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "This meeting request will be permanently deleted.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios
+          .delete(`${baseurl}/meeting-requests/${id}/`)
+          .then(() => {
+            Swal.fire({
+              icon: "success",
+              title: "Deleted!",
+              text: "Meeting request deleted successfully.",
+              timer: 2000,
+              showConfirmButton: false,
+            });
+            fetchMeetingRequests(); // Refresh list
+          })
+          .catch((error) => {
+            console.error("Delete error:", error);
+            Swal.fire("Error", "Failed to delete. Try again.", "error");
+          });
+      }
+    });
+  };
 
   const handleStatusChange = (scheduleId, newStatus) => {
-    const meeting = scheduledData.find((item) => item.scheduled_meeting_id === scheduleId);
+    const meeting = scheduledData.find(
+      (item) => item.scheduled_meeting_id === scheduleId
+    );
 
     if (!meeting) {
       Swal.fire({
-        icon: 'error',
-        title: 'Not Found',
-        text: 'Meeting not found',
+        icon: "error",
+        title: "Not Found",
+        text: "Meeting not found",
       });
       return;
     }
 
-    const payload = { status: newStatus };
-
     axios
-      .put(`${baseurl}/scheduled-meetings/${scheduleId}/`, payload)
+      .put(`${baseurl}/scheduled-meetings/${scheduleId}/`, { status: newStatus })
       .then(() => {
-        fetchScheduledMeetings(); // Refresh data
-        console.log(`Status updated to ${newStatus}`);
+        fetchScheduledMeetings();
         Swal.fire({
-          icon: 'success',
-          title: 'Success',
-          text: 'Status updated successfully!',
+          icon: "success",
+          title: "Success",
+          text: "Status updated successfully!",
           timer: 2000,
           showConfirmButton: false,
         });
       })
       .catch((error) => {
-        console.error('Error updating meeting status:', error.response?.data || error.message);
-        Swal.fire({
-          icon: 'error',
-          title: 'Update Failed',
-          text: 'Failed to update status. Please try again.',
-        });
+        console.error("Error updating meeting status:", error);
+        Swal.fire("Error", "Failed to update status. Try again.", "error");
       });
   };
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
-    setPage(1); // Reset to first page
+    setPage(1);
+
     if (newValue === 0) fetchMeetingRequests();
     else fetchScheduledMeetings();
   };
 
   const headers = [
-    ...(tabValue === 0 ? [{ label: 'RequestId', key: 'id' }] : []),
-    { label: 'UserId', key: 'user_id' },
-    { label: 'Team Name', key: 'name' },
-    { label: 'Team Referral ID', key: 'referral_id' },
-    { label: 'Email', key: 'email' },
-    { label: 'Profile Type', key: 'profile_type' },
-    { label: tabValue === 0 ? 'Requested Date' : 'Scheduled Date', key: 'date' },
-    { label: tabValue === 0 ? 'Requested Time' : 'Scheduled Time', key: 'time' },
-    { label: 'Action', key: 'action' },
+    ...(tabValue === 0 ? [{ label: "RequestId", key: "id" }] : []),
+    { label: "UserId", key: "user_id" },
+    { label: "Team Name", key: "name" },
+    { label: "Team Referral ID", key: "referral_id" },
+    { label: "Email", key: "email" },
+    { label: "Profile Type", key: "profile_type" },
+    { label: tabValue === 0 ? "Requested Date" : "Scheduled Date", key: "date" },
+    { label: tabValue === 0 ? "Requested Time" : "Scheduled Time", key: "time" },
+    { label: "Action", key: "action" },
   ];
 
   const getTableData = () => {
@@ -120,28 +149,45 @@ function MeetingRequests() {
         profile_type: item.profile_type,
         date: item.requested_date || item.scheduled_date,
         time: item.requested_time || item.scheduled_time,
+
         action:
           tabValue === 0 ? (
-            <Button
-              variant={isScheduled ? 'outlined' : 'contained'}
-              size="small"
-              disabled={isScheduled}
-              onClick={(e) => {
-                e.stopPropagation();
-                if (!isScheduled) {
-                  navigate(`/shedulemeet/${item.user_id}`, {
-                    state: { request_id: item.request_id },
-                  });
-                }
-              }}
-            >
-              {isScheduled ? 'Scheduled' : 'Schedule'}
-            </Button>
+            <Box sx={{ display: "flex", gap: 1 }}>
+              <Button
+                variant={isScheduled ? "outlined" : "contained"}
+                size="small"
+                disabled={isScheduled}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!isScheduled) {
+                    navigate(`/shedulemeet/${item.user_id}`, {
+                      state: { request_id: item.request_id },
+                    });
+                  }
+                }}
+              >
+                {isScheduled ? "Scheduled" : "Schedule"}
+              </Button>
+
+              {/* ⭐ DELETE ICON (ONLY FOR MEETING REQUESTS TAB) */}
+              <IconButton
+  color="error"
+  onClick={(e) => {
+    e.stopPropagation();
+    deleteMeetingRequest(item.id ?? item.request_id);
+  }}
+>
+  <DeleteIcon />
+</IconButton>
+
+            </Box>
           ) : (
             <Select
               size="small"
-              value={item.status || 'Scheduled'}
-              onChange={(e) => handleStatusChange(item.scheduled_meeting_id, e.target.value)}
+              value={item.status || "scheduled"}
+              onChange={(e) =>
+                handleStatusChange(item.scheduled_meeting_id, e.target.value)
+              }
               sx={{ minWidth: 140 }}
             >
               <MenuItem value="scheduled">Scheduled</MenuItem>
@@ -154,7 +200,8 @@ function MeetingRequests() {
   };
 
   const totalPages = Math.ceil(
-    (tabValue === 0 ? meetingData.length : scheduledData.length) / itemsPerPage
+    (tabValue === 0 ? meetingData.length : scheduledData.length) /
+      itemsPerPage
   );
 
   const handlePageChange = (_, value) => {
@@ -164,8 +211,8 @@ function MeetingRequests() {
   return (
     <>
       <Header />
-      <Box sx={{ width: '90%', margin: '2rem auto' }}>
-        <Box sx={{ textAlign: 'center', paddingTop: '2rem' }}>
+      <Box sx={{ width: "90%", margin: "2rem auto" }}>
+        <Box sx={{ textAlign: "center", paddingTop: "2rem" }}>
           <Tabs value={tabValue} onChange={handleTabChange} centered>
             <Tab label="Meeting Requests" />
             <Tab label="Scheduled Meetings" />
@@ -173,14 +220,13 @@ function MeetingRequests() {
         </Box>
 
         <TableLayout
-          title={tabValue === 0 ? 'Meeting Requests' : 'Scheduled Meetings'}
+          title={tabValue === 0 ? "Meeting Requests" : "Scheduled Meetings"}
           headers={headers}
           data={getTableData()}
           loading={loading}
         />
 
-        {/* Pagination Controls */}
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+        <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
           <Pagination
             count={totalPages}
             page={page}
