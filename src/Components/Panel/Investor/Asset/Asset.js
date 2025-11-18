@@ -74,7 +74,7 @@ const AssetsUI = () => {
   const [subscriptionPaid, setSubscriptionPaid] = useState(false);
   const [currentImageIndices, setCurrentImageIndices] = useState({});
   const [page, setPage] = useState(1);
-  const itemsPerPage = 6;
+  const itemsPerPage = 30;
   const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
   const startIndex = (page - 1) * itemsPerPage;
   const paginatedProperties = filteredProperties.slice(startIndex, startIndex + itemsPerPage);

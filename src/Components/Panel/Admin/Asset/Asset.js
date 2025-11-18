@@ -70,7 +70,7 @@ const AssetsUI = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentImageIndices, setCurrentImageIndices] = useState({});
   const navigate = useNavigate();
-  const itemsPerPage = 6;
+  const itemsPerPage = 30;
   const [page, setPage] = useState(1);
   const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
   const startIndex = (page - 1) * itemsPerPage;

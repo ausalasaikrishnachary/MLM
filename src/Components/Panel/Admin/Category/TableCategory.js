@@ -10,7 +10,7 @@ import {
   Button,
   IconButton,
   Container,
-  Pagination
+  Pagination,
 } from "@mui/material";
 
 import axios from "axios";
@@ -20,16 +20,20 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { baseurl } from "../../../BaseURL/BaseURL";
 
 function TableCategory() {
-  const [types, setTypes] = useState([]);
   const [categories, setCategories] = useState([]);
-
+  const [types, setTypes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const itemsPerPage = 5;
+
+  const [pageCat, setPageCat] = useState(1);
+  const [pageType, setPageType] = useState(1);
+  const itemsPerPage = 8;
 
   const navigate = useNavigate();
 
-  // Styling – Matches your CommissionLevels UI
+  const TYPE_URL = `${baseurl}/property-types/`;
+  const CATEGORY_URL = `https://rahul30.pythonanywhere.com/property-categories/`;
+
+  // SAME UI STYLE AS COMMISSION LEVELS
   const cellStyle = {
     fontWeight: "bold",
     textAlign: "center",
@@ -48,25 +52,10 @@ function TableCategory() {
     padding: 2,
   };
 
-  const TYPE_URL = `${baseurl}/property-types/`;
-  const CATEGORY_URL = `${baseurl}/property-categories/`;
-
   useEffect(() => {
-    fetchTypes();
     fetchCategories();
+    fetchTypes();
   }, []);
-
-  const fetchTypes = async () => {
-    setLoading(true);
-    try {
-      const res = await axios.get(TYPE_URL);
-      setTypes(res.data);
-      setPage(1);
-    } catch (err) {
-      console.error("Error fetching types:", err);
-    }
-    setLoading(false);
-  };
 
   const fetchCategories = async () => {
     try {
@@ -77,59 +66,140 @@ function TableCategory() {
     }
   };
 
-  const getCategoryName = (id) => {
-    const found = categories.find(
-      (cat) => cat.property_category_id === id
-    );
-    return found ? found.name : "Unknown";
+  const fetchTypes = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get(TYPE_URL);
+      setTypes(res.data);
+    } catch (err) {
+      console.error("Error fetching types:", err);
+    }
+    setLoading(false);
   };
 
-  const handleDelete = async (id) => {
+  // DELETE CATEGORY
+  const handleDeleteCategory = async (id) => {
+    if (!window.confirm("Do you want to delete this category?")) return;
+
+    try {
+      await axios.delete(`${CATEGORY_URL}${id}/`);
+      fetchCategories();
+    } catch (error) {
+      console.error("Error deleting category:", error);
+    }
+  };
+
+  // DELETE TYPE
+  const handleDeleteType = async (id) => {
     if (!window.confirm("Do you want to delete this property type?")) return;
 
     try {
       await axios.delete(`${TYPE_URL}${id}/`);
       fetchTypes();
     } catch (error) {
-      console.error("Error deleting:", error);
+      console.error("Error deleting type:", error);
     }
   };
 
-  const handlePageChange = (_, value) => {
-    setPage(value);
+  const getCategoryName = (id) => {
+    const found = categories.find((cat) => cat.property_category_id === id);
+    return found ? found.name : "Unknown";
   };
 
-  const totalPages = Math.ceil(types.length / itemsPerPage);
-
-  const paginatedData = types.slice(
-    (page - 1) * itemsPerPage,
-    page * itemsPerPage
-  );
+  const paginate = (data, page) =>
+    data.slice((page - 1) * itemsPerPage, page * itemsPerPage);
 
   return (
     <>
       <Header />
       <Container>
-        <div style={{ textAlign: "center", marginTop: "8%" }}>
+
+        {/* CATEGORY TABLE */}
+        <div style={{ textAlign: "center", marginTop: "5%" }}>
+          <h2 style={{ fontWeight: "bold" }}>Property Categories</h2>
+        </div>
+
+        <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+          <Button
+            variant="contained"
+            color="success"
+            onClick={() => navigate("/propertycategoryform")}
+          >
+            Add Property Category
+          </Button>
+        </Box>
+
+        <Table sx={{ border: "1px solid black", width: "100%", mb: 5 }}>
+          <TableHead>
+            <TableRow>
+              <TableCell sx={cellStyle}>S.No</TableCell>
+              <TableCell sx={cellStyle}>Category Name</TableCell>
+              <TableCell sx={cellStyle}>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+
+          <TableBody>
+            {categories.length > 0 ? (
+              paginate(categories, pageCat).map((cat, index) => (
+                <TableRow key={cat.property_category_id}>
+                  <TableCell sx={cellBodyStyle}>
+                    {(pageCat - 1) * itemsPerPage + index + 1}
+                  </TableCell>
+                  <TableCell sx={cellBodyStyle}>{cat.name}</TableCell>
+
+                  <TableCell sx={cellBodyStyle}>
+                    <IconButton
+                      color="error"
+                      size="small"
+                      onClick={() =>
+                        handleDeleteCategory(cat.property_category_id)
+                      }
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={3} sx={noDataStyle}>
+                  No categories found
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+
+        {/* CATEGORY Pagination */}
+        <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 4 }}>
+          <Pagination
+            count={Math.ceil(categories.length / itemsPerPage)}
+            page={pageCat}
+            onChange={(_, value) => setPageCat(value)}
+            color="primary"
+            sx={{ "& .MuiPaginationItem-root": { borderRadius: 0 } }}
+          />
+        </Box>
+
+        {/* TYPES TABLE */}
+        <div style={{ textAlign: "center", marginTop: "3%" }}>
           <h2 style={{ fontWeight: "bold" }}>Property Types</h2>
         </div>
 
-        {/* Add Category Button */}
         <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
           <Button
             variant="contained"
             color="primary"
             onClick={() => navigate("/a-category")}
           >
-            Add Category
+            Add Property Type
           </Button>
         </Box>
 
-        {/* Table */}
         <Table sx={{ border: "1px solid black", width: "100%" }}>
           <TableHead>
             <TableRow>
-              <TableCell sx={cellStyle}>ID</TableCell>
+              <TableCell sx={cellStyle}>S.No</TableCell>
               <TableCell sx={cellStyle}>Type Name</TableCell>
               <TableCell sx={cellStyle}>Category</TableCell>
               <TableCell sx={cellStyle}>Actions</TableCell>
@@ -143,11 +213,11 @@ function TableCategory() {
                   Loading...
                 </TableCell>
               </TableRow>
-            ) : paginatedData.length > 0 ? (
-              paginatedData.map((item) => (
+            ) : paginate(types, pageType).length > 0 ? (
+              paginate(types, pageType).map((item, index) => (
                 <TableRow key={item.property_type_id}>
                   <TableCell sx={cellBodyStyle}>
-                    {item.property_type_id}
+                    {(pageType - 1) * itemsPerPage + index + 1}
                   </TableCell>
 
                   <TableCell sx={cellBodyStyle}>{item.name}</TableCell>
@@ -157,28 +227,21 @@ function TableCategory() {
                   </TableCell>
 
                   <TableCell sx={cellBodyStyle}>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                        gap: 1,
-                      }}
-                    >
-                    <IconButton
-  color="primary"
-  size="small"
-  onClick={() => navigate(`/editcategory/${item.property_type_id}`)}
->
-  <EditIcon fontSize="small" />
-</IconButton>
-
+                    <Box sx={{ display: "flex", justifyContent: "center", gap: 1 }}>
+                      <IconButton
+                        color="primary"
+                        size="small"
+                        onClick={() =>
+                          navigate(`/editcategory/${item.property_type_id}`)
+                        }
+                      >
+                        <EditIcon fontSize="small" />
+                      </IconButton>
 
                       <IconButton
                         color="error"
                         size="small"
-                        onClick={() =>
-                          handleDelete(item.property_type_id)
-                        }
+                        onClick={() => handleDeleteType(item.property_type_id)}
                       >
                         <DeleteIcon fontSize="small" />
                       </IconButton>
@@ -196,22 +259,16 @@ function TableCategory() {
           </TableBody>
         </Table>
 
-        {/* Pagination */}
-        {!loading && types.length > 0 && (
-          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
-            <Pagination
-              count={totalPages}
-              page={page}
-              onChange={handlePageChange}
-              color="primary"
-              sx={{
-                "& .MuiPaginationItem-root": {
-                  borderRadius: 0,
-                },
-              }}
-            />
-          </Box>
-        )}
+        {/* TYPES Pagination */}
+        <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
+          <Pagination
+            count={Math.ceil(types.length / itemsPerPage)}
+            page={pageType}
+            onChange={(_, value) => setPageType(value)}
+            color="primary"
+            sx={{ "& .MuiPaginationItem-root": { borderRadius: 0 } }}
+          />
+        </Box>
       </Container>
     </>
   );
