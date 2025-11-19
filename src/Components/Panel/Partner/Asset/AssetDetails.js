@@ -229,13 +229,24 @@ const TabPanel = (props) => {
 const AssetDetail = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { property } = location.state || {};
+   const { property: receivedProperty } = location.state || {};
   const { id } = useParams();
+  const [property, setProperty] = useState(null);
+
 
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [isPlot, setIsPlot] = useState(false);
   const [propertyTypeName, setPropertyTypeName] = useState("");
   const [tabValue, setTabValue] = useState(0);
+
+  useEffect(() => {
+  if (!property) {
+    fetch(`${baseurl}/property/${id}/`)
+      .then((res) => res.json())
+      .then((data) => setProperty(data))
+      .catch((err) => console.error("Error fetching property:", err));
+  }
+}, [id, property]);
 
 useEffect(() => {
   const fetchPropertyTypes = async () => {
@@ -264,8 +275,10 @@ useEffect(() => {
 }, [property]);
 
   if (!property) {
-    return <Typography>Loading property details...</Typography>;
-  }
+  return <Typography>Loading property details...</Typography>;
+}
+
+
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-IN', {

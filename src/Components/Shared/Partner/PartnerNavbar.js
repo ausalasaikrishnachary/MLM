@@ -21,6 +21,7 @@ import {
   Badge,
   Menu as MuiMenu
 } from '@mui/material';
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
@@ -80,28 +81,36 @@ export default function PartnerHeader() {
         });
     };
 
-    const fetchNotifications = () => {
-      axios.get(`${baseurl}/notifications/user-id/${userId}/`)
-        .then(response => {
-          const unread = response.data.filter(n => !n.is_read);
-          setNotifications(prev => {
-            // avoid duplicates when merging birthday + API notifications
-            const all = [...unread, ...prev];
-            const unique = [];
-            const seen = new Set();
-            for (let n of all) {
-              if (!seen.has(n.notification_status_id)) {
-                unique.push(n);
-                seen.add(n.notification_status_id);
-              }
-            }
-            return unique;
-          });
-        })
-        .catch(error => {
-          console.error("Error fetching notifications:", error);
-        });
-    };
+  const fetchNotifications = () => {
+  axios
+    .get(`${baseurl}/notifications/user-id/${userId}/`)
+    .then(response => {
+
+      // ✅ Add this line
+      console.log("NOTIFICATIONS FROM API:", response.data);
+
+      const unread = response.data.filter(n => !n.is_read);
+
+      setNotifications(prev => {
+        const all = [...unread, ...prev];
+
+        const unique = [];
+        const seen = new Set();
+
+        for (let n of all) {
+          if (!seen.has(n.notification_status_id)) {
+            unique.push(n);
+            seen.add(n.notification_status_id);
+          }
+        }
+
+        return unique;
+      });
+    })
+    .catch(error => {
+      console.error("Error fetching notifications:", error);
+    });
+};
 
     fetchProfileImageAndBirthday();
     fetchNotifications();
@@ -127,7 +136,7 @@ export default function PartnerHeader() {
         { label: 'Training Material', path: '/p-trainingmaterial' },
         { label: 'My Team', path: '/p-myteam' },
         { label: 'Site Visits', path: '/p-sitevisits' },
-        { label: 'Wishlist', path: '/p-wishlist' },
+        // { label: 'Wishlist', path: '/p-wishlist' },
        
       ]
     },
@@ -169,6 +178,11 @@ export default function PartnerHeader() {
   const handleProfileMenuClose = () => {
     setProfileAnchorEl(null);
   };
+
+  const handleClick = (notif) => {
+  navigate(`/p-assets/${notif.property.id}`);
+};
+
 
   const [openOperationsMobile, setOpenOperationsMobile] = useState(false);
 
@@ -268,22 +282,32 @@ export default function PartnerHeader() {
                   <img src={Logo} alt="logo" style={{ height: '50px', maxWidth: '150px', transform: 'scale(2.0)', }} />
                 </Link>
               </Box>
-              <Box display="flex" alignItems="center">
-                <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
-                  <Badge badgeContent={notifications.length} color="error">
-                    <NotificationsNoneIcon />
-                  </Badge>
-                </IconButton>
-                <Typography sx={{ ml: 2, mr: 2, color: '#000', fontWeight: 'bold' }}>
-                  {first_name} ({referral_id})
-                </Typography>
-                <Avatar
-                  onClick={handleAvatarClick}
-                  sx={{ width: 40, height: 40, cursor: 'pointer' }}
-                  alt="Profile Avatar"
-                  src={profileImage ? `${baseurl}${profileImage}` : "https://via.placeholder.com/40"}
-                />
-              </Box>
+           <Box display="flex" alignItems="center">
+
+  {/* Wishlist Heart Icon */}
+  <IconButton sx={{ color: "#ee1111ff", mr: 1 }} onClick={() => navigate("/p-wishlist")}>
+    <FavoriteIcon />
+  </IconButton>
+
+  {/* Notification Icon */}
+  <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
+    <Badge badgeContent={notifications.length} color="error">
+      <NotificationsNoneIcon />
+    </Badge>
+  </IconButton>
+
+  <Typography sx={{ ml: 2, mr: 2, color: '#000', fontWeight: 'bold' }}>
+    {first_name} ({referral_id})
+  </Typography>
+
+  <Avatar
+    onClick={handleAvatarClick}
+    sx={{ width: 40, height: 40, cursor: 'pointer' }}
+    alt="Profile Avatar"
+    src={profileImage ? `${baseurl}${profileImage}` : "https://via.placeholder.com/40"}
+  />
+</Box>
+
 
             </Box>
           ) : (
@@ -337,6 +361,10 @@ export default function PartnerHeader() {
     )
   )}
 </Box>
+  {/* Wishlist Heart Icon */}
+  <IconButton sx={{ color: "#ee1111ff", mr: 1 }} onClick={() => navigate("/p-wishlist")}>
+    <FavoriteIcon />
+  </IconButton>
               <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
                 <Badge badgeContent={notifications.length} color="error">
                   <NotificationsNoneIcon />
@@ -440,25 +468,31 @@ export default function PartnerHeader() {
       >
         {notifications.length > 0 ? (
           notifications.map((notif) => (
-            <MenuItem
-              key={notif.notification_status_id}
-              onClick={() => {
-                axios.post(`${baseurl}/notifications/mark-as-read/`, {
-                  user_id: parseInt(userId),
-                  notification_id: notif.notification_status_id
-                })
-                  .then(() => {
-                    setNotifications(prev => prev.filter(n => n.notification_status_id !== notif.notification_status_id));
-                    handleNotificationClose();
-                    navigate('/p-assets');
-                  })
-                  .catch(error => {
-                    console.error("Error marking notification as read:", error);
-                  });
-              }}
-            >
-              {notif.message}
-            </MenuItem>
+<MenuItem
+  key={notif.notification_status_id}
+  onClick={() => {
+    axios.post(`${baseurl}/notifications/mark-as-read/`, {
+      user_id: parseInt(userId),
+      notification_id: notif.notification_status_id
+    })
+      .then(() => {
+        setNotifications(prev =>
+          prev.filter(n => n.notification_status_id !== notif.notification_status_id)
+        );
+        handleNotificationClose();
+
+        // ⭐ Correct navigation
+        navigate(`/p-assets/${notif.property.id}`);
+      })
+      .catch(error => {
+        console.error("Error marking notification as read:", error);
+      });
+  }}
+>
+  {notif.message}
+</MenuItem>
+
+
           ))
         ) : (
           <MenuItem disabled>No notifications</MenuItem>

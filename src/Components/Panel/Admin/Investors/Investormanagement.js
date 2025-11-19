@@ -32,6 +32,8 @@ const Tmanagement = () => {
   const [loading, setLoading] = useState(true);
   const [selectedRole, setSelectedRole] = useState("All");
   const [page, setPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+
     const rowsPerPage = 5; 
 
   // Fetch data
@@ -64,17 +66,24 @@ const Tmanagement = () => {
   // Unique roles for filter dropdown
   const uniqueRoles = ["All", ...new Set(data.map((user) => user.role).filter(Boolean))];
 
-  // Filtered data
-  const filteredData =
-    selectedRole === "All"
-      ? data
-      : data.filter((user) => user.role === selectedRole);
+const filteredData =
+  selectedRole === "All"
+    ? data
+    : data.filter((user) => user.role === selectedRole);
 
+// Apply search filter
+const searchedData = filteredData.filter((user) =>
+  Object.values(user)
+    .join(" ")
+    .toLowerCase()
+    .includes(searchQuery.toLowerCase())
+);
 
+// Pagination uses searchedData instead of filteredData
 const startIndex = (page - 1) * rowsPerPage;
-const paginatedData = filteredData.slice(startIndex, startIndex + rowsPerPage);
-const pageCount = Math.ceil(filteredData.length / rowsPerPage);
-;
+const paginatedData = searchedData.slice(startIndex, startIndex + rowsPerPage);
+const pageCount = Math.ceil(searchedData.length / rowsPerPage);
+
 
 
 
@@ -198,31 +207,50 @@ const handleStatusChange = async (userId, newStatus) => {
     <>
       <Header />
       <Container sx={{ mt: 10 }}>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 2
-          }}
-        >
-          <FormControl sx={{ minWidth: 200, mt: 5 }}>
-            <InputLabel id="role-filter-label">Filter by Role</InputLabel>
-            <Select
-              labelId="role-filter-label"
-              value={selectedRole}
-              label="Filter by Role"
-              onChange={(e) => setSelectedRole(e.target.value)}
-            >
-              {uniqueRoles.map((role) => (
-                <MenuItem key={role} value={role}>
-                  {role === "Agent" ? "Team" : role || "Unknown"}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+<Box
+  sx={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    mb: 2,
+    mt: 5
+  }}
+>
+  {/* Filter Dropdown */}
+  <FormControl sx={{ minWidth: 200 }}>
+    <InputLabel id="role-filter-label">Filter by Role</InputLabel>
+    <Select
+      labelId="role-filter-label"
+      value={selectedRole}
+      label="Filter by Role"
+      onChange={(e) => setSelectedRole(e.target.value)}
+    >
+      {uniqueRoles.map((role) => (
+        <MenuItem key={role} value={role}>
+          {role === "Agent" ? "Team" : role || "Unknown"}
+        </MenuItem>
+      ))}
+    </Select>
+  </FormControl>
 
-        </Box>
+  {/* Search Bar */}
+  <Box>
+    <input
+      type="text"
+      placeholder="Search..."
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      style={{
+        padding: "10px",
+        width: "250px",
+        fontSize: "14px",
+        borderRadius: "4px",
+        border: "1px solid #999"
+      }}
+    />
+  </Box>
+</Box>
+
 
 
             <Box

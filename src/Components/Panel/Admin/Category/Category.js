@@ -77,22 +77,22 @@ function Category() {
       <Container maxWidth="sm" sx={{ mt: 4 }}>
 
         {/* Title */}
-        <Typography variant="h5" gutterBottom>
+        {/* <Typography variant="h5" gutterBottom>
           Create Category
-        </Typography>
+        </Typography> */}
 
         {/* Category Input Row */}
-        <Grid container spacing={2} alignItems="center" mb={3}>
-          <Grid item xs={8}>
+        {/* <Grid container spacing={2} alignItems="center" mb={3}> */}
+          {/* <Grid item xs={8}>
             <TextField
               label="Category Name"
               fullWidth
               value={categoryName}
               onChange={(e) => setCategoryName(e.target.value)}
             />
-          </Grid>
+          </Grid> */}
 
-          <Grid item xs={4}>
+          {/* <Grid item xs={4}>
             <Button
               variant="contained"
               fullWidth
@@ -101,8 +101,8 @@ function Category() {
             >
               Add Category
             </Button>
-          </Grid>
-        </Grid>
+          </Grid> */}
+        {/* </Grid> */}
 
         <Typography variant="h5" gutterBottom>
           Create Type Under Category
