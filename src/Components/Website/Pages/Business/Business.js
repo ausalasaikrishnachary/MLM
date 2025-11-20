@@ -25,6 +25,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import ShareIcon from "@mui/icons-material/Share";
 import Header from "../../../Shared/Navbar/Navbar";
 import { baseurl } from "../../../BaseURL/BaseURL";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const AdminBusiness = () => {
   const [open, setOpen] = useState(false); 
@@ -33,6 +34,7 @@ const AdminBusiness = () => {
   const [selectedLogo, setSelectedLogo] = useState(null);
   const [businesses, setBusinesses] = useState([]);
   const [searchTerm, setSearchTerm] = useState(''); // Added search term state
+   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBusinesses = async () => {
@@ -117,6 +119,7 @@ const handlePageChange = (event, value) => {
           paginatedBusinesses.map((biz, idx) => (
             <Grid item xs={12} sm={6} md={4} key={idx} sx={{ display: "flex" }}>
               <Card
+              onClick={() => navigate(`/web-businessproducts/${biz.business_id}`)}
                 sx={{
                   borderRadius: "20px",
                   p: 2,

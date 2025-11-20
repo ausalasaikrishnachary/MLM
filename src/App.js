@@ -187,6 +187,10 @@ import InvestorReportsPage from "./Components/Panel/Investor/Reports/InvestorRep
 import TableCategory from "./Components/Panel/Admin/Category/TableCategory";
 import EditCategory from "./Components/Panel/Admin/Category/EditCategory";
 import PropertyCategoryform from "./Components/Panel/Admin/Category/PropertyCategoryform";
+import ProductDetails from "./Components/Panel/Partner/Business/ProductDetails";
+import I_ProductDetails from "./Components/Panel/Investor/InvestorBusiness/I-ProductDetails";
+import WebBusinessProducts from "./Components/Website/Pages/Business/WebBusinessProducts";
+import WebProductDetails from "./Components/Website/Pages/Business/WebProductDetails";
 
 
 function Layout() {
@@ -196,7 +200,7 @@ function Layout() {
   const [showChat, setShowChat] = useState(false);
 
   // Define paths where Header and Footer should be visible
-  const publicPaths = ["/", "/aboutus", "/FAQ", "/contactus", "/properties", "/propertydetails", "/termsandconditions", "/privacypolicy", "/refundpolicy", "/filteredproperties", "/viewpropertiesdetails/:id", "/business"];
+  const publicPaths = ["/", "/aboutus", "/FAQ", "/contactus", "/properties", "/propertydetails", "/termsandconditions", "/privacypolicy", "/refundpolicy", "/filteredproperties", "/viewpropertiesdetails/:id", "/business", "/web-businessproducts/:id", "/web-product-details/:id"];
   const footerPaths = ["/", "/aboutus", "/FAQ", "/contactus", "/properties", "/termsandconditions", "/privacypolicy", "/refundpolicy", "/filteredproperties", "/viewpropertiesdetails/:id", "/business"]; // Removed '/propertydetails'
 
   // Trigger popup after 60 seconds on public pages
@@ -216,7 +220,14 @@ function Layout() {
   return (
 
     <>
-      {publicPaths.includes(location.pathname) && <Header />}
+    {publicPaths.some(path => {
+    if (path.includes(":id")) {
+      const base = path.split("/:")[0]; // "/web-businessproducts"
+      return location.pathname.startsWith(base);
+    }
+    return location.pathname === path;
+}) && <Header />}
+
 
       <div className="main-container">
         <Routes>
@@ -231,6 +242,7 @@ function Layout() {
           <Route path="/propertydetails" element={<PropertyDetail />} />
           <Route path="/viewpropertiesdetails/:id" element={<ViewPropertiesDetails />} />
           <Route path="/business" element={<Business />} />
+           <Route path="/web-businessproducts/:id" element={<WebBusinessProducts />} />
 
 
           <Route path="/a-trainingmaterial" element={<TrainingMaterial />} />
@@ -250,6 +262,7 @@ function Layout() {
           <Route path="/a-table-carousel" element={<CarouselList />} />
           <Route path="/View_Tmanagement" element={<View_Tmanagement />} />
           <Route path="/Edit_Tmanagement" element={<Edit_Tmanagement />} />
+            <Route path="/web-product-details/:id" element={<WebProductDetails />} />
 
           <Route path="/a-transactionmoniter" element={<Tmoniter />} />
           <Route path="/a-investment-page" element={<InvestmentPage />} />
@@ -393,6 +406,8 @@ function Layout() {
 
 
           <Route path="/termsandconditions" element={<Termsandconditions />} />
+            <Route path="/product-details/:id" element={<ProductDetails />} />
+             <Route path="/i-product-details/:id" element={<I_ProductDetails />} />
           <Route path="/privacypolicy" element={<Privacypolicy />} />
           <Route path="/refundpolicy" element={<Refundpolicy />} />
           <Route path="/legalnavbar" element={<LegalNavbar />} />

@@ -18,7 +18,7 @@ import PartnerHeader from "../../../Shared/Partner/PartnerNavbar";
 import { baseurl } from "../../../BaseURL/BaseURL";
 import PaginationComponent from "../../../Shared/Pagination";
 
-function BusinessProducts() {
+function WebBusinessProducts() {
   const { id } = useParams();
   const [products, setProducts] = useState([]);
   const [commissions, setCommissions] = useState([]);
@@ -94,11 +94,11 @@ function BusinessProducts() {
     console.log("View count updated");
 
     // Now navigate after update
-    navigate(`/product-details/${product.id}`);
+    navigate(`/web-product-details/${product.id}`);
   } catch (error) {
     console.log("Error updating view count:", error);
     // Still navigate even if update fails
-    navigate(`/product-details/${product.id}`);
+    navigate(`/web-product-details/${product.id}`);
   }
 };
 
@@ -109,11 +109,37 @@ function BusinessProducts() {
 
   return (
     <>
-      <PartnerHeader />
+      {/* <PartnerHeader /> */}
       <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-        <Typography variant="h4" fontWeight="bold" align="center" gutterBottom>
-          Products for Business
-        </Typography>
+       <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  mb: 2,
+                  position: "relative",
+                }}
+              >
+                {/* Back Button (Left) */}
+                <Button
+                  variant="outlined"
+                  onClick={() => navigate(-1)}
+                  sx={{ position: "absolute", left: 0 }}
+                >
+                  ← Back
+                </Button>
+      
+                {/* Center Heading */}
+                <Typography
+                  variant="h4"
+                  sx={{
+                    width: "100%",
+                    textAlign: "center",
+                    fontWeight: "bold",
+                  }}
+                >
+                 Products for Business
+                </Typography>
+              </Box>
 
         {loading ? (
           <Box display="flex" justifyContent="center" mt={5}>
@@ -203,7 +229,7 @@ function BusinessProducts() {
 
                     </Box>
                     {/* ✅ Payout Button with Hover Popover */}
-                    <Box sx={{ mt: 1 }}>
+                    {/* <Box sx={{ mt: 1 }}>
                       <Button
                         onMouseEnter={(e) => handlePopoverOpen(e, product.id)}
                         onMouseLeave={handlePopoverClose}
@@ -259,7 +285,7 @@ function BusinessProducts() {
                           )}
                         </Box>
                       </Popover>
-                    </Box>
+                    </Box> */}
                   </CardContent>
                 </Card>
               </Grid>
@@ -277,8 +303,8 @@ function BusinessProducts() {
           </Box>
         )}
       </Container>
-    </>
+    </> 
   );
 }
 
-export default BusinessProducts;
+export default WebBusinessProducts;

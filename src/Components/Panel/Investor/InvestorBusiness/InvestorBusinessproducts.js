@@ -23,7 +23,7 @@ import PaginationComponent from "../../../Shared/Pagination";
 import InvestorHeader from "../../../Shared/Investor/InvestorNavbar";
 import { baseurl } from "../../../BaseURL/BaseURL";
 
-function AdminBussinessProducts() {
+function AdminBussinessProducts() { 
     const { id } = useParams(); // get business_id from URL
     const [products, setProducts] = useState([]);
     const [commissions, setCommissions] = useState([]);
@@ -104,6 +104,26 @@ function AdminBussinessProducts() {
     const handlePageChange = (event, value) => {
         setPage(value);
     };
+     const handleViewDetails = async (product) => {
+  try {
+    await fetch(`${baseurl}/products/${product.id}/`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        view_count: (product.view_count || 0) + 1,
+      }),
+    });
+
+    console.log("View count updated");
+
+    // Now navigate after update
+    navigate(`/i-product-details/${product.id}`);
+  } catch (error) {
+    console.log("Error updating view count:", error);
+    // Still navigate even if update fails
+    navigate(`i-/product-details/${product.id}`);
+  }
+};
 
     // ✅ Calculate pagination based on products, not businesses
     const totalPages = Math.ceil(products.length / itemsPerPage);
@@ -212,6 +232,24 @@ function AdminBussinessProducts() {
                                                 <strong>Description:</strong> {product.description}
                                             </Typography>
                                         )}
+                                        <Box sx={{ mt: 2 }}>
+                                                           <Button
+                                          onClick={() => handleViewDetails(product)}
+                                          fullWidth
+                                          variant="contained"
+                                          sx={{
+                                            color: "white",
+                                            textTransform: "none",
+                                            "&:hover": { color: "rgb(5,5,5)" },
+                                            mb: 1,
+                                            backgroundColor: "green",
+                                          }}
+                                        >
+                                          View Details
+                                        </Button>
+                                        
+                                        
+                                                            </Box>
 
                                         {/* ✅ Payout Button with Hover Popover */}
                                         <Box sx={{ mt: 2 }}>
