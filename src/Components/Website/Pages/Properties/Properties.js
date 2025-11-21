@@ -140,26 +140,27 @@ const Properties = () => {
     page * itemsPerPage
   );
 
-  const handleViewDetails = async (property) => {
+ const handleViewDetails = async (property) => {
+  // Navigate first
+  navigate(`/viewpropertiesdetails/${property.property_id}`, {
+    state: { property }
+  });
+
+  // Update count in background (no blocking)
   try {
     await fetch(`${baseurl}/property/${property.property_id}/`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         view_count: (property.view_count || 0) + 1
-      })
+      }),
     });
-
     console.log("View count updated");
-  } catch (error) {
-    console.log("Error updating view count:", error);
+  } catch (err) {
+    console.log("Error updating view count:", err);
   }
-
-  // navigate after update
-  navigate(`/viewpropertiesdetails/${property.property_id}`, {
-    state: { property }
-  });
 };
+
 
 
   if (loading) {

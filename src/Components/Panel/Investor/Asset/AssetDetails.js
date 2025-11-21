@@ -374,6 +374,24 @@ const AssetDetail = () => {
   const [propertyTypeName, setPropertyTypeName] = useState("");
   const [tabValue, setTabValue] = useState(0);
 
+  const [categories, setCategories] = useState([]);
+  
+    
+    useEffect(() => {
+      const fetchData = async () => {
+        const catRes = await fetch(`${baseurl}/property-categories/`);
+    
+        setCategories(await catRes.json());
+      };
+    
+      fetchData();
+    }, []);
+    
+    const getCategoryName = (id) => {
+      const item = categories.find(c => c.property_category_id === id);
+      return item ? item.name : "N/A";
+    };
+
   useEffect(() => {
     const fetchPropertyTypes = async () => {
       try {
@@ -566,7 +584,7 @@ const AssetDetail = () => {
                   {[
                     ['Looking to', property.looking_to],
                     ['Property Value', formatCurrency(property.property_value)],
-                    ['Category', property.category],
+                    ['Category', getCategoryName(property.category)],
                     ['Property Type', propertyTypeName],
                   ].map(([label, value], index) => (
                     <Grid item xs={12} sm={6} key={index}>

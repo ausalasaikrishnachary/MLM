@@ -529,7 +529,7 @@ const EditAsset = () => {
                       alt="Property" 
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />
-                    <IconButton
+                    {/* <IconButton
                       size="small"
                       sx={{ 
                         position: 'absolute', 
@@ -541,7 +541,7 @@ const EditAsset = () => {
                       onClick={() => handleRemoveExistingImage(img.id)}
                     >
                       <DeleteIcon fontSize="small" />
-                    </IconButton>
+                    </IconButton> */}
                     <Button
                       size="small"
                       component="label"

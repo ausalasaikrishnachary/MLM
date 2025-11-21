@@ -108,11 +108,12 @@ const TabPanel = (props) => {
     </div>
   );
 };
-
+ 
 const AssetDetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { property } = location.state || {};
+  console.log("Property details:", property);
   const { id } = useParams();
 
   const [openMedia, setOpenMedia] = useState(false);
@@ -120,6 +121,33 @@ const AssetDetails = () => {
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [isPlot, setIsPlot] = useState(false);
   const [tabValue, setTabValue] = useState(0);
+
+  const [categories, setCategories] = useState([]);
+const [types, setTypes] = useState([]);
+
+useEffect(() => {
+  const fetchData = async () => {
+    const catRes = await fetch(`${baseurl}/property-categories/`);
+    const typeRes = await fetch(`${baseurl}/property-types/`);
+
+    setCategories(await catRes.json());
+    setTypes(await typeRes.json());
+  };
+
+  fetchData();
+}, []);
+
+const getCategoryName = (id) => {
+  const item = categories.find(c => c.property_category_id === id);
+  return item ? item.name : "N/A";
+};
+
+const getPropertyTypeName = (id) => {
+  const item = types.find(t => t.property_type_id === id);
+  return item ? item.name : "N/A";
+};
+
+
 
 
 
@@ -140,6 +168,7 @@ useEffect(() => {
           setIsPlot(true);
         }
       }
+      console.log("Fetched property types:", data);
     } catch (err) {
       console.error("Error fetching property types:", err);
     }
@@ -456,8 +485,8 @@ useEffect(() => {
                   {[
                     ['Looking to', property.looking_to],
                     ['Property Value', formatCurrency(property.total_property_value)],
-                    ['Category', property.category],
-                    ['Property Type', property.property_type],
+                     ['Category', getCategoryName(property.category)],
+  ['Property Type', getPropertyTypeName(property.property_type)],
                   ].map(([label, value], index) => (
                     <Grid item xs={12} sm={6} key={index}>
                       <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
