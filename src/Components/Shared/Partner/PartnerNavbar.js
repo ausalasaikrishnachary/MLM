@@ -131,7 +131,7 @@ export default function PartnerHeader() {
       label: 'Operations',
       subItems: [
         { label: 'Transaction', path: '/p-transaction' },
-        { label: 'Commission', path: '/p-commission' },
+        { label: 'Payout', path: '/p-commission' },
         { label: 'Plans', path: '/p-plans' },
         { label: 'Training Material', path: '/p-trainingmaterial' },
         { label: 'My Team', path: '/p-myteam' },

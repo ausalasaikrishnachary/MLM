@@ -67,14 +67,14 @@ export default function Header() {
     {
       label: 'Operations',
       subItems: [
-        { label: 'Company Commission', path: '/a-transactionmoniter' },
-        { label: 'Team Commission', path: '/a-commission' },
+        { label: 'Company Payout', path: '/a-transactionmoniter' },
+        { label: 'Team Payout', path: '/a-commission' },
         { label: 'Subscriptions', path: '/a-subscriptions' },
         { label: 'Booking Slab', path: '/a-bookingslab' },
         { label: 'Training Material', path: '/a-trainingmaterial' },
          { label: 'How It Works', path: '/a-upvdhowitworks' },
         { label: 'Transaction', path: '/a-transactionsummary' },
-        { label: 'Commission Master', path: '/a-commissionmaster' },
+        { label: 'Payout Master', path: '/a-commissionmaster' },
         { label: 'Create Category', path: '/tablecategory' },
         { label: 'Business', path: '/a-business' },
         { label: 'Site Visits', path: '/a-sitevisit' },
