@@ -8,18 +8,17 @@ import {
 import Header from "../../../Shared/Navbar/Navbar";  // ✅ Added here
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { baseurl } from "../../../BaseURL/BaseURL";
 
 function AddPropertyCategory() {
   const [formData, setFormData] = useState({ name: "" });
   const navigate = useNavigate();
 
-  const CATEGORY_URL = "https://rahul30.pythonanywhere.com/property-categories/";
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      await axios.post(CATEGORY_URL, formData);
+      await axios.post(`${baseurl}/property-categories/`, formData);
       alert("Category added successfully!");
       navigate("/tablecategory");
     } catch (err) {
