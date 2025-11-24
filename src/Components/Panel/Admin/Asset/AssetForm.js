@@ -1410,7 +1410,7 @@ const AddPropertyForm = () => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Company Commission"
+                  label="Company Payout"
                   name="company_commission"
                   type="number"
                   value={formData.company_commission}
@@ -1421,7 +1421,7 @@ const AddPropertyForm = () => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Distribution Commission"
+                  label="Distribution Payout"
                   name="distribution_commission"
                   type="number"
                   value={formData.distribution_commission}

@@ -66,50 +66,80 @@ const AboutUs = () => {
               How It Works – Investing with Shriraj
             </Typography>
             <Typography variant="body1" paragraph>
-              Shriraj offers a <strong>fractional ownership model</strong> that
-              allows investors to invest in real estate assets without needing
-              to purchase an entire property. Here’s how it works:
+             ShriRaj Team Business Community is a group where entrepreneurs, business
+owners, and professionals connect with each other, share experiences, expand
+their network, and create growth opportunities together.
             </Typography>
 
           
 
             {/* ✅ Vision, Mission, Values Section */}
-            <Box mt={2}>
-              <Grid container spacing={3} mt={2} justifyContent="center">
-                {/* Our Vision */}
-                <Grid item xs={12} sm={4}>
-                  <Box display="flex" flexDirection="column" alignItems="center" textAlign="center">
-                    <VisibilityIcon fontSize="large" sx={{ mb: 1, color: "primary.main" }} />
-                    <Typography variant="h6" fontWeight="bold">Our Vision</Typography>
-                    <Typography variant="body2" sx={{ maxWidth: "250px" }}>
-                      To empower financial independence through accessible, data-driven real estate investments.
-                    </Typography>
-                  </Box>
-                </Grid>
+          <Box mt={4}>
+  <Grid container spacing={4} justifyContent="center">
+    
+    {/* Our Vision */}
+    <Grid item xs={12} md={4}>
+      <Box display="flex" flexDirection="column" alignItems="center" textAlign="center" px={2}>
+        <VisibilityIcon fontSize="large" sx={{ mb: 1, color: "primary.main" }} />
+        <Typography variant="h6" fontWeight="bold" gutterBottom>
+          Our Vision
+        </Typography>
 
-                {/* Our Mission */}
-                <Grid item xs={12} sm={4}>
-                  <Box display="flex" flexDirection="column" alignItems="center" textAlign="center">
-                    <FlagIcon fontSize="large" sx={{ mb: 1, color: "secondary.main" }} />
-                    <Typography variant="h6" fontWeight="bold">Our Mission</Typography>
-                    <Typography variant="body2" sx={{ maxWidth: "250px" }}>
-                      To transform the real estate landscape through technology, transparency, and investor-centric innovation.
-                    </Typography>
-                  </Box>
-                </Grid>
+        <Typography variant="body2" sx={{ maxWidth: "280px" }}>
+          “Where businesses grow together.”
+        </Typography>
+        <Typography variant="body2" sx={{ maxWidth: "280px" }}>
+          “Stronger connections, endless opportunities.”
+        </Typography>
+        <Typography variant="body2" sx={{ maxWidth: "280px" }}>
+          “Learn, connect, grow.”
+        </Typography>
+        <Typography variant="body2" sx={{ maxWidth: "280px" }}>
+          “Your network, your progress.”
+        </Typography>
+        <Typography variant="body2" sx={{ maxWidth: "280px" }}>
+          “Support for entrepreneurs, a path to success.”
+        </Typography>
+      </Box>
+    </Grid>
 
-                {/* Our Values */}
-                <Grid item xs={12} sm={4}>
-                  <Box display="flex" flexDirection="column" alignItems="center" textAlign="center">
-                    <VerifiedUserIcon fontSize="large" sx={{ mb: 1, color: "success.main" }} />
-                    <Typography variant="h6" fontWeight="bold">Our Values</Typography>
-                    <Typography variant="body2" sx={{ maxWidth: "250px" }}>
-                      We prioritize integrity, transparency, and trust to create lasting value for our investors.
-                    </Typography>
-                  </Box>
-                </Grid>
-              </Grid>
-            </Box>
+    {/* Our Mission */}
+    <Grid item xs={12} md={4}>
+      <Box display="flex" flexDirection="column" alignItems="center" textAlign="center" px={2}>
+        <FlagIcon fontSize="large" sx={{ mb: 1, color: "secondary.main" }} />
+        <Typography variant="h6" fontWeight="bold" gutterBottom>
+          Our Mission
+        </Typography>
+
+        <Typography variant="body2" sx={{ maxWidth: "280px", mb: 2 }}>
+          Join the ShriRaj Team Business Community! Entrepreneurs, startups and professionals come together to learn, build
+networks, and gain new opportunities.
+        </Typography>
+
+        <Typography variant="body2">• Networking</Typography>
+        <Typography variant="body2">• Experience Sharing</Typography>
+        <Typography variant="body2">• Business Guidance</Typography>
+        <Typography variant="body2">• Growth Events</Typography>
+      </Box>
+    </Grid>
+
+    {/* Our Values */}
+    <Grid item xs={12} md={4}>
+      <Box display="flex" flexDirection="column" alignItems="center" textAlign="center" px={2}>
+        <VerifiedUserIcon fontSize="large" sx={{ mb: 1, color: "success.main" }} />
+        <Typography variant="h6" fontWeight="bold" gutterBottom>
+          Our Values
+        </Typography>
+
+        <Typography variant="body2" sx={{ maxWidth: "280px" }}>
+          We uphold integrity, transparency, and trust to support strong and reliable business growth.
+        </Typography>
+      </Box>
+    </Grid>
+
+  </Grid>
+</Box>
+
 
               {/* ✅ Dynamic Video Section with Pagination (Card UI) */}
             <Box mt={3} mb={5}>
