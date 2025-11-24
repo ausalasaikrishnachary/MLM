@@ -30,8 +30,7 @@ function TableCategory() {
 
   const navigate = useNavigate();
 
-  const TYPE_URL = `${baseurl}/property-types/`;
-  const CATEGORY_URL = `https://rahul30.pythonanywhere.com/property-categories/`;
+
 
   // SAME UI STYLE AS COMMISSION LEVELS
   const cellStyle = {
@@ -59,7 +58,7 @@ function TableCategory() {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get(CATEGORY_URL);
+      const res = await axios.get(`${baseurl}/property-categories/`);
       setCategories(res.data);
     } catch (err) {
       console.error("Error fetching categories:", err);
@@ -69,7 +68,7 @@ function TableCategory() {
   const fetchTypes = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(TYPE_URL);
+      const res = await axios.get(`${baseurl}/property-types/`);
       setTypes(res.data);
     } catch (err) {
       console.error("Error fetching types:", err);
@@ -82,7 +81,7 @@ function TableCategory() {
     if (!window.confirm("Do you want to delete this category?")) return;
 
     try {
-      await axios.delete(`${CATEGORY_URL}${id}/`);
+      await axios.delete(`${baseurl}/property-categories/${id}/`);
       fetchCategories();
     } catch (error) {
       console.error("Error deleting category:", error);
@@ -94,7 +93,7 @@ function TableCategory() {
     if (!window.confirm("Do you want to delete this property type?")) return;
 
     try {
-      await axios.delete(`${TYPE_URL}${id}/`);
+      await axios.delete(`${baseurl}/property-types/${id}/`);
       fetchTypes();
     } catch (error) {
       console.error("Error deleting type:", error);

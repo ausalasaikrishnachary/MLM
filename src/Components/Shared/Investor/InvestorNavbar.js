@@ -29,6 +29,7 @@ import { Badge, Menu as MuiMenu } from '@mui/material';
 import axios from 'axios';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import './InvvestorNavbar.css'
+import FavoriteIcon from "@mui/icons-material/Favorite";
 
 
 export default function InvestorHeader() {
@@ -41,7 +42,7 @@ export default function InvestorHeader() {
     // { label: 'Add Business', path: '/i-addbusiness' },
     { label: 'Business', path: '/i-business' },
     { label: 'Transactions', path: '/i-transactions' },
-    { label: 'Wishlist', path: '/i-wishlist' }, // Direct link to transactions page
+    // { label: 'Wishlist', path: '/i-wishlist' }, // Direct link to transactions page
     { label: 'Plans', path: '/i-plans' },
     { label: 'Meetings', path: '/i-meetings' },
     // { label: 'Reports', path: '/i-reports' },
@@ -316,6 +317,11 @@ export default function InvestorHeader() {
   </Button>
 ))}
               </Box>
+
+                {/* Wishlist Heart Icon */}
+  <IconButton sx={{ color: "#ee1111ff", mr: 1 }} onClick={() => navigate("/i-wishlist")}>
+    <FavoriteIcon />
+  </IconButton>
 
               {/* Right: Notification, Username, Profile Avatar */}
               <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
