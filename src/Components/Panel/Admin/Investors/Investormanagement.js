@@ -230,7 +230,7 @@ const Tmanagement = () => {
                   {role === "Agent"
                     ? "Team"
                     : role === "Client"
-                      ? "Users"
+                      ? "User"
                       : role || "Unknown"}
                 </MenuItem>
 

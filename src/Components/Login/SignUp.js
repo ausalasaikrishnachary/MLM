@@ -436,7 +436,7 @@ const SignUp = () => {
                                                     {role.role_name === "Agent"
                                                         ? "Team"
                                                         : role.role_name === "Client"
-                                                            ? "Users"
+                                                            ? "User"
                                                             : role.role_name}
                                                 </MenuItem>
                                             ))}
