@@ -320,7 +320,7 @@ const handleAddPlan = async () => {
                   variant="outlined"
                 >
                   <MenuItem value="agent">Team</MenuItem>
-                  <MenuItem value="client">Client</MenuItem>
+                  <MenuItem value="client">User</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
