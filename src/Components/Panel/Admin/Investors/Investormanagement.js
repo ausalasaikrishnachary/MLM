@@ -13,6 +13,7 @@ import {
   FormControl,
   InputLabel,
   Select,
+  Typography,
   MenuItem
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -26,7 +27,7 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 
-const Tmanagement = () => {
+const Tmanagement = () => { 
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -206,7 +207,27 @@ const Tmanagement = () => {
   return (
     <>
       <Header />
-      <Container sx={{ mt: 10 }}>
+      <Container sx={{ mt: 7 }}>
+      <div style={{ textAlign: 'center', marginTop: "7%" }}>
+                <Typography
+                                       variant="h4"
+                                       sx={{
+                                           fontSize: {
+                                               xs: "1.8rem",
+                                               sm: "2.1rem",
+                                               md: "2.0rem",
+                                           },
+                                           fontWeight: "bold",
+                                           whiteSpace: "nowrap",
+                                           overflow: "hidden",
+                                           textOverflow: "ellipsis",
+                                           textAlign:'center',
+                                           marginBottom:'10px',
+                                       }}
+                                   >
+                  Users Table
+                </Typography>
+              </div>
         <Box
           sx={{
             display: "flex",
@@ -333,7 +354,7 @@ const Tmanagement = () => {
                           <VisibilityIcon fontSize="small" />
                         </IconButton>
                         <IconButton
-                          color="primary"
+                          color="warning"
                           size="small"
                           onClick={() => handleEdit(user.fullData)}
                         >
