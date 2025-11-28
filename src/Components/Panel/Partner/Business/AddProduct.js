@@ -129,7 +129,7 @@ const AddProduct = () => {
               <TextField
                 fullWidth
                 type="number"
-                label="Price"
+                label="Team Payout"
                 name="price"
                 value={formData.price}
                 onChange={handleChange}
@@ -251,7 +251,7 @@ const AddProduct = () => {
               <TextField
                 fullWidth
                 type="number"
-                label="Company Commission (%)"
+                label="Company Payout (%)"
                 name="company_commission"
                 value={formData.company_commission}
                 onChange={handleChange}

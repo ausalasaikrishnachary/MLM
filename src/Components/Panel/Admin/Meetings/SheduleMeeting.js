@@ -21,12 +21,20 @@ function SheduleMeeting() {
     const location = useLocation();
     const RequestId = location.state?.request_id;
     const navigate = useNavigate();
+    const [departments, setDepartments] = useState([]);
+    useEffect(() => {
+    axios.get(`${baseurl}/departments/`)
+        .then(res => setDepartments(res.data))
+        .catch(err => console.log("Departments fetch error:", err));
+}, []);
+
+
 
 
 const [form, setForm] = useState({
     name: '',
     email: '',
-    profile_type: '',
+    department_name: '',
     date: '',
     startTime: '',
     meeting_link: '',
@@ -48,11 +56,15 @@ const [form, setForm] = useState({
                 .get(`${baseurl}/meeting-requests/${RequestId}/`)
                 .then((res) => {
                     const data = res.data;
+                    // Convert department ID → department name
+                const departmentName = departments.find(
+                    (d) => d.id === Number(data.department)
+                )?.name || "N/A";
                     setForm((prev) => ({
                         ...prev,
                         name: data.name,
                         email: data.email,
-                        profile_type: data.profile_type,
+                        department_name: departmentName,
                         date: data.requested_date,
                         startTime: data.requested_time,
                         referralId: data.referral_id,
@@ -64,7 +76,7 @@ const [form, setForm] = useState({
                     console.error('Failed to fetch agent details:', err);
                 });
         }
-    }, [RequestId]);
+    }, [RequestId, departments]);
 
 
     // Handle input changes
@@ -104,7 +116,7 @@ const handleSubmit = async (e) => {
         user_id: form.userId,
         name: form.name,
         email: form.email,
-        profile_type: form.profile_type,
+        department_name: form.department_name
     };
 
     console.log("Payload being sent:", payload);
@@ -172,7 +184,8 @@ const handleSubmit = async (e) => {
                             marginBottom:'18px',
                         }}
                     >
-                     Meeting Request for <strong>{form.profile_type}</strong>
+                     Meeting Request for <strong>{form.department_name}</strong>
+
                     </Typography>
                 <form onSubmit={handleSubmit}>
                     <Grid container spacing={2}>
@@ -196,16 +209,15 @@ const handleSubmit = async (e) => {
                                 required
                             />
                         </Grid>
-                        <Grid item xs={12} sm={4}>
-                            <TextField
-                                fullWidth
-                                name="profile_type"
-                                label="Profile Type"
-                                value={form.profile_type}
-                                onChange={handleChange}
-                                required
-                            />
-                        </Grid>
+                       <Grid item xs={12} sm={4}>
+  <TextField
+    fullWidth
+    label="Department"
+    value={form.department_name}
+    InputProps={{ readOnly: true }}
+  />
+</Grid>
+
                         <Grid item xs={12} sm={4}>
                             <TextField
                                 fullWidth

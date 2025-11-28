@@ -2,29 +2,30 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import InvestorHeader from "../../../Shared/Investor/InvestorNavbar";
 import { Box, Card, CardContent, Typography, Button, Grid, Avatar, Modal } from '@mui/material';
-import TableLayout from '../../../Shared/TableLayout';
 import DisplayRequest from './DisplayRequests';
 import axios from 'axios';
 import { baseurl } from '../../../BaseURL/BaseURL';
-import { Pagination } from '@mui/material';
+import { Pagination } from "@mui/material";
 
-
-const profiles = [
-    {
-        id: 2,
-        label: 'Sales & Marketing',
-        image: '/images/psychologist.png',
-        buttonText: 'Request Meeting',
-    },
-];
 
 function I_Meetings() {
     const navigate = useNavigate();
     const [subscriptionPaid, setSubscriptionPaid] = useState(false);
     const [openModal, setOpenModal] = useState(false);
+    const [departments, setDepartments] = useState([]); // ⬅ Fetch dynamic departments
     const userId = localStorage.getItem("user_id");
+    const [page, setPage] = useState(1);
+const cardsPerPage = 10; // 10 departments → next page
+const paginatedDepartments = departments.slice(
+  (page - 1) * cardsPerPage,
+  page * cardsPerPage
+);
+
+const totalPages = Math.ceil(departments.length / cardsPerPage);
 
 
+
+    // Fetch subscription status
     useEffect(() => {
         if (userId) {
             axios.get(`${baseurl}/user-subscriptions/user-id/${userId}/`)
@@ -38,10 +39,20 @@ function I_Meetings() {
         }
     }, [userId]);
 
-    const handleRequestMeeting = (profileType) => {
+    // Fetch Departments
+    useEffect(() => {
+        axios.get(`${baseurl}/departments/`)
+            .then(res => {
+                setDepartments(res.data);
+            })
+            .catch(err => console.log("Departments fetch error:", err));
+    }, []);
+
+    // Handle meeting request
+    const handleRequestMeeting = (departmentName, departmentId) => {
         if (subscriptionPaid) {
             navigate("/i-meetingrequest", {
-                state: { profileType },
+                state: { departmentName, departmentId }, // ⬅ send department details
             });
         } else {
             setOpenModal(true);
@@ -54,18 +65,22 @@ function I_Meetings() {
     return (
         <>
             <InvestorHeader />
+
             <Box sx={{ p: 3 }}>
                 <Grid container spacing={3} justifyContent="center">
-                    {profiles.map((profile) => (
-                        <Grid item xs={12} sm={6} md={4} key={profile.id}>
+                    {paginatedDepartments.map((dept) => (
+                        <Grid item xs={6} sm={4} md={2.4} key={dept.id}>
                             <Card
                                 sx={{
-                                    borderRadius: 4,
+                                    borderRadius: 3,
                                     textAlign: 'center',
                                     background: 'linear-gradient(180deg, #fdf9ff 0%, #e7f2ff 100%)',
-                                    boxShadow: 3,
+                                    boxShadow: 2,
                                     position: 'relative',
                                     overflow: 'visible',
+                                    minHeight: 220,
+                                    padding: 1,
+
                                 }}
                             >
                                 <CardContent>
@@ -79,22 +94,17 @@ function I_Meetings() {
                                             color: '#4A4A4A',
                                         }}
                                     >
-                                        {profile.label}
+                                        {dept.name}
                                     </Typography>
 
                                     <Avatar
-                                        src={profile.image}
-                                        alt={profile.label}
-                                        sx={{
-                                            width: 100,
-                                            height: 100,
-                                            margin: '60px auto 20px',
-                                        }}
+                                        src="/images/coach.png"
+                                        alt={dept.name}
+                                         sx={{ width: 70, height: 70, margin: '30px auto 15px' }}
                                     />
 
                                     <Button
                                         variant="contained"
-                                        color="secondary"
                                         sx={{
                                             borderRadius: 10,
                                             px: 4,
@@ -107,15 +117,30 @@ function I_Meetings() {
                                                 backgroundColor: '#f3e5f5',
                                             },
                                         }}
-                                        onClick={() => handleRequestMeeting(profile.label)}
+                                        onClick={() => handleRequestMeeting(dept.name, dept.id)}
                                     >
-                                        {profile.buttonText}
+                                        Request Meeting
                                     </Button>
                                 </CardContent>
                             </Card>
                         </Grid>
                     ))}
                 </Grid>
+
+                {/* Pagination */}
+<Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+  <Pagination
+    count={totalPages}
+    page={page}
+    onChange={(e, value) => setPage(value)}
+    color="primary"
+    sx={{
+      '& .MuiPaginationItem-root': {
+        borderRadius: '0px',
+      },
+    }}
+  />
+</Box>
 
                 <DisplayRequest />
 

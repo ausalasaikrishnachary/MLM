@@ -191,6 +191,11 @@ import ProductDetails from "./Components/Panel/Partner/Business/ProductDetails";
 import I_ProductDetails from "./Components/Panel/Investor/InvestorBusiness/I-ProductDetails";
 import WebBusinessProducts from "./Components/Website/Pages/Business/WebBusinessProducts";
 import WebProductDetails from "./Components/Website/Pages/Business/WebProductDetails";
+import Departments from "./Components/Panel/Admin/Departments/Departments";
+import AddDepartments from "./Components/Panel/Admin/Departments/AddDepartments";
+import PartnerLandingPage from "./Components/Panel/Partner/PartnerLandingPage/PartnerLandingPage";
+import InvestorLandingPage from "./Components/Panel/Investor/InvestorLandingPage/InvestorLandingPage";
+import AdminLandingPage from "./Components/Panel/Admin/AdminLandingPage/AdminLandingPage";
 
 
 function Layout() {
@@ -305,6 +310,8 @@ function Layout() {
           <Route path="/a-edit-commissionmaster/:id" element={<EditCommissionLevels />} />
           <Route path="/a-category" element={<Category />} />
            <Route path="/tablecategory" element={<TableCategory/>} />
+           <Route path="/a-departments" element={<Departments/>} />
+           <Route path="/adddepartment" element={<AddDepartments/>} />
            <Route path="/propertycategoryform" element={<PropertyCategoryform/>} />
            <Route path="/editcategory/:id" element={<EditCategory/>} />
           <Route path="/a-business" element={<AdminBussiness />} />
@@ -316,6 +323,7 @@ function Layout() {
            <Route path="/a-editqa/:id" element={<EditQA/>} />
            <Route path="/a-sitevisit" element={<SiteVisits/>} />
            <Route path="/a-admiteditsite/:id" element={<AdminEdit/>} />
+           <Route path="/adminlandingpage" element={<AdminLandingPage/>} />
 
 
 
@@ -348,6 +356,8 @@ function Layout() {
           <Route path="/i-business" element={<InvestorBusiness />} />
           <Route path="/i-businessproducts/:id" element={<InvestorBusinessproducts />} />
            <Route path="/i-wishlist" element={<InvestorWishlist/>} />
+           <Route path="/investorlandingpage" element={<InvestorLandingPage/>} />
+           
           
           
           <Route path="/i-editbusiness/:id" element={<EditInvestorBusiness />} />
@@ -403,6 +413,7 @@ function Layout() {
           <Route path="/p-editbusiness/:id" element={<EditBusiness />} />
           <Route path="/p-allbusinesses" element={<AllBusinesses />} />
           <Route path="/p-businessproducts/:id" element={<BusinessProducts />} />
+           <Route path="/partnerlandingpage" element={<PartnerLandingPage/>} />
 
 
           <Route path="/termsandconditions" element={<Termsandconditions />} />

@@ -5,10 +5,11 @@ import {
   Button,
   Box
 } from "@mui/material";
-import Header from "../../../Shared/Navbar/Navbar";  // ✅ Added here
+import Header from "../../../Shared/Navbar/Navbar";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { baseurl } from "../../../BaseURL/BaseURL";
+import Swal from "sweetalert2"; // Popup import
 
 function AddPropertyCategory() {
   const [formData, setFormData] = useState({ name: "" });
@@ -19,18 +20,32 @@ function AddPropertyCategory() {
 
     try {
       await axios.post(`${baseurl}/property-categories/`, formData);
-      alert("Category added successfully!");
-      navigate("/tablecategory");
+
+      // SUCCESS SWEETALERT
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "Category Created",
+        confirmButtonColor: "#6C63FF", // Purple button like screenshot
+        confirmButtonText: "OK",
+      }).then(() => navigate("/tablecategory")); // Redirect after popup
+
     } catch (err) {
       console.error("Error posting:", err);
-      alert("Error adding category");
+
+      // ERROR SWEETALERT
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to add category",
+        confirmButtonColor: "#6C63FF",
+      });
     }
   };
 
   return (
     <>
-      <Header /> {/* ✅ Navbar appears at the top */}
-
+      <Header /> {/* Navbar */}
       <Container maxWidth="sm" sx={{ mt: 6 }}>
         <h2 style={{ fontWeight: "bold", textAlign: "center" }}>
           Add Property Category

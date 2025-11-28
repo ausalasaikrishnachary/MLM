@@ -79,6 +79,7 @@ export default function Header() {
         { label: 'Business', path: '/a-business' },
         { label: 'Site Visits', path: '/a-sitevisit' },
         { label: 'Chatbot', path: '/a-chatbot' },
+         { label: 'Departments', path: '/a-departments' },
       ]
     },
     { label: 'Meetings', path: '/a-meetings' },

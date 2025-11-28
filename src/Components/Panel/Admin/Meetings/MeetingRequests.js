@@ -18,6 +18,14 @@ function MeetingRequests() {
   const [page, setPage] = useState(1);
   const itemsPerPage = 5;
 
+  const [departments, setDepartments] = useState([]);
+
+useEffect(() => {
+  axios.get(`${baseurl}/departments/`)
+    .then(res => setDepartments(res.data))
+    .catch(err => console.log("Departments fetch error:", err));
+}, []);
+
   useEffect(() => {
     fetchMeetingRequests();
   }, []);
@@ -126,10 +134,11 @@ function MeetingRequests() {
     { label: "Team Name", key: "name" },
     { label: "Team Referral ID", key: "referral_id" },
     { label: "Email", key: "email" },
-    { label: "Profile Type", key: "profile_type" },
+    { label: 'Department', key: 'department_name' },
     { label: tabValue === 0 ? "Requested Date" : "Scheduled Date", key: "date" },
     { label: tabValue === 0 ? "Requested Time" : "Scheduled Time", key: "time" },
-    { label: "Action", key: "action" },
+    { label: "Schedule", key: "schedule" },    
+  { label: "Actions", key: "action" },        
   ];
 
   const getTableData = () => {
@@ -140,63 +149,74 @@ function MeetingRequests() {
     return sliced.map((item) => {
       const isScheduled = item.is_scheduled;
 
+ const departmentName =
+  departments?.find((d) => d.id == item.department)?.name || "N/A";
+
+console.log("Dept:", item.department);
+
+
+
+
       return {
-        id: item.request_id || item.schedule_id,
-        user_id: item.user_id,
-        name: item.name,
-        referral_id: item.referral_id,
-        email: item.email,
-        profile_type: item.profile_type,
-        date: item.requested_date || item.scheduled_date,
-        time: item.requested_time || item.scheduled_time,
+    id: item.request_id || item.schedule_id,
+    user_id: item.user_id,
+    name: item.name,
+    referral_id: item.referral_id,
+    email: item.email,
+    department_name: departmentName,
+    date: item.requested_date || item.scheduled_date,
+    time: item.requested_time || item.scheduled_time,
 
-        action:
-          tabValue === 0 ? (
-            <Box sx={{ display: "flex", gap: 1 }}>
-              <Button
-                variant={isScheduled ? "outlined" : "contained"}
-                size="small"
-                disabled={isScheduled}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (!isScheduled) {
-                    navigate(`/shedulemeet/${item.user_id}`, {
-                      state: { request_id: item.request_id },
-                    });
-                  }
-                }}
-              >
-                {isScheduled ? "Scheduled" : "Schedule"}
-              </Button>
+    // ⭐ COLUMN 1 → Schedule Button ONLY
+    schedule:
+      tabValue === 0 ? (
+        <Button
+          variant={isScheduled ? "outlined" : "contained"}
+          size="small"
+          disabled={isScheduled}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (!isScheduled) {
+              navigate(`/shedulemeet/${item.user_id}`, {
+                state: { request_id: item.request_id },
+              });
+            }
+          }}
+        >
+          {isScheduled ? "Scheduled" : "Schedule"}
+        </Button>
+      ) : (
+        <Select
+          size="small"
+          value={item.status || "scheduled"}
+          onChange={(e) =>
+            handleStatusChange(item.scheduled_meeting_id, e.target.value)
+          }
+          sx={{ minWidth: 140 }}
+        >
+          <MenuItem value="scheduled">Scheduled</MenuItem>
+          <MenuItem value="cancelled">Cancelled</MenuItem>
+          <MenuItem value="completed">Completed</MenuItem>
+        </Select>
+      ),
 
-              {/* ⭐ DELETE ICON (ONLY FOR MEETING REQUESTS TAB) */}
-              <IconButton
-  color="error"
-  onClick={(e) => {
-    e.stopPropagation();
-    deleteMeetingRequest(item.id ?? item.request_id);
-  }}
->
-  <DeleteIcon />
-</IconButton>
-
-            </Box>
-          ) : (
-            <Select
-              size="small"
-              value={item.status || "scheduled"}
-              onChange={(e) =>
-                handleStatusChange(item.scheduled_meeting_id, e.target.value)
-              }
-              sx={{ minWidth: 140 }}
-            >
-              <MenuItem value="scheduled">Scheduled</MenuItem>
-              <MenuItem value="cancelled">Cancelled</MenuItem>
-              <MenuItem value="completed">Completed</MenuItem>
-            </Select>
-          ),
-      };
-    });
+    // ⭐ COLUMN 2 → Delete Icon ONLY
+    action:
+      tabValue === 0 ? (
+        <IconButton
+          color="error"
+          onClick={(e) => {
+            e.stopPropagation();
+            deleteMeetingRequest(item.request_id);
+          }}
+        >
+          <DeleteIcon />
+        </IconButton>
+      ) : (
+        "—"
+      ),
+  };
+});
   };
 
   const totalPages = Math.ceil(

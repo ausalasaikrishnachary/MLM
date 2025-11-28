@@ -41,6 +41,7 @@ const EditAsset = () => {
     facing: '',
     agreement_video: null,
     agreement_file: null,
+    listing_days:''
   });
 
   const [existingImages, setExistingImages] = useState([]);
@@ -311,11 +312,12 @@ const EditAsset = () => {
     { name: 'address', label: 'Address' },
     { name: 'facing', label: 'Facing' },
     { name: 'property_value', label: 'Property Value' },
-    { name: 'agent_commission', label: 'Team Commission' },
-    { name: 'company_commission', label: 'Company Commission' },
-    { name: 'distribution_commission', label: 'Distribution Commission' },
+    { name: 'agent_commission', label: 'Team Payout' },
+    { name: 'company_commission', label: 'Company Payout' },
+    { name: 'distribution_commission', label: 'Distribution Payout' },
     { name: 'total_property_value', label: 'Total Property Value'},
     { name: 'description', label: 'Description' },
+     { name: 'listing_days', label: 'Listing Days' },
   ];
 
   const getFileName = (path) => {
