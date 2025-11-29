@@ -33,21 +33,32 @@ const Sitevisit = () => {
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const navigate = useNavigate();
+  const userId = localStorage.getItem("user_id");
 
   const rowsPerPage = 5;
 
-  // Fetch site visits
-  const fetchSiteVisits = async () => {
-    try {
-      const response = await axios.get(`${baseurl}/site-visits/`);
-      setSiteVisits(response.data);
-      setFilteredVisits(response.data);
-    } catch (error) {
-      console.error("Error fetching site visits:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+ // Fetch site visits
+const fetchSiteVisits = async () => {
+  try {
+    const response = await axios.get(`${baseurl}/site-visits/user-id/${userId}/`);
+
+    console.log("SITE VISITS API RESPONSE:", response.data);
+
+    // Ensure we extract the correct array
+    const visits = Array.isArray(response.data)
+      ? response.data
+      : response.data.visits || response.data.results || [];
+
+    setSiteVisits(visits);
+    setFilteredVisits(visits);
+
+  } catch (error) {
+    console.error("Error fetching site visits:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     fetchSiteVisits();

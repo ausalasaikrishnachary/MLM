@@ -69,22 +69,26 @@ function ViewBusiness() {
     product_commission: "",
   });
 
-  // Fetch businesses
-  useEffect(() => {
-    fetch(`${baseurl}/business/`)
-      .then((res) => res.json())
-      .then((data) => {
-        const filtered = data.filter(
-          (business) => String(business.user_id) === String(userId)
-        );
-        setBusinesses(filtered);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching businesses:", error);
-        setLoading(false);
-      });
-  }, [userId]);
+// Fetch businesses
+useEffect(() => {
+  const fetchBusinesses = async () => {
+    try {
+      const res = await fetch(`${baseurl}/business/user-id/${userId}/`);
+      const data = await res.json();
+
+      // API already returns *only businesses for that user*
+      setBusinesses(data);
+      setLoading(false);
+
+    } catch (error) {
+      console.error("Error fetching businesses:", error);
+      setLoading(false);
+    }
+  };
+
+  fetchBusinesses();
+}, [userId]);
+
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this business?")) {

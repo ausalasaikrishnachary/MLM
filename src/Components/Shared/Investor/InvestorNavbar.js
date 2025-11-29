@@ -431,7 +431,7 @@ export default function InvestorHeader() {
                   .then(() => {
                     setNotifications(prev => prev.filter(n => n.notification_status_id !== notif.notification_status_id));
                     handleNotificationClose();
-                    navigate('/i-asset');
+                    navigate(`/i-assets/${notif.property.id}`);
                   })
                   .catch(error => {
                     console.error("Error marking notification as read:", error);

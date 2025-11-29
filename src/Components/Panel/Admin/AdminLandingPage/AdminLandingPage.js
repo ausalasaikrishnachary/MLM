@@ -48,7 +48,7 @@ const AdminLandingPage = () => {
     const userId = localStorage.getItem("user_id");
 
     // Properties states
-    const [sortBy, setSortBy] = useState('');
+    const [sortBy, setSortBy] = useState(''); 
     const [properties, setProperties] = useState([]);
     const [selectedProperty, setSelectedProperty] = useState(null);
     const [openDialog, setOpenDialog] = useState(false);
@@ -67,27 +67,23 @@ const AdminLandingPage = () => {
     // Carousel state
     const [openCarousel, setOpenCarousel] = useState(false);
 
-    // Fetch properties
     useEffect(() => {
-        const fetchLatestProperties = async () => {
-            try {
-                const response = await fetch(`${baseurl}/property-stats/user-id/${userId}/`);
-                const data = await response.json();
-
-                if (data.latest && data.latest.properties) {
-                    setProperties(data.latest.properties.list);
-                    setFilteredProperties(data.latest.properties.list);
-                } else {
-                    setProperties([]);
-                }
-            } catch (error) {
-                console.error('Error fetching booked properties:', error);
-            }
-        };
-
-        fetchLatestProperties();
-    }, []);
-
+       const fetchLatestProperties = async () => {
+           try {
+               const response = await fetch(`${baseurl}/latest-properties/`);
+               const data = await response.json();
+   
+               // API returns array directly
+               setProperties(data);
+               setFilteredProperties(data);
+   
+           } catch (error) {
+               console.error("Error fetching latest properties:", error);
+           }
+       };
+   
+       fetchLatestProperties();
+   }, []);
     // Fetch businesses
     useEffect(() => {
         fetch(`${baseurl}/business/`)
@@ -104,6 +100,12 @@ const AdminLandingPage = () => {
                 setLoadingBusinesses(false);
             });
     }, []);
+
+     const parseDate = (dateStr) => {
+    const [day, month, yearAndTime] = dateStr.split("-");
+    const [year, time] = yearAndTime.split(" ");
+    return new Date(`${year}-${month}-${day} ${time}`);
+};
 
     // Filter and sort properties
     useEffect(() => {
@@ -133,12 +135,12 @@ const AdminLandingPage = () => {
 
         // Apply sort filter
         switch (sortBy) {
-            case 'latest':
-                results.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-                break;
-            case 'oldest':
-                results.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-                break;
+              case 'latest':
+    results.sort((a, b) => parseDate(b.created_at) - parseDate(a.created_at));
+    break;
+case 'oldest':
+    results.sort((a, b) => parseDate(a.created_at) - parseDate(b.created_at));
+    break;
             case 'price-high':
                 results.sort((a, b) => b.property_value - a.property_value);
                 break;
@@ -312,7 +314,7 @@ const AdminLandingPage = () => {
                             <>
                                 <Grid container spacing={3}>
                                     {paginatedProperties.map((property) => (
-                                        <Grid item xs={12} md={6} lg={4} key={property.id}>
+                                        <Grid item xs={12} md={6} lg={4} key={property.property_id}>
                                             <Card
                                                 sx={{
                                                     borderRadius: 2,
@@ -484,7 +486,7 @@ const AdminLandingPage = () => {
                                                                     textTransform: 'none',
                                                                     '&:hover': { backgroundColor: '#59ed7c', color: 'rgb(5,5,5)' }
                                                                 }}
-                                                                onClick={() => navigate(`/p-assets/${property.property_id}`, { state: { property } })}
+                                                                onClick={() => navigate(`/a-assets/${property.property_id}`, { state: { property } })}
                                                             >
                                                                 VIEW DETAILS
                                                             </Button>
@@ -563,7 +565,7 @@ const AdminLandingPage = () => {
                                                     overflow: "visible",
                                                     cursor: 'pointer',
                                                 }}
-                                                onClick={() => navigate(`/p-businessproducts/${business.business_id}`)}
+                                                onClick={() => navigate(`/a-businessproducts/${business.business_id}`)}
                                             >
                                                 {/* Offer Ribbon */}
                                                 {business.offer_title && (
