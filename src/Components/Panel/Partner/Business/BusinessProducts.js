@@ -12,21 +12,75 @@ import {
   CircularProgress,
   Divider,
   Button,
+  IconButton,
   Popover,
 } from "@mui/material";
 import PartnerHeader from "../../../Shared/Partner/PartnerNavbar";
 import { baseurl } from "../../../BaseURL/BaseURL";
 import PaginationComponent from "../../../Shared/Pagination";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 
-function BusinessProducts() {
+function BusinessProducts() { 
   const { id } = useParams();
   const [products, setProducts] = useState([]);
   const [commissions, setCommissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+   const userId = localStorage.getItem("user_id");
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [hoveredProduct, setHoveredProduct] = useState(null);
+
+   const [wishlist, setWishlist] = useState([]);
+  
+      useEffect(() => {
+    const fetchWishlist = async () => {
+      try {
+        const res = await axios.get(`${baseurl}/wishlist/`);
+        const userWishlist = res.data
+          .filter(item => item.user === parseInt(userId)) // Only user's wishlist
+          .map(item => item.product); // <-- PRODUCT ID
+        setWishlist(userWishlist);
+      } catch (err) {
+        console.error("Error fetching wishlist:", err);
+      }
+    };
+  
+    if (userId) fetchWishlist();
+  }, [userId]);
+  
+  
+  const handleWishlistToggle = async (productId) => {
+    if (!userId) {
+      alert("Please log in to add to wishlist.");
+      return;
+    }
+  
+    try {
+      if (wishlist.includes(productId)) {
+        // ❌ REMOVE (DELETE)
+        const res = await axios.get(`${baseurl}/wishlist/`);
+        const item = res.data.find(
+          (entry) => entry.user === parseInt(userId) && entry.product === productId
+        );
+  
+        if (item) {
+          await axios.delete(`${baseurl}/wishlist/${item.id}/`);
+          setWishlist((prev) => prev.filter((id) => id !== productId));
+        }
+      } else {
+        // ❤️ ADD (POST)
+        await axios.post(`${baseurl}/wishlist/`, {
+          user: parseInt(userId),
+          product: productId,
+        });
+        setWishlist((prev) => [...prev, productId]);
+      }
+    } catch (error) {
+      console.error("Error updating wishlist:", error);
+    }
+  };
 
   // ✅ Fetch Products by Business ID
   useEffect(() => {
@@ -159,9 +213,25 @@ function BusinessProducts() {
 
                   {/* Product Info */}
                   <CardContent sx={{ flexGrow: 1 }}>
-                    <Typography variant="h6" fontWeight="bold" gutterBottom>
-                      {product.product_name}
-                    </Typography>
+                     <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+                                                               <Typography variant="h6" fontWeight="bold">
+                                                                   {product.product_name} 
+                                                               </Typography>
+                     <IconButton
+                        onClick={() => handleWishlistToggle(product.id)}
+                        sx={{
+                          backgroundColor: "rgba(255,255,255,0.8)",
+                          "&:hover": { backgroundColor: "rgba(255,255,255,1)" },
+                        }}
+                      >
+                        {wishlist.includes(product.id) ? (
+                          <FavoriteIcon sx={{ color: "red" }} />
+                        ) : (
+                          <FavoriteBorderIcon sx={{ color: "red" }} />
+                        )}
+                      </IconButton>
+                        </Box>
+                      
 
                     <Divider sx={{ my: 1.5 }} />
 

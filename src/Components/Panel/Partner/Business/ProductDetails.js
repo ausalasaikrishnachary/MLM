@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Box, Card, CardContent, Typography, CircularProgress, Button } from "@mui/material";
-import Header from "../../../Shared/Navbar/Navbar";
+import PartnerHeader from "../../../Shared/Partner/PartnerNavbar";
 import { baseurl } from "../../../BaseURL/BaseURL";
 
 const ProductDetails = () => {
@@ -38,7 +38,7 @@ const ProductDetails = () => {
 
   return (
     <>
-      <Header />
+      <PartnerHeader />
 
       <Box sx={{ p: 3 }}>
 

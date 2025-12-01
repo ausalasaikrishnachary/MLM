@@ -42,7 +42,7 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import DescriptionIcon from "@mui/icons-material/Description";
 import DownloadIcon from "@mui/icons-material/Download";
 
-const PartnerLandingPage = () => {
+const PartnerLandingPage = () => { 
     const [activeTab, setActiveTab] = useState(0);
     const navigate = useNavigate();
     const userId = localStorage.getItem("user_id");
@@ -67,26 +67,23 @@ const PartnerLandingPage = () => {
     // Carousel state
     const [openCarousel, setOpenCarousel] = useState(false);
 
-    // Fetch properties
     useEffect(() => {
-        const fetchLatestProperties = async () => {
-            try {
-                const response = await fetch(`${baseurl}/property-stats/user-id/${userId}/`);
-                const data = await response.json();
-
-                if (data.latest && data.latest.properties) {
-                    setProperties(data.latest.properties.list);
-                    setFilteredProperties(data.latest.properties.list);
-                } else {
-                    setProperties([]);
-                }
-            } catch (error) {
-                console.error('Error fetching booked properties:', error);
-            }
-        };
-
-        fetchLatestProperties();
-    }, []);
+       const fetchLatestProperties = async () => {
+           try {
+               const response = await fetch(`${baseurl}/latest-properties/`);
+               const data = await response.json();
+   
+               // API returns array directly
+               setProperties(data);
+               setFilteredProperties(data);
+   
+           } catch (error) {
+               console.error("Error fetching latest properties:", error);
+           }
+       };
+   
+       fetchLatestProperties();
+   }, []);
 
     // Fetch businesses
     useEffect(() => {
@@ -104,6 +101,12 @@ const PartnerLandingPage = () => {
                 setLoadingBusinesses(false);
             });
     }, []);
+
+       const parseDate = (dateStr) => {
+    const [day, month, yearAndTime] = dateStr.split("-");
+    const [year, time] = yearAndTime.split(" ");
+    return new Date(`${year}-${month}-${day} ${time}`);
+};
 
     // Filter and sort properties
     useEffect(() => {
@@ -133,12 +136,12 @@ const PartnerLandingPage = () => {
 
         // Apply sort filter
         switch (sortBy) {
-            case 'latest':
-                results.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-                break;
-            case 'oldest':
-                results.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-                break;
+             case 'latest':
+    results.sort((a, b) => parseDate(b.created_at) - parseDate(a.created_at));
+    break;
+case 'oldest':
+    results.sort((a, b) => parseDate(a.created_at) - parseDate(b.created_at));
+    break;
             case 'price-high':
                 results.sort((a, b) => b.property_value - a.property_value);
                 break;
@@ -312,7 +315,7 @@ const PartnerLandingPage = () => {
                             <>
                                 <Grid container spacing={3}>
                                     {paginatedProperties.map((property) => (
-                                        <Grid item xs={12} md={6} lg={4} key={property.id}>
+                                        <Grid item xs={12} md={6} lg={4} key={property.property_id}>
                                             <Card
                                                 sx={{
                                                     borderRadius: 2,
