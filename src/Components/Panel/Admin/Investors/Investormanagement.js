@@ -493,6 +493,25 @@ import PaginationComponent from "../../../Shared/Pagination";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
+// Function to format the date from API to dd/mm/yyyy
+const formatApiDate = (dateTimeString) => {
+  if (!dateTimeString) return "";
+  
+  try {
+    // Extract just the date part (before the space) - "dd-mm-yyyy HH:MM:SS"
+    const datePart = dateTimeString.split(' ')[0];
+    
+    // Convert from dd-mm-yyyy to dd/mm/yyyy
+    const [day, month, year] = datePart.split('-');
+    
+    // Return in dd/mm/yyyy format
+    return `${day}/${month}/${year}`;
+  } catch (error) {
+    console.error("Error formatting date:", error);
+    return "";
+  }
+};
+
 const Tmanagement = () => { 
   const navigate = useNavigate();
   const [data, setData] = useState([]);
@@ -582,7 +601,7 @@ const Tmanagement = () => {
         `"${user.phone}"`,
         `"${user.role === "Agent" ? "Team" : user.role}"`,
         `"${user.referralId}"`,
-        `"${new Date(user.created_at).toLocaleDateString("en-IN")}"`,
+        `"${formatApiDate(user.created_at)}"`, // FIXED: Use formatApiDate function
         `"${user.status}"`
       ].join(','))
     ].join('\n');
@@ -852,8 +871,9 @@ const Tmanagement = () => {
                       {user.role === "Agent" ? "Team" : user.role}
                     </TableCell>
                     <TableCell sx={cellBodyStyle}>{user.referralId}</TableCell>
+                    {/* FIXED: Display date in dd/mm/yyyy format */}
                     <TableCell sx={cellBodyStyle}>
-                      {new Date(user.created_at).toLocaleDateString("en-IN")}
+                      {formatApiDate(user.created_at)}
                     </TableCell>
                     <TableCell sx={cellBodyStyle}>
                       <Select
