@@ -108,51 +108,57 @@ const AdminLandingPage = () => {
 };
 
     // Filter and sort properties
-    useEffect(() => {
-        let results = [...properties];
+   useEffect(() => {
+    // Check if properties is iterable (an array)
+    if (!Array.isArray(properties)) {
+        setFilteredProperties([]);
+        return;
+    }
 
-        // Apply search filter
-        if (searchQuery.trim()) {
-            const query = searchQuery.toLowerCase();
-            results = results.filter(property => {
-                const searchFields = [
-                    property.property_title,
-                    property.first_name,
-                    property.city,
-                    property.state,
-                    property.owner_name,
-                    property.owner_contact,
-                    property.address,
-                    property.description,
-                    property.property_value?.toString(),
-                    property.area?.toString(),
-                    property.builtup_area?.toString()
-                ].filter(Boolean);
+    let results = [...properties];
 
-                return searchFields.some(field => field.toLowerCase().includes(query));
-            });
-        }
+    // Apply search filter
+    if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase();
+        results = results.filter(property => {
+            const searchFields = [
+                property.property_title,
+                property.first_name,
+                property.city,
+                property.state,
+                property.owner_name,
+                property.owner_contact,
+                property.address,
+                property.description,
+                property.property_value?.toString(),
+                property.area?.toString(),
+                property.builtup_area?.toString()
+            ].filter(Boolean);
 
-        // Apply sort filter
-        switch (sortBy) {
-              case 'latest':
-    results.sort((a, b) => parseDate(b.created_at) - parseDate(a.created_at));
-    break;
-case 'oldest':
-    results.sort((a, b) => parseDate(a.created_at) - parseDate(b.created_at));
-    break;
-            case 'price-high':
-                results.sort((a, b) => b.property_value - a.property_value);
-                break;
-            case 'price-low':
-                results.sort((a, b) => a.property_value - b.property_value);
-                break;
-            default:
-                break;
-        }
+            return searchFields.some(field => field.toLowerCase().includes(query));
+        });
+    }
 
-        setFilteredProperties(results);
-    }, [searchQuery, sortBy, properties]);
+    // Apply sort filter
+    switch (sortBy) {
+        case 'latest':
+            results.sort((a, b) => parseDate(b.created_at) - parseDate(a.created_at));
+            break;
+        case 'oldest':
+            results.sort((a, b) => parseDate(a.created_at) - parseDate(b.created_at));
+            break;
+        case 'price-high':
+            results.sort((a, b) => b.property_value - a.property_value);
+            break;
+        case 'price-low':
+            results.sort((a, b) => a.property_value - b.property_value);
+            break;
+        default:
+            break;
+    }
+
+    setFilteredProperties(results);
+}, [searchQuery, sortBy, properties]);
 
     // Filter businesses
     const filteredBusinesses = businesses.filter(business => {
@@ -163,7 +169,10 @@ case 'oldest':
     // Pagination calculations
     const propertiesTotalPages = Math.ceil(filteredProperties.length / propertiesPerPage);
     const propertiesStartIndex = (propertiesPage - 1) * propertiesPerPage;
-    const paginatedProperties = filteredProperties.slice(propertiesStartIndex, propertiesStartIndex + propertiesPerPage);
+    //const paginatedProperties = filteredProperties.slice(propertiesStartIndex, propertiesStartIndex + propertiesPerPage);
+    const paginatedProperties = Array.isArray(filteredProperties) 
+    ? filteredProperties.slice(propertiesStartIndex, propertiesStartIndex + propertiesPerPage)
+    : [];
 
     const businessesTotalPages = Math.ceil(filteredBusinesses.length / businessesPerPage);
     const businessesStartIndex = (businessesPage - 1) * businessesPerPage;

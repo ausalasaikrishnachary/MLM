@@ -112,6 +112,11 @@ const InvestorLandingPage = () => {
 
     // Filter and sort properties
     useEffect(() => {
+        // Check if properties is iterable (an array)
+    if (!Array.isArray(properties)) {
+        setFilteredProperties([]);
+        return;
+    }
         let results = [...properties];
 
         // Apply search filter
@@ -166,7 +171,10 @@ case 'oldest':
     // Pagination calculations
     const propertiesTotalPages = Math.ceil(filteredProperties.length / propertiesPerPage);
     const propertiesStartIndex = (propertiesPage - 1) * propertiesPerPage;
-    const paginatedProperties = filteredProperties.slice(propertiesStartIndex, propertiesStartIndex + propertiesPerPage);
+    //const paginatedProperties = filteredProperties.slice(propertiesStartIndex, propertiesStartIndex + propertiesPerPage);
+    const paginatedProperties = Array.isArray(filteredProperties) 
+    ? filteredProperties.slice(propertiesStartIndex, propertiesStartIndex + propertiesPerPage)
+    : [];
 
     const businessesTotalPages = Math.ceil(filteredBusinesses.length / businessesPerPage);
     const businessesStartIndex = (businessesPage - 1) * businessesPerPage;
