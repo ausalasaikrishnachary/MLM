@@ -8,6 +8,7 @@ import {
   Grid,
   Card,
   CardMedia,
+  Chip,
   CardContent,
   Typography,
   Button,
@@ -21,7 +22,7 @@ import {
   DialogContent,
   DialogActions,
   Pagination,
-    Table,
+  Table,
   TableBody,
   TableCell,
   TableContainer,
@@ -39,7 +40,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
 import { useNavigate } from "react-router-dom";
 import { Carousel } from 'react-responsive-carousel';
- import Swal from 'sweetalert2';
+import Swal from 'sweetalert2';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import PaginationComponent from '../../../Shared/Pagination';
 import { baseurl } from '../../../BaseURL/BaseURL';
@@ -73,25 +74,25 @@ const PartnerMyAssets = () => {
   const startIndex = (page - 1) * itemsPerPage;
   const paginatedProperties = filteredProperties.slice(startIndex, startIndex + itemsPerPage);
 
-      // Report generation states
-    const [openReportDialog, setOpenReportDialog] = useState(false);
-    const [openReportConfigDialog, setOpenReportConfigDialog] = useState(false);
-    const [startDate, setStartDate] = useState(new Date(new Date().setMonth(new Date().getMonth() - 1)));
-    const [endDate, setEndDate] = useState(new Date());
-    const [reportType, setReportType] = useState('monthly');
-    const [reportData, setReportData] = useState([]);
-    const [reportColumns, setReportColumns] = useState([
-      { id: 'property_title', label: 'Property Title', checked: true },
-      { id: 'city', label: 'City', checked: true },
-      { id: 'state', label: 'State', checked: true },
-      { id: 'property_value', label: 'Value (₹)', checked: true },
-      { id: 'status', label: 'Status', checked: true },
-      { id: 'created_at', label: 'Date Added', checked: true },
-      { id: 'owner_name', label: 'Owner', checked: false },
-      { id: 'owner_contact', label: 'Contact', checked: false },
-      { id: 'area', label: 'Area', checked: false },
-      { id: 'builtup_area', label: 'Built-up Area', checked: false },
-    ]);
+  // Report generation states
+  const [openReportDialog, setOpenReportDialog] = useState(false);
+  const [openReportConfigDialog, setOpenReportConfigDialog] = useState(false);
+  const [startDate, setStartDate] = useState(new Date(new Date().setMonth(new Date().getMonth() - 1)));
+  const [endDate, setEndDate] = useState(new Date());
+  const [reportType, setReportType] = useState('monthly');
+  const [reportData, setReportData] = useState([]);
+  const [reportColumns, setReportColumns] = useState([
+    { id: 'property_title', label: 'Property Title', checked: true },
+    { id: 'city', label: 'City', checked: true },
+    { id: 'state', label: 'State', checked: true },
+    { id: 'property_value', label: 'Value (₹)', checked: true },
+    { id: 'status', label: 'Status', checked: true },
+    { id: 'created_at', label: 'Date Added', checked: true },
+    { id: 'owner_name', label: 'Owner', checked: false },
+    { id: 'owner_contact', label: 'Contact', checked: false },
+    { id: 'area', label: 'Area', checked: false },
+    { id: 'builtup_area', label: 'Built-up Area', checked: false },
+  ]);
 
 
   const fetchProperties = async () => {
@@ -204,49 +205,49 @@ const PartnerMyAssets = () => {
     setSelectedProperty(null);
   };
 
-const handleDelete = async (propertyId) => {
-  const result = await Swal.fire({
-    title: 'Are you sure?',
-    text: "Do you really want to delete this property?",
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#3085d6',
-    confirmButtonText: 'Yes, delete it!'
-  });
-
-  if (!result.isConfirmed) return;
-
-  try {
-    const response = await fetch(`${baseurl}/property/${propertyId}/`, {
-      method: 'DELETE',
+  const handleDelete = async (propertyId) => {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "Do you really want to delete this property?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
     });
 
-    if (response.ok) {
-      await Swal.fire({
-        icon: 'success',
-        title: 'Deleted!',
-        text: 'Property deleted successfully.',
-        timer: 2000,
-        showConfirmButton: false
+    if (!result.isConfirmed) return;
+
+    try {
+      const response = await fetch(`${baseurl}/property/${propertyId}/`, {
+        method: 'DELETE',
       });
-      fetchProperties(); // Refresh the list
-    } else {
+
+      if (response.ok) {
+        await Swal.fire({
+          icon: 'success',
+          title: 'Deleted!',
+          text: 'Property deleted successfully.',
+          timer: 2000,
+          showConfirmButton: false
+        });
+        fetchProperties(); // Refresh the list
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Failed',
+          text: `Failed to delete property. Status: ${response.status}`
+        });
+      }
+    } catch (error) {
+      console.error('Error deleting property:', error);
       Swal.fire({
         icon: 'error',
-        title: 'Failed',
-        text: `Failed to delete property. Status: ${response.status}`
+        title: 'Error',
+        text: 'An error occurred while deleting the property.'
       });
     }
-  } catch (error) {
-    console.error('Error deleting property:', error);
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'An error occurred while deleting the property.'
-    });
-  }
-};
+  };
 
 
   const handleNextImage = (propertyId, totalImages) => (e) => {
@@ -309,7 +310,7 @@ const handleDelete = async (propertyId) => {
   };
 
 
-      // Report generation functions
+  // Report generation functions
   const openReportConfiguration = () => {
     setOpenReportConfigDialog(true);
   };
@@ -320,7 +321,7 @@ const handleDelete = async (propertyId) => {
 
   const generateReport = () => {
     let filtered = [...properties];
-    
+
     filtered = filtered.filter(property => {
       const propertyDate = new Date(property.created_at);
       return propertyDate >= startDate && propertyDate <= endDate;
@@ -330,7 +331,7 @@ const handleDelete = async (propertyId) => {
       const grouped = filtered.reduce((acc, property) => {
         const date = new Date(property.created_at);
         const monthYear = `${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
-        
+
         if (!acc[monthYear]) {
           acc[monthYear] = [];
         }
@@ -350,7 +351,7 @@ const handleDelete = async (propertyId) => {
       const grouped = filtered.reduce((acc, property) => {
         const date = new Date(property.created_at);
         const year = date.getFullYear().toString();
-        
+
         if (!acc[year]) {
           acc[year] = [];
         }
@@ -381,11 +382,11 @@ const handleDelete = async (propertyId) => {
 
   const exportToCSV = () => {
     const activeColumns = reportColumns.filter(col => col.checked).map(col => col.id);
-    
-    let csv = activeColumns.map(col => 
+
+    let csv = activeColumns.map(col =>
       reportColumns.find(rc => rc.id === col)?.label || col
     ).join(',') + '\n';
-    
+
     reportData.forEach(group => {
       group.properties.forEach(property => {
         const row = activeColumns.map(col => {
@@ -397,13 +398,13 @@ const handleDelete = async (propertyId) => {
         csv += row + '\n';
       });
     });
-    
+
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.setAttribute('hidden', '');
     a.setAttribute('href', url);
-    a.setAttribute('download', `property_report_${new Date().toISOString().slice(0,10)}.csv`);
+    a.setAttribute('download', `property_report_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -417,17 +418,17 @@ const handleDelete = async (propertyId) => {
       Total Properties: ${reportData.reduce((sum, group) => sum + group.count, 0)}\n
       Total Value: ₹${reportData.reduce((sum, group) => sum + group.totalValue, 0).toLocaleString()}\n\n
       ${reportColumns.filter(col => col.checked).map(col => col.label).join(' | ')}\n
-      ${reportData.flatMap(group => 
-        group.properties.map(property => 
-          reportColumns.filter(col => col.checked).map(col => 
-            col.id === 'created_at' 
-              ? new Date(property[col.id]).toLocaleDateString() 
-              : property[col.id] || ''
-          ).join(' | ')
-        ).join('\n')
-      ).join('\n')}
+      ${reportData.flatMap(group =>
+      group.properties.map(property =>
+        reportColumns.filter(col => col.checked).map(col =>
+          col.id === 'created_at'
+            ? new Date(property[col.id]).toLocaleDateString()
+            : property[col.id] || ''
+        ).join(' | ')
+      ).join('\n')
+    ).join('\n')}
     `;
-    
+
     alert('In a real implementation, this would generate a PDF with the following content:\n\n' + pdfContent);
   };
 
@@ -466,19 +467,18 @@ const handleDelete = async (propertyId) => {
               </tr>
             </thead>
             <tbody>
-              ${reportData.flatMap(group => 
-                group.properties.map(property => 
-                  `<tr>
-                    ${reportColumns.filter(col => col.checked).map(col => 
-                      `<td>${
-                        col.id === 'created_at' 
-                          ? new Date(property[col.id]).toLocaleDateString() 
-                          : property[col.id] || ''
-                      }</td>`
-                    ).join('')}
+              ${reportData.flatMap(group =>
+      group.properties.map(property =>
+        `<tr>
+                    ${reportColumns.filter(col => col.checked).map(col =>
+          `<td>${col.id === 'created_at'
+            ? new Date(property[col.id]).toLocaleDateString()
+            : property[col.id] || ''
+          }</td>`
+        ).join('')}
                   </tr>`
-                ).join('')
-              ).join('')}
+      ).join('')
+    ).join('')}
             </tbody>
           </table>
           <script>
@@ -490,7 +490,7 @@ const handleDelete = async (propertyId) => {
         </body>
       </html>
     `;
-    
+
     const printWindow = window.open('', '_blank');
     printWindow.document.write(printContent);
     printWindow.document.close();
@@ -504,8 +504,8 @@ const handleDelete = async (propertyId) => {
           <Typography variant="h4" sx={{ textAlign: "center" }}>
             Properties
           </Typography>
-          <Button 
-            variant="contained" 
+          <Button
+            variant="contained"
             color="secondary"
             onClick={openReportConfiguration}
             startIcon={<DescriptionIcon />}
@@ -583,7 +583,7 @@ const handleDelete = async (propertyId) => {
                 Add Property
               </Button>
             </Grid> */}
-                   {/* <SubscriptionProtectedButton
+            {/* <SubscriptionProtectedButton
                   userId={userId}
                   buttonText="Add Property"
                   navigateTo="/p-addasset"
@@ -726,32 +726,31 @@ const handleDelete = async (propertyId) => {
                           {property.looking_to === 'sell' ? 'Sell' : 'Rent'}
                         </Box>
                       )} */}
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          top: 15,
-                          left: -30,
-                          width: '150px',
-                          transform: 'rotate(-45deg)',
-                          backgroundColor:
-                            property.status === 'available'
-                              ? '#2ECC71'
-                              : property.status === 'booked'
-                                ? '#E67E22'
-                                : '#E74C3C',
-                          color: 'white',
-                          textAlign: 'center',
-                          fontSize: '12px',
-                          fontWeight: 'bold',
-                          textTransform: 'uppercase',
-                          py: '4px',
-                          boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-                        }}
-                      >
-                        {property.status}
-                      </Box>
+
                     </Box>
                     <CardContent>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                        <Typography fontWeight="bold" sx={{ flex: 1, mr: 1 }}>
+                          {/* {property.property_title} */}
+                        </Typography>
+                        <Chip
+                          label={property.status}
+                          size="small"
+                          sx={{
+                            backgroundColor:
+                              property.status === 'available'
+                                ? '#2ECC71'
+                                : property.status === 'booked'
+                                  ? '#E67E22'
+                                  : '#E74C3C',
+                            color: 'white',
+                            fontWeight: 'bold',
+                            textTransform: 'uppercase',
+                            fontSize: '0.7rem',
+                            minWidth: '70px'
+                          }}
+                        />
+                      </Box>
                       <Typography fontWeight="bold" mb={1}>
                         {property.property_title}
                       </Typography>
@@ -951,120 +950,120 @@ const handleDelete = async (propertyId) => {
           onChange={handlePageChange}
         />
 
-                {/* Report Configuration Dialog */}
-                <Dialog open={openReportConfigDialog} onClose={closeReportConfiguration} maxWidth="sm" fullWidth>
-                  <DialogTitle>Generate Property Report</DialogTitle>
-                  <DialogContent dividers>
-                    <Stack spacing={3} sx={{ mt: 2 }}>
-                      <FormControl fullWidth>
-                        <InputLabel id="report-type-label">Report Type</InputLabel>
-                        <Select
-                          labelId="report-type-label"
-                          value={reportType}
-                          onChange={(e) => setReportType(e.target.value)}
-                          label="Report Type"
-                        >
-                          <MenuItem value="monthly">Monthly</MenuItem>
-                          <MenuItem value="yearly">Yearly</MenuItem>
-                          <MenuItem value="custom">Custom Date Range</MenuItem>
-                        </Select>
-                      </FormControl>
-        
-                      <Box sx={{ display: 'flex', gap: 2 }}>
-                        <Box sx={{ flex: 1 }}>
-                          <Typography variant="subtitle2" gutterBottom>
-                            Start Date
-                          </Typography>
-                          <DatePicker
-                            selected={startDate}
-                            onChange={(date) => setStartDate(date)}
-                            selectsStart
-                            startDate={startDate}
-                            endDate={endDate}
-                            customInput={
-                              <TextField
-                                fullWidth
-                                variant="outlined"
-                                InputProps={{
-                                  startAdornment: (
-                                    <InputAdornment position="start">
-                                      <EventIcon color="action" />
-                                    </InputAdornment>
-                                  ),
-                                }}
-                              />
-                            }
-                          />
-                        </Box>
-                        <Box sx={{ flex: 1 }}>
-                          <Typography variant="subtitle2" gutterBottom>
-                            End Date
-                          </Typography>
-                          <DatePicker
-                            selected={endDate}
-                            onChange={(date) => setEndDate(date)}
-                            selectsEnd
-                            startDate={startDate}
-                            endDate={endDate}
-                            minDate={startDate}
-                            customInput={
-                              <TextField
-                                fullWidth
-                                variant="outlined"
-                                InputProps={{
-                                  startAdornment: (
-                                    <InputAdornment position="start">
-                                      <CalendarMonthIcon color="action" />
-                                    </InputAdornment>
-                                  ),
-                                }}
-                              />
-                            }
-                          />
-                        </Box>
-                      </Box>
-        
-                      <Box>
-                        <Typography variant="subtitle2" gutterBottom>
-                          Select Columns to Include
-                        </Typography>
-                        <FormGroup>
-                          {reportColumns.map((column) => (
-                            <FormControlLabel
-                              key={column.id}
-                              control={
-                                <Checkbox
-                                  checked={column.checked}
-                                  onChange={(e) => {
-                                    const updatedColumns = reportColumns.map(col => 
-                                      col.id === column.id ? { ...col, checked: e.target.checked } : col
-                                    );
-                                    setReportColumns(updatedColumns);
-                                  }}
-                                />
-                              }
-                              label={column.label}
-                            />
-                          ))}
-                        </FormGroup>
-                      </Box>
-                    </Stack>
-                  </DialogContent>
-                  <DialogActions>
-                    <Button onClick={closeReportConfiguration} color="primary">
-                      Cancel
-                    </Button>
-                    <Button onClick={generateReport} variant="contained" color="primary">
-                      Generate Report
-                    </Button>
-                  </DialogActions>
-                </Dialog>
-        
-                {/* Report Display Dialog */}
-                <Dialog open={openReportDialog} onClose={() => setOpenReportDialog(false)} maxWidth="lg" fullWidth>
-                  <DialogTitle>Property Report</DialogTitle>
-                  <DialogContent dividers>
-                    {/* <Box sx={{ mb: 3 }}>
+        {/* Report Configuration Dialog */}
+        <Dialog open={openReportConfigDialog} onClose={closeReportConfiguration} maxWidth="sm" fullWidth>
+          <DialogTitle>Generate Property Report</DialogTitle>
+          <DialogContent dividers>
+            <Stack spacing={3} sx={{ mt: 2 }}>
+              <FormControl fullWidth>
+                <InputLabel id="report-type-label">Report Type</InputLabel>
+                <Select
+                  labelId="report-type-label"
+                  value={reportType}
+                  onChange={(e) => setReportType(e.target.value)}
+                  label="Report Type"
+                >
+                  <MenuItem value="monthly">Monthly</MenuItem>
+                  <MenuItem value="yearly">Yearly</MenuItem>
+                  <MenuItem value="custom">Custom Date Range</MenuItem>
+                </Select>
+              </FormControl>
+
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <Box sx={{ flex: 1 }}>
+                  <Typography variant="subtitle2" gutterBottom>
+                    Start Date
+                  </Typography>
+                  <DatePicker
+                    selected={startDate}
+                    onChange={(date) => setStartDate(date)}
+                    selectsStart
+                    startDate={startDate}
+                    endDate={endDate}
+                    customInput={
+                      <TextField
+                        fullWidth
+                        variant="outlined"
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <EventIcon color="action" />
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    }
+                  />
+                </Box>
+                <Box sx={{ flex: 1 }}>
+                  <Typography variant="subtitle2" gutterBottom>
+                    End Date
+                  </Typography>
+                  <DatePicker
+                    selected={endDate}
+                    onChange={(date) => setEndDate(date)}
+                    selectsEnd
+                    startDate={startDate}
+                    endDate={endDate}
+                    minDate={startDate}
+                    customInput={
+                      <TextField
+                        fullWidth
+                        variant="outlined"
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <CalendarMonthIcon color="action" />
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    }
+                  />
+                </Box>
+              </Box>
+
+              <Box>
+                <Typography variant="subtitle2" gutterBottom>
+                  Select Columns to Include
+                </Typography>
+                <FormGroup>
+                  {reportColumns.map((column) => (
+                    <FormControlLabel
+                      key={column.id}
+                      control={
+                        <Checkbox
+                          checked={column.checked}
+                          onChange={(e) => {
+                            const updatedColumns = reportColumns.map(col =>
+                              col.id === column.id ? { ...col, checked: e.target.checked } : col
+                            );
+                            setReportColumns(updatedColumns);
+                          }}
+                        />
+                      }
+                      label={column.label}
+                    />
+                  ))}
+                </FormGroup>
+              </Box>
+            </Stack>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={closeReportConfiguration} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={generateReport} variant="contained" color="primary">
+              Generate Report
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Report Display Dialog */}
+        <Dialog open={openReportDialog} onClose={() => setOpenReportDialog(false)} maxWidth="lg" fullWidth>
+          <DialogTitle>Property Report</DialogTitle>
+          <DialogContent dividers>
+            {/* <Box sx={{ mb: 3 }}>
                       <Typography variant="h6" gutterBottom>
                         Report Summary
                       </Typography>
@@ -1087,51 +1086,51 @@ const handleDelete = async (propertyId) => {
                         </Box>
                       </Box>
                     </Box> */}
-        
-                    <TableContainer component={Paper} sx={{ maxHeight: '60vh', overflow: 'auto' }}>
-                      <Table stickyHeader>
-                        <TableHead>
-                          <TableRow>
-                            {reportColumns.filter(col => col.checked).map(column => (
-                              <TableCell key={column.id} sx={{ fontWeight: 'bold', color:"#4A90E2" }} >{column.label}</TableCell>
-                            ))}
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {reportData.flatMap(group => 
-                            group.properties.map((property, idx) => (
-                              <TableRow key={`${group.period}-${idx}`}>
-                                {reportColumns.filter(col => col.checked).map(column => (
-                                  <TableCell key={`${property.id}-${column.id}`}>
-                                    {column.id === 'created_at' 
-                                      ? new Date(property[column.id]).toLocaleDateString() 
-                                      : column.id === 'property_value'
-                                        ? `₹${property[column.id]?.toLocaleString() || '-'}`
-                                        : property[column.id] || '-'}
-                                  </TableCell>
-                                ))}
-                              </TableRow>
-                            ))
-                          )}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </DialogContent>
-                  <DialogActions>
-                    <Button onClick={() => setOpenReportDialog(false)} color="primary">
-                      Close
-                    </Button>
-                    <Button onClick={printReport} startIcon={<PrintIcon />} color="primary">
-                      Print
-                    </Button>
-                    <Button onClick={exportToPDF} startIcon={<PictureAsPdfIcon />} color="primary">
-                      PDF
-                    </Button>
-                    <Button onClick={exportToCSV} startIcon={<DescriptionIcon />} color="primary">
-                      CSV
-                    </Button>
-                  </DialogActions>
-                </Dialog>
+
+            <TableContainer component={Paper} sx={{ maxHeight: '60vh', overflow: 'auto' }}>
+              <Table stickyHeader>
+                <TableHead>
+                  <TableRow>
+                    {reportColumns.filter(col => col.checked).map(column => (
+                      <TableCell key={column.id} sx={{ fontWeight: 'bold', color: "#4A90E2" }} >{column.label}</TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {reportData.flatMap(group =>
+                    group.properties.map((property, idx) => (
+                      <TableRow key={`${group.period}-${idx}`}>
+                        {reportColumns.filter(col => col.checked).map(column => (
+                          <TableCell key={`${property.id}-${column.id}`}>
+                            {column.id === 'created_at'
+                              ? new Date(property[column.id]).toLocaleDateString()
+                              : column.id === 'property_value'
+                                ? `₹${property[column.id]?.toLocaleString() || '-'}`
+                                : property[column.id] || '-'}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenReportDialog(false)} color="primary">
+              Close
+            </Button>
+            <Button onClick={printReport} startIcon={<PrintIcon />} color="primary">
+              Print
+            </Button>
+            <Button onClick={exportToPDF} startIcon={<PictureAsPdfIcon />} color="primary">
+              PDF
+            </Button>
+            <Button onClick={exportToCSV} startIcon={<DescriptionIcon />} color="primary">
+              CSV
+            </Button>
+          </DialogActions>
+        </Dialog>
 
         {/* Pagination */}
         {/* <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>

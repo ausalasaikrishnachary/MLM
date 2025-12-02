@@ -48,7 +48,7 @@ const AdminLandingPage = () => {
     const userId = localStorage.getItem("user_id");
 
     // Properties states
-    const [sortBy, setSortBy] = useState(''); 
+    const [sortBy, setSortBy] = useState('');
     const [properties, setProperties] = useState([]);
     const [selectedProperty, setSelectedProperty] = useState(null);
     const [openDialog, setOpenDialog] = useState(false);
@@ -68,22 +68,22 @@ const AdminLandingPage = () => {
     const [openCarousel, setOpenCarousel] = useState(false);
 
     useEffect(() => {
-       const fetchLatestProperties = async () => {
-           try {
-               const response = await fetch(`${baseurl}/latest-properties/`);
-               const data = await response.json();
-   
-               // API returns array directly
-               setProperties(data);
-               setFilteredProperties(data);
-   
-           } catch (error) {
-               console.error("Error fetching latest properties:", error);
-           }
-       };
-   
-       fetchLatestProperties();
-   }, []);
+        const fetchLatestProperties = async () => {
+            try {
+                const response = await fetch(`${baseurl}/latest-properties/`);
+                const data = await response.json();
+
+                // API returns array directly
+                setProperties(data);
+                setFilteredProperties(data);
+
+            } catch (error) {
+                console.error("Error fetching latest properties:", error);
+            }
+        };
+
+        fetchLatestProperties();
+    }, []);
     // Fetch businesses
     useEffect(() => {
         fetch(`${baseurl}/business/`)
@@ -101,64 +101,64 @@ const AdminLandingPage = () => {
             });
     }, []);
 
-     const parseDate = (dateStr) => {
-    const [day, month, yearAndTime] = dateStr.split("-");
-    const [year, time] = yearAndTime.split(" ");
-    return new Date(`${year}-${month}-${day} ${time}`);
-};
+    const parseDate = (dateStr) => {
+        const [day, month, yearAndTime] = dateStr.split("-");
+        const [year, time] = yearAndTime.split(" ");
+        return new Date(`${year}-${month}-${day} ${time}`);
+    };
 
     // Filter and sort properties
-   useEffect(() => {
-    // Check if properties is iterable (an array)
-    if (!Array.isArray(properties)) {
-        setFilteredProperties([]);
-        return;
-    }
+    useEffect(() => {
+        // Check if properties is iterable (an array)
+        if (!Array.isArray(properties)) {
+            setFilteredProperties([]);
+            return;
+        }
 
-    let results = [...properties];
+        let results = [...properties];
 
-    // Apply search filter
-    if (searchQuery.trim()) {
-        const query = searchQuery.toLowerCase();
-        results = results.filter(property => {
-            const searchFields = [
-                property.property_title,
-                property.first_name,
-                property.city,
-                property.state,
-                property.owner_name,
-                property.owner_contact,
-                property.address,
-                property.description,
-                property.property_value?.toString(),
-                property.area?.toString(),
-                property.builtup_area?.toString()
-            ].filter(Boolean);
+        // Apply search filter
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase();
+            results = results.filter(property => {
+                const searchFields = [
+                    property.property_title,
+                    property.first_name,
+                    property.city,
+                    property.state,
+                    property.owner_name,
+                    property.owner_contact,
+                    property.address,
+                    property.description,
+                    property.property_value?.toString(),
+                    property.area?.toString(),
+                    property.builtup_area?.toString()
+                ].filter(Boolean);
 
-            return searchFields.some(field => field.toLowerCase().includes(query));
-        });
-    }
+                return searchFields.some(field => field.toLowerCase().includes(query));
+            });
+        }
 
-    // Apply sort filter
-    switch (sortBy) {
-        case 'latest':
-            results.sort((a, b) => parseDate(b.created_at) - parseDate(a.created_at));
-            break;
-        case 'oldest':
-            results.sort((a, b) => parseDate(a.created_at) - parseDate(b.created_at));
-            break;
-        case 'price-high':
-            results.sort((a, b) => b.property_value - a.property_value);
-            break;
-        case 'price-low':
-            results.sort((a, b) => a.property_value - b.property_value);
-            break;
-        default:
-            break;
-    }
+        // Apply sort filter
+        switch (sortBy) {
+            case 'latest':
+                results.sort((a, b) => parseDate(b.created_at) - parseDate(a.created_at));
+                break;
+            case 'oldest':
+                results.sort((a, b) => parseDate(a.created_at) - parseDate(b.created_at));
+                break;
+            case 'price-high':
+                results.sort((a, b) => b.property_value - a.property_value);
+                break;
+            case 'price-low':
+                results.sort((a, b) => a.property_value - b.property_value);
+                break;
+            default:
+                break;
+        }
 
-    setFilteredProperties(results);
-}, [searchQuery, sortBy, properties]);
+        setFilteredProperties(results);
+    }, [searchQuery, sortBy, properties]);
 
     // Filter businesses
     const filteredBusinesses = businesses.filter(business => {
@@ -170,9 +170,9 @@ const AdminLandingPage = () => {
     const propertiesTotalPages = Math.ceil(filteredProperties.length / propertiesPerPage);
     const propertiesStartIndex = (propertiesPage - 1) * propertiesPerPage;
     //const paginatedProperties = filteredProperties.slice(propertiesStartIndex, propertiesStartIndex + propertiesPerPage);
-    const paginatedProperties = Array.isArray(filteredProperties) 
-    ? filteredProperties.slice(propertiesStartIndex, propertiesStartIndex + propertiesPerPage)
-    : [];
+    const paginatedProperties = Array.isArray(filteredProperties)
+        ? filteredProperties.slice(propertiesStartIndex, propertiesStartIndex + propertiesPerPage)
+        : [];
 
     const businessesTotalPages = Math.ceil(filteredBusinesses.length / businessesPerPage);
     const businessesStartIndex = (businessesPage - 1) * businessesPerPage;
@@ -238,7 +238,7 @@ const AdminLandingPage = () => {
 
     return (
         <>
-            <Header/>
+            <Header />
             <Container sx={{ py: 4 }}>
                 {/* Header Section */}
                 <Box position="relative" mb={3} height="56px">
@@ -339,56 +339,64 @@ const AdminLandingPage = () => {
                                                     <CardMedia
                                                         component="img"
                                                         height="220"
-                                                        image={property.images.length > 0 ? `${baseurl}${property.images[0].image}` : 'https://via.placeholder.com/300'}
+                                                        image={
+                                                            property.images.length > 0
+                                                                ? `${baseurl}${property.images[0].image}`
+                                                                : 'https://via.placeholder.com/300'
+                                                        }
                                                         alt={property.property_title}
-                                                        sx={{ objectFit: 'cover', borderRadius: '12px 12px 0 0', cursor: 'pointer' }}
+                                                        sx={{
+                                                            objectFit: 'cover',
+                                                            borderRadius: '12px 12px 0 0',
+                                                            cursor: 'pointer'
+                                                        }}
                                                         onClick={() => handleImageClick(property)}
                                                     />
-                                                    {property.status !== 'sold' && (
-                                                        <Box
-                                                            sx={{
-                                                                position: 'absolute',
-                                                                top: 15,
-                                                                right: -30,
-                                                                width: '150px',
-                                                                transform: 'rotate(45deg)',
-                                                                backgroundColor: "red",
-                                                                color: 'white',
-                                                                textAlign: 'center',
-                                                                fontSize: '12px',
-                                                                fontWeight: 'bold',
-                                                                textTransform: 'uppercase',
-                                                                py: '4px',
-                                                                boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-                                                            }}
-                                                        >
-                                                            {property.looking_to === 'sell' ? 'Sell' : 'Rent'}
-                                                        </Box>
-                                                    )}
-                                                    <Box
+                                                </Box>
+
+                                                {/* STATUS + LOOKING TO (Below Image) */}
+                                                <Box
+                                                    sx={{
+                                                        display: "flex",
+                                                        justifyContent: "space-between",
+                                                        alignItems: "center",
+                                                        mt: 1,
+                                                        px: 1
+                                                    }}
+                                                >
+                                                    {/* STATUS CHIP */}
+                                                    <Chip
+                                                        label={property.status}
+                                                        size="small"
                                                         sx={{
-                                                            position: 'absolute',
-                                                            top: 15,
-                                                            left: -30,
-                                                            width: '150px',
-                                                            transform: 'rotate(-45deg)',
                                                             backgroundColor:
-                                                                property.status === 'available'
-                                                                    ? '#2ECC71'
-                                                                    : property.status === 'booked'
-                                                                        ? '#E67E22'
-                                                                        : '#E74C3C',
-                                                            color: 'white',
-                                                            textAlign: 'center',
-                                                            fontSize: '12px',
-                                                            fontWeight: 'bold',
-                                                            textTransform: 'uppercase',
-                                                            py: '4px',
-                                                            boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
+                                                                property.status === "available"
+                                                                    ? "#2ECC71"
+                                                                    : property.status === "booked"
+                                                                        ? "#E67E22"
+                                                                        : "#E74C3C",
+                                                            color: "white",
+                                                            fontWeight: "bold",
+                                                            textTransform: "uppercase",
+                                                            fontSize: "0.7rem",
+                                                            minWidth: "70px"
                                                         }}
-                                                    >
-                                                        {property.status}
-                                                    </Box>
+                                                    />
+
+                                                    {/* LOOKING TO CHIP */}
+                                                    <Chip
+                                                        label={property.looking_to === "sell" ? "Sell" : "Rent"}
+                                                        size="small"
+                                                        sx={{
+                                                            backgroundColor:
+                                                                property.looking_to === "sell" ? "#3498DB" : "#9B59B6",
+                                                            color: "white",
+                                                            fontWeight: "bold",
+                                                            textTransform: "uppercase",
+                                                            fontSize: "0.7rem",
+                                                            minWidth: "70px"
+                                                        }}
+                                                    />
                                                 </Box>
                                                 <CardContent>
                                                     <Typography fontWeight="bold" mb={1}>

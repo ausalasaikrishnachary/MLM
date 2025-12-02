@@ -335,12 +335,12 @@ const AssetsUI = () => {
           view_count: (property.view_count || 0) + 1
         })
       });
-  
+
       console.log("View count updated");
     } catch (error) {
       console.log("Error updating view count:", error);
     }
-  
+
     // navigate after update
     navigate(`/p-assets/${property.property_id}`, {
       state: { property }
@@ -804,66 +804,66 @@ const AssetsUI = () => {
                           </Typography>
                         </Grid>
                       </Grid>
-                       {/* Always show the icons */}
-  <Grid item xs={12}>
-    <Box
-      sx={{
-        display: 'flex',
-        justifyContent: 'flex-end',
-        alignItems: 'center',
-        gap: 1.5,
-        mt: 0.5,
-      }}
-    >
-      {/* Wishlist Button */}
-      <IconButton
-        onClick={() => handleWishlistToggle(property.property_id)}
-        sx={{
-          backgroundColor: 'rgba(255,255,255,0.8)',
-          '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
-        }}
-      >
-        {wishlist.includes(property.property_id) ? (
-          <FavoriteIcon sx={{ color: 'red' }} />
-        ) : (
-          <FavoriteBorderIcon sx={{ color: 'red' }} />
-        )}
-      </IconButton>
+                      {/* Always show the icons */}
+                      <Grid item xs={12}>
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            justifyContent: 'flex-end',
+                            alignItems: 'center',
+                            gap: 1.5,
+                            mt: 0.5,
+                          }}
+                        >
+                          {/* Wishlist Button */}
+                          <IconButton
+                            onClick={() => handleWishlistToggle(property.property_id)}
+                            sx={{
+                              backgroundColor: 'rgba(255,255,255,0.8)',
+                              '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
+                            }}
+                          >
+                            {wishlist.includes(property.property_id) ? (
+                              <FavoriteIcon sx={{ color: 'red' }} />
+                            ) : (
+                              <FavoriteBorderIcon sx={{ color: 'red' }} />
+                            )}
+                          </IconButton>
 
-      {/* Like Button */}
-      <IconButton
-        onClick={() => handleLikeToggle(property.property_id)}
-        size="small"
-        sx={{
-          backgroundColor: 'rgba(255,255,255,0.8)',
-          '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
-          color: likedProperties.includes(property.property_id)
-            ? '#1a73e8'
-            : 'grey',
-        }}
-      >
-        {likedProperties.includes(property.property_id) ? (
-          <ThumbUpAltIcon />
-        ) : (
-          <ThumbUpAltOutlinedIcon />
-        )}
-      </IconButton>
+                          {/* Like Button */}
+                          <IconButton
+                            onClick={() => handleLikeToggle(property.property_id)}
+                            size="small"
+                            sx={{
+                              backgroundColor: 'rgba(255,255,255,0.8)',
+                              '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
+                              color: likedProperties.includes(property.property_id)
+                                ? '#1a73e8'
+                                : 'grey',
+                            }}
+                          >
+                            {likedProperties.includes(property.property_id) ? (
+                              <ThumbUpAltIcon />
+                            ) : (
+                              <ThumbUpAltOutlinedIcon />
+                            )}
+                          </IconButton>
 
-      {/* Call Button */}
-      <IconButton
-        component="a"
-        href={`tel:${subscriptionPaid ? property.owner_contact : '9074307248'}`}
-        size="small"
-        sx={{
-          backgroundColor: 'rgba(255,255,255,0.8)',
-          '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
-          color: '#4caf50',
-        }}
-      >
-        <CallIcon />
-      </IconButton>
-    </Box>
-  </Grid>
+                          {/* Call Button */}
+                          <IconButton
+                            component="a"
+                            href={`tel:${subscriptionPaid ? property.owner_contact : '9074307248'}`}
+                            size="small"
+                            sx={{
+                              backgroundColor: 'rgba(255,255,255,0.8)',
+                              '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
+                              color: '#4caf50',
+                            }}
+                          >
+                            <CallIcon />
+                          </IconButton>
+                        </Box>
+                      </Grid>
                       <Box
                         sx={{
                           backgroundColor: '#F8F9FA',
@@ -872,39 +872,39 @@ const AssetsUI = () => {
                           mb: 2
                         }}
                       >
-                       <Grid container>
-  {/* Show referral info if available */}
-  {subscriptionPaid && property.referral_id && (
-    <Grid item xs={12}>
-      <Typography
-        variant="body2"
-        fontWeight="bold"
-        color="#E67E22"
-        textAlign="center"
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        gap={1}
-      >
-        Added by: {property.username}
-      </Typography>
-      <Typography
-        variant="body2"
-        fontWeight="bold"
-        color="#E67E22"
-        textAlign="center"
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        gap={1}
-      >
-        Referral ID: {property.referral_id}
-      </Typography>
-    </Grid>
-  )}
+                        <Grid container>
+                          {/* Show referral info if available */}
+                          {subscriptionPaid && property.referral_id && (
+                            <Grid item xs={12}>
+                              <Typography
+                                variant="body2"
+                                fontWeight="bold"
+                                color="#E67E22"
+                                textAlign="center"
+                                display="flex"
+                                justifyContent="center"
+                                alignItems="center"
+                                gap={1}
+                              >
+                                Added by: {property.username}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                fontWeight="bold"
+                                color="#E67E22"
+                                textAlign="center"
+                                display="flex"
+                                justifyContent="center"
+                                alignItems="center"
+                                gap={1}
+                              >
+                                Referral ID: {property.referral_id}
+                              </Typography>
+                            </Grid>
+                          )}
 
- 
-</Grid>
+
+                        </Grid>
 
                       </Box>
 
@@ -976,7 +976,7 @@ const AssetsUI = () => {
                               '&:hover': { color: 'rgb(5,5,5)' }
                             }}
                             disabled={!subscriptionPaid}
-                              onClick={() => handleViewDetails(property)}
+                            onClick={() => handleViewDetails(property)}
                           >
                             VIEW DETAILS
                           </Button>
