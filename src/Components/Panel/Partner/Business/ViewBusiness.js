@@ -112,10 +112,10 @@ useEffect(() => {
 
   const totalPages = Math.ceil(businesses.length / itemsPerPage);
   const startIndex = (page - 1) * itemsPerPage;
-  const paginatedBusinesses = businesses.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
+  const paginatedBusinesses = Array.isArray(businesses)
+  ? businesses.slice(startIndex, startIndex + itemsPerPage)
+  : [];
+
 
   // Handle dialog open
   const handleOpenDialog = (business) => {
