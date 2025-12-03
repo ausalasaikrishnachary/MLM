@@ -305,11 +305,11 @@ export default function Header() {
                 </Link>
               </Box>
               <Box display="flex" alignItems="center">
-                <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
+                {/* <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
                   <Badge badgeContent={notifications.length} color="error">
                     <NotificationsNoneIcon />
                   </Badge>
-                </IconButton>
+                </IconButton> */}
                 <Typography sx={{ ml: 2, mr: 2, color: '#000', fontWeight: 'bold' }}>
                   {user_name}
                 </Typography>
@@ -372,11 +372,11 @@ export default function Header() {
                   )
                 ))}
               </Box>
-              <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
+              {/* <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
                 <Badge badgeContent={notifications.length} color="error">
                   <NotificationsNoneIcon />
                 </Badge>
-              </IconButton>
+              </IconButton> */}
               <Typography sx={{ ml: 2, mr: 2, color: '#000', fontWeight: 'bold' }}>
                 {user_name}
               </Typography>
