@@ -162,7 +162,7 @@ const AddProduct = () => {
             </Grid>
 
             {/* Tax */}
-            <Grid item xs={12} md={4}>
+            {/* <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
                 label="Units"
@@ -171,7 +171,7 @@ const AddProduct = () => {
                 onChange={handleChange}
                 variant="outlined"
               />
-            </Grid>
+            </Grid> */}
 
             {/* <Grid item xs={12} md={4}>
               <TextField
@@ -245,7 +245,7 @@ const AddProduct = () => {
                 variant="outlined"
               />
             </Grid>
-
+{/* 
             <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
@@ -256,7 +256,7 @@ const AddProduct = () => {
                 onChange={handleChange}
                 variant="outlined"
               />
-            </Grid>
+            </Grid> */}
 
             {/* <Grid item xs={12} md={4}>
               <TextField

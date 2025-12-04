@@ -332,9 +332,9 @@ function MyTeam() {
             {/* Children Section */}
             {childAgents.length > 0 ? (
               <>
-                <Typography variant="h6" mb={2}>
+                {/* <Typography variant="h6" mb={2}>
                   Direct Members ({childAgents.length})
-                </Typography>
+                </Typography> */}
                 
                 {renderMembers(childAgents)}
               </>

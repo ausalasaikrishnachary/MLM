@@ -240,6 +240,7 @@ const AssetDetail = () => {
   const [tabValue, setTabValue] = useState(0);
 
   const [categories, setCategories] = useState([]);
+  const { property: passedProperty } = location.state || {};
 
   
   useEffect(() => {
@@ -260,14 +261,16 @@ const AssetDetail = () => {
 
   
 
+  // Fetch property if not passed
   useEffect(() => {
-  if (!property) {
-    fetch(`${baseurl}/property/${id}/`)
-      .then((res) => res.json())
-      .then((data) => setProperty(data))
-      .catch((err) => console.error("Error fetching property:", err));
-  }
-}, [id, property]);
+    if (!passedProperty && id) {
+      fetch(`${baseurl}/property/${id}/`)
+        .then(res => res.json())
+        .then(data => setProperty(data))
+        .catch(err => console.error("Error fetching property:", err));
+    }
+  }, [id, passedProperty]);
+
 
 useEffect(() => {
   const fetchPropertyTypes = async () => {
