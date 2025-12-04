@@ -204,11 +204,11 @@ export default function InvestorHeader() {
 
               {/* Right: Notification, Username, Profile Avatar */}
               <Box display="flex" alignItems="center">
-                {/* <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
+                <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
                   <Badge badgeContent={notifications.length} color="error">
                     <NotificationsNoneIcon />
                   </Badge>
-                </IconButton> */}
+                </IconButton>
                 <Typography
                   sx={{
                     ml: 2,
@@ -324,11 +324,11 @@ export default function InvestorHeader() {
   </IconButton>
 
               {/* Right: Notification, Username, Profile Avatar */}
-              {/* <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
+              <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
                 <Badge badgeContent={notifications.length} color="error">
                   <NotificationsNoneIcon />
                 </Badge>
-              </IconButton> */}
+              </IconButton>
               <Typography
                 sx={{
                   ml: 2,
