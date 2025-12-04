@@ -468,38 +468,42 @@ export default function Header() {
 
       </Menu>
       <MuiMenu
-        anchorEl={notificationAnchorEl}
-        open={notificationMenuOpen}
-        onClose={handleNotificationClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-      >
-        {notifications.length > 0 ? (
-          notifications.map((notif) => (
-            <MenuItem
-              key={notif.notification_status_id}
-              onClick={() => {
-                axios.post(`${baseurl}/notifications/mark-as-read/`, {
-                  user_id: parseInt(userId),
-                  notification_id: notif.notification_status_id
-                })
-                  .then(() => {
-                    setNotifications(prev => prev.filter(n => n.notification_status_id !== notif.notification_status_id));
-                    handleNotificationClose();
-                    handleNavigate(`/a-assets/${notif.property.id}`);
-                  })
-                  .catch(error => {
-                    console.error("Error marking notification as read:", error);
-                  });
-              }}
-            >
-              {notif.message}
-            </MenuItem>
-          ))
-        ) : (
-          <MenuItem disabled>No notifications</MenuItem>
-        )}
-      </MuiMenu>
+            anchorEl={notificationAnchorEl}
+            open={notificationMenuOpen}
+            onClose={handleNotificationClose}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+          >
+            {notifications.length > 0 ? (
+              notifications.map((notif) => (
+                <MenuItem
+                  key={notif.notification_status_id}
+                  onClick={() => {
+                    axios.post(`${baseurl}/notifications/mark-as-read/`, {
+                      user_id: parseInt(userId),
+                      notification_id: notif.notification_status_id
+                    })
+                      .then(() => {
+                        setNotifications(prev => 
+                          prev.filter(n => n.notification_status_id !== notif.notification_status_id)
+                        );
+                        handleNotificationClose();
+                        
+                        // ✅ FIXED: Navigate using notif.property.id instead of assets
+                        navigate(`/a-assets/${notif.property.id}`);
+                      })
+                      .catch(error => {
+                        console.error("Error marking notification as read:", error);
+                      });
+                  }}
+                >
+                  {notif.message}
+                </MenuItem>
+              ))
+            ) : (
+              <MenuItem disabled>No notifications</MenuItem>
+            )}
+          </MuiMenu>
     </>
   );
 }
