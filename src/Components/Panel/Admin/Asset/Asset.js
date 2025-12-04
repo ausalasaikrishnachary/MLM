@@ -860,7 +860,7 @@ const getDaysRemaining = (property) => {
                         {property.city}, {property.state}
                       </Typography>
  {/* ✅ ADD THIS: Listing Days Remaining Display */}
-  <Box sx={{ mb: 2 }}>
+  {/* <Box sx={{ mb: 2 }}>
     <Chip
       label={getDaysRemaining(property)}
       size="small"
@@ -870,7 +870,7 @@ const getDaysRemaining = (property) => {
         fontSize: '0.7rem'
       }}
     />
-  </Box>
+  </Box> */}
                       {/* <Typography variant="body2" color="text.secondary" mb={1}>
                         Added By: <strong>{property.first_name}</strong>
                       </Typography> */}

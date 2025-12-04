@@ -290,11 +290,11 @@ export default function PartnerHeader() {
   </IconButton>
 
   {/* Notification Icon */}
-  <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
+  {/* <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
     <Badge badgeContent={notifications.length} color="error">
       <NotificationsNoneIcon />
     </Badge>
-  </IconButton>
+  </IconButton> */}
 
   <Typography sx={{ ml: 2, mr: 2, color: '#000', fontWeight: 'bold' }}>
     {first_name} ({referral_id})
@@ -365,11 +365,11 @@ export default function PartnerHeader() {
   <IconButton sx={{ color: "#ee1111ff", mr: 1 }} onClick={() => navigate("/p-wishlist")}>
     <FavoriteIcon />
   </IconButton>
-              <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
+              {/* <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
                 <Badge badgeContent={notifications.length} color="error">
                   <NotificationsNoneIcon />
                 </Badge>
-              </IconButton>
+              </IconButton> */}
               <Typography sx={{ ml: 2, mr: 2, color: '#000', fontWeight: 'bold' }}>
                 {first_name} ({referral_id})
               </Typography>
