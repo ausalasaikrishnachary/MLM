@@ -204,11 +204,11 @@ export default function InvestorHeader() {
 
               {/* Right: Notification, Username, Profile Avatar */}
               <Box display="flex" alignItems="center">
-                {/* <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
+                <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
                   <Badge badgeContent={notifications.length} color="error">
                     <NotificationsNoneIcon />
                   </Badge>
-                </IconButton> */}
+                </IconButton>
                 <Typography
                   sx={{
                     ml: 2,
@@ -324,11 +324,11 @@ export default function InvestorHeader() {
   </IconButton>
 
               {/* Right: Notification, Username, Profile Avatar */}
-              {/* <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
+              <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
                 <Badge badgeContent={notifications.length} color="error">
                   <NotificationsNoneIcon />
                 </Badge>
-              </IconButton> */}
+              </IconButton>
               <Typography
                 sx={{
                   ml: 2,
@@ -413,38 +413,42 @@ export default function InvestorHeader() {
       </Menu>
 
       <MuiMenu
-        anchorEl={notificationAnchorEl}
-        open={notificationMenuOpen}
-        onClose={handleNotificationClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+  anchorEl={notificationAnchorEl}
+  open={notificationMenuOpen}
+  onClose={handleNotificationClose}
+  anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+  transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+>
+  {notifications.length > 0 ? (
+    notifications.map((notif) => (
+      <MenuItem
+        key={notif.notification_status_id}
+        onClick={() => {
+          axios.post(`${baseurl}/notifications/mark-as-read/`, {
+            user_id: parseInt(userId),
+            notification_id: notif.notification_status_id
+          })
+            .then(() => {
+              setNotifications(prev => 
+                prev.filter(n => n.notification_status_id !== notif.notification_status_id)
+              );
+              handleNotificationClose();
+              
+              // ✅ FIXED: Navigate using notif.property.id instead of assets
+              navigate(`/i-assets/${notif.property.id}`);
+            })
+            .catch(error => {
+              console.error("Error marking notification as read:", error);
+            });
+        }}
       >
-        {notifications.length > 0 ? (
-          notifications.map((notif) => (
-            <MenuItem
-              key={notif.notification_status_id}
-              onClick={() => {
-                axios.post(`${baseurl}/notifications/mark-as-read/`, {
-                  user_id: parseInt(userId),
-                  notification_id: notif.notification_status_id
-                })
-                  .then(() => {
-                    setNotifications(prev => prev.filter(n => n.notification_status_id !== notif.notification_status_id));
-                    handleNotificationClose();
-                    navigate(`/i-assets/${notif.property.id}`);
-                  })
-                  .catch(error => {
-                    console.error("Error marking notification as read:", error);
-                  });
-              }}
-            >
-              {notif.message}
-            </MenuItem>
-          ))
-        ) : (
-          <MenuItem disabled>No notifications</MenuItem>
-        )}
-      </MuiMenu>
+        {notif.message}
+      </MenuItem>
+    ))
+  ) : (
+    <MenuItem disabled>No notifications</MenuItem>
+  )}
+</MuiMenu>
     </>
   );
 }

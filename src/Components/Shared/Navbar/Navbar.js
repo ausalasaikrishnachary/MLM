@@ -305,11 +305,11 @@ export default function Header() {
                 </Link>
               </Box>
               <Box display="flex" alignItems="center">
-                {/* <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
+                <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
                   <Badge badgeContent={notifications.length} color="error">
                     <NotificationsNoneIcon />
                   </Badge>
-                </IconButton> */}
+                </IconButton>
                 <Typography sx={{ ml: 2, mr: 2, color: '#000', fontWeight: 'bold' }}>
                   {user_name}
                 </Typography>
@@ -372,11 +372,11 @@ export default function Header() {
                   )
                 ))}
               </Box>
-              {/* <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
+              <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
                 <Badge badgeContent={notifications.length} color="error">
                   <NotificationsNoneIcon />
                 </Badge>
-              </IconButton> */}
+              </IconButton>
               <Typography sx={{ ml: 2, mr: 2, color: '#000', fontWeight: 'bold' }}>
                 {user_name}
               </Typography>
@@ -468,38 +468,42 @@ export default function Header() {
 
       </Menu>
       <MuiMenu
-        anchorEl={notificationAnchorEl}
-        open={notificationMenuOpen}
-        onClose={handleNotificationClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-      >
-        {notifications.length > 0 ? (
-          notifications.map((notif) => (
-            <MenuItem
-              key={notif.notification_status_id}
-              onClick={() => {
-                axios.post(`${baseurl}/notifications/mark-as-read/`, {
-                  user_id: parseInt(userId),
-                  notification_id: notif.notification_status_id
-                })
-                  .then(() => {
-                    setNotifications(prev => prev.filter(n => n.notification_status_id !== notif.notification_status_id));
-                    handleNotificationClose();
-                    handleNavigate(`/a-assets/${notif.property.id}`);
-                  })
-                  .catch(error => {
-                    console.error("Error marking notification as read:", error);
-                  });
-              }}
-            >
-              {notif.message}
-            </MenuItem>
-          ))
-        ) : (
-          <MenuItem disabled>No notifications</MenuItem>
-        )}
-      </MuiMenu>
+            anchorEl={notificationAnchorEl}
+            open={notificationMenuOpen}
+            onClose={handleNotificationClose}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+          >
+            {notifications.length > 0 ? (
+              notifications.map((notif) => (
+                <MenuItem
+                  key={notif.notification_status_id}
+                  onClick={() => {
+                    axios.post(`${baseurl}/notifications/mark-as-read/`, {
+                      user_id: parseInt(userId),
+                      notification_id: notif.notification_status_id
+                    })
+                      .then(() => {
+                        setNotifications(prev => 
+                          prev.filter(n => n.notification_status_id !== notif.notification_status_id)
+                        );
+                        handleNotificationClose();
+                        
+                        // ✅ FIXED: Navigate using notif.property.id instead of assets
+                        navigate(`/a-assets/${notif.property.id}`);
+                      })
+                      .catch(error => {
+                        console.error("Error marking notification as read:", error);
+                      });
+                  }}
+                >
+                  {notif.message}
+                </MenuItem>
+              ))
+            ) : (
+              <MenuItem disabled>No notifications</MenuItem>
+            )}
+          </MuiMenu>
     </>
   );
 }
