@@ -456,7 +456,8 @@ const SignUp = () => {
                                         />
                                         {sponsorInfo && (
                                             <Typography variant="body2" sx={{ mt: 1, color: 'text.secondary' }}>
-                                                Sponsor: <strong>{sponsorInfo.username}</strong>
+                                                Sponsor: <strong>{sponsorInfo.first_name} {sponsorInfo.last_name}</strong> 
+                                                
                                             </Typography>
                                         )}
                                     </Grid>

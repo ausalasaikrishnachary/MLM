@@ -678,11 +678,11 @@ useEffect(() => {
                     <Box sx={{ p: 3, bgcolor: 'primary.light', color: 'white', borderRadius: 2 }}>
                      
                       <Box display="flex" alignItems="center" justifyContent="space-between">
-                        <Typography>Email:sriraj@gmail.com</Typography>
+                        <Typography>Email:shrirajteam@gmail.com</Typography>
                         <IconButton
                           size="small"
                           onClick={() => {
-                            navigator.clipboard.writeText('sriraj@gmail.com');
+                            navigator.clipboard.writeText('shrirajteam@gmail.com');
                             // You could add a toast notification here
                           }}
                           sx={{ color: 'white' }}
