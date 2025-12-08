@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Grid,
@@ -15,7 +15,7 @@ const AddProduct = () => {
   const userId = localStorage.getItem("user_id");
   const navigate = useNavigate();
   const location = useLocation();
-  const { business } = location.state || {}; // passed from ViewBusiness
+  const { business, editMode, productData } = location.state || {};
 
   const [formData, setFormData] = useState({
     agent_id: userId,
@@ -35,9 +35,36 @@ const AddProduct = () => {
     available_qty: "",
     company_commission: "",
     product_commission: "",
-    discount_percent:"",
+    discount_percent: "",
     product_image: null,
   });
+
+  // Pre-fill form if in edit mode
+  useEffect(() => {
+    if (editMode && productData) {
+      setFormData({
+        agent_id: userId,
+        business_id: productData.business_id || business?.business_id || "",
+        product_name: productData.product_name || "",
+        sku: productData.sku || "",
+        description: productData.description || "",
+        price: productData.distribution_commission || "", // Assuming distribution_commission is the price
+        selling_price: productData.selling_price || "",
+        mrp: productData.mrp || "",
+        units: productData.units || "",
+        tax_percent: productData.tax_percent || "",
+        cgst_percent: productData.cgst_percent || "",
+        cgst_amount: productData.cgst_amount || "",
+        sgst_percent: productData.sgst_percent || "",
+        sgst_amount: productData.sgst_amount || "",
+        available_qty: productData.available_qty || "",
+        company_commission: productData.company_commission || "",
+        product_commission: productData.distribution_commission || "",
+        discount_percent: "", // Add this field if it exists in your data
+        product_image: null, // Keep as null, we'll handle file separately
+      });
+    }
+  }, [editMode, productData, business, userId]);
 
   // Handle text input
   const handleChange = (e) => {
@@ -60,17 +87,27 @@ const AddProduct = () => {
         if (value !== null && value !== "") payload.append(key, value);
       });
 
-      const res = await fetch(`${baseurl}/products/`, {
-        method: "POST",
-        body: payload,
-      });
+      let res;
+      if (editMode && productData) {
+        // Update existing product
+        res = await fetch(`${baseurl}/products/${productData.id}/`, {
+          method: "PUT",
+          body: payload,
+        });
+      } else {
+        // Create new product
+        res = await fetch(`${baseurl}/products/`, {
+          method: "POST",
+          body: payload,
+        });
+      }
 
       if (res.ok) {
-        alert("✅ Product added successfully!");
-        navigate("/p-viewbusiness");
+        alert(`✅ Product ${editMode ? 'updated' : 'added'} successfully!`);
+        navigate(`/p-businessproducts/${business?.business_id || productData?.business_id}`);
       } else {
         const error = await res.text();
-        alert("❌ Failed to add product: " + error);
+        alert(`❌ Failed to ${editMode ? 'update' : 'add'} product: ` + error);
       }
     } catch (err) {
       console.error("Error posting product:", err);
@@ -83,7 +120,7 @@ const AddProduct = () => {
       <Container maxWidth="lg" sx={{ mt: 4, mb: 6 }}>
         <Box display="flex" justifyContent="center" mb={3}>
           <Typography variant="h2" fontWeight="bold" textAlign="center">
-            Add Product For {business?.business_name || "N/A"}
+            {editMode ? 'Edit' : 'Add'} Product {business?.business_name ? `For ${business.business_name}` : ''}
           </Typography>
         </Box>
 
@@ -162,7 +199,7 @@ const AddProduct = () => {
             </Grid>
 
             {/* Tax */}
-            {/* <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
                 label="Units"
@@ -171,9 +208,9 @@ const AddProduct = () => {
                 onChange={handleChange}
                 variant="outlined"
               />
-            </Grid> */}
+            </Grid>
 
-            {/* <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
                 type="number"
@@ -231,7 +268,7 @@ const AddProduct = () => {
                 onChange={handleChange}
                 variant="outlined"
               />
-            </Grid> */}
+            </Grid>
 
             {/* Quantity & Commissions */}
             <Grid item xs={12} md={4}>
@@ -245,7 +282,7 @@ const AddProduct = () => {
                 variant="outlined"
               />
             </Grid>
-{/* 
+
             <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
@@ -256,9 +293,9 @@ const AddProduct = () => {
                 onChange={handleChange}
                 variant="outlined"
               />
-            </Grid> */}
+            </Grid>
 
-            {/* <Grid item xs={12} md={4}>
+            <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
                 type="number"
@@ -268,7 +305,7 @@ const AddProduct = () => {
                 onChange={handleChange}
                 variant="outlined"
               />
-            </Grid> */}
+            </Grid>
 
             <Grid item xs={12} md={4}>
               <TextField
@@ -285,7 +322,7 @@ const AddProduct = () => {
             {/* Product Image Upload */}
             <Grid item xs={12} md={4}>
               <Button variant="outlined" component="label" fullWidth>
-                Upload Product Image
+                {editMode ? 'Update Product Image' : 'Upload Product Image'}
                 <input
                   type="file"
                   name="product_image"
@@ -294,9 +331,13 @@ const AddProduct = () => {
                   onChange={handleFileChange}
                 />
               </Button>
-              {formData.product_image && (
+              {formData.product_image ? (
                 <Typography mt={1}>{formData.product_image.name}</Typography>
-              )}
+              ) : editMode && productData?.product_image ? (
+                <Typography mt={1} variant="body2">
+                  Current: {productData.product_image.split('/').pop()}
+                </Typography>
+              ) : null}
             </Grid>
           </Grid>
 
@@ -304,7 +345,7 @@ const AddProduct = () => {
             <Button
               variant="outlined"
               color="secondary"
-              onClick={() => navigate("/p-viewbusiness")}
+              onClick={() => navigate(`/p-businessproducts/${business?.business_id || productData?.business_id}`)}
             >
               Cancel
             </Button>
@@ -313,7 +354,7 @@ const AddProduct = () => {
               variant="contained"
               sx={{ bgcolor: "#1A0033", px: 5, py: 1.2 }}
             >
-              Submit
+              {editMode ? 'Update Product' : 'Submit'}
             </Button>
           </Box>
         </form>

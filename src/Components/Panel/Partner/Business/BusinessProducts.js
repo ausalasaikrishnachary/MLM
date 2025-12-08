@@ -14,12 +14,19 @@ import {
   Button,
   IconButton,
   Popover,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Tooltip
 } from "@mui/material";
 import PartnerHeader from "../../../Shared/Partner/PartnerNavbar";
 import { baseurl } from "../../../BaseURL/BaseURL";
 import PaginationComponent from "../../../Shared/Pagination";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 function BusinessProducts() { 
   const { id } = useParams();
@@ -27,20 +34,24 @@ function BusinessProducts() {
   const [commissions, setCommissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-   const userId = localStorage.getItem("user_id");
+  const userId = localStorage.getItem("user_id");
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [hoveredProduct, setHoveredProduct] = useState(null);
-
-   const [wishlist, setWishlist] = useState([]);
+  const [wishlist, setWishlist] = useState([]);
   
-      useEffect(() => {
+  // Delete confirmation dialog
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
+
+  // Fetch wishlist
+  useEffect(() => {
     const fetchWishlist = async () => {
       try {
         const res = await axios.get(`${baseurl}/wishlist/`);
         const userWishlist = res.data
-          .filter(item => item.user === parseInt(userId)) // Only user's wishlist
-          .map(item => item.product); // <-- PRODUCT ID
+          .filter(item => item.user === parseInt(userId))
+          .map(item => item.product);
         setWishlist(userWishlist);
       } catch (err) {
         console.error("Error fetching wishlist:", err);
@@ -50,39 +61,7 @@ function BusinessProducts() {
     if (userId) fetchWishlist();
   }, [userId]);
   
-  
-  const handleWishlistToggle = async (productId) => {
-    if (!userId) {
-      alert("Please log in to add to wishlist.");
-      return;
-    }
-  
-    try {
-      if (wishlist.includes(productId)) {
-        // ❌ REMOVE (DELETE)
-        const res = await axios.get(`${baseurl}/wishlist/`);
-        const item = res.data.find(
-          (entry) => entry.user === parseInt(userId) && entry.product === productId
-        );
-  
-        if (item) {
-          await axios.delete(`${baseurl}/wishlist/${item.id}/`);
-          setWishlist((prev) => prev.filter((id) => id !== productId));
-        }
-      } else {
-        // ❤️ ADD (POST)
-        await axios.post(`${baseurl}/wishlist/`, {
-          user: parseInt(userId),
-          product: productId,
-        });
-        setWishlist((prev) => [...prev, productId]);
-      }
-    } catch (error) {
-      console.error("Error updating wishlist:", error);
-    }
-  };
-
-  // ✅ Fetch Products by Business ID
+  // Fetch products by business ID
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -101,7 +80,7 @@ function BusinessProducts() {
     fetchProducts();
   }, [id]);
 
-  // ✅ Fetch Commission Master
+  // Fetch commission master
   useEffect(() => {
     const fetchCommissions = async () => {
       try {
@@ -114,7 +93,37 @@ function BusinessProducts() {
     fetchCommissions();
   }, []);
 
-  // ✅ Popover Handlers
+  // Wishlist toggle
+  const handleWishlistToggle = async (productId) => {
+    if (!userId) {
+      alert("Please log in to add to wishlist.");
+      return;
+    }
+  
+    try {
+      if (wishlist.includes(productId)) {
+        const res = await axios.get(`${baseurl}/wishlist/`);
+        const item = res.data.find(
+          (entry) => entry.user === parseInt(userId) && entry.product === productId
+        );
+  
+        if (item) {
+          await axios.delete(`${baseurl}/wishlist/${item.id}/`);
+          setWishlist((prev) => prev.filter((id) => id !== productId));
+        }
+      } else {
+        await axios.post(`${baseurl}/wishlist/`, {
+          user: parseInt(userId),
+          product: productId,
+        });
+        setWishlist((prev) => [...prev, productId]);
+      }
+    } catch (error) {
+      console.error("Error updating wishlist:", error);
+    }
+  };
+
+  // Popover handlers
   const handlePopoverOpen = (event, productId) => {
     setAnchorEl(event.currentTarget);
     setHoveredProduct(productId);
@@ -125,9 +134,61 @@ function BusinessProducts() {
     setHoveredProduct(null);
   };
 
-  const open = Boolean(anchorEl);
+  // Edit product - Navigate to AddProduct form with pre-filled data
+  const handleEditClick = (product) => {
+    // Navigate to AddProduct form with product data
+    navigate("/p-addproduct", {
+      state: {
+        business: { business_id: id }, // Pass business ID
+        editMode: true,
+        productData: product // Pass the product data to pre-fill
+      }
+    });
+  };
 
-  // ✅ Pagination
+  // Delete product functions
+  const handleDeleteClick = (product) => {
+    setProductToDelete(product);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!productToDelete) return;
+
+    try {
+      await axios.delete(`${baseurl}/products/${productToDelete.id}/`);
+      
+      // Remove from local state
+      setProducts(products.filter(p => p.id !== productToDelete.id));
+      
+      alert("Product deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      alert("Failed to delete product.");
+    } finally {
+      setDeleteDialogOpen(false);
+      setProductToDelete(null);
+    }
+  };
+
+  // View details
+  const handleViewDetails = async (product) => {
+    try {
+      await fetch(`${baseurl}/products/${product.id}/`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          view_count: (product.view_count || 0) + 1,
+        }),
+      });
+      navigate(`/product-details/${product.id}`);
+    } catch (error) {
+      console.log("Error updating view count:", error);
+      navigate(`/product-details/${product.id}`);
+    }
+  };
+
+  // Pagination
   const [page, setPage] = useState(1);
   const itemsPerPage = 6;
 
@@ -135,28 +196,7 @@ function BusinessProducts() {
     setPage(value);
   };
 
-  const handleViewDetails = async (product) => {
-  try {
-    await fetch(`${baseurl}/products/${product.id}/`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        view_count: (product.view_count || 0) + 1,
-      }),
-    });
-
-    console.log("View count updated");
-
-    // Now navigate after update
-    navigate(`/product-details/${product.id}`);
-  } catch (error) {
-    console.log("Error updating view count:", error);
-    // Still navigate even if update fails
-    navigate(`/product-details/${product.id}`);
-  }
-};
-
-
+  const open = Boolean(anchorEl);
   const totalPages = Math.ceil(products.length / itemsPerPage) || 1;
   const startIndex = (page - 1) * itemsPerPage;
   const paginatedProducts = products.slice(startIndex, startIndex + itemsPerPage);
@@ -188,8 +228,39 @@ function BusinessProducts() {
                     height: "100%",
                     display: "flex",
                     flexDirection: "column",
+                    position: "relative",
                   }}
                 >
+                  {/* Edit and Delete Buttons */}
+                  <Box sx={{ position: "absolute", top: 10, right: 10, zIndex: 1 }}>
+                    <Tooltip title="Edit Product">
+                      <IconButton
+                        size="small"
+                        sx={{ 
+                          backgroundColor: "white",
+                          mr: 1,
+                          "&:hover": { backgroundColor: "#f0f0f0" }
+                        }}
+                        onClick={() => handleEditClick(product)}
+                      >
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    
+                    <Tooltip title="Delete Product">
+                      <IconButton
+                        size="small"
+                        sx={{ 
+                          backgroundColor: "white",
+                          "&:hover": { backgroundColor: "#f0f0f0" }
+                        }}
+                        onClick={() => handleDeleteClick(product)}
+                      >
+                        <DeleteIcon fontSize="small" color="error" />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+
                   {/* Product Image */}
                   {product.product_image ? (
                     <CardMedia
@@ -213,11 +284,11 @@ function BusinessProducts() {
 
                   {/* Product Info */}
                   <CardContent sx={{ flexGrow: 1 }}>
-                     <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
-                                                               <Typography variant="h6" fontWeight="bold">
-                                                                   {product.product_name} 
-                                                               </Typography>
-                     <IconButton
+                    <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+                      <Typography variant="h6" fontWeight="bold">
+                        {product.product_name} 
+                      </Typography>
+                      <IconButton
                         onClick={() => handleWishlistToggle(product.id)}
                         sx={{
                           backgroundColor: "rgba(255,255,255,0.8)",
@@ -230,8 +301,7 @@ function BusinessProducts() {
                           <FavoriteBorderIcon sx={{ color: "red" }} />
                         )}
                       </IconButton>
-                        </Box>
-                      
+                    </Box>
 
                     <Divider sx={{ my: 1.5 }} />
 
@@ -254,25 +324,24 @@ function BusinessProducts() {
                       </Typography>
                     )}
 
- <Box sx={{ mt: 2 }}>
-                   <Button
-  onClick={() => handleViewDetails(product)}
-  fullWidth
-  variant="contained"
-  sx={{
-    color: "white",
-    textTransform: "none",
-    "&:hover": { color: "rgb(5,5,5)" },
-    mb: 1,
-    backgroundColor: "green",
-  }}
->
-  View Details
-</Button>
-
-
+                    <Box sx={{ mt: 2 }}>
+                      <Button
+                        onClick={() => handleViewDetails(product)}
+                        fullWidth
+                        variant="contained"
+                        sx={{
+                          color: "white",
+                          textTransform: "none",
+                          "&:hover": { color: "rgb(5,5,5)" },
+                          mb: 1,
+                          backgroundColor: "green",
+                        }}
+                      >
+                        View Details
+                      </Button>
                     </Box>
-                    {/* ✅ Payout Button with Hover Popover */}
+
+                    {/* Payout Button with Hover Popover */}
                     <Box sx={{ mt: 1 }}>
                       <Button
                         onMouseEnter={(e) => handlePopoverOpen(e, product.id)}
@@ -347,6 +416,23 @@ function BusinessProducts() {
           </Box>
         )}
       </Container>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+        <DialogTitle>Confirm Delete</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete "{productToDelete?.product_name}"? 
+            This action cannot be undone.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleDeleteConfirm} variant="contained" color="error">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
