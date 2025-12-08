@@ -292,7 +292,7 @@
 //                         </Typography>
 
 //                         {/* Add Product Button */}
-                        
+
 //                         <Tooltip title="Add Product">
 //                           <IconButton
 //                             color="primary"
@@ -441,6 +441,8 @@ import {
   Link,
   IconButton,
   Tooltip,
+  Modal,
+  Button
 } from "@mui/material";
 import BusinessIcon from "@mui/icons-material/Business";
 import LanguageIcon from "@mui/icons-material/Language";
@@ -452,6 +454,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
+import axios from "axios";
 
 import PartnerHeader from "../../../Shared/Partner/PartnerNavbar";
 import { useNavigate } from "react-router-dom";
@@ -463,6 +466,8 @@ function ViewBusiness() {
   const [businesses, setBusinesses] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [subscriptionPaid, setSubscriptionPaid] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
 
   // Pagination states
   const [page, setPage] = useState(1);
@@ -485,6 +490,22 @@ function ViewBusiness() {
     fetchBusinesses();
   }, [userId]);
 
+  useEffect(() => {
+    const fetchSubscriptionStatus = async () => {
+      if (userId) {
+        try {
+          const response = await axios.get(`${baseurl}/user-subscriptions/user-id/${userId}/`);
+          const latest = response.data.find(item => item.latest_status !== undefined);
+          setSubscriptionPaid(latest?.latest_status === "paid");
+        } catch (error) {
+          console.error("Subscription fetch error:", error);
+        }
+      }
+    };
+
+    fetchSubscriptionStatus();
+  }, [userId]);
+
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this business?")) {
       fetch(`${baseurl}/business/${id}/`, { method: "DELETE" })
@@ -503,6 +524,23 @@ function ViewBusiness() {
 
   const handlePageChange = (event, value) => {
     setPage(value);
+  };
+
+  //Subscription:
+  const handleAddProductClick = (business, e) => {
+    e.stopPropagation();
+    if (subscriptionPaid) {
+      navigate("/p-addproduct", { state: { business } });
+    } else {
+      setOpenModal(true);
+    }
+  };
+
+  const handleCloseModal = () => setOpenModal(false);
+
+  const handleSubscribe = () => {
+    setOpenModal(false);
+    navigate('/p-plans');
   };
 
   // Function to handle container click
@@ -546,6 +584,7 @@ function ViewBusiness() {
             + Add Business
           </button>
         </Box>
+
 
         {loading ? (
           <Box
@@ -635,7 +674,7 @@ function ViewBusiness() {
                                 ? `${baseurl}/${business.logo}`
                                 : "/default-logo.png"
                             }
-                            sx={{ 
+                            sx={{
                               objectFit: "contain",
                               bgcolor: "#f5f5f5"
                             }}
@@ -665,18 +704,17 @@ function ViewBusiness() {
                             </Typography>
 
                             {/* Add Product Button */}
+                            {/* Add Product Button */}
                             <Tooltip title="Add Product">
                               <IconButton
                                 color="primary"
                                 size="small"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  navigate("/p-addproduct", { state: { business } });
-                                }}
+                                onClick={(e) => handleAddProductClick(business, e)}
                               >
                                 <AddIcon />
                               </IconButton>
                             </Tooltip>
+
                           </Box>
 
                           <Chip
@@ -746,11 +784,11 @@ function ViewBusiness() {
                     </Box>
 
                     {/* Action Buttons - Outside the clickable area */}
-                    <Box 
-                      display="flex" 
-                      justifyContent="flex-end" 
+                    <Box
+                      display="flex"
+                      justifyContent="flex-end"
                       p={1}
-                      sx={{ 
+                      sx={{
                         backgroundColor: '#f9f9f9',
                         borderTop: '1px solid #e0e0e0'
                       }}
@@ -811,6 +849,39 @@ function ViewBusiness() {
             )}
           </>
         )}
+         {/* Subscription Modal */}
+<Modal open={openModal} onClose={handleCloseModal}>
+  <Box sx={{
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    boxShadow: 24,
+    p: 4,
+    borderRadius: '8px'
+  }}>
+    <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+      Subscription Required
+    </Typography>
+    <Typography variant="body1" sx={{ mb: 3 }}>
+      You need an active subscription to <Box component="span" sx={{ fontWeight: 'bold' }}>add products</Box> to your business.
+    </Typography>
+    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+      <Button variant="outlined" onClick={handleCloseModal}>
+        Cancel
+      </Button>
+      <Button
+        variant="contained"
+        onClick={handleSubscribe}
+        sx={{ backgroundColor: '#673ab7', '&:hover': { backgroundColor: '#5e35b1' } }}
+      >
+        Subscribe Now
+      </Button>
+    </Box>
+  </Box>
+</Modal>
       </Container>
     </>
   );

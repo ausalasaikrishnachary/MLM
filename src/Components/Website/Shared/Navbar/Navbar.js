@@ -64,7 +64,9 @@ const navigate = useNavigate();
 
   const navItems = [
     { label: 'Home', path: '/' },
-    { label: 'How it works', path: '/aboutus' },
+  
+    { label: 'About Us', path: '/aboutus' },
+    { label: 'How To Use', path: '/how-to-use' },
     { 
     label: 'Properties',
     path: '/properties',

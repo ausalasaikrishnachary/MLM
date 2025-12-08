@@ -87,6 +87,7 @@ export default function Header() {
     { label: 'Leads', path: '/a-popup-leads' },
     { label: 'Company', path: '/tableadminmeetings' },
     { label: 'Reports', path: '/a-reports' },
+    { label: 'Settings', path: '/a-settings' },
   ];
 
   // ✅ Intercept Add Property clicks
