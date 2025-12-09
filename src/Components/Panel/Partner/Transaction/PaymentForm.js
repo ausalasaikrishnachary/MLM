@@ -9,7 +9,7 @@ import {
     Typography,
 } from '@mui/material';
 import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
-import { baseurl } from '../../../BaseURL/BaseURL';
+import { baseurl, redirecturl } from '../../../BaseURL/BaseURL';
 import Swal from 'sweetalert2';
 import jsPDF from 'jspdf';
 import { pdf } from '@react-pdf/renderer';
@@ -124,7 +124,7 @@ function PaymentForm() {
                 user_id: formData.user_id,
                 property_id: formData.property_id,
                 payment_type: "Full-Amount",
-                redirect_url: "https://shrirajteam.com/p-transaction" // ✅ this should be your return page
+                redirect_url: `${redirecturl}/p-transaction` // ✅ this should be your return page
             };
 
             const initiateRes = await fetch(`${baseurl}/property/initiate-payment/`, {

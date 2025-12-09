@@ -10,6 +10,7 @@ import {
   Button,
   TextField,
   InputAdornment,
+  Chip,
   FormControl,
   Select,
   MenuItem,
@@ -73,7 +74,7 @@ const AssetsUI = () => {
   const [subscriptionPaid, setSubscriptionPaid] = useState(false);
   const [currentImageIndices, setCurrentImageIndices] = useState({});
   const [page, setPage] = useState(1);
-  const itemsPerPage = 6;
+  const itemsPerPage = 30;
   const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
   const startIndex = (page - 1) * itemsPerPage;
   const paginatedProperties = filteredProperties.slice(startIndex, startIndex + itemsPerPage);
@@ -94,112 +95,112 @@ const AssetsUI = () => {
     { id: 'created_at', label: 'Date Added', checked: true },
     { id: 'owner_name', label: 'Owner', checked: false },
     { id: 'owner_contact', label: 'Contact', checked: false },
-    { id: 'plot_area_sqft', label: 'Plot Area (sqft)', checked: false },
-    { id: 'builtup_area_sqft', label: 'Built-up Area (sqft)', checked: false },
+    { id: 'area', label: 'Area', checked: false },
+    { id: 'builtup_area', label: 'Built-up Area', checked: false },
   ]);
 
-    const [likedProperties, setLikedProperties] = useState([]);
-    useEffect(() => {
-      const fetchLikes = async () => {
-        try {
-          const res = await axios.get(`${baseurl}/likes/`);
-          const userLikes = res.data
-            .filter(item => item.user === parseInt(userId))
-            .map(item => item.property);
-          setLikedProperties(userLikes);
-        } catch (err) {
-          console.error("Error fetching likes:", err);
-        }
-      };
-    
-      if (userId) fetchLikes();
-    }, [userId]);
-  
-    const handleLikeToggle = async (propertyId) => {
-      if (!userId) {
-        alert("Please log in to like a property.");
-        return;
-      }
-    
+  const [likedProperties, setLikedProperties] = useState([]);
+  useEffect(() => {
+    const fetchLikes = async () => {
       try {
-        if (likedProperties.includes(propertyId)) {
-          // Remove like
-          const res = await axios.get(`${baseurl}/likes/`);
-          const item = res.data.find(
-            (entry) => entry.user === parseInt(userId) && entry.property === propertyId
-          );
-          if (item) {
-            await axios.delete(`${baseurl}/likes/${item.id}/`);
-            setLikedProperties(prev => prev.filter(id => id !== propertyId));
-          }
-        } else {
-          // Add like
-          await axios.post(`${baseurl}/likes/`, {
-            user: parseInt(userId),
-            property: propertyId
-          });
-          setLikedProperties(prev => [...prev, propertyId]);
-        }
-      } catch (error) {
-        console.error("Error updating likes:", error);
+        const res = await axios.get(`${baseurl}/likes/`);
+        const userLikes = res.data
+          .filter(item => item.user === parseInt(userId))
+          .map(item => item.property);
+        setLikedProperties(userLikes);
+      } catch (err) {
+        console.error("Error fetching likes:", err);
       }
     };
-    
-    
-  
-  
-  
-  
-    const [wishlist, setWishlist] = useState([]);
-  
-    // ✅ Fetch user's existing wishlist on page load
-    useEffect(() => {
-      const fetchWishlist = async () => {
-        try {
-          const res = await axios.get(`${baseurl}/wishlist/`);
-          const userWishlist = res.data
-            .filter(item => item.user === parseInt(userId)) // Only user's wishlist
-            .map(item => item.property);
-          setWishlist(userWishlist);
-        } catch (err) {
-          console.error("Error fetching wishlist:", err);
+
+    if (userId) fetchLikes();
+  }, [userId]);
+
+  const handleLikeToggle = async (propertyId) => {
+    if (!userId) {
+      alert("Please log in to like a property.");
+      return;
+    }
+
+    try {
+      if (likedProperties.includes(propertyId)) {
+        // Remove like
+        const res = await axios.get(`${baseurl}/likes/`);
+        const item = res.data.find(
+          (entry) => entry.user === parseInt(userId) && entry.property === propertyId
+        );
+        if (item) {
+          await axios.delete(`${baseurl}/likes/${item.id}/`);
+          setLikedProperties(prev => prev.filter(id => id !== propertyId));
         }
-      };
-    
-      if (userId) fetchWishlist();
-    }, [userId]);
-    
-    // ✅ Toggle wishlist state and API call
-    const handleWishlistToggle = async (propertyId) => {
-      if (!userId) {
-        alert("Please log in to add to wishlist.");
-        return;
+      } else {
+        // Add like
+        await axios.post(`${baseurl}/likes/`, {
+          user: parseInt(userId),
+          property: propertyId
+        });
+        setLikedProperties(prev => [...prev, propertyId]);
       }
-    
+    } catch (error) {
+      console.error("Error updating likes:", error);
+    }
+  };
+
+
+
+
+
+
+  const [wishlist, setWishlist] = useState([]);
+
+  // ✅ Fetch user's existing wishlist on page load
+  useEffect(() => {
+    const fetchWishlist = async () => {
       try {
-        if (wishlist.includes(propertyId)) {
-          // Remove from wishlist (DELETE)
-          const res = await axios.get(`${baseurl}/wishlist/`);
-          const item = res.data.find(
-            (entry) => entry.user === parseInt(userId) && entry.property === propertyId
-          );
-    
-          if (item) {
-            await axios.delete(`${baseurl}/wishlist/${item.id}/`);
-            setWishlist((prev) => prev.filter((id) => id !== propertyId));
-          }
-        } else {
-          // Add to wishlist (POST)
-          await axios.post(`${baseurl}/wishlist/`, {
-            user: parseInt(userId),
-            property: propertyId,
-          });
-          setWishlist((prev) => [...prev, propertyId]);
-        }
-      } catch (error) {
-        console.error("Error updating wishlist:", error);
+        const res = await axios.get(`${baseurl}/wishlist/`);
+        const userWishlist = res.data
+          .filter(item => item.user === parseInt(userId)) // Only user's wishlist
+          .map(item => item.property);
+        setWishlist(userWishlist);
+      } catch (err) {
+        console.error("Error fetching wishlist:", err);
       }
     };
+
+    if (userId) fetchWishlist();
+  }, [userId]);
+
+  // ✅ Toggle wishlist state and API call
+  const handleWishlistToggle = async (propertyId) => {
+    if (!userId) {
+      alert("Please log in to add to wishlist.");
+      return;
+    }
+
+    try {
+      if (wishlist.includes(propertyId)) {
+        // Remove from wishlist (DELETE)
+        const res = await axios.get(`${baseurl}/wishlist/`);
+        const item = res.data.find(
+          (entry) => entry.user === parseInt(userId) && entry.property === propertyId
+        );
+
+        if (item) {
+          await axios.delete(`${baseurl}/wishlist/${item.id}/`);
+          setWishlist((prev) => prev.filter((id) => id !== propertyId));
+        }
+      } else {
+        // Add to wishlist (POST)
+        await axios.post(`${baseurl}/wishlist/`, {
+          user: parseInt(userId),
+          property: propertyId,
+        });
+        setWishlist((prev) => [...prev, propertyId]);
+      }
+    } catch (error) {
+      console.error("Error updating wishlist:", error);
+    }
+  };
 
   useEffect(() => {
     if (userId) {
@@ -227,6 +228,7 @@ const AssetsUI = () => {
       try {
         const response = await fetch(`${baseurl}/properties/approval-status/approved/`);
         const data = await response.json();
+        
 
         // Filter out properties where user_id matches the current user's id
         const filteredProperties = data.filter(
@@ -260,8 +262,8 @@ const AssetsUI = () => {
           property.address,
           property.description,
           property.property_value?.toString(),
-          property.plot_area_sqft?.toString(),
-          property.builtup_area_sqft?.toString()
+          property.area?.toString(),
+          property.builtup_area?.toString()
         ].filter(Boolean);
 
         return searchFields.some(field => field.toLowerCase().includes(query));
@@ -311,10 +313,10 @@ const AssetsUI = () => {
     setSortBy(event.target.value);
   };
 
-  const handleViewDetails = (property) => {
-    setSelectedProperty(property);
-    setOpenDialog(true);
-  };
+  // const handleViewDetails = (property) => {
+  //   setSelectedProperty(property);
+  //   setOpenDialog(true);
+  // };
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
@@ -578,6 +580,27 @@ const AssetsUI = () => {
     printWindow.document.close();
   };
 
+   const handleViewDetails = async (property) => {
+  try {
+    await fetch(`${baseurl}/property/${property.property_id}/`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        view_count: (property.view_count || 0) + 1
+      })
+    });
+
+    console.log("View count updated");
+  } catch (error) {
+    console.log("Error updating view count:", error);
+  }
+
+  // navigate after update
+  navigate(`/i-assets/${property.property_id}`, {
+    state: { property }
+  });
+};
+
   return (
     <>
       <InvestorHeader />
@@ -731,8 +754,8 @@ const AssetsUI = () => {
                         />
                       )}
 
-                                            {/* ❤️ Wishlist Icon */}
-                      <IconButton
+                      {/* ❤️ Wishlist Icon */}
+                      {/* <IconButton
                         onClick={() => handleWishlistToggle(property.property_id)}
                         sx={{
                           position: 'absolute',
@@ -748,7 +771,7 @@ const AssetsUI = () => {
                         ) : (
                           <FavoriteBorderIcon sx={{ color: 'red' }} />
                         )}
-                      </IconButton>
+                      </IconButton> */}
 
                       {/* Navigation arrows when there are multiple media items */}
                       {totalMedia > 1 && (
@@ -823,34 +846,6 @@ const AssetsUI = () => {
                           {property.looking_to}
                         </Box>
                       )} */}
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          top: 15,
-                          left: -30,
-                          width: '150px',
-                          transform: 'rotate(-45deg)',
-                          backgroundColor:
-                            property.status === 'sold'
-                              ? '#2ECC71' // Green
-                              : property.status === 'booked'
-                                ? '#F1C40F' // Yellow
-                                : property.status === 'cancelled'
-                                  ? '#E74C3C' // Red
-                                  : property.status === 'available'
-                                    ? '#3498DB' // Blue
-                                    : '#95A5A6', // Fallback grey
-                          color: 'white',
-                          textAlign: 'center',
-                          fontSize: '12px',
-                          fontWeight: 'bold',
-                          textTransform: 'uppercase',
-                          py: '4px',
-                          boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-                        }}
-                      >
-                        {property.status}
-                      </Box>
                     </Box>
                     <CardContent>
                       {/* ✅ Title row with checkbox and label */}
@@ -861,17 +856,17 @@ const AssetsUI = () => {
 
                         {/* Checkbox + Text */}
                         <Box display="flex" alignItems="center" gap={1}>
-  {/* Like Button (Thumb Up) */}
-  <IconButton
+                          {/* Like Button (Thumb Up) */}
+                          {/* <IconButton
     onClick={() => handleLikeToggle(property.property_id)}
     size="small"
     sx={{ color: likedProperties.includes(property.property_id) ? '#1a73e8' : 'grey' }}
   >
     {likedProperties.includes(property.property_id) ? <ThumbUpAltIcon /> : <ThumbUpAltOutlinedIcon />}
-  </IconButton>
+  </IconButton> */}
 
-  {/* Compare Checkbox */}
-  {/* <Checkbox
+                          {/* Compare Checkbox */}
+                          {/* <Checkbox
     checked={compareList.some(p => p.property_id === property.property_id)}
     onChange={() => handleCompareToggle(property)}
     size="small"
@@ -880,11 +875,27 @@ const AssetsUI = () => {
   <Typography variant="body2" color="textSecondary">
     Compare
   </Typography> */}
-</Box>
-
+                        </Box>
+                        <Chip
+                          label={property.status}
+                          size="small"
+                          sx={{
+                            backgroundColor:
+                              property.status === 'available'
+                                ? '#2ECC71'
+                                : property.status === 'booked'
+                                  ? '#E67E22'
+                                  : '#E74C3C',
+                            color: 'white',
+                            fontWeight: 'bold',
+                            textTransform: 'uppercase',
+                            fontSize: '0.7rem',
+                            minWidth: '70px'
+                          }}
+                        />
 
                       </Box>
-                      
+
                       <Typography variant="body2" color="text.secondary" mb={2}>
                         {property.city}, {property.state}
                       </Typography>
@@ -899,10 +910,10 @@ const AssetsUI = () => {
                       >
                         <Grid item xs={6}>
                           <Typography variant="caption" color="text.secondary">
-                            Plot Area
+                            Area
                           </Typography>
                           <Typography fontWeight="600" color="#4A90E2">
-                            {property.plot_area_sqft} sqft
+                            {property.area} {property.area_unit}
                           </Typography>
                         </Grid>
                         <Grid item xs={6}>
@@ -910,7 +921,7 @@ const AssetsUI = () => {
                             Built-up Area
                           </Typography>
                           <Typography fontWeight="600" color="#4A90E2">
-                            {property.builtup_area_sqft} sqft
+                            {property.builtup_area} {property.area_unit}
                           </Typography>
                         </Grid>
                         <Grid item xs={6}>
@@ -930,6 +941,65 @@ const AssetsUI = () => {
                           </Typography>
                         </Grid>
                       </Grid>
+                        <Grid item xs={12}>
+                          <Box
+                            sx={{
+                              display: 'flex',
+                              justifyContent: 'flex-end',
+                              alignItems: 'center',
+                              gap: 1.5,
+                              mt: 0.5,
+                            }}
+                          >
+                            {/* Wishlist Button */}
+                            <IconButton
+                              onClick={() => handleWishlistToggle(property.property_id)}
+                              sx={{
+                                backgroundColor: 'rgba(255,255,255,0.8)',
+                                '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
+                              }}
+                            >
+                              {wishlist.includes(property.property_id) ? (
+                                <FavoriteIcon sx={{ color: 'red' }} />
+                              ) : (
+                                <FavoriteBorderIcon sx={{ color: 'red' }} />
+                              )}
+                            </IconButton>
+                      
+                            {/* Like Button */}
+                            <IconButton
+                              onClick={() => handleLikeToggle(property.property_id)}
+                              size="small"
+                              sx={{
+                                backgroundColor: 'rgba(255,255,255,0.8)',
+                                '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
+                                color: likedProperties.includes(property.property_id)
+                                  ? '#1a73e8'
+                                  : 'grey',
+                              }}
+                            >
+                              {likedProperties.includes(property.property_id) ? (
+                                <ThumbUpAltIcon />
+                              ) : (
+                                <ThumbUpAltOutlinedIcon />
+                              )}
+                            </IconButton>
+                      
+                            {/* Call Button */}
+                            <IconButton
+                              component="a"
+                              href={`tel:${subscriptionPaid ? property.owner_contact : '9074307248'}`}
+                              size="small"
+                              sx={{
+                                backgroundColor: 'rgba(255,255,255,0.8)',
+                                '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
+                                color: '#4caf50',
+                              }}
+                            >
+                              <CallIcon />
+                            </IconButton>
+                          </Box>
+                        </Grid>
                       <Box
                         sx={{
                           backgroundColor: '#F8F9FA',
@@ -969,7 +1039,7 @@ const AssetsUI = () => {
 
                           ) : (
                             <>
-                              <Grid item xs={6}>
+                              {/* <Grid item xs={6}>
                                 <Typography variant="body2" color="text.secondary">
                                   {subscriptionPaid ? "Owner Email" : "Office Email"}
                                 </Typography>
@@ -988,38 +1058,10 @@ const AssetsUI = () => {
                                   <EmailIcon fontSize="small" />
                                   {subscriptionPaid ? property.owner_email : "sriraj@gmail.com"}
                                 </Typography>
-                              </Grid>
+                              </Grid> */}
 
-                              <Grid item xs={6}>
-                                <Typography variant="body2" color="text.secondary">
-                                  {subscriptionPaid ? "Owner Contact" : "Office Contact"}
-                                </Typography>
-                              </Grid>
+                              
 
-                              <Grid item xs={6}>
-                                <Typography
-                                  variant="body2"
-                                  fontWeight="bold"
-                                  color="text.secondary"
-                                  align="right"
-                                  display="flex"
-                                  justifyContent="flex-end"
-                                  alignItems="center"
-                                  gap={1}
-                                >
-                                  <CallIcon fontSize="small" />
-                                  <a
-                                    href={`tel:${subscriptionPaid ? property.owner_contact : "9074307248"}`}
-                                    style={{
-                                      color: 'inherit',
-                                      textDecoration: 'none',
-                                      fontWeight: 'bold',
-                                    }}
-                                  >
-                                    {subscriptionPaid ? property.owner_contact : "9074307248"}
-                                  </a>
-                                </Typography>
-                              </Grid>
 
                             </>
                           )}
@@ -1037,7 +1079,7 @@ const AssetsUI = () => {
                               '&:hover': { color: 'rgb(5,5,5)' }
                             }}
                             disabled={!subscriptionPaid}
-                            onClick={() => navigate(`/i-assets/${property.property_id}`, { state: { property } })}
+                             onClick={() => handleViewDetails(property)}
                           >
                             VIEW DETAILS
                           </Button>

@@ -150,8 +150,8 @@ const ApprovedAssets = () => {
                     property.address,
                     property.description,
                     property.property_value?.toString(),
-                    property.plot_area_sqft?.toString(),
-                    property.builtup_area_sqft?.toString()
+                    property.area?.toString(),
+                    property.builtup_area?.toString()
                 ].filter(Boolean);
 
                 return searchFields.some(field => field.toLowerCase().includes(query));
@@ -422,10 +422,10 @@ const ApprovedAssets = () => {
                                             >
                                                 <Grid item xs={6}>
                                                     <Typography variant="caption" color="text.secondary">
-                                                        Plot Area
+                                                        Area
                                                     </Typography>
                                                     <Typography fontWeight="600" color="#4A90E2">
-                                                        {property.plot_area_sqft} sqft
+                                                        {property.area} {property.area_unit}
                                                     </Typography>
                                                 </Grid>
                                                 <Grid item xs={6}>
@@ -433,7 +433,7 @@ const ApprovedAssets = () => {
                                                         Built-up Area
                                                     </Typography>
                                                     <Typography fontWeight="600" color="#4A90E2">
-                                                        {property.builtup_area_sqft} sqft
+                                                        {property.builtup_area} {property.area_unit}
                                                     </Typography>
                                                 </Grid>
                                                 <Grid item xs={6}>

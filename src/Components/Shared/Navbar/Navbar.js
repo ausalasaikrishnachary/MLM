@@ -75,8 +75,9 @@ export default function Header() {
          { label: 'How It Works', path: '/a-upvdhowitworks' },
         { label: 'Transaction', path: '/a-transactionsummary' },
         { label: 'Commission Master', path: '/a-commissionmaster' },
-        { label: 'Create Category', path: '/a-category' },
+        { label: 'Create Category', path: '/tablecategory' },
         { label: 'Business', path: '/a-business' },
+        { label: 'Site Visits', path: '/a-sitevisit' },
         { label: 'Chatbot', path: '/a-chatbot' },
       ]
     },
@@ -84,6 +85,7 @@ export default function Header() {
     { label: 'Offer', path: '/a-table-carousel' },
     { label: 'Leads', path: '/a-popup-leads' },
     { label: 'Company', path: '/tableadminmeetings' },
+    { label: 'Reports', path: '/a-reports' },
   ];
 
   // ✅ Intercept Add Property clicks

@@ -10,6 +10,7 @@ import {
     Typography,
     Grid,
 } from "@mui/material";
+import { baseurl } from "../../../BaseURL/BaseURL";
 
 function EditBusiness() {
     const { id } = useParams(); // business_id from URL
@@ -33,7 +34,7 @@ function EditBusiness() {
 
     // Fetch existing business details
     useEffect(() => {
-        fetch(`https://shrirajteam.com:81/business/${id}/`)
+        fetch(`${baseurl}/business/${id}/`)
             .then((res) => res.json())
             .then((data) => {
                 setBusinessData({
@@ -82,7 +83,7 @@ function EditBusiness() {
         if (logoFile) formData.append("logo", logoFile);
         if (documentFile) formData.append("documents", documentFile);
 
-        fetch(`https://shrirajteam.com:81/business/${id}/`, {
+        fetch(`${baseurl}/business/${id}/`, {
             method: "PUT",
             body: formData,
         })
@@ -189,7 +190,7 @@ function EditBusiness() {
                             {businessData.logo ? (
                                 <Box mb={1}>
                                     <img
-                                        src={`https://shrirajteam.com:81/${businessData.logo}`}
+                                        src={`${baseurl}/${businessData.logo}`}
                                         alt="Logo"
                                         style={{ width: "100%", maxHeight: "150px", objectFit: "contain" }}
                                     />
@@ -217,7 +218,7 @@ function EditBusiness() {
                             {businessData.documents ? (
                                 <Box mb={1}>
                                     <a
-                                        href={`https://shrirajteam.com:81/${businessData.documents}`}
+                                        href={`${baseurl}/${businessData.documents}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                     >

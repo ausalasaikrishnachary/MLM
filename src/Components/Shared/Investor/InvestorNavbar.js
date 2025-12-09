@@ -40,9 +40,11 @@ export default function InvestorHeader() {
     { label: 'Properties', path: '/i-asset' },
     // { label: 'Add Business', path: '/i-addbusiness' },
     { label: 'Business', path: '/i-business' },
-    { label: 'Transactions', path: '/i-transactions' }, // Direct link to transactions page
+    { label: 'Transactions', path: '/i-transactions' },
+    { label: 'Wishlist', path: '/i-wishlist' }, // Direct link to transactions page
     { label: 'Plans', path: '/i-plans' },
     { label: 'Meetings', path: '/i-meetings' },
+    // { label: 'Reports', path: '/i-reports' },
   ];
 
   const userId = localStorage.getItem("user_id");

@@ -85,8 +85,8 @@ const FilteredProperties = () => {
       property.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
       property.city.toLowerCase().includes(searchTerm.toLowerCase()) || 
       property.total_property_value.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      property.plot_area_sqft.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      property.builtup_area_sqft.toLowerCase().includes(searchTerm.toLowerCase());
+      property.area.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      property.builtup_area.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesType = 
       selectedType === 'Property Sub Types' || 

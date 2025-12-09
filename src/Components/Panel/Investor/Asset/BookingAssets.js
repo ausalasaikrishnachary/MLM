@@ -15,7 +15,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useParams, useLocation } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { baseurl } from '../../../BaseURL/BaseURL';
+import { baseurl, redirecturl } from '../../../BaseURL/BaseURL';
 import jsPDF from 'jspdf';
 import { pdf } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
@@ -89,7 +89,7 @@ const generateReceipt = async (invoiceNumber) => {
         user_id: userId,
         property_id: property.property_id,
         payment_type: "Booking-Amount",
-        redirect_url: "https://shrirajteam.com/i-transactions",
+        redirect_url: `${redirecturl}/i-transactions`,
       };
 
       const initiateRes = await fetch(`${baseurl}/property/initiate-payment/`, {

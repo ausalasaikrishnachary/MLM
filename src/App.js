@@ -143,6 +143,7 @@ import CommissionLevels from "./Components/Panel/Admin/CommissionLevels/Commissi
 import AddCommissionLevels from "./Components/Panel/Admin/CommissionLevels/AddCommissionLevels";
 import EditCommissionLevels from "./Components/Panel/Admin/CommissionLevels/EditCommissionLevels";
 import Category from "./Components/Panel/Admin/Category/Category";
+import AdminEdit from "./Components/Panel/Admin/SiteVisits/AdminEdit"
 import Subcrptionplan from "./Components/Panel/Partner/Plans/Subcrptionplan";
 import SearchBox from "./Components/Website/Pages/Home/SearchBox";
 import AddBusiness from "./Components/Panel/Partner/Business/AddBusiness";
@@ -164,6 +165,7 @@ import AllBusinesses from "./Components/Panel/Partner/Business/AllBusinesses";
 import AdminBussinessEdit from "./Components/Panel/Admin/AdminBussiness/AdminBussinessEdit";
 
 import Wishlist from "./Components/Panel/Partner/Asset/Wishlist ";
+
 import AddProduct from "./Components/Panel/Partner/Business/AddProduct";
 import BusinessProducts from "./Components/Panel/Partner/Business/BusinessProducts";
 import AdminBussinessProducts from "./Components/Panel/Admin/AdminBussiness/AdminBussinessProducts";
@@ -176,6 +178,15 @@ import Sitevisit from "./Components/Panel/Partner/Sitevisit/Sitevisit";
 import AddSitevisit from "./Components/Panel/Partner/AddSitevisit/AddSitevisit";
 import EditSitevisit from "./Components/Panel/Partner/AddSitevisit/EditSitevisit";
 import EditQA from "./Components/Panel/Admin/Chatbot/EditQA";
+import SiteVisits from "./Components/Panel/Admin/SiteVisits/SiteVisits";
+import EditTrainingMaterial from "./Components/Panel/Admin/TrainingMaterial/EditTrainingMaterial";
+import VerifyOtp from "./Components/Login/VerifyOtp";
+import InvestorWishlist from "./Components/Panel/Investor/InvestorWishlist";
+import AdminReportsPage from "./Components/Panel/Admin/Reports/AdminReportsPage";
+import InvestorReportsPage from "./Components/Panel/Investor/Reports/InvestorReportPage";
+import TableCategory from "./Components/Panel/Admin/Category/TableCategory";
+import EditCategory from "./Components/Panel/Admin/Category/EditCategory";
+import PropertyCategoryform from "./Components/Panel/Admin/Category/PropertyCategoryform";
 
 
 function Layout() {
@@ -227,6 +238,7 @@ function Layout() {
           <Route path="/a-editvideo/:id" element={<EditVideo />} />
           <Route path="/a-addvideo" element={<AddVideo />} />
           <Route path="/a-addtrainingmaterial" element={<AddTrainingMaterial />} />
+          <Route path="/a-edittrainingmaterial" element={<EditTrainingMaterial />} />
           {/* <Route path="/home" element={<LandingPage />} /> */}
           <Route path="/a-dashboard" element={<AdminDashboard />} />
           <Route path="/admin-meetings" element={<AdminMeetings />} />
@@ -241,6 +253,7 @@ function Layout() {
 
           <Route path="/a-transactionmoniter" element={<Tmoniter />} />
           <Route path="/a-investment-page" element={<InvestmentPage />} />
+          <Route path="/a-reports" element={<AdminReportsPage />} />
           <Route path="/a-add-lead" element={<AddLead />} />
           <Route path="/a-partners" element={<PartnersDashboard />} />
           <Route path="/a-profile" element={<AdminProfile />} />
@@ -278,6 +291,9 @@ function Layout() {
           <Route path="/a-add-commissionmaster" element={<AddCommissionLevels />} />
           <Route path="/a-edit-commissionmaster/:id" element={<EditCommissionLevels />} />
           <Route path="/a-category" element={<Category />} />
+           <Route path="/tablecategory" element={<TableCategory/>} />
+           <Route path="/propertycategoryform" element={<PropertyCategoryform/>} />
+           <Route path="/editcategory/:id" element={<EditCategory/>} />
           <Route path="/a-business" element={<AdminBussiness />} />
           <Route path="/a-editbusiness/:id" element={<AdminBussinessEdit />} />
           <Route path="/a-businessproducts/:id" element={<AdminBussinessProducts />} />
@@ -285,6 +301,8 @@ function Layout() {
           <Route path="/a-chatbot" element={<Chatbot />} />
           <Route path="/a-createq&a" element={<CreateQA />} />
            <Route path="/a-editqa/:id" element={<EditQA/>} />
+           <Route path="/a-sitevisit" element={<SiteVisits/>} />
+           <Route path="/a-admiteditsite/:id" element={<AdminEdit/>} />
 
 
 
@@ -299,6 +317,7 @@ function Layout() {
           <Route path="/i-transaction-details" element={<Tdetails />} />
           <Route path="/i-payment-form" element={<Payment />} />
           <Route path="/i-profile" element={<InvestorProfile />} />
+           <Route path="/i-reports" element={<InvestorReportsPage />} />
           <Route path="/clienteditprofile" element={<ClientEditProfile />} />
           <Route path="/i-servies" element={<Services />} />
           <Route path="/i-profiledetails" element={<Kyc />} />
@@ -315,9 +334,11 @@ function Layout() {
           <Route path="/i-addbusiness" element={<AddInvestorBusiness />} />
           <Route path="/i-business" element={<InvestorBusiness />} />
           <Route path="/i-businessproducts/:id" element={<InvestorBusinessproducts />} />
+           <Route path="/i-wishlist" element={<InvestorWishlist/>} />
           
           
           <Route path="/i-editbusiness/:id" element={<EditInvestorBusiness />} />
+
 
 
 
@@ -326,7 +347,7 @@ function Layout() {
           <Route path="/p-report" element={<Report />} />
           <Route path="/p-addasset" element={<AssetForm />} />
           <Route path="/p-assets" element={<AssetDashboard />} />
-          {/* <Route path="/p-wishlistpage" element={<WishlistPage />} /> */}
+          {/* <Route path="/p-wishlistpage" element={<wishlistpage />} /> */}
           <Route path="/p-wishlist" element={<Wishlist />} />
           <Route path="/p-comparelist" element={<Comparelist />} />
           <Route path="/p-profile" element={<PartnerProfile />} />
@@ -376,6 +397,7 @@ function Layout() {
           <Route path="/refundpolicy" element={<Refundpolicy />} />
           <Route path="/legalnavbar" element={<LegalNavbar />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/verify-otp" element={<VerifyOtp />} />
 
           <Route path="/filteredproperties" element={<FilteredProperties />} />
           <Route path="/payment-callback" element={<PaymentCallback />} />

@@ -92,8 +92,8 @@ const PartnerMyAssets = () => {
     { id: 'created_at', label: 'Date Added', checked: true },
     { id: 'owner_name', label: 'Owner', checked: false },
     { id: 'owner_contact', label: 'Contact', checked: false },
-    { id: 'plot_area_sqft', label: 'Plot Area (sqft)', checked: false },
-    { id: 'builtup_area_sqft', label: 'Built-up Area (sqft)', checked: false },
+    { id: 'area', label: 'Area', checked: false },
+    { id: 'builtup_area', label: 'Built-up Area', checked: false },
   ]);
 
 
@@ -131,8 +131,8 @@ const PartnerMyAssets = () => {
           property.address,
           property.description,
           property.property_value?.toString(),
-          property.plot_area_sqft?.toString(),
-          property.builtup_area_sqft?.toString(),
+          property.area?.toString(),
+          property.builtup_area?.toString(),
           referralId
         ].filter(Boolean);
 
@@ -521,7 +521,7 @@ const PartnerMyAssets = () => {
             Properties
           </Typography>
 
-          <Button
+          {/* <Button
             variant="contained"
             color="secondary"
             onClick={openReportConfiguration}
@@ -535,7 +535,7 @@ const PartnerMyAssets = () => {
             }}
           >
             Generate Report
-          </Button>
+          </Button> */}
 
 
         </Box>
@@ -776,10 +776,10 @@ const PartnerMyAssets = () => {
                       >
                         <Grid item xs={6}>
                           <Typography variant="caption" color="text.secondary">
-                            Plot Area
+                            Area
                           </Typography>
                           <Typography fontWeight="600" color="#4A90E2">
-                            {property.plot_area_sqft} sqft
+                            {property.area} {property.area_unit}
                           </Typography>
                         </Grid>
                         <Grid item xs={6}>
@@ -787,7 +787,7 @@ const PartnerMyAssets = () => {
                             Built-up Area
                           </Typography>
                           <Typography fontWeight="600" color="#4A90E2">
-                            {property.builtup_area_sqft} sqft
+                            {property.builtup_area} {property.area_unit}
                           </Typography>
                         </Grid>
                         <Grid item xs={6}>

@@ -5,7 +5,7 @@ import {
 } from '@mui/material';
 import Swal from 'sweetalert2';
 import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
-import { baseurl } from '../../../BaseURL/BaseURL';
+import { baseurl, redirecturl } from '../../../BaseURL/BaseURL';
 
 const Subcrptionplan = () => {
   const [variantData, setVariantData] = useState([]);
@@ -71,7 +71,7 @@ const Subcrptionplan = () => {
       acc[variant.plan_id] = {
         name: plan.plan_name,
         description: plan.description,
-        type: plan.plan_type || 'Self service',
+        type: plan.plan_type,
         highlight: plan.plan_name === 'Advanced Plus' ? 'Most Bought' : null,
         color: ['#E3F2FD', '#F3E5F5', '#FFF3E0'][Object.keys(acc).length % 3], // cycle colors
         options: []
@@ -104,7 +104,7 @@ const Subcrptionplan = () => {
         body: JSON.stringify({
           user_id: Number(userId),
           variant_id: selectedVariantId,
-          redirect_url: "https://shrirajteam.com/p-plans",
+          redirect_url: `${redirecturl}/p-plans`,
         }),
       });
 

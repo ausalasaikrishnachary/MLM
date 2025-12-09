@@ -29,6 +29,7 @@ import EmailIcon from "@mui/icons-material/Email";
 import CloseIcon from "@mui/icons-material/Close";
 import ShareIcon from "@mui/icons-material/Share";
 import Header from "../../../Shared/Navbar/Navbar";
+import { baseurl } from "../../../BaseURL/BaseURL";
 
 const sectors = [
   "All Businesses",
@@ -56,7 +57,7 @@ const AdminBusiness = () => {
   useEffect(() => {
     const fetchBusinesses = async () => {
       try {
-        const response = await axios.get("https://shrirajteam.com:81/business/");
+        const response = await axios.get(`${baseurl}/business/`);
         setBusinesses(response.data);
       } catch (error) {
         console.error("Error fetching businesses:", error);
@@ -190,7 +191,7 @@ const AdminBusiness = () => {
   <Box display="flex" justifyContent="space-between" alignItems="center">
   {biz.logo ? (
     <img
-      src={`https://shrirajteam.com:81${biz.logo}`}   // prepend base URL
+      src={`${baseurl}/${biz.logo}`}   // prepend base URL
       alt={`${biz.business_name} Logo`}
       style={{
         width: 50,
@@ -278,7 +279,7 @@ const AdminBusiness = () => {
       <IconButton
         sx={{ bgcolor: "#f2f2f7", "&:hover": { bgcolor: "#e1e1ec" } }}
         onClick={() =>
-          window.open(`https://shrirajteam.com:81${biz.documents}`, "_blank")
+          window.open(`${baseurl}/${biz.documents}`, "_blank")
         }
       >
         ⬇️

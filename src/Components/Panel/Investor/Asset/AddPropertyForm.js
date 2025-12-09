@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Country, State, City } from "country-state-city";
 import {
   Box,
   Typography,
@@ -44,7 +45,7 @@ const VisuallyHiddenInput = styled('input')({
   position: 'absolute',
   bottom: 0,
   left: 0,
-  whiteSpace: 'nowrap',
+  whiteSpace: 'nowrap', 
   width: 1,
 });
 
@@ -52,7 +53,7 @@ const AddPropertyForm = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [propertyCategories, setPropertyCategories] = useState([]);
   const [propertyTypes, setPropertyTypes] = useState([]);
-  const [amenities, setAmenities] = useState([]);
+  const [amenities, setAmenities] = useState([]); 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const userId = localStorage.getItem('user_id');
@@ -77,6 +78,7 @@ const AddPropertyForm = () => {
     longitude: '',
     plotArea: '',
     areaUnit: 'sq.ft.',
+     pricePerUnit: '',
     length: '',
     breadth: '',
     numberOfFloors: 1,
@@ -94,7 +96,7 @@ const AddPropertyForm = () => {
     ownershipType: 'Freehold',
     price: '',
     maintenance: '',
-    amenities: [1], // Default amenity
+    amenities: [], // Default amenity
     propertyUniqueness: '',
     locationAdvantages: '',
     otherFeatures: '',
@@ -114,7 +116,32 @@ const AddPropertyForm = () => {
     agreement_file: null,
   });
 
+   const countries = Country.getAllCountries();
+      const states = formData.country
+        ? State.getStatesOfCountry(formData.country)
+        : [];
+      const cities = formData.state
+        ? City.getCitiesOfState(formData.country, formData.state)
+        : [];
+
   const [showResidentialFields, setShowResidentialFields] = useState(false);
+  const [showBuiltupArea, setShowBuiltupArea] = useState(true);
+  useEffect(() => {
+  if (formData.propertyType) {
+    const selectedType = propertyTypes.find(type => type.property_type_id === formData.propertyType);
+    if (selectedType) {
+      const typeName = selectedType.name.toLowerCase();
+      
+      const shouldShowResidential = typeName.includes('flat') || typeName.includes('villa') ||
+        typeName.includes('apartment') || typeName.includes('house');
+      setShowResidentialFields(shouldShowResidential);
+      
+      // Hide built-up area for plot types
+      const shouldShowBuiltupArea = !typeName.includes('plot');
+      setShowBuiltupArea(shouldShowBuiltupArea);
+    }
+  }
+}, [formData.propertyType, propertyTypes]);
 
   useEffect(() => {
     if (formData.propertyType) {
@@ -130,19 +157,25 @@ const AddPropertyForm = () => {
 
   // Fetch initial data
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [categoriesRes, amenitiesRes] = await Promise.all([
-          axios.get(`${baseurl}/property-categories/`),
-          axios.get(`${baseurl}/amenities/`)
-        ]);
-        setPropertyCategories(categoriesRes.data);
-        setAmenities(amenitiesRes.data);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-    fetchData();
+     const fetchData = async () => {
+        try {
+          const [categoriesRes, amenitiesRes] = await Promise.all([
+            axios.get(`${baseurl}/property-categories/`),
+            axios.get(`${baseurl}/amenities/`)
+          ]);
+          setPropertyCategories(categoriesRes.data);
+          
+          // Convert amenity IDs to numbers
+          const formattedAmenities = amenitiesRes.data.map(amenity => ({
+            ...amenity,
+            amenity_id: parseInt(amenity.amenity_id)
+          }));
+          setAmenities(formattedAmenities);
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      };
+        fetchData();
   }, []);
 
   useEffect(() => {
@@ -166,20 +199,31 @@ const AddPropertyForm = () => {
     return regex.test(value);
   };
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value
-    }));
+ const handleChange = (e) => {
+  const { name, value, type, checked } = e.target;
+  const newValue = type === 'checkbox' ? checked : value;
 
-    if (name === "description") {
-      setErrors(prev => ({
-        ...prev,
-        description: !validateDescription(value),
-      }));
+  setFormData((prev) => {
+    const updated = { ...prev, [name]: newValue };
+
+    // Auto-calculate price when pricePerUnit or plotArea changes
+    if (name === "pricePerUnit" || name === "plotArea") {
+      const pricePerUnit = parseFloat(updated.pricePerUnit) || 0;
+      const plotArea = parseFloat(updated.plotArea) || 0;
+      updated.price = pricePerUnit * plotArea;
     }
-  };
+
+    return updated;
+  });
+
+  // Validate description
+  if (name === "description") {
+    setErrors((prev) => ({
+      ...prev,
+      description: !validateDescription(value),
+    }));
+  }
+};
 
   const handleFileUpload = async (e, type) => {
     const files = e.target.files;
@@ -205,14 +249,15 @@ const AddPropertyForm = () => {
     }));
   };
 
-  const handleAmenityChange = (amenityId) => {
-    setFormData(prev => {
-      const newAmenities = prev.amenities.includes(amenityId)
-        ? prev.amenities.filter(id => id !== amenityId)
-        : [...prev.amenities, amenityId];
-      return { ...prev, amenities: newAmenities };
-    });
-  };
+   const handleAmenityChange = (amenityId) => {
+  setFormData(prev => {
+    const numericId = parseInt(amenityId);
+    const newAmenities = prev.amenities.includes(numericId)
+      ? prev.amenities.filter(id => id !== numericId)
+      : [...prev.amenities, numericId];
+    return { ...prev, amenities: newAmenities };
+  });
+};
 
   // Add these handler functions:
   const handleAgreementVideoUpload = (e) => {
@@ -263,14 +308,14 @@ const AddPropertyForm = () => {
     setIsSubmitting(true);
 
     try {
-      // Convert plot area to sq.ft based on selected unit
-      let plotAreaSqft = parseFloat(formData.plotArea) || 0;
-      switch (formData.areaUnit) {
-        case 'sq.m.': plotAreaSqft *= 10.7639; break;
-        case 'acres': plotAreaSqft *= 43560; break;
-        case 'hectares': plotAreaSqft *= 107639; break;
-        default: break; // Already in sq.ft
-      }
+      // Convert Area to sq.ft based on selected unit
+      // let plotAreaSqft = parseFloat(formData.plotArea) || 0;
+      // switch (formData.areaUnit) {
+      //   case 'sq.m.': plotAreaSqft *= 10.7639; break;
+      //   case 'acres': plotAreaSqft *= 43560; break;
+      //   case 'hectares': plotAreaSqft *= 107639; break;
+      //   default: break; // Already in sq.ft
+      // }
 
       // Prepare form data for API
       const payload = new FormData();
@@ -288,8 +333,11 @@ const AddPropertyForm = () => {
         pin_code: formData.pinCode,
         latitude: formData.latitude || '12.120000',
         longitude: formData.longitude || '12.120000',
-        plot_area_sqft: plotAreaSqft.toFixed(2),
-        builtup_area_sqft: formData.builtupArea || '0.00',
+         area: formData.plotArea,
+        // area: plotAreaSqft.toFixed(2),
+        area_unit: formData.areaUnit,
+        price_per_unit: formData.pricePerUnit || '0.00',
+        builtup_area: formData.builtupArea || '0.00',
         length_ft: formData.length || '0.00',
         breadth_ft: formData.breadth || '0.00',
         number_of_floors: formData.numberOfFloors,
@@ -307,7 +355,6 @@ const AddPropertyForm = () => {
         owner_contact: formData.ownerContact,
         owner_email: formData.ownerEmail,
         is_featured: formData.isFeatured,
-        // amenities: JSON.stringify(formData.amenities),
         category: formData.category,
         property_type: formData.propertyType,
         user_id: userId,
@@ -331,6 +378,13 @@ const AddPropertyForm = () => {
           payload.append(key, value);
         }
       });
+
+       // With this dynamic version:
+if (formData.amenities && formData.amenities.length > 0) {
+  formData.amenities.forEach((id) => {
+    payload.append("amenities", id.toString()); // Ensure it's string for FormData
+  });
+}
 
       // Append files
       formData.images.forEach((img) => {
@@ -374,7 +428,7 @@ const AddPropertyForm = () => {
       });
 
       console.log('Submission successful:', response.data);
-      Swal.fire('Success', 'Property updated successfully!', 'success');
+      Swal.fire('Success', 'Property Added successfully!', 'success');
       navigate("/i-myassets");
 
       // Optionally reset form or redirect here
@@ -419,7 +473,7 @@ const AddPropertyForm = () => {
           formData.city?.trim() &&
           formData.state?.trim() &&
           formData.country?.trim() &&
-          formData.pinCode?.trim() &&
+          // formData.pinCode?.trim() &&
           formData.latitude !== undefined &&
           formData.longitude !== undefined
         );
@@ -597,47 +651,76 @@ const AddPropertyForm = () => {
 
       case 1: return (
         <Grid container spacing={3} sx={{ mt: 2 }}>
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              multiline
-              rows={2}
-              label="Full Address"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-            />
-          </Grid>
-
           <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="City"
-              name="city"
-              value={formData.city}
-              onChange={handleChange}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="State"
-              name="state"
-              value={formData.state}
-              onChange={handleChange}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Country"
-              name="country"
-              value={formData.country}
-              onChange={handleChange}
-            />
-          </Grid>
+                         <TextField
+                           select
+                           fullWidth
+                           label="Country"
+                           value={formData.country}
+                           onChange={(e) => {
+                             setFormData({
+                               ...formData,
+                               country: e.target.value,
+                               state: "",
+                               city: "",
+                             });
+                           }}
+                         >
+                           {countries.map((country) => (
+                             <MenuItem key={country.isoCode} value={country.isoCode}>
+                               {country.name}
+                             </MenuItem>
+                           ))}
+                         </TextField>
+                       </Grid>
+                 
+                       {/* State Dropdown */}
+                       <Grid item xs={12} sm={6}>
+                         <TextField
+                           select
+                           fullWidth
+                           label="State"
+                           value={formData.state}
+                           onChange={(e) => {
+                             setFormData({
+                               ...formData,
+                               state: e.target.value,
+                               city: "",
+                             });
+                           }}
+                           disabled={!formData.country}
+                         >
+                           {states.map((state) => (
+                             <MenuItem key={state.isoCode} value={state.isoCode}>
+                               {state.name}
+                             </MenuItem>
+                           ))}
+                         </TextField>
+                       </Grid>
+                 
+                       {/* City Dropdown */}
+                       <Grid item xs={12} sm={6}>
+                         <TextField
+                           select
+                           fullWidth
+                           label="City"
+                           value={formData.city}
+                           onChange={(e) => {
+                             setFormData({
+                               ...formData,
+                               city: e.target.value,
+                             });
+                           }}
+                           disabled={!formData.state}
+                         >
+                           {cities.map((city) => (
+                             <MenuItem key={city.name} value={city.name}>
+                               {city.name}
+                             </MenuItem>
+                           ))}
+                         </TextField>
+                       </Grid>
+         
 
           <Grid item xs={12} sm={6}>
             <TextField
@@ -649,7 +732,19 @@ const AddPropertyForm = () => {
             />
           </Grid>
 
-          <Grid item xs={12} sm={6}>
+ <Grid item xs={12}>
+            <TextField
+              fullWidth
+              multiline
+              rows={2}
+              label="Full Address"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+            />
+          </Grid>
+          
+          {/* <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label="Latitude"
@@ -659,9 +754,9 @@ const AddPropertyForm = () => {
               onChange={handleChange}
               placeholder="12.120000"
             />
-          </Grid>
+          </Grid> */}
 
-          <Grid item xs={12} sm={6}>
+          {/* <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label="Longitude"
@@ -671,7 +766,7 @@ const AddPropertyForm = () => {
               onChange={handleChange}
               placeholder="12.120000"
             />
-          </Grid>
+          </Grid> */}
         </Grid>
       );
 
@@ -758,17 +853,6 @@ const AddPropertyForm = () => {
             </>
           )}
           <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Plot Area"
-              name="plotArea"
-              type="number"
-              value={formData.plotArea}
-              onChange={handleChange}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
             <FormControl fullWidth>
               <InputLabel>Area Unit</InputLabel>
               <Select
@@ -779,11 +863,35 @@ const AddPropertyForm = () => {
               >
                 <MenuItem value="sq.ft.">Square Feet</MenuItem>
                 <MenuItem value="sq.m.">Square Meters</MenuItem>
+                  <MenuItem value="sq.yd.">Square Yards</MenuItem>
                 <MenuItem value="acres">Acres</MenuItem>
                 <MenuItem value="hectares">Hectares</MenuItem>
+                 <MenuItem value="cents">Cents</MenuItem>
               </Select>
             </FormControl>
           </Grid>
+
+           <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Area"
+              name="plotArea"
+              type="number"
+              value={formData.plotArea}
+              onChange={handleChange}
+            />
+          </Grid>
+
+            <Grid item xs={12} sm={6}>
+                                <TextField
+                                  fullWidth
+                                  label="Price Per Unit"
+                                  name="pricePerUnit"
+                                  type="number"
+                                  value={formData.pricePerUnit}
+                                  onChange={handleChange}
+                                />
+                              </Grid>
 
           <Grid item xs={12} sm={6}>
             <TextField
@@ -807,16 +915,18 @@ const AddPropertyForm = () => {
             />
           </Grid>
 
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Built-up Area (sq.ft)"
-              name="builtupArea"
-              type="number"
-              value={formData.builtupArea}
-              onChange={handleChange}
-            />
-          </Grid>
+        {showBuiltupArea && (  // ✅ CORRECT - wraps entire Grid
+  <Grid item xs={12} sm={6}>
+    <TextField
+      fullWidth
+      label="Built-up Area"
+      name="builtupArea"
+      type="number"
+      value={formData.builtupArea}
+      onChange={handleChange}
+    />
+  </Grid>
+)}
 
           <Grid item xs={12} sm={6}>
             <TextField
@@ -1059,7 +1169,7 @@ const AddPropertyForm = () => {
           </Grid>
 
 
-          <Grid item xs={12}>
+          {/* <Grid item xs={12}>
             <Typography variant="h6" gutterBottom>Agreement Video</Typography>
             <Button
               component="label"
@@ -1111,7 +1221,7 @@ const AddPropertyForm = () => {
                 />
               </Box>
             )}
-          </Grid>
+          </Grid> */}
 
         </Grid>
       );
@@ -1197,7 +1307,8 @@ const AddPropertyForm = () => {
                   name="price"
                   type="number"
                   value={formData.price}
-                  onChange={handleChange}
+                  // onChange={handleChange}
+                   InputProps={{ readOnly: true }}
                 />
               </Grid>
             </>

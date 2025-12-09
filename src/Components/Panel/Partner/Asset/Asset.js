@@ -7,6 +7,7 @@ import {
   CardMedia,
   CardContent,
   Typography,
+  Chip,
   Button,
   TextField,
   InputAdornment,
@@ -61,7 +62,7 @@ const AssetsUI = () => {
   const [subscriptionPaid, setSubscriptionPaid] = useState(false);
   const [currentImageIndices, setCurrentImageIndices] = useState({});
   const [page, setPage] = useState(1);
-  const itemsPerPage = 6;
+  const itemsPerPage = 30;
   const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
   const startIndex = (page - 1) * itemsPerPage;
   const paginatedProperties = filteredProperties.slice(startIndex, startIndex + itemsPerPage);
@@ -84,7 +85,7 @@ const AssetsUI = () => {
         console.error("Error fetching likes:", err);
       }
     };
-  
+
     if (userId) fetchLikes();
   }, [userId]);
 
@@ -93,7 +94,7 @@ const AssetsUI = () => {
       alert("Please log in to like a property.");
       return;
     }
-  
+
     try {
       if (likedProperties.includes(propertyId)) {
         // Remove like
@@ -117,8 +118,8 @@ const AssetsUI = () => {
       console.error("Error updating likes:", error);
     }
   };
-  
-  
+
+
 
 
 
@@ -138,17 +139,17 @@ const AssetsUI = () => {
         console.error("Error fetching wishlist:", err);
       }
     };
-  
+
     if (userId) fetchWishlist();
   }, [userId]);
-  
+
   // ✅ Toggle wishlist state and API call
   const handleWishlistToggle = async (propertyId) => {
     if (!userId) {
       alert("Please log in to add to wishlist.");
       return;
     }
-  
+
     try {
       if (wishlist.includes(propertyId)) {
         // Remove from wishlist (DELETE)
@@ -156,7 +157,7 @@ const AssetsUI = () => {
         const item = res.data.find(
           (entry) => entry.user === parseInt(userId) && entry.property === propertyId
         );
-  
+
         if (item) {
           await axios.delete(`${baseurl}/wishlist/${item.id}/`);
           setWishlist((prev) => prev.filter((id) => id !== propertyId));
@@ -173,7 +174,7 @@ const AssetsUI = () => {
       console.error("Error updating wishlist:", error);
     }
   };
-  
+
 
   useEffect(() => {
     const fetchCommissions = async () => {
@@ -230,11 +231,13 @@ const AssetsUI = () => {
       try {
         const response = await fetch(`${baseurl}/properties/approval-status/approved/`);
         const data = await response.json();
+        console.log('Fetched properties:', data);
 
         // Filter out properties where user_id matches the current user's id
         const filteredProperties = data.filter(
           (property) => property.user_id?.toString() !== userId
         );
+        console.log('Filtered properties:', filteredProperties);
 
         setProperties(filteredProperties);
         setFilteredProperties(filteredProperties);
@@ -263,8 +266,8 @@ const AssetsUI = () => {
           property.address,
           property.description,
           property.property_value?.toString(),
-          property.plot_area_sqft?.toString(),
-          property.builtup_area_sqft?.toString()
+          property.area?.toString(),
+          property.builtup_area?.toString()
         ].filter(Boolean);
 
         return searchFields.some(field => field.toLowerCase().includes(query));
@@ -319,9 +322,29 @@ const AssetsUI = () => {
     setSortBy(event.target.value);
   };
 
-  const handleViewDetails = (property) => {
-    setSelectedProperty(property);
-    setOpenDialog(true);
+  // const handleViewDetails = (property) => {
+  //   setSelectedProperty(property);
+  //   setOpenDialog(true);
+  // };
+  const handleViewDetails = async (property) => {
+    try {
+      await fetch(`${baseurl}/property/${property.property_id}/`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          view_count: (property.view_count || 0) + 1
+        })
+      });
+  
+      console.log("View count updated");
+    } catch (error) {
+      console.log("Error updating view count:", error);
+    }
+  
+    // navigate after update
+    navigate(`/p-assets/${property.property_id}`, {
+      state: { property }
+    });
   };
 
   const handleCloseDialog = () => {
@@ -591,7 +614,7 @@ const AssetsUI = () => {
                             }}
                           />
                         </Box>
-                        
+
                       ) : (
                         <CardMedia
                           component="img"
@@ -601,27 +624,8 @@ const AssetsUI = () => {
                           sx={{ objectFit: 'cover', borderRadius: '12px 12px 0 0', cursor: 'pointer' }}
                           onClick={() => handleImageClick(property)}
                         />
-                        
-                      )}
-                      {/* ❤️ Wishlist Icon */}
-<IconButton
-  onClick={() => handleWishlistToggle(property.property_id)}
-  sx={{
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    backgroundColor: 'rgba(255,255,255,0.8)',
-    '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
-    zIndex: 2,
-  }}
->
-  {wishlist.includes(property.property_id) ? (
-    <FavoriteIcon sx={{ color: 'red' }} />
-  ) : (
-    <FavoriteBorderIcon sx={{ color: 'red' }} />
-  )}
-</IconButton>
 
+                      )}
 
                       {/* Navigation arrows when there are multiple media items */}
                       {totalMedia > 1 && (
@@ -696,36 +700,31 @@ const AssetsUI = () => {
                           {property.looking_to}
                         </Box>
                       )} */}
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          top: 15,
-                          left: -30,
-                          width: '150px',
-                          transform: 'rotate(-45deg)',
-                          backgroundColor:
-                            property.status === 'sold'
-                              ? '#2ECC71' // Green
-                              : property.status === 'booked'
-                                ? '#F1C40F' // Yellow
-                                : property.status === 'cancelled'
-                                  ? '#E74C3C' // Red
-                                  : property.status === 'available'
-                                    ? '#3498DB' // Blue
-                                    : '#95A5A6', // Fallback grey
-                          color: 'white',
-                          textAlign: 'center',
-                          fontSize: '12px',
-                          fontWeight: 'bold',
-                          textTransform: 'uppercase',
-                          py: '4px',
-                          boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-                        }}
-                      >
-                        {property.status}
-                      </Box>
+
                     </Box>
                     <CardContent>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                        <Typography fontWeight="bold" sx={{ flex: 1, mr: 1 }}>
+                          {/* {property.property_title} */}
+                        </Typography>
+                        <Chip
+                          label={property.status}
+                          size="small"
+                          sx={{
+                            backgroundColor:
+                              property.status === 'available'
+                                ? '#2ECC71'
+                                : property.status === 'booked'
+                                  ? '#E67E22'
+                                  : '#E74C3C',
+                            color: 'white',
+                            fontWeight: 'bold',
+                            textTransform: 'uppercase',
+                            fontSize: '0.7rem',
+                            minWidth: '70px'
+                          }}
+                        />
+                      </Box>
                       {/* ✅ Title row with checkbox and label */}
                       <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
                         <Typography fontWeight="bold">
@@ -734,26 +733,26 @@ const AssetsUI = () => {
 
                         {/* Checkbox + Text */}
                         <Box display="flex" alignItems="center" gap={1}>
-  {/* Like Button (Thumb Up) */}
-  <IconButton
+                          {/* Like Button (Thumb Up) */}
+                          {/* <IconButton
     onClick={() => handleLikeToggle(property.property_id)}
     size="small"
     sx={{ color: likedProperties.includes(property.property_id) ? '#1a73e8' : 'grey' }}
   >
     {likedProperties.includes(property.property_id) ? <ThumbUpAltIcon /> : <ThumbUpAltOutlinedIcon />}
-  </IconButton>
+  </IconButton> */}
 
-  {/* Compare Checkbox */}
-  <Checkbox
-    checked={compareList.some(p => p.property_id === property.property_id)}
-    onChange={() => handleCompareToggle(property)}
-    size="small"
-    color="primary"
-  />
-  <Typography variant="body2" color="textSecondary">
-    Compare
-  </Typography>
-</Box>
+                          {/* Compare Checkbox */}
+                          <Checkbox
+                            checked={compareList.some(p => p.property_id === property.property_id)}
+                            onChange={() => handleCompareToggle(property)}
+                            size="small"
+                            color="primary"
+                          />
+                          <Typography variant="body2" color="textSecondary">
+                            Compare
+                          </Typography>
+                        </Box>
 
 
                       </Box>
@@ -774,10 +773,10 @@ const AssetsUI = () => {
                       >
                         <Grid item xs={6}>
                           <Typography variant="caption" color="text.secondary">
-                            Plot Area
+                            Area
                           </Typography>
                           <Typography fontWeight="600" color="#4A90E2">
-                            {property.plot_area_sqft} sqft
+                            {property.area} {property.area_unit}
                           </Typography>
                         </Grid>
                         <Grid item xs={6}>
@@ -785,7 +784,7 @@ const AssetsUI = () => {
                             Built-up Area
                           </Typography>
                           <Typography fontWeight="600" color="#4A90E2">
-                            {property.builtup_area_sqft} sqft
+                            {property.builtup_area} {property.area_unit}
                           </Typography>
                         </Grid>
                         <Grid item xs={6}>
@@ -805,6 +804,66 @@ const AssetsUI = () => {
                           </Typography>
                         </Grid>
                       </Grid>
+                       {/* Always show the icons */}
+  <Grid item xs={12}>
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        gap: 1.5,
+        mt: 0.5,
+      }}
+    >
+      {/* Wishlist Button */}
+      <IconButton
+        onClick={() => handleWishlistToggle(property.property_id)}
+        sx={{
+          backgroundColor: 'rgba(255,255,255,0.8)',
+          '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
+        }}
+      >
+        {wishlist.includes(property.property_id) ? (
+          <FavoriteIcon sx={{ color: 'red' }} />
+        ) : (
+          <FavoriteBorderIcon sx={{ color: 'red' }} />
+        )}
+      </IconButton>
+
+      {/* Like Button */}
+      <IconButton
+        onClick={() => handleLikeToggle(property.property_id)}
+        size="small"
+        sx={{
+          backgroundColor: 'rgba(255,255,255,0.8)',
+          '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
+          color: likedProperties.includes(property.property_id)
+            ? '#1a73e8'
+            : 'grey',
+        }}
+      >
+        {likedProperties.includes(property.property_id) ? (
+          <ThumbUpAltIcon />
+        ) : (
+          <ThumbUpAltOutlinedIcon />
+        )}
+      </IconButton>
+
+      {/* Call Button */}
+      <IconButton
+        component="a"
+        href={`tel:${subscriptionPaid ? property.owner_contact : '9074307248'}`}
+        size="small"
+        sx={{
+          backgroundColor: 'rgba(255,255,255,0.8)',
+          '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
+          color: '#4caf50',
+        }}
+      >
+        <CallIcon />
+      </IconButton>
+    </Box>
+  </Grid>
                       <Box
                         sx={{
                           backgroundColor: '#F8F9FA',
@@ -813,93 +872,42 @@ const AssetsUI = () => {
                           mb: 2
                         }}
                       >
-                        <Grid container>
-                          {subscriptionPaid && property.referral_id ? (
-                            <Grid item xs={12}>
-                              <Typography
-                                variant="body2"
-                                fontWeight="bold"
-                                color="#E67E22"
-                                textAlign="center"
-                                display="flex"
-                                justifyContent="center"
-                                alignItems="center"
-                                gap={1}
-                              >
-                                Added by: {property.username}
-                              </Typography>
-                              <Typography
-                                variant="body2"
-                                fontWeight="bold"
-                                color="#E67E22"
-                                textAlign="center"
-                                display="flex"
-                                justifyContent="center"
-                                alignItems="center"
-                                gap={1}
-                              >
-                                Referral ID: {property.referral_id}
-                              </Typography>
-                            </Grid>
+                       <Grid container>
+  {/* Show referral info if available */}
+  {subscriptionPaid && property.referral_id && (
+    <Grid item xs={12}>
+      <Typography
+        variant="body2"
+        fontWeight="bold"
+        color="#E67E22"
+        textAlign="center"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        gap={1}
+      >
+        Added by: {property.username}
+      </Typography>
+      <Typography
+        variant="body2"
+        fontWeight="bold"
+        color="#E67E22"
+        textAlign="center"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        gap={1}
+      >
+        Referral ID: {property.referral_id}
+      </Typography>
+    </Grid>
+  )}
 
-                          ) : (
-                            <>
-                              <Grid item xs={6}>
-                                <Typography variant="body2" color="text.secondary">
-                                  {subscriptionPaid ? "Owner Email" : "Office Email"}
-                                </Typography>
-                              </Grid>
-                              <Grid item xs={6}>
-                                <Typography
-                                  variant="body2"
-                                  fontWeight="bold"
-                                  color="#4A90E2"
-                                  align="right"
-                                  display="flex"
-                                  justifyContent="flex-end"
-                                  alignItems="center"
-                                  gap={1}
-                                >
-                                  <EmailIcon fontSize="small" />
-                                  {subscriptionPaid ? property.owner_email : "sriraj@gmail.com"}
-                                </Typography>
-                              </Grid>
+ 
+</Grid>
 
-                              <Grid item xs={6}>
-                                <Typography variant="body2" color="text.secondary">
-                                  {subscriptionPaid ? "Owner Contact" : "Office Contact"}
-                                </Typography>
-                              </Grid>
-
-                              <Grid item xs={6}>
-                                <Typography
-                                  variant="body2"
-                                  fontWeight="bold"
-                                  color="text.secondary"
-                                  align="right"
-                                  display="flex"
-                                  justifyContent="flex-end"
-                                  alignItems="center"
-                                  gap={1}
-                                >
-                                  <CallIcon fontSize="small" />
-                                  <a
-                                    href={`tel:${subscriptionPaid ? property.owner_contact : "9074307248"}`}
-                                    style={{
-                                      color: 'inherit',
-                                      textDecoration: 'none',
-                                      fontWeight: 'bold',
-                                    }}
-                                  >
-                                    {subscriptionPaid ? property.owner_contact : "9074307248"}
-                                  </a>
-                                </Typography>
-                              </Grid>
-
-                            </>
-                          )}
-                        </Grid>
                       </Box>
+
 
                       <Button
                         onMouseEnter={(e) => handlePopoverOpen(e, property.property_id)}
@@ -968,7 +976,7 @@ const AssetsUI = () => {
                               '&:hover': { color: 'rgb(5,5,5)' }
                             }}
                             disabled={!subscriptionPaid}
-                            onClick={() => navigate(`/p-assets/${property.property_id}`, { state: { property } })}
+                              onClick={() => handleViewDetails(property)}
                           >
                             VIEW DETAILS
                           </Button>

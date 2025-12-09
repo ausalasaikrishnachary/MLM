@@ -21,8 +21,8 @@ import { Carousel } from 'react-responsive-carousel';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
-
-const Properties = () => {
+ 
+const Properties = () => { 
   const navigate = useNavigate();
   const [properties, setProperties] = useState([]);
   const [propertyTypes, setPropertyTypes] = useState([]);
@@ -106,18 +106,19 @@ const Properties = () => {
   };
 
   const filteredAndSortedProperties = [...properties]
-    .filter(property => {
-      const matchesSearch =
-        property.property_title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        property.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        property.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        property.total_property_value.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        property.plot_area_sqft.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        property.builtup_area_sqft.toLowerCase().includes(searchTerm.toLowerCase());
+   .filter(property => {
+  const searchLower = searchTerm.toLowerCase();
+  const matchesSearch =
+    (property.property_title?.toLowerCase() || '').includes(searchLower) ||
+    (property.address?.toLowerCase() || '').includes(searchLower) ||
+    (property.city?.toLowerCase() || '').includes(searchLower) ||
+    (property.total_property_value?.toString().toLowerCase() || '').includes(searchLower) ||
+    (property.area?.toLowerCase() || '').includes(searchLower) ||
+    (property.builtup_area?.toLowerCase() || '').includes(searchLower);
 
-      const matchesType = !selectedTypeId || property.property_type === selectedTypeId;
-      return matchesSearch && matchesType;
-    })
+  const matchesType = !selectedTypeId || property.property_type === selectedTypeId;
+  return matchesSearch && matchesType;
+})
     .sort((a, b) => {
       if (selectedSort === 'Latest') {
         return new Date(b.created_at) - new Date(a.created_at);
@@ -138,6 +139,28 @@ const Properties = () => {
     (page - 1) * itemsPerPage,
     page * itemsPerPage
   );
+
+  const handleViewDetails = async (property) => {
+  try {
+    await fetch(`${baseurl}/property/${property.property_id}/`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        view_count: (property.view_count || 0) + 1
+      })
+    });
+
+    console.log("View count updated");
+  } catch (error) {
+    console.log("Error updating view count:", error);
+  }
+
+  // navigate after update
+  navigate(`/viewpropertiesdetails/${property.property_id}`, {
+    state: { property }
+  });
+};
+
 
   if (loading) {
     return (
@@ -272,10 +295,10 @@ const Properties = () => {
                   <Grid container spacing={1}>
                     <Grid item xs={6}>
                       <Typography variant="caption" color="text.secondary">
-                        Plot Area
+                        Area
                       </Typography>
                       <Typography fontWeight="600" color="#4A90E2">
-                        {property.plot_area_sqft || 'N/A'} sqft
+                        {property.area || 'N/A'} {property.area_unit}
                       </Typography>
                     </Grid>
                     <Grid item xs={6}>
@@ -283,7 +306,7 @@ const Properties = () => {
                         Built-up Area
                       </Typography>
                       <Typography fontWeight="600" color="#4A90E2">
-                        {property.builtup_area_sqft || 'N/A'} sqft
+                        {property.builtup_area || 'N/A'} {property.area_unit}
                       </Typography>
                     </Grid>
                     <Grid item xs={6}>
@@ -305,24 +328,21 @@ const Properties = () => {
                   </Grid>
                 </div>
                 <div className="btn-container single-button">
-                  <Button
-                    sx={{
-                      color: "#2E166D",
-                      border: "1px solid #2E166D",
-                      width: "100%",
-                      '&:hover': {
-                        backgroundColor: "#2E166D",
-                        color: "#FFFFFF"
-                      }
-                    }}
-                    onClick={() =>
-                      navigate(`/viewpropertiesdetails/${property.property_id}`, {
-                        state: { property }
-                      })
-                    }
-                  >
-                    View Details
-                  </Button>
+                 <Button
+  sx={{
+    color: "#2E166D",
+    border: "1px solid #2E166D",
+    width: "100%",
+    "&:hover": {
+      backgroundColor: "#2E166D",
+      color: "#FFFFFF",
+    },
+  }}
+  onClick={() => handleViewDetails(property)}
+>
+  View Details
+</Button>
+
                   <Button
                     sx={{
                       color: "#2E166D",

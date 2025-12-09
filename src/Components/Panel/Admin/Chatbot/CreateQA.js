@@ -97,7 +97,7 @@ function CreateQA() {
             {/* All three fields in one row on large screens */}
             <Grid container item spacing={3} xs={12}>
               {/* Question Number */}
-              <Grid item xs={12} md={4}>
+              {/* <Grid item xs={12} md={4}>
                 <TextField
                   fullWidth
                   label="Question Number"
@@ -108,10 +108,10 @@ function CreateQA() {
                   variant="outlined"
                   required
                 />
-              </Grid>
+              </Grid> */}
 
               {/* Question */}
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   fullWidth
                   label="Question"
@@ -124,7 +124,7 @@ function CreateQA() {
               </Grid>
 
               {/* Answer */}
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} md={6}>
                 <TextField
                   fullWidth
                   label="Answer"

@@ -121,7 +121,7 @@ function Chatbot() {
               <Table>
                 <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
   <TableRow>
-    <TableCell sx={{ fontWeight: "bold" }}>Question No.</TableCell>
+    {/* <TableCell sx={{ fontWeight: "bold" }}>Question No.</TableCell> */}
     <TableCell sx={{ fontWeight: "bold" }}>Question</TableCell>
     <TableCell sx={{ fontWeight: "bold" }}>Answer</TableCell>
     <TableCell sx={{ fontWeight: "bold" }}>Actions</TableCell>
@@ -131,7 +131,7 @@ function Chatbot() {
   {paginatedData.length > 0 ? (
     paginatedData.map((item, index) => (
       <TableRow key={index} hover>
-        <TableCell>{item.question_number}</TableCell>
+        {/* <TableCell>{item.question_number}</TableCell> */}
         <TableCell>{item.question}</TableCell>
         <TableCell>{item.answer}</TableCell>
         <TableCell>

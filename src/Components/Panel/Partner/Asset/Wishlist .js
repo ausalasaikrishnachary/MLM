@@ -1,67 +1,1030 @@
 import React, { useEffect, useState } from "react";
-import { Container, Grid, Card, CardMedia, CardContent, Typography, Box } from "@mui/material";
+import {
+  Container,
+  Grid,
+  Card,
+  CardMedia,
+  CardContent,
+  Typography,
+  Box,
+  Chip,
+  Button,
+  TextField,
+  InputAdornment,
+  FormControl,
+  Select,
+  MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Popover,
+  IconButton,
+  Checkbox
+} from "@mui/material";
 import axios from "axios";
 import { baseurl } from "../../../BaseURL/BaseURL";
 import PartnerHeader from "../../../Shared/Partner/PartnerNavbar";
+import { useNavigate } from "react-router-dom";
+import SearchIcon from '@mui/icons-material/Search';
+import CallIcon from '@mui/icons-material/Call';
+import EmailIcon from '@mui/icons-material/Email';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import VideocamIcon from '@mui/icons-material/Videocam';
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
+import ThumbUpAltOutlinedIcon from '@mui/icons-material/ThumbUpAltOutlined';
+import { Carousel } from 'react-responsive-carousel';
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import PaginationComponent from '../../../Shared/Pagination';
 
 const Wishlist = () => {
   const userId = localStorage.getItem("user_id");
   const [wishlistItems, setWishlistItems] = useState([]);
+  const [properties, setProperties] = useState([]);
+  const [filteredProperties, setFilteredProperties] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState('latest');
+  const [selectedProperty, setSelectedProperty] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [openCarousel, setOpenCarousel] = useState(false);
+  const [currentImageIndices, setCurrentImageIndices] = useState({});
+  const [page, setPage] = useState(1);
+  const [compareList, setCompareList] = useState([]);
+  const [selectedTypeCategory, setSelectedTypeCategory] = useState('');
+  const [propertyTypes, setPropertyTypes] = useState([]);
+  const [subscriptionPaid, setSubscriptionPaid] = useState(false);
+  const [commissions, setCommissions] = useState([]);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [hoveredProperty, setHoveredProperty] = useState(null);
+  const [likedProperties, setLikedProperties] = useState([]);
+  const [wishlist, setWishlist] = useState([]);
 
+  const navigate = useNavigate();
+  const itemsPerPage = 6;
+  const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
+  const startIndex = (page - 1) * itemsPerPage;
+  const paginatedProperties = filteredProperties.slice(startIndex, startIndex + itemsPerPage);
+
+  // Fetch wishlist data
   useEffect(() => {
-    const fetchWishlist = async () => {
+    const fetchWishlistData = async () => {
       try {
         const wishlistRes = await axios.get(`${baseurl}/wishlist/`);
         const userWishlist = wishlistRes.data.filter(item => item.user === parseInt(userId));
-
         const propertyIds = userWishlist.map(item => item.property);
+        
         const propertiesRes = await axios.get(`${baseurl}/properties/approval-status/approved/`);
-
-        const wishlistedProperties = propertiesRes.data.filter(p => propertyIds.includes(p.property_id));
+        const wishlistedProperties = propertiesRes.data.filter(p => 
+          propertyIds.includes(p.property_id) && p.user_id?.toString() !== userId
+        );
+        
         setWishlistItems(wishlistedProperties);
+        setProperties(wishlistedProperties);
+        setFilteredProperties(wishlistedProperties);
+        
+        // Set wishlist state for icons
+        setWishlist(propertyIds);
       } catch (err) {
         console.error("Error loading wishlist:", err);
       }
     };
-    if (userId) fetchWishlist();
+
+    if (userId) fetchWishlistData();
   }, [userId]);
+
+  // Fetch additional data
+  useEffect(() => {
+    const fetchAdditionalData = async () => {
+      try {
+        // Fetch property types
+        const typesRes = await axios.get(`${baseurl}/property-types/`);
+        setPropertyTypes(typesRes.data);
+
+        // Fetch commissions
+        const commissionsRes = await axios.get(`${baseurl}/commissions-master/`);
+        setCommissions(commissionsRes.data);
+
+        // Fetch likes
+        const likesRes = await axios.get(`${baseurl}/likes/`);
+        const userLikes = likesRes.data
+          .filter(item => item.user === parseInt(userId))
+          .map(item => item.property);
+        setLikedProperties(userLikes);
+
+        // Check subscription
+        const subscriptionRes = await axios.get(`${baseurl}/user-subscriptions/user-id/${userId}/`);
+        const data = subscriptionRes.data;
+        const latest = data.find(item => item.latest_status !== undefined);
+        if (latest && latest.latest_status === "paid") {
+          setSubscriptionPaid(true);
+        }
+      } catch (error) {
+        console.error("Error fetching additional data:", error);
+      }
+    };
+
+    if (userId) fetchAdditionalData();
+  }, [userId]);
+
+  // Filter and sort properties
+  useEffect(() => {
+    let results = [...wishlistItems];
+
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      results = results.filter(property => {
+        const searchFields = [
+          property.property_title,
+          property.first_name,
+          property.city,
+          property.state,
+          property.owner_name,
+          property.owner_contact,
+          property.address,
+          property.description,
+          property.property_value?.toString(),
+          property.area?.toString(),
+          property.builtup_area?.toString()
+        ].filter(Boolean);
+
+        return searchFields.some(field => field.toLowerCase().includes(query));
+      });
+    }
+
+    // Apply sort filter
+    switch (sortBy) {
+      case 'latest':
+        results.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        break;
+      case 'oldest':
+        results.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+        break;
+      case 'price-high':
+        results.sort((a, b) => b.property_value - a.property_value);
+        break;
+      case 'price-low':
+        results.sort((a, b) => a.property_value - b.property_value);
+        break;
+      case 'sold':
+        results = results.filter((property) => property.status?.toLowerCase() === 'sold');
+        break;
+      case 'available':
+        results = results.filter((property) => property.status?.toLowerCase() === 'available');
+        break;
+      case 'booked':
+        results = results.filter((property) => property.status?.toLowerCase() === 'booked');
+        break;
+      default:
+        break;
+    }
+
+    if (selectedTypeCategory) {
+      results = results.filter((property) => property.category === selectedTypeCategory);
+    }
+
+    setFilteredProperties(results);
+  }, [searchQuery, sortBy, wishlistItems, selectedTypeCategory]);
+
+  // Media handling functions
+  const getAllMedia = (property) => {
+    const media = [];
+
+    if (property.images && property.images.length > 0) {
+      media.push(...property.images.map(img => ({
+        type: 'image',
+        url: `${baseurl}${img.image}`,
+        alt: `Property image`
+      })));
+    }
+
+    if (property.videos && property.videos.length > 0) {
+      media.push(...property.videos.map(vid => ({
+        type: 'video',
+        url: `${baseurl}${vid.video}`,
+        alt: `Property video`
+      })));
+    }
+
+    return media;
+  };
+
+  const getCurrentMediaUrl = (property) => {
+    const media = getAllMedia(property);
+    if (media.length === 0) return 'https://via.placeholder.com/300';
+
+    const currentIndex = currentImageIndices[property.property_id] || 0;
+    return media[currentIndex]?.url || 'https://via.placeholder.com/300';
+  };
+
+  const isCurrentMediaVideo = (property) => {
+    const media = getAllMedia(property);
+    if (media.length === 0) return false;
+
+    const currentIndex = currentImageIndices[property.property_id] || 0;
+    return media[currentIndex]?.type === 'video';
+  };
+
+  const handleNextImage = (propertyId, totalMedia) => (e) => {
+    e.stopPropagation();
+    setCurrentImageIndices(prev => ({
+      ...prev,
+      [propertyId]: (prev[propertyId] || 0) < totalMedia - 1 ? (prev[propertyId] || 0) + 1 : 0
+    }));
+  };
+
+  const handlePrevImage = (propertyId, totalMedia) => (e) => {
+    e.stopPropagation();
+    setCurrentImageIndices(prev => ({
+      ...prev,
+      [propertyId]: (prev[propertyId] || 0) > 0 ? (prev[propertyId] || 0) - 1 : totalMedia - 1
+    }));
+  };
+
+  // Wishlist and Like handlers
+  const handleWishlistToggle = async (propertyId) => {
+    if (!userId) {
+      alert("Please log in to manage wishlist.");
+      return;
+    }
+
+    try {
+      if (wishlist.includes(propertyId)) {
+        const res = await axios.get(`${baseurl}/wishlist/`);
+        const item = res.data.find(
+          (entry) => entry.user === parseInt(userId) && entry.property === propertyId
+        );
+        if (item) {
+          await axios.delete(`${baseurl}/wishlist/${item.id}/`);
+          setWishlist((prev) => prev.filter((id) => id !== propertyId));
+          setWishlistItems((prev) => prev.filter((property) => property.property_id !== propertyId));
+          setFilteredProperties((prev) => prev.filter((property) => property.property_id !== propertyId));
+        }
+      }
+    } catch (error) {
+      console.error("Error updating wishlist:", error);
+    }
+  };
+
+  const handleLikeToggle = async (propertyId) => {
+    if (!userId) {
+      alert("Please log in to like a property.");
+      return;
+    }
+
+    try {
+      if (likedProperties.includes(propertyId)) {
+        const res = await axios.get(`${baseurl}/likes/`);
+        const item = res.data.find(
+          (entry) => entry.user === parseInt(userId) && entry.property === propertyId
+        );
+        if (item) {
+          await axios.delete(`${baseurl}/likes/${item.id}/`);
+          setLikedProperties(prev => prev.filter(id => id !== propertyId));
+        }
+      } else {
+        await axios.post(`${baseurl}/likes/`, {
+          user: parseInt(userId),
+          property: propertyId
+        });
+        setLikedProperties(prev => [...prev, propertyId]);
+      }
+    } catch (error) {
+      console.error("Error updating likes:", error);
+    }
+  };
+
+  // Compare functionality
+  const handleCompareToggle = (property) => {
+    setCompareList((prev) => {
+      const exists = prev.find((p) => p.property_id === property.property_id);
+      if (exists) {
+        return prev.filter((p) => p.property_id !== property.property_id);
+      } else {
+        return [...prev, property];
+      }
+    });
+  };
+
+  // Dialog handlers
+  const handleViewDetails = (property) => {
+    setSelectedProperty(property);
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setSelectedProperty(null);
+  };
+
+  const handleImageClick = (property) => {
+    setSelectedProperty(property);
+    setOpenCarousel(true);
+  };
+
+  const handleCloseCarousel = () => {
+    setOpenCarousel(false);
+    setSelectedProperty(null);
+  };
+
+  // Popover handlers
+  const handlePopoverOpen = (event, propertyId) => {
+    setAnchorEl(event.currentTarget);
+    setHoveredProperty(propertyId);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+    setHoveredProperty(null);
+  };
+
+  const open = Boolean(anchorEl);
+
+  // Utility functions
+  const getPropertyTypeName = (property_type_id) => {
+    const type = propertyTypes.find(pt => pt.property_type_id === property_type_id);
+    return type ? type.name : 'Unknown';
+  };
+
+  const handlePageChange = (event, value) => {
+    setPage(value);
+  };
+
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+  };
+
+  const handleSortChange = (event) => {
+    setSortBy(event.target.value);
+  };
 
   return (
     <>
       <PartnerHeader />
+      
+      {/* ✅ Floating Compare Button */}
+      {compareList.length > 0 && (
+        <Box
+          sx={{
+            position: 'fixed',
+            bottom: 20,
+            right: 20,
+            zIndex: 1300,
+          }}
+        >
+          <Button
+            variant="contained"
+            color="secondary"
+            sx={{
+              borderRadius: '50px',
+              px: 3,
+              py: 1.5,
+              boxShadow: '0px 4px 15px rgba(0,0,0,0.3)',
+              textTransform: 'none',
+              fontWeight: 'bold',
+            }}
+            onClick={() => navigate("/p-comparelist", { state: { compareList } })}
+          >
+            Compare ({compareList.length})
+          </Button>
+        </Box>
+      )}
+
       <Container sx={{ py: 4 }}>
-        <Typography variant="h4" textAlign="center" mb={3}>
+        <Typography variant="h4" sx={{ marginLeft: '10px', textAlign: "center", mb: 3 }}>
           My Wishlist ❤️
         </Typography>
-        <Grid container spacing={3}>
-          {wishlistItems.length > 0 ? (
-            wishlistItems.map(property => (
-              <Grid item xs={12} md={4} key={property.property_id}>
-                <Card>
-                  <CardMedia
+
+        {/* Search and Filter Section */}
+        <Box
+          sx={{
+            backgroundColor: 'white',
+            p: 2,
+            borderRadius: 2,
+            boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
+            mb: 3
+          }}
+        >
+          <Grid container spacing={2} alignItems="center">
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                placeholder="Search wishlist..."
+                variant="outlined"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon sx={{ color: '#757575' }} />
+                    </InputAdornment>
+                  )
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <FormControl fullWidth>
+                <Select
+                  value={sortBy}
+                  onChange={handleSortChange}
+                  displayEmpty
+                  sx={{ borderRadius: '8px', fontSize: '15px' }}
+                >
+                  <MenuItem value="">
+                    <em>Sort By</em>
+                  </MenuItem>
+                  <MenuItem value="latest">Latest</MenuItem>
+                  <MenuItem value="oldest">Oldest</MenuItem>
+                  <MenuItem value="price-high">Price: High to Low</MenuItem>
+                  <MenuItem value="price-low">Price: Low to High</MenuItem>
+                  <MenuItem value="sold">Sold</MenuItem>
+                  <MenuItem value="available">Available</MenuItem>
+                  <MenuItem value="booked">Booked</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <FormControl fullWidth >
+                <Select
+                  value={selectedTypeCategory}
+                  onChange={(e) => setSelectedTypeCategory(e.target.value)}
+                  displayEmpty
+                  sx={{ borderRadius: '8px', fontSize: '15px' }}
+                >
+                  <MenuItem value="">
+                    <em>All Types</em>
+                  </MenuItem>
+                  {propertyTypes.map((type) => (
+                    <MenuItem key={type.property_type_id} value={type.category}>
+                      {type.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
+        </Box>
+
+        {/* Cards Section */}
+        {filteredProperties.length > 0 ? (
+          <Grid container spacing={3}>
+            {paginatedProperties.map((property) => {
+              const media = getAllMedia(property);
+              const currentIndex = currentImageIndices[property.property_id] || 0;
+              const totalMedia = media.length;
+
+              return (
+                <Grid item xs={12} md={6} lg={4} key={property.property_id}>
+                  <Card
+                    sx={{
+                      borderRadius: 2,
+                      transition: 'all 0.3s ease',
+                      position: 'relative',
+                      cursor: 'pointer',
+                      '&:hover': {
+                        transform: 'translateY(-5px)',
+                        boxShadow: '0 4px 15px rgba(0,0,0,0.749)',
+                      }
+                    }}
+                  >
+                    <Box sx={{ position: 'relative' }}>
+                      {isCurrentMediaVideo(property) ? (
+                        <Box sx={{ height: '220px', position: 'relative' }}>
+                          <video
+                            controls
+                            style={{
+                              width: '100%',
+                              height: '220px',
+                              objectFit: 'cover',
+                              borderRadius: '12px 12px 0 0',
+                              cursor: 'pointer'
+                            }}
+                            onClick={() => handleImageClick(property)}
+                          >
+                            <source src={getCurrentMediaUrl(property)} type="video/mp4" />
+                            Your browser does not support the video tag.
+                          </video>
+                          <VideocamIcon
+                            sx={{
+                              position: 'absolute',
+                              top: 8,
+                              left: 8,
+                              color: 'white',
+                              backgroundColor: 'rgba(0,0,0,0.5)',
+                              borderRadius: '50%',
+                              padding: '4px'
+                            }}
+                          />
+                        </Box>
+                      ) : (
+                        <CardMedia
+                          component="img"
+                          height="220"
+                          image={getCurrentMediaUrl(property)}
+                          alt={property.property_title}
+                          sx={{ objectFit: 'cover', borderRadius: '12px 12px 0 0', cursor: 'pointer' }}
+                          onClick={() => handleImageClick(property)}
+                        />
+                      )}
+
+                      {/* Wishlist Icon */}
+                      {/* <IconButton
+                        onClick={() => handleWishlistToggle(property.property_id)}
+                        sx={{
+                          position: 'absolute',
+                          top: 10,
+                          right: 10,
+                          backgroundColor: 'rgba(255,255,255,0.8)',
+                          '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
+                          zIndex: 2,
+                        }}
+                      >
+                        <FavoriteIcon sx={{ color: 'red' }} />
+                      </IconButton> */}
+
+                      {/* Navigation arrows when there are multiple media items */}
+                      {totalMedia > 1 && (
+                        <>
+                          <IconButton
+                            sx={{
+                              position: 'absolute',
+                              left: 10,
+                              top: '50%',
+                              transform: 'translateY(-50%)',
+                              backgroundColor: 'rgba(36, 36, 36, 0.5)',
+                              color: 'white',
+                              '&:hover': {
+                                backgroundColor: 'rgba(0,0,0,0.7)'
+                              }
+                            }}
+                            onClick={handlePrevImage(property.property_id, totalMedia)}
+                          >
+                            <ChevronLeftIcon />
+                          </IconButton>
+                          <IconButton
+                            sx={{
+                              position: 'absolute',
+                              right: 10,
+                              top: '50%',
+                              transform: 'translateY(-50%)',
+                              backgroundColor: 'rgba(90, 81, 81, 0.5)',
+                              color: 'white',
+                              '&:hover': {
+                                backgroundColor: 'rgba(0,0,0,0.7)'
+                              }
+                            }}
+                            onClick={handleNextImage(property.property_id, totalMedia)}
+                          >
+                            <ChevronRightIcon />
+                          </IconButton>
+                          {/* Media counter */}
+                          <Box
+                            sx={{
+                              position: 'absolute',
+                              bottom: 10,
+                              right: 10,
+                              backgroundColor: 'rgba(0,0,0,0.5)',
+                              color: 'white',
+                              px: 1,
+                              borderRadius: '4px',
+                              fontSize: '0.75rem'
+                            }}
+                          >
+                            {`${currentIndex + 1}/${totalMedia}`}
+                          </Box>
+                        </>
+                      )}
+                    </Box>
+
+                    <CardContent>
+ <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                                      <Typography fontWeight="bold" sx={{ flex: 1, mr: 1 }}>
+                                        {/* {property.property_title} */}
+                                      </Typography>
+                                      <Chip 
+                                        label={property.status} 
+                                        size="small"
+                                        sx={{
+                                          backgroundColor: 
+                                            property.status === 'available'
+                                              ? '#2ECC71'
+                                              : property.status === 'booked'
+                                                ? '#E67E22'
+                                                : '#E74C3C',
+                                          color: 'white',
+                                          fontWeight: 'bold',
+                                          textTransform: 'uppercase',
+                                          fontSize: '0.7rem',
+                                          minWidth: '70px'
+                                        }}
+                                      />
+                                    </Box>
+                                           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                                             <Typography fontWeight="bold" sx={{ flex: 1, mr: 1 }}>
+                                               {property.property_title}
+                                             </Typography>
+                                               <Box display="flex" alignItems="center" gap={1}>
+                                            <Checkbox
+                                              checked={compareList.some(p => p.property_id === property.property_id)}
+                                              onChange={() => handleCompareToggle(property)}
+                                              size="small"
+                                              color="primary"
+                                            />
+                                            <Typography variant="body2" color="textSecondary">
+                                              Compare
+                                            </Typography>
+                                          </Box>
+                      </Box>
+
+                      <Typography variant="body2" color="text.secondary" mb={1}>
+                        {property.city}, {property.state} | Category: {getPropertyTypeName(property.property_type)}
+                      </Typography>
+
+                      <Grid
+                        container
+                        spacing={2}
+                        sx={{
+                          p: 1.5,
+                          borderRadius: 1,
+                          mb: 2
+                        }}
+                      >
+                        <Grid item xs={6}>
+                          <Typography variant="caption" color="text.secondary">
+                            Area
+                          </Typography>
+                          <Typography fontWeight="600" color="#4A90E2">
+                            {property.area} {property.area_unit}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography variant="caption" color="text.secondary">
+                            Built-up Area
+                          </Typography>
+                          <Typography fontWeight="600" color="#4A90E2">
+                            {property.builtup_area} {property.area_unit}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography variant="caption" color="text.secondary">
+                            Property Value
+                          </Typography>
+                          <Typography fontWeight="600" color="#4A90E2">
+                            ₹{property.total_property_value}
+                          </Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                          <Typography variant="caption" color="text.secondary">
+                            Floors
+                          </Typography>
+                          <Typography fontWeight="600" color="#4A90E2">
+                            {property.number_of_floors}
+                          </Typography>
+                        </Grid>
+                      </Grid>
+
+                      <Box
+                        sx={{
+                          backgroundColor: '#F8F9FA',
+                          borderRadius: 1,
+                          p: 1.5,
+                          mb: 2
+                        }}
+                      >
+                        <Grid container>
+                          {subscriptionPaid && property.referral_id ? (
+                            <Grid item xs={12}>
+                              <Typography
+                                variant="body2"
+                                fontWeight="bold"
+                                color="#E67E22"
+                                textAlign="center"
+                                display="flex"
+                                justifyContent="center"
+                                alignItems="center"
+                                gap={1}
+                              >
+                                Added by: {property.username}
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                fontWeight="bold"
+                                color="#E67E22"
+                                textAlign="center"
+                                display="flex"
+                                justifyContent="center"
+                                alignItems="center"
+                                gap={1}
+                              >
+                                Referral ID: {property.referral_id}
+                              </Typography>
+                            </Grid>
+                          ) : (
+                            <>
+                              <Grid item xs={12}>
+                               <Box
+    sx={{
+      display: 'flex',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+      gap: 1.5,
+      mt: 0.5,
+    }}
+  >
+    {/* Wishlist Button */}
+    <IconButton
+      onClick={() => handleWishlistToggle(property.property_id)}
+      sx={{
+        backgroundColor: 'rgba(255,255,255,0.8)',
+        '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
+      }}
+    >
+      {wishlist.includes(property.property_id) ? (
+        <FavoriteIcon sx={{ color: 'red' }} />
+      ) : (
+        <FavoriteBorderIcon sx={{ color: 'red' }} />
+      )}
+    </IconButton>
+
+    {/* Like Button */}
+    <IconButton
+      onClick={() => handleLikeToggle(property.property_id)}
+      size="small"
+      sx={{
+        backgroundColor: 'rgba(255,255,255,0.8)',
+        '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
+        color: likedProperties.includes(property.property_id)
+          ? '#1a73e8'
+          : 'grey',
+      }}
+    >
+      {likedProperties.includes(property.property_id) ? (
+        <ThumbUpAltIcon />
+      ) : (
+        <ThumbUpAltOutlinedIcon />
+      )}
+    </IconButton>
+
+    {/* Call Button */}
+    <IconButton
+      component="a"
+      href={`tel:${subscriptionPaid ? property.owner_contact : '9074307248'}`}
+      size="small"
+      sx={{
+        backgroundColor: 'rgba(255,255,255,0.8)',
+        '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
+        color: '#4caf50',
+      }}
+    >
+      <CallIcon />
+    </IconButton>
+  </Box>
+                              </Grid>
+                            </>
+                          )}
+                        </Grid>
+                      </Box>
+
+                      {/* Compare Checkbox */}
+                      {/* <Box display="flex" alignItems="center" justifyContent="flex-end" gap={1} mb={2}>
+                        <Checkbox
+                          checked={compareList.some(p => p.property_id === property.property_id)}
+                          onChange={() => handleCompareToggle(property)}
+                          size="small"
+                          color="primary"
+                        />
+                        <Typography variant="body2" color="textSecondary">
+                          Compare
+                        </Typography>
+                      </Box> */}
+
+                      <Button
+                        onMouseEnter={(e) => handlePopoverOpen(e, property.property_id)}
+                        onMouseLeave={handlePopoverClose}
+                        fullWidth
+                        variant="contained"
+                        sx={{
+                          color: 'white',
+                          textTransform: 'none',
+                          '&:hover': { color: 'rgb(5,5,5)' },
+                          marginBottom: "9px"
+                        }}
+                      >
+                        Payout
+                      </Button>
+
+                      <Popover
+                        id="mouse-over-popover"
+                        sx={{ pointerEvents: "none" }}
+                        open={open && hoveredProperty === property.property_id}
+                        anchorEl={anchorEl}
+                        anchorOrigin={{
+                          vertical: "bottom",
+                          horizontal: "left",
+                        }}
+                        transformOrigin={{
+                          vertical: "top",
+                          horizontal: "left",
+                        }}
+                        onClose={handlePopoverClose}
+                        disableRestoreFocus
+                      >
+                        <Box sx={{ p: 2 }}>
+                          <Typography fontWeight="bold">Commissions</Typography>
+                          {commissions.length > 0 ? (
+                            commissions.map((c) => {
+                              const amount =
+                                (parseFloat(c.percentage) * property.distribution_commission) / 100;
+                              return (
+                                <Typography key={c.id} variant="body2">
+                                  Team {c.level_no}: ₹{amount.toLocaleString()}
+                                </Typography>
+                              );
+                            })
+                          ) : (
+                            <Typography variant="body2" color="text.secondary">
+                              No commission data
+                            </Typography>
+                          )}
+                        </Box>
+                      </Popover>
+
+                      <Grid container spacing={1}>
+                        <Grid item xs={12}>
+                          <Button
+                            fullWidth
+                            variant="contained"
+                            sx={{
+                              color: 'white',
+                              textTransform: 'none',
+                              '&:hover': { color: 'rgb(5,5,5)' }
+                            }}
+                            disabled={!subscriptionPaid}
+                            onClick={() => navigate(`/p-assets/${property.property_id}`, { state: { property } })}
+                          >
+                            VIEW DETAILS
+                          </Button>
+                        </Grid>
+                        <Grid item xs={12}>
+                          <Button
+                            fullWidth
+                            variant="contained"
+                            sx={{
+                              backgroundColor: '#149c33',
+                              color: 'white',
+                              textTransform: 'none',
+                              '&:hover': { backgroundColor: '#59ed7c', color: 'rgb(5,5,5)' }
+                            }}
+                            disabled={!subscriptionPaid || property.status !== 'available'}
+                            onClick={() => navigate(`/p-bookingassets?property_id=${property.property_id}`)}
+                          >
+                            Buy Now
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              );
+            })}
+          </Grid>
+        ) : (
+          <Box sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '200px',
+            textAlign: 'center'
+          }}>
+            <Typography variant="h6" color="textSecondary">
+              No wishlisted properties found.
+            </Typography>
+          </Box>
+        )}
+
+        {/* Pagination */}
+        {filteredProperties.length > 0 && (
+          <PaginationComponent
+            count={totalPages}
+            page={page}
+            onChange={handlePageChange}
+          />
+        )}
+
+        {/* Media Carousel Dialog */}
+        <Dialog open={openCarousel} onClose={handleCloseCarousel} maxWidth="md" fullWidth>
+          <Box sx={{ p: 2, background: '#000' }}>
+            {selectedProperty && getAllMedia(selectedProperty).length > 0 ? (
+              <Carousel
+                showThumbs={false}
+                infiniteLoop
+                useKeyboardArrows
+                dynamicHeight
+                autoPlay
+                emulateTouch
+              >
+                {getAllMedia(selectedProperty)
+                  .filter((media) => media.type === 'image')
+                  .map((media, idx) => (
+                    <div key={idx}>
+                      <img
+                        src={media.url}
+                        alt={media.alt || `Image ${idx + 1}`}
+                        style={{
+                          borderRadius: 8,
+                          maxHeight: '550px',
+                          objectFit: 'cover',
+                          width: '100%',
+                        }}
+                      />
+                    </div>
+                  ))}
+              </Carousel>
+            ) : (
+              <Typography color="white">No media available.</Typography>
+            )}
+          </Box>
+        </Dialog>
+
+        {/* Property Details Dialog */}
+        {selectedProperty && (
+          <Dialog open={openDialog} onClose={handleCloseDialog} fullWidth maxWidth="lg">
+            <DialogTitle>{selectedProperty.property_title} - Details</DialogTitle>
+            <DialogContent dividers>
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  <Box
                     component="img"
-                    height="220"
-                    image={`${baseurl}${property.images?.[0]?.image || "/default.jpg"}`}
-                    alt={property.property_title}
+                    src={selectedProperty.images.length > 0 ? `${baseurl}/${selectedProperty.images[0].image}` : 'https://via.placeholder.com/300'}
+                    alt={selectedProperty.property_title}
+                    sx={{ width: '100%', borderRadius: 2 }}
                   />
-                  <CardContent>
-                    <Typography fontWeight="bold">{property.property_title}</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {property.city}, {property.state}
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Box sx={{ mb: 1 }}>
+                    <Typography fontWeight="bold">Description:</Typography>
+                    <Typography variant="body2">{selectedProperty.description}</Typography>
+                  </Box>
+                  <Box sx={{ mb: 1 }}>
+                    <Typography fontWeight="bold">Address:</Typography>
+                    <Typography variant="body2">
+                      {selectedProperty.address}, {selectedProperty.city}, {selectedProperty.state}, {selectedProperty.country} - {selectedProperty.pin_code}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      ₹{property.total_property_value}
+                  </Box>
+                  <Box sx={{ mb: 1 }}>
+                    <Typography fontWeight="bold">Coordinates:</Typography>
+                    <Typography variant="body2">
+                      Latitude: {selectedProperty.latitude}, Longitude: {selectedProperty.longitude}
                     </Typography>
-                  </CardContent>
-                </Card>
+                  </Box>
+                  <Box sx={{ mb: 1 }}>
+                    <Typography fontWeight="bold">Dimensions:</Typography>
+                    <Typography variant="body2">
+                      Length: {selectedProperty.length_ft} ft, Breadth: {selectedProperty.breadth_ft} ft
+                    </Typography>
+                  </Box>
+                  <Box sx={{ mb: 1 }}>
+                    <Typography fontWeight="bold">Facing Direction:</Typography>
+                    <Typography variant="body2">{selectedProperty.facing}</Typography>
+                  </Box>
+                  <Box sx={{ mb: 1 }}>
+                    <Typography fontWeight="bold">Ownership Type:</Typography>
+                    <Typography variant="body2">{selectedProperty.ownership_type}</Typography>
+                  </Box>
+                  <Box sx={{ mb: 1 }}>
+                    <Typography fontWeight="bold">Property Uniqueness:</Typography>
+                    <Typography variant="body2">{selectedProperty.property_uniqueness}</Typography>
+                  </Box>
+                  <Box sx={{ mb: 1 }}>
+                    <Typography fontWeight="bold">Location Advantages:</Typography>
+                    <Typography variant="body2">{selectedProperty.location_advantages}</Typography>
+                  </Box>
+                  <Box sx={{ mb: 1 }}>
+                    <Typography fontWeight="bold">Other Features:</Typography>
+                    <Typography variant="body2">{selectedProperty.other_features}</Typography>
+                  </Box>
+                  <Box>
+                    <Typography fontWeight="bold">Contact:</Typography>
+                    <Typography variant="body2">
+                      {selectedProperty.owner_name} - {selectedProperty.owner_contact} ({selectedProperty.owner_email})
+                    </Typography>
+                  </Box>
+                </Grid>
               </Grid>
-            ))
-          ) : (
-            <Box sx={{ width: "100%", textAlign: "center", mt: 5 }}>
-              <Typography color="text.secondary">No wishlisted properties yet.</Typography>
-            </Box>
-          )}
-        </Grid>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseDialog} variant="contained" color="error">
+                CLOSE
+              </Button>
+              <Button variant="contained" color="success">
+                {selectedProperty.looking_to === 'sell' ? 'BUY NOW' : 'RENT NOW'}
+              </Button>
+            </DialogActions>
+          </Dialog>
+        )}
       </Container>
     </>
   );

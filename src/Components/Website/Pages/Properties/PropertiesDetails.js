@@ -38,8 +38,8 @@
 //             <Typography><strong>Longitude:</strong> {property.longitude}</Typography>
 //             <Typography><strong>Looking to:</strong> {property.looking_to}</Typography>
 //             <Typography><strong>Property Value:</strong> {property.property_value}</Typography>
-//             <Typography><strong>Plot Area:</strong> {property.plot_area_sqft} sq.ft</Typography>
-//             <Typography><strong>Built-up Area:</strong> {property.builtup_area_sqft} sq.ft</Typography>
+//             <Typography><strong>Area:</strong> {property.area} {property.area_unit}</Typography>
+//             <Typography><strong>Built-up Area:</strong> {property.builtup_area} {property.area_unit}</Typography>
 //             <Typography><strong>Length:</strong> {property.length_ft} ft</Typography>
 //             <Typography><strong>Breadth:</strong> {property.breadth_ft} ft</Typography>
 //             <Typography><strong>Number of Floors:</strong> {property.number_of_floors}</Typography>
@@ -213,10 +213,10 @@ const AssetDetails = () => {
             <Divider sx={{ mb: 2 }} />
             <Grid container spacing={2} mb={3}>
               <Grid item xs={6}>
-                <Typography><strong>Plot Area:</strong> {property.plot_area_sqft} sq.ft</Typography>
+                <Typography><strong>Area:</strong> {property.area} {property.area_unit}</Typography>
               </Grid>
               <Grid item xs={6}>
-                <Typography><strong>Built-up Area:</strong> {property.builtup_area_sqft} sq.ft</Typography>
+                <Typography><strong>Built-up Area:</strong> {property.builtup_area} {property.area_unit}</Typography>
               </Grid>
               <Grid item xs={6}>
                 <Typography><strong>Length:</strong> {property.length_ft} ft</Typography>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Country, State, City } from "country-state-city";
 import {
   Box,
   Typography,
@@ -50,11 +51,11 @@ const VisuallyHiddenInput = styled('input')({
   width: 1,
 });
 
-const AddPropertyForm = () => {
+const AddPropertyForm = () => {  
   const [activeStep, setActiveStep] = useState(0);
   const [propertyCategories, setPropertyCategories] = useState([]);
   const [propertyTypes, setPropertyTypes] = useState([]);
-  const [amenities, setAmenities] = useState([]);
+  const [amenities, setAmenities] = useState([]); 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const userId = localStorage.getItem("user_id");
@@ -78,6 +79,7 @@ const AddPropertyForm = () => {
     latitude: '',
     longitude: '',
     plotArea: '',
+    pricePerUnit: '',
     areaUnit: 'sq.ft.',
     length: '',
     breadth: '',
@@ -122,6 +124,14 @@ const AddPropertyForm = () => {
     agreement_file: null,
   });
 
+   const countries = Country.getAllCountries();
+  const states = formData.country
+    ? State.getStatesOfCountry(formData.country)
+    : [];
+  const cities = formData.state
+    ? City.getCitiesOfState(formData.country, formData.state)
+    : [];
+
   useEffect(() => {
     fetchInitialData();
   }, []);
@@ -142,16 +152,22 @@ const AddPropertyForm = () => {
 
   const fetchInitialData = async () => {
     try {
-      const [categoriesRes, amenitiesRes] = await Promise.all([
-        axios.get(`${baseurl}/property-categories/`),
-        axios.get(`${baseurl}/amenities/`)
-      ]);
-      setPropertyCategories(categoriesRes.data);
-      setAmenities(amenitiesRes.data);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
+             const [categoriesRes, amenitiesRes] = await Promise.all([
+               axios.get(`${baseurl}/property-categories/`),
+               axios.get(`${baseurl}/amenities/`)
+             ]);
+             setPropertyCategories(categoriesRes.data);
+             
+             // Convert amenity IDs to numbers
+             const formattedAmenities = amenitiesRes.data.map(amenity => ({
+               ...amenity,
+               amenity_id: parseInt(amenity.amenity_id)
+             }));
+             setAmenities(formattedAmenities);
+           } catch (error) {
+             console.error('Error fetching data:', error);
+           }
+         };
 
   const [newAmenity, setNewAmenity] = useState('');
 
@@ -247,32 +263,44 @@ const AddPropertyForm = () => {
 
 
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    const newValue = type === 'checkbox' ? checked : value;
+ const handleChange = (e) => {
+  const { name, value, type, checked } = e.target;
+  const newValue = type === 'checkbox' ? checked : value;
 
-    setFormData(prev => {
-      const updated = {
+  setFormData((prev) => {
+    const updated = {
+      ...prev,
+      [name]: newValue,
+    };
+
+    // Parse numbers safely
+    const price = parseFloat(name === 'price' ? newValue : updated.price) || 0;
+    const commission = parseFloat(
+      name === 'company_commission' ? newValue : updated.company_commission
+    ) || 0;
+
+    // Auto-calculate price = pricePerUnit × plotArea
+    if (name === "pricePerUnit" || name === "plotArea") {
+      const pricePerUnit = parseFloat(updated.pricePerUnit) || 0;
+      const plotArea = parseFloat(updated.plotArea) || 0;
+      updated.price = pricePerUnit * plotArea;
+    }
+
+    // Calculate total property value
+    updated.total_property_value = (parseFloat(updated.price) || 0) + commission;
+
+    // Validate description if the field is "description"
+    if (name === "description") {
+      setErrors((prev) => ({
         ...prev,
-        [name]: newValue
-      };
+        description: !validateDescription(value),
+      }));
+    }
 
-      // Parse numbers safely
-      const price = parseFloat(name === 'price' ? newValue : updated.price) || 0;
-      const commission = parseFloat(name === 'company_commission' ? newValue : updated.company_commission) || 0;
+    return updated;
+  });
+};
 
-      updated.total_property_value = price + commission;
-      // Validate description if the field is "description"
-      if (name === "description") {
-        setErrors(prev => ({
-          ...prev,
-          description: !validateDescription(value),
-        }));
-      }
-
-      return updated;
-    });
-  };
 
 
   const handleFileUpload = async (e, type) => {
@@ -300,15 +328,14 @@ const AddPropertyForm = () => {
   };
 
   const handleAmenityChange = (amenityId) => {
-    const parsedId = parseInt(amenityId, 10); // Ensure it's an integer
-    setFormData(prev => {
-      const newAmenities = prev.amenities.includes(parsedId)
-        ? prev.amenities.filter(id => id !== parsedId)
-        : [...prev.amenities, parsedId];
-      return { ...prev, amenities: newAmenities };
-    });
-  };
-
+  setFormData(prev => {
+    const numericId = parseInt(amenityId);
+    const newAmenities = prev.amenities.includes(numericId)
+      ? prev.amenities.filter(id => id !== numericId)
+      : [...prev.amenities, numericId];
+    return { ...prev, amenities: newAmenities };
+  });
+};
   // Add these handler functions:
   const handleAgreementVideoUpload = (e) => {
     const file = e.target.files[0];
@@ -359,14 +386,14 @@ const AddPropertyForm = () => {
     setIsSubmitting(true);
 
     try {
-      // Convert plot area to sq.ft based on selected unit
-      let plotAreaSqft = parseFloat(formData.plotArea) || 0;
-      switch (formData.areaUnit) {
-        case 'sq.m.': plotAreaSqft *= 10.7639; break;
-        case 'acres': plotAreaSqft *= 43560; break;
-        case 'hectares': plotAreaSqft *= 107639; break;
-        default: break; // Already in sq.ft
-      }
+      // Convert Area to sq.ft based on selected unit
+      // let plotAreaSqft = parseFloat(formData.plotArea) || 0;
+      // switch (formData.areaUnit) {
+      //   case 'sq.m.': plotAreaSqft *= 10.7639; break;
+      //   case 'acres': plotAreaSqft *= 43560; break;
+      //   case 'hectares': plotAreaSqft *= 107639; break;
+      //   default: break; // Already in sq.ft
+      // }
 
       // Prepare form data for API
       const payload = new FormData();
@@ -383,8 +410,11 @@ const AddPropertyForm = () => {
         pin_code: formData.pinCode,
         latitude: formData.latitude || '12.120000',
         longitude: formData.longitude || '12.120000',
-        plot_area_sqft: plotAreaSqft.toFixed(2),
-        builtup_area_sqft: formData.builtupArea || '0.00',
+         area: formData.plotArea,
+        // area: plotAreaSqft.toFixed(2),
+        area_unit: formData.areaUnit,
+        price_per_unit: formData.pricePerUnit || '0.00',
+        builtup_area: formData.builtupArea || '0.00',
         length_ft: formData.length || '0.00',
         breadth_ft: formData.breadth || '0.00',
         number_of_floors: formData.numberOfFloors,
@@ -402,7 +432,6 @@ const AddPropertyForm = () => {
         owner_contact: formData.ownerContact,
         owner_email: formData.ownerEmail,
         is_featured: formData.isFeatured,
-        amenities: formData.amenities.map(id => Number(id)),
         category: formData.category,
         property_type: formData.propertyType,
         user_id: formData.userId,
@@ -432,6 +461,12 @@ const AddPropertyForm = () => {
           payload.append(key, value);
         }
       });
+
+      if (formData.amenities && formData.amenities.length > 0) {
+  formData.amenities.forEach((id) => {
+    payload.append("amenities", id.toString()); // Ensure it's string for FormData
+  });
+}
 
       // Append files
       formData.images.forEach((img) => {
@@ -474,7 +509,7 @@ const AddPropertyForm = () => {
       });
 
       console.log('Submission successful:', response.data);
-      Swal.fire('Success', 'Property updated successfully!', 'success');
+      Swal.fire('Success', 'Property Added successfully!', 'success');
       navigate("/a-asset");
 
       // Optionally reset form or redirect here
@@ -555,7 +590,7 @@ const AddPropertyForm = () => {
           formData.city?.trim() &&
           formData.state?.trim() &&
           formData.country?.trim() &&
-          formData.pinCode?.trim() &&
+          // formData.pinCode?.trim() &&
           formData.latitude !== undefined &&
           formData.longitude !== undefined
         );
@@ -764,47 +799,75 @@ const AddPropertyForm = () => {
 
       case 1: return (
         <Grid container spacing={3} sx={{ mt: 2 }}>
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              multiline
-              rows={2}
-              label="Full Address"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-            />
-          </Grid>
+        <Grid item xs={12} sm={6}>
+        <TextField
+          select
+          fullWidth
+          label="Country"
+          value={formData.country}
+          onChange={(e) => {
+            setFormData({
+              ...formData,
+              country: e.target.value,
+              state: "",
+              city: "",
+            });
+          }}
+        >
+          {countries.map((country) => (
+            <MenuItem key={country.isoCode} value={country.isoCode}>
+              {country.name}
+            </MenuItem>
+          ))}
+        </TextField>
+      </Grid>
 
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="City"
-              name="city"
-              value={formData.city}
-              onChange={handleChange}
-            />
-          </Grid>
+      {/* State Dropdown */}
+      <Grid item xs={12} sm={6}>
+        <TextField
+          select
+          fullWidth
+          label="State"
+          value={formData.state}
+          onChange={(e) => {
+            setFormData({
+              ...formData,
+              state: e.target.value,
+              city: "",
+            });
+          }}
+          disabled={!formData.country}
+        >
+          {states.map((state) => (
+            <MenuItem key={state.isoCode} value={state.isoCode}>
+              {state.name}
+            </MenuItem>
+          ))}
+        </TextField>
+      </Grid>
 
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="State"
-              name="state"
-              value={formData.state}
-              onChange={handleChange}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Country"
-              name="country"
-              value={formData.country}
-              onChange={handleChange}
-            />
-          </Grid>
+      {/* City Dropdown */}
+      <Grid item xs={12} sm={6}>
+        <TextField
+          select
+          fullWidth
+          label="City"
+          value={formData.city}
+          onChange={(e) => {
+            setFormData({
+              ...formData,
+              city: e.target.value,
+            });
+          }}
+          disabled={!formData.state}
+        >
+          {cities.map((city) => (
+            <MenuItem key={city.name} value={city.name}>
+              {city.name}
+            </MenuItem>
+          ))}
+        </TextField>
+      </Grid>
 
           <Grid item xs={12} sm={6}>
             <TextField
@@ -816,7 +879,19 @@ const AddPropertyForm = () => {
             />
           </Grid>
 
-          <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
+            <TextField
+              fullWidth
+              multiline
+              rows={2}
+              label="Full Address"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+            />
+          </Grid>
+
+          {/* <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label="Latitude"
@@ -826,9 +901,9 @@ const AddPropertyForm = () => {
               onChange={handleChange}
               placeholder="12.120000"
             />
-          </Grid>
+          </Grid> */}
 
-          <Grid item xs={12} sm={6}>
+          {/* <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
               label="Longitude"
@@ -838,7 +913,7 @@ const AddPropertyForm = () => {
               onChange={handleChange}
               placeholder="12.120000"
             />
-          </Grid>
+          </Grid> */}
         </Grid>
       );
 
@@ -924,16 +999,6 @@ const AddPropertyForm = () => {
               </Grid>
             </>
           )}
-          <Grid item xs={12} sm={6}>
-            <TextField
-              fullWidth
-              label="Plot Area"
-              name="plotArea"
-              type="number"
-              value={formData.plotArea}
-              onChange={handleChange}
-            />
-          </Grid>
 
           <Grid item xs={12} sm={6}>
             <FormControl fullWidth>
@@ -946,10 +1011,34 @@ const AddPropertyForm = () => {
               >
                 <MenuItem value="sq.ft.">Square Feet</MenuItem>
                 <MenuItem value="sq.m.">Square Meters</MenuItem>
+                <MenuItem value="sq.yd.">Square Yards</MenuItem>
                 <MenuItem value="acres">Acres</MenuItem>
                 <MenuItem value="hectares">Hectares</MenuItem>
+                 <MenuItem value="cents">Cents</MenuItem>
               </Select>
             </FormControl>
+          </Grid>
+
+           <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Area"
+              name="plotArea"
+              type="number"
+              value={formData.plotArea}
+              onChange={handleChange}
+            />
+          </Grid>
+
+           <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="Price Per Unit"
+              name="pricePerUnit"
+              type="number"
+              value={formData.pricePerUnit}
+              onChange={handleChange}
+            />
           </Grid>
 
           <Grid item xs={12} sm={6}>
@@ -977,7 +1066,7 @@ const AddPropertyForm = () => {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              label="Built-up Area (sq.ft)"
+              label="Built-up Area"
               name="builtupArea"
               type="number"
               value={formData.builtupArea}
@@ -1313,7 +1402,8 @@ const AddPropertyForm = () => {
                   name="price"
                   type="number"
                   value={formData.price}
-                  onChange={handleChange}
+                  InputProps={{ readOnly: true }}
+                  // onChange={handleChange}
                 />
               </Grid>
 
