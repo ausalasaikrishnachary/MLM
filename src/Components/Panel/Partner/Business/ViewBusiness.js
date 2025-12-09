@@ -442,7 +442,8 @@ import {
   IconButton,
   Tooltip,
   Modal,
-  Button
+  Button,
+  Popover,
 } from "@mui/material";
 import BusinessIcon from "@mui/icons-material/Business";
 import LanguageIcon from "@mui/icons-material/Language";
@@ -468,6 +469,12 @@ function ViewBusiness() {
   const navigate = useNavigate();
   const [subscriptionPaid, setSubscriptionPaid] = useState(false);
   const [openModal, setOpenModal] = useState(false);
+  
+  // Payout states
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [hoveredBusiness, setHoveredBusiness] = useState(null);
+  const [commissions, setCommissions] = useState([]);
+  const [businessProducts, setBusinessProducts] = useState([]);
 
   // Pagination states
   const [page, setPage] = useState(1);
@@ -506,6 +513,39 @@ function ViewBusiness() {
     fetchSubscriptionStatus();
   }, [userId]);
 
+  // Fetch commissions data (for Payout popover)
+  useEffect(() => {
+    const fetchCommissions = async () => {
+      try {
+        const response = await axios.get(`${baseurl}/commissions-master/`);
+        setCommissions(response.data);
+      } catch (error) {
+        console.error("Error fetching commissions:", error);
+      }
+    };
+
+    fetchCommissions();
+  }, []);
+
+  // Fetch products for each business
+  useEffect(() => {
+    const fetchAllProducts = async () => {
+      try {
+        const response = await axios.get(`${baseurl}/products/`);
+        const userProducts = response.data.filter(
+          (item) => String(item.agent_id) === String(userId)
+        );
+        setBusinessProducts(userProducts);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    if (businesses.length > 0) {
+      fetchAllProducts();
+    }
+  }, [businesses, userId]);
+
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this business?")) {
       fetch(`${baseurl}/business/${id}/`, { method: "DELETE" })
@@ -526,7 +566,48 @@ function ViewBusiness() {
     setPage(value);
   };
 
-  //Subscription:
+  // Payout Popover handlers
+  const handlePopoverOpen = (event, businessId) => {
+    setAnchorEl(event.currentTarget);
+    setHoveredBusiness(businessId);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+    setHoveredBusiness(null);
+  };
+
+  // Get products for a specific business
+  const getBusinessProducts = (businessId) => {
+    return businessProducts.filter(
+      (product) => String(product.business_id) === String(businessId)
+    );
+  };
+
+  // Calculate total commission for a business
+  const calculateTotalCommission = (businessId) => {
+    const products = getBusinessProducts(businessId);
+    if (products.length === 0) return { total: 0, details: [] };
+
+    const commissionDetails = commissions.map((commission) => {
+      let totalAmount = 0;
+      products.forEach((product) => {
+        const amount = (parseFloat(commission.percentage) * 
+          parseFloat(product.distribution_commission || 0)) / 100;
+        totalAmount += amount;
+      });
+      return {
+        level_no: commission.level_no,
+        amount: totalAmount
+      };
+    });
+
+    const total = commissionDetails.reduce((sum, detail) => sum + detail.amount, 0);
+
+    return { total, details: commissionDetails };
+  };
+
+  // Subscription:
   const handleAddProductClick = (business, e) => {
     e.stopPropagation();
     if (subscriptionPaid) {
@@ -553,6 +634,8 @@ function ViewBusiness() {
   const paginatedBusinesses = Array.isArray(businesses)
     ? businesses.slice(startIndex, startIndex + itemsPerPage)
     : [];
+
+  const open = Boolean(anchorEl);
 
   return (
     <>
@@ -585,7 +668,6 @@ function ViewBusiness() {
           </button>
         </Box>
 
-
         {loading ? (
           <Box
             display="flex"
@@ -607,235 +689,316 @@ function ViewBusiness() {
         ) : (
           <>
             <Grid container spacing={3}>
-              {paginatedBusinesses.map((business) => (
-                <Grid item xs={12} sm={6} md={4} key={business.business_id}>
-                  <Box
-                    sx={{
-                      borderRadius: 3,
-                      boxShadow: 4,
-                      height: "100%",
-                      display: "flex",
-                      flexDirection: "column",
-                      position: "relative",
-                      overflow: "hidden",
-                      borderTopLeftRadius: "15px",
-                      borderTopRightRadius: "15px",
-                      transition: "transform 0.2s, box-shadow 0.2s",
-                      "&:hover": {
-                        transform: "translateY(-4px)",
-                        boxShadow: 6,
-                      },
-                    }}
-                  >
-                    {/* Clickable Content Area */}
+              {paginatedBusinesses.map((business) => {
+                const businessProductsCount = getBusinessProducts(business.business_id).length;
+                const commissionData = calculateTotalCommission(business.business_id);
+                
+                return (
+                  <Grid item xs={12} sm={6} md={4} key={business.business_id}>
                     <Box
                       sx={{
-                        flexGrow: 1,
-                        cursor: "pointer",
+                        borderRadius: 3,
+                        boxShadow: 4,
+                        height: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                        position: "relative",
+                        overflow: "hidden",
+                        borderTopLeftRadius: "15px",
+                        borderTopRightRadius: "15px",
+                        transition: "transform 0.2s, box-shadow 0.2s",
+                        "&:hover": {
+                          transform: "translateY(-4px)",
+                          boxShadow: 6,
+                        },
                       }}
-                      onClick={() => handleContainerClick(business.business_id)}
                     >
-                      <Card sx={{ flexGrow: 1, border: "none", boxShadow: "none" }}>
-                        {/* Offer Ribbon */}
-                        {business.offer_title && (
-                          <Box
-                            sx={{
-                              position: "absolute",
-                              top: 16,
-                              left: -25,
-                              width: "120px",
-                              transform: "rotate(-45deg)",
-                              backgroundColor: "#2ECC71",
-                              color: "white",
-                              textAlign: "center",
-                              fontSize: "12px",
-                              fontWeight: "bold",
-                              textTransform: "uppercase",
-                              py: "3px",
-                              boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-                              zIndex: 1,
-                            }}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                            }}
-                          >
-                            {business.offer_title.toUpperCase()}
-                          </Box>
-                        )}
-
-                        {/* Business Logo - Now clickable */}
-                        {business.logo ? (
-                          <CardMedia
-                            component="img"
-                            height="200"
-                            alt={business.business_name || "Business Logo"}
-                            image={
-                              business.logo
-                                ? `${baseurl}/${business.logo}`
-                                : "/default-logo.png"
-                            }
-                            sx={{
-                              objectFit: "contain",
-                              bgcolor: "#f5f5f5"
-                            }}
-                          />
-                        ) : (
-                          <Box
-                            height="160px"
-                            display="flex"
-                            justifyContent="center"
-                            alignItems="center"
-                            bgcolor="#f5f5f5"
-                          >
-                            <BusinessIcon sx={{ fontSize: 60, color: "gray" }} />
-                          </Box>
-                        )}
-
-                        {/* Business Info */}
-                        <CardContent sx={{ flexGrow: 1 }}>
-                          <Box
-                            display="flex"
-                            justifyContent="space-between"
-                            alignItems="center"
-                            mb={1}
-                          >
-                            <Typography variant="h6" fontWeight="bold">
-                              {business.business_name}
-                            </Typography>
-
-                            {/* Add Product Button */}
-                            {/* Add Product Button */}
-                            <Tooltip title="Add Product">
-                              <IconButton
-                                color="primary"
-                                size="small"
-                                onClick={(e) => handleAddProductClick(business, e)}
-                              >
-                                <AddIcon />
-                              </IconButton>
-                            </Tooltip>
-
-                          </Box>
-
-                          <Chip
-                            label={business.business_type}
-                            color="primary"
-                            size="small"
-                            sx={{ mb: 1 }}
-                          />
-
-                          <Divider sx={{ my: 1.5 }} />
-
-                          <Box
-                            display="flex"
-                            alignItems="center"
-                            gap={1}
-                            mb={1}
-                          >
-                            <LanguageIcon fontSize="small" color="primary" />
-                            <Link
-                              href={business.website}
-                              target="_blank"
-                              rel="noopener"
-                              underline="hover"
+                      {/* Clickable Content Area */}
+                      <Box
+                        sx={{
+                          flexGrow: 1,
+                          cursor: "pointer",
+                        }}
+                        onClick={() => handleContainerClick(business.business_id)}
+                      >
+                        <Card sx={{ flexGrow: 1, border: "none", boxShadow: "none" }}>
+                          {/* Offer Ribbon */}
+                          {business.offer_title && (
+                            <Box
+                              sx={{
+                                position: "absolute",
+                                top: 16,
+                                left: -25,
+                                width: "120px",
+                                transform: "rotate(-45deg)",
+                                backgroundColor: "#2ECC71",
+                                color: "white",
+                                textAlign: "center",
+                                fontSize: "12px",
+                                fontWeight: "bold",
+                                textTransform: "uppercase",
+                                py: "3px",
+                                boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                                zIndex: 1,
+                              }}
                               onClick={(e) => {
                                 e.stopPropagation();
-                                e.preventDefault();
-                                window.open(business.website, '_blank', 'noopener,noreferrer');
                               }}
                             >
-                              {business.website}
-                            </Link>
-                          </Box>
-
-                          <Box display="flex" alignItems="center" gap={1} mb={1}>
-                            <EmailIcon fontSize="small" color="primary" />
-                            <Typography variant="body2">{business.email}</Typography>
-                          </Box>
-
-                          <Box display="flex" alignItems="center" gap={1} mb={1}>
-                            <PhoneIcon fontSize="small" color="primary" />
-                            <Typography variant="body2">{business.phone}</Typography>
-                          </Box>
-
-                          {business.address && (
-                            <Box display="flex" alignItems="center" gap={1} mb={1}>
-                              <LocationOnIcon fontSize="small" color="primary" />
-                              <Typography variant="body2" color="text.secondary">
-                                {business.address}
-                              </Typography>
+                              {business.offer_title.toUpperCase()}
                             </Box>
                           )}
 
-                          {business.description && (
-                            <Box display="flex" alignItems="flex-start" mb={1}>
-                              <DescriptionIcon
-                                fontSize="small"
-                                color="primary"
-                                sx={{ mr: 0.5, mt: 0.3 }}
+                          {/* Business Logo - Now clickable */}
+                          {business.logo ? (
+                            <CardMedia
+                              component="img"
+                              height="200"
+                              alt={business.business_name || "Business Logo"}
+                              image={
+                                business.logo
+                                  ? `${baseurl}/${business.logo}`
+                                  : "/default-logo.png"
+                              }
+                              sx={{
+                                objectFit: "contain",
+                                bgcolor: "#f5f5f5"
+                              }}
+                            />
+                          ) : (
+                            <Box
+                              height="160px"
+                              display="flex"
+                              justifyContent="center"
+                              alignItems="center"
+                              bgcolor="#f5f5f5"
+                            >
+                              <BusinessIcon sx={{ fontSize: 60, color: "gray" }} />
+                            </Box>
+                          )}
+
+                          {/* Business Info */}
+                          <CardContent sx={{ flexGrow: 1 }}>
+                            <Box
+                              display="flex"
+                              justifyContent="space-between"
+                              alignItems="center"
+                              mb={1}
+                            >
+                              <Typography variant="h6" fontWeight="bold">
+                                {business.business_name}
+                              </Typography>
+
+                              {/* Product Count Badge */}
+                              <Chip
+                                label={`${businessProductsCount} products`}
+                                size="small"
+                                color="secondary"
                               />
-                              <Typography variant="body2" color="text.secondary">
-                                {business.description}
-                              </Typography>
                             </Box>
-                          )}
-                        </CardContent>
-                      </Card>
-                    </Box>
 
-                    {/* Action Buttons - Outside the clickable area */}
-                    <Box
-                      display="flex"
-                      justifyContent="flex-end"
-                      p={1}
-                      sx={{
-                        backgroundColor: '#f9f9f9',
-                        borderTop: '1px solid #e0e0e0'
-                      }}
-                    >
-                      {business.documents && (
-                        <Tooltip title="Download">
+                            <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+                              <Chip
+                                label={business.business_type}
+                                color="primary"
+                                size="small"
+                              />
+                              
+                              {/* Add Product Button */}
+                              <Tooltip title="Add Product">
+                                <IconButton
+                                  color="primary"
+                                  size="small"
+                                  onClick={(e) => handleAddProductClick(business, e)}
+                                >
+                                  <AddIcon />
+                                </IconButton>
+                              </Tooltip>
+                            </Box>
+
+                            <Divider sx={{ my: 1.5 }} />
+
+                            <Box
+                              display="flex"
+                              alignItems="center"
+                              gap={1}
+                              mb={1}
+                            >
+                              <LanguageIcon fontSize="small" color="primary" />
+                              <Link
+                                href={business.website}
+                                target="_blank"
+                                rel="noopener"
+                                underline="hover"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  e.preventDefault();
+                                  window.open(business.website, '_blank', 'noopener,noreferrer');
+                                }}
+                              >
+                                {business.website}
+                              </Link>
+                            </Box>
+
+                            <Box display="flex" alignItems="center" gap={1} mb={1}>
+                              <EmailIcon fontSize="small" color="primary" />
+                              <Typography variant="body2">{business.email}</Typography>
+                            </Box>
+
+                            <Box display="flex" alignItems="center" gap={1} mb={1}>
+                              <PhoneIcon fontSize="small" color="primary" />
+                              <Typography variant="body2">{business.phone}</Typography>
+                            </Box>
+
+                            {business.address && (
+                              <Box display="flex" alignItems="center" gap={1} mb={1}>
+                                <LocationOnIcon fontSize="small" color="primary" />
+                                <Typography variant="body2" color="text.secondary">
+                                  {business.address}
+                                </Typography>
+                              </Box>
+                            )}
+
+                            {business.description && (
+                              <Box display="flex" alignItems="flex-start" mb={1}>
+                                <DescriptionIcon
+                                  fontSize="small"
+                                  color="primary"
+                                  sx={{ mr: 0.5, mt: 0.3 }}
+                                />
+                                <Typography variant="body2" color="text.secondary">
+                                  {business.description}
+                                </Typography>
+                              </Box>
+                            )}
+
+                            {/* ✅ Payout Button with Hover Popover */}
+                            {businessProductsCount > 0 && (
+                              <Box sx={{ mt: 2 }}>
+                                <Button
+                                  onMouseEnter={(e) => handlePopoverOpen(e, business.business_id)}
+                                  onMouseLeave={handlePopoverClose}
+                                  fullWidth
+                                  variant="contained"
+                                  sx={{
+                                    color: "white",
+                                    textTransform: "none",
+                                    "&:hover": { color: "rgb(5,5,5)" },
+                                    marginBottom: "9px",
+                                  }}
+                                >
+                                  Payout
+                                </Button>
+
+                                <Popover
+                                  id="mouse-over-popover"
+                                  sx={{ pointerEvents: "none" }}
+                                  open={open && hoveredBusiness === business.business_id}
+                                  anchorEl={anchorEl}
+                                  anchorOrigin={{
+                                    vertical: "bottom",
+                                    horizontal: "left",
+                                  }}
+                                  transformOrigin={{
+                                    vertical: "top",
+                                    horizontal: "left",
+                                  }}
+                                  onClose={handlePopoverClose}
+                                  disableRestoreFocus
+                                >
+                                  <Box sx={{ p: 2 }}>
+                                    <Typography fontWeight="bold" gutterBottom>
+                                      Commission Summary
+                                    </Typography>
+                                    <Typography variant="body2" color="text.secondary" gutterBottom>
+                                      {businessProductsCount} products
+                                    </Typography>
+                                    
+                                    {commissionData.details.length > 0 ? (
+                                      <>
+                                        {commissionData.details.map((c) => (
+                                          <Typography key={c.level_no} variant="body2">
+                                            Team {c.level_no}: ₹
+                                            {c.amount.toLocaleString(undefined, {
+                                              minimumFractionDigits: 2,
+                                            })}
+                                          </Typography>
+                                        ))}
+                                        <Divider sx={{ my: 1 }} />
+                                        <Typography variant="body1" fontWeight="bold">
+                                          Total: ₹
+                                          {commissionData.total.toLocaleString(undefined, {
+                                            minimumFractionDigits: 2,
+                                          })}
+                                        </Typography>
+                                      </>
+                                    ) : (
+                                      <Typography variant="body2" color="text.secondary">
+                                        No commission data
+                                      </Typography>
+                                    )}
+                                  </Box>
+                                </Popover>
+                              </Box>
+                            )}
+                          </CardContent>
+                        </Card>
+                      </Box>
+
+                      {/* Action Buttons - Outside the clickable area */}
+                      <Box
+                        display="flex"
+                        justifyContent="flex-end"
+                        p={1}
+                        sx={{
+                          backgroundColor: '#f9f9f9',
+                          borderTop: '1px solid #e0e0e0'
+                        }}
+                      >
+                        {business.documents && (
+                          <Tooltip title="Download">
+                            <IconButton
+                              component="a"
+                              href={`${baseurl}/${business.documents}`}
+                              target="_blank"
+                              rel="noopener"
+                              color="primary"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                window.open(`${baseurl}/${business.documents}`, '_blank', 'noopener,noreferrer');
+                              }}
+                            >
+                              <DownloadIcon />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+
+                        <Tooltip title="Edit">
                           <IconButton
-                            component="a"
-                            href={`${baseurl}/${business.documents}`}
-                            target="_blank"
-                            rel="noopener"
                             color="primary"
                             onClick={(e) => {
-                              e.preventDefault();
-                              window.open(`${baseurl}/${business.documents}`, '_blank', 'noopener,noreferrer');
+                              navigate(`/p-editbusiness/${business.business_id}`);
                             }}
                           >
-                            <DownloadIcon />
+                            <EditIcon />
                           </IconButton>
                         </Tooltip>
-                      )}
 
-                      <Tooltip title="Edit">
-                        <IconButton
-                          color="primary"
-                          onClick={(e) => {
-                            navigate(`/p-editbusiness/${business.business_id}`);
-                          }}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Tooltip title="Delete">
-                        <IconButton
-                          color="error"
-                          onClick={(e) => {
-                            handleDelete(business.business_id);
-                          }}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </Tooltip>
+                        <Tooltip title="Delete">
+                          <IconButton
+                            color="error"
+                            onClick={(e) => {
+                              handleDelete(business.business_id);
+                            }}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
                     </Box>
-                  </Box>
-                </Grid>
-              ))}
+                  </Grid>
+                );
+              })}
             </Grid>
 
             {totalPages >= 1 && (
@@ -849,39 +1012,40 @@ function ViewBusiness() {
             )}
           </>
         )}
-         {/* Subscription Modal */}
-<Modal open={openModal} onClose={handleCloseModal}>
-  <Box sx={{
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    boxShadow: 24,
-    p: 4,
-    borderRadius: '8px'
-  }}>
-    <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-      Subscription Required
-    </Typography>
-    <Typography variant="body1" sx={{ mb: 3 }}>
-      You need an active subscription to <Box component="span" sx={{ fontWeight: 'bold' }}>add products</Box> to your business.
-    </Typography>
-    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-      <Button variant="outlined" onClick={handleCloseModal}>
-        Cancel
-      </Button>
-      <Button
-        variant="contained"
-        onClick={handleSubscribe}
-        sx={{ backgroundColor: '#673ab7', '&:hover': { backgroundColor: '#5e35b1' } }}
-      >
-        Subscribe Now
-      </Button>
-    </Box>
-  </Box>
-</Modal>
+        
+        {/* Subscription Modal */}
+        <Modal open={openModal} onClose={handleCloseModal}>
+          <Box sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 400,
+            bgcolor: 'background.paper',
+            boxShadow: 24,
+            p: 4,
+            borderRadius: '8px'
+          }}>
+            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+              Subscription Required
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 3 }}>
+              You need an active subscription to <Box component="span" sx={{ fontWeight: 'bold' }}>add products</Box> to your business.
+            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+              <Button variant="outlined" onClick={handleCloseModal}>
+                Cancel
+              </Button>
+              <Button
+                variant="contained"
+                onClick={handleSubscribe}
+                sx={{ backgroundColor: '#673ab7', '&:hover': { backgroundColor: '#5e35b1' } }}
+              >
+                Subscribe Now
+              </Button>
+            </Box>
+          </Box>
+        </Modal>
       </Container>
     </>
   );

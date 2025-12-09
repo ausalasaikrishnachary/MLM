@@ -332,7 +332,9 @@ import {
   Link,
   IconButton,
   Tooltip,
-  TextField
+  TextField,
+  Button,
+  Popover
 } from "@mui/material";
 import BusinessIcon from "@mui/icons-material/Business";
 import LanguageIcon from "@mui/icons-material/Language";
@@ -343,19 +345,24 @@ import DescriptionIcon from "@mui/icons-material/Description";
 import DownloadIcon from "@mui/icons-material/Download";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import axios from "axios";
 
-import PartnerHeader from "../../../Shared/Partner/PartnerNavbar";
+import Header from "../../../Shared/Navbar/Navbar";
 import { useNavigate } from "react-router-dom";
 import { baseurl } from "../../../BaseURL/BaseURL";
 import PaginationComponent from "../../../Shared/Pagination";
-import Header from "../../../Shared/Navbar/Navbar";
 
 function ViewBusiness() { 
   const userId = localStorage.getItem("user_id");
   const [businesses, setBusinesses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [commissions, setCommissions] = useState([]);
   const navigate = useNavigate();
-   const [searchTerm, setSearchTerm] = useState(''); // Added search term state
+  const [searchTerm, setSearchTerm] = useState('');
+  
+  // Payout popover states
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [hoveredBusiness, setHoveredBusiness] = useState(null);
 
   // Pagination states
   const [page, setPage] = useState(1);
@@ -366,7 +373,7 @@ function ViewBusiness() {
     fetch(`${baseurl}/business/`)
       .then((res) => res.json())
       .then((data) => {
-        const filtered = data
+        const filtered = data;
         setBusinesses(filtered);
         setLoading(false);
       })
@@ -375,6 +382,20 @@ function ViewBusiness() {
         setLoading(false);
       });
   }, [userId]);
+
+  // Fetch commissions
+  useEffect(() => {
+    const fetchCommissions = async () => {
+      try {
+        const response = await axios.get(`${baseurl}/commissions-master/`);
+        setCommissions(response.data);
+      } catch (error) {
+        console.error("Error fetching commissions:", error);
+      }
+    };
+
+    fetchCommissions();
+  }, []);
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this business?")) {
@@ -396,10 +417,23 @@ function ViewBusiness() {
     setPage(value);
   };
 
-   // Filter businesses based on business_type
+  // Payout popover handlers
+  const handlePopoverOpen = (event, businessId) => {
+    event.stopPropagation(); // Prevent card click navigation
+    setAnchorEl(event.currentTarget);
+    setHoveredBusiness(businessId);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+    setHoveredBusiness(null);
+  };
+
+  const open = Boolean(anchorEl);
+
+  // Filter businesses based on business_type
   const filteredBusinesses = businesses.filter(business => {
-    if (!searchTerm) return true; // Show all if no search term
-    
+    if (!searchTerm) return true;
     return business.business_type?.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
@@ -421,42 +455,25 @@ function ViewBusiness() {
           </Typography>
         </Box>
 
-          {/* Search Bar */}
-                <Box sx={{ mb: 3, maxWidth: 400 }}>
-                  <TextField
-                    fullWidth
-                    label="Search by business category or type..."
-                    variant="outlined"
-                    value={searchTerm}
-                    onChange={(e) => {
-                      setSearchTerm(e.target.value);
-                      setPage(1); // Reset to first page when searching
-                    }}
-                    sx={{
-                      '& .MuiOutlinedInput-root': {
-                        borderRadius: '12px',
-                        backgroundColor: 'white',
-                      }
-                    }}
-                  />
-                </Box>
-
-        {/* <Box display="flex" justifyContent="flex-end" mb={3}>
-          <button
-            style={{
-              padding: "10px 20px",
-              borderRadius: "8px",
-              backgroundColor: "#1976d2",
-              color: "white",
-              border: "none",
-              cursor: "pointer",
-              fontWeight: "bold",
+        {/* Search Bar */}
+        <Box sx={{ mb: 3, maxWidth: 400 }}>
+          <TextField
+            fullWidth
+            label="Search by business category or type..."
+            variant="outlined"
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setPage(1);
             }}
-            onClick={() => navigate("/p-addbusiness")}
-          >
-            + Add Business
-          </button>
-        </Box> */}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '12px',
+                backgroundColor: 'white',
+              }
+            }}
+          />
+        </Box>
 
         {loading ? (
           <Box display="flex" justifyContent="center" alignItems="center" mt={5}>
@@ -478,7 +495,7 @@ function ViewBusiness() {
                 <Grid item xs={12} sm={6} md={4} key={business.business_id}>
                   <Card
                     sx={{
-                   borderRadius: "20px",
+                      borderRadius: "20px",
                       p: 2,
                       boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
                       bgcolor: "#fff",
@@ -490,7 +507,6 @@ function ViewBusiness() {
                       position: "relative",
                       overflow: "visible",
                       cursor: 'pointer',
-
                     }}
                     onClick={() => navigate(`/a-businessproducts/${business.business_id}`)}
                   >
@@ -526,7 +542,13 @@ function ViewBusiness() {
                         image={
                           business.logo ? `${baseurl}/${business.logo}` : "/default-logo.png"
                         }
-                        sx={{ objectFit: "contain" }}
+                        sx={{ 
+                          height: 180,
+                          objectFit: "contain",
+                          width: "100%",
+                          borderRadius: "12px",
+                          mb: 2 
+                        }}
                       />
                     ) : (
                       <Box
@@ -535,13 +557,15 @@ function ViewBusiness() {
                         justifyContent="center"
                         alignItems="center"
                         bgcolor="#f5f5f5"
+                        borderRadius="12px"
+                        mb={2}
                       >
                         <BusinessIcon sx={{ fontSize: 60, color: "gray" }} />
                       </Box>
                     )}
 
                     {/* Business Info */}
-                    <CardContent sx={{ flexGrow: 1 }}>
+                    <CardContent sx={{ flexGrow: 1, p: 0, mb: 2 }}>
                       <Typography variant="h6" fontWeight="bold" gutterBottom>
                         {business.business_name}
                       </Typography>
@@ -550,7 +574,7 @@ function ViewBusiness() {
                         label={business.business_type}
                         color="primary"
                         size="small"
-                        sx={{ mb: 1 }}
+                        sx={{ mb: 2 }}
                       />
 
                       <Divider sx={{ my: 1.5 }} />
@@ -563,6 +587,8 @@ function ViewBusiness() {
                           target="_blank"
                           rel="noopener"
                           underline="hover"
+                          sx={{ fontSize: "0.875rem" }}
+                          onClick={(e) => e.stopPropagation()}
                         >
                           {business.website}
                         </Link>
@@ -592,7 +618,7 @@ function ViewBusiness() {
 
                       {/* Description */}
                       {business.description && (
-                        <Box display="flex" alignItems="flex-start" mb={1}>
+                        <Box display="flex" alignItems="flex-start" mb={2}>
                           <DescriptionIcon
                             fontSize="small"
                             color="primary"
@@ -605,11 +631,30 @@ function ViewBusiness() {
                       )}
                     </CardContent>
 
+                    {/* Payout Button */}
+                    <Box sx={{ mb: 2 }}>
+                      <Button
+                        onMouseEnter={(e) => handlePopoverOpen(e, business.business_id)}
+                        onMouseLeave={handlePopoverClose}
+                        fullWidth
+                        variant="contained"
+                        sx={{
+                          color: "white",
+                          textTransform: "none",
+                          "&:hover": { color: "rgb(5,5,5)" },
+                          borderRadius: "8px",
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Payout
+                      </Button>
+                    </Box>
+
                     {/* Action Buttons */}
-                    <Box display="flex" justifyContent="flex-end" p={1}>
+                    <Box display="flex" justifyContent="space-between" alignItems="center" p={0}>
                       {/* Download Document */}
                       {business.documents && (
-                        <Tooltip title="Download">
+                        <Tooltip title="Download Document">
                           <IconButton
                             component="a"
                             href={`${baseurl}/${business.documents}`}
@@ -617,53 +662,106 @@ function ViewBusiness() {
                             rel="noopener"
                             color="primary"
                             onClick={(e) => e.stopPropagation()}
+                            size="small"
                           >
                             <DownloadIcon />
                           </IconButton>
                         </Tooltip>
                       )}
 
-                      <Tooltip title="Edit">
-                        <IconButton
-                          color="primary"
-                          onClick={(e) => {
-                            e.stopPropagation(); // ✅ prevent navigation
-                            navigate(`/a-editbusiness/${business.business_id}`);
-                          }}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                      </Tooltip>
+                      <Box display="flex" gap={1} justifyContent="flex-end">
+                            <Tooltip title="Edit">
+                                <IconButton
+                                    color="primary"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        navigate(`/a-editbusiness/${business.business_id}`);
+                                    }}
+                                    size="small"
+                                >
+                                    <EditIcon />
+                                </IconButton>
+                            </Tooltip>
 
-                      <Tooltip title="Delete">
-                        <IconButton
-                          color="error"
-                          onClick={(e) => {
-                            e.stopPropagation(); // ✅ prevent navigation
-                            handleDelete(business.business_id);
-                          }}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </Tooltip>
+                            <Tooltip title="Delete">
+                                <IconButton
+                                    color="error"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDelete(business.business_id);
+                                    }}
+                                    size="small"
+                                >
+                                    <DeleteIcon />
+                                </IconButton>
+                            </Tooltip>
+                        </Box>
                     </Box>
                   </Card>
+
+                  {/* Payout Popover */}
+                  <Popover
+                    id="mouse-over-popover"
+                    sx={{ 
+                      pointerEvents: "none",
+                      zIndex: 9999 
+                    }}
+                    open={open && hoveredBusiness === business.business_id}
+                    anchorEl={anchorEl}
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "left",
+                    }}
+                    transformOrigin={{
+                      vertical: "top",
+                      horizontal: "left",
+                    }}
+                    onClose={handlePopoverClose}
+                    disableRestoreFocus
+                  >
+                    <Box sx={{ p: 2, maxWidth: 300 }}>
+                      <Typography fontWeight="bold" gutterBottom>
+                        Commissions for {business.business_name}
+                      </Typography>
+                      {commissions.length > 0 ? (
+                        commissions.map((c) => {
+                          // Note: You might want to replace business.distribution_commission 
+                          // with the actual commission field from your business data
+                          const commissionAmount = business.distribution_commission || 0;
+                          const amount = (parseFloat(c.percentage) * commissionAmount) / 100;
+                          return (
+                            <Typography key={c.id} variant="body2" sx={{ mb: 0.5 }}>
+                              Team {c.level_no}: ₹
+                              {amount.toLocaleString(undefined, {
+                                minimumFractionDigits: 2,
+                              })}
+                            </Typography>
+                          );
+                        })
+                      ) : (
+                        <Typography variant="body2" color="text.secondary">
+                          No commission data available
+                        </Typography>
+                      )}
+                      <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: "block" }}>
+                        *Based on business distribution commission
+                      </Typography>
+                    </Box>
+                  </Popover>
                 </Grid>
               ))}
             </Grid>
 
             {/* Pagination */}
-            {/* Pagination */}
             {totalPages >= 1 && (
-              <Box display="flex" justifyContent="flex-end" mt={2}>
+              <Box display="flex" justifyContent="flex-end" mt={3}>
                 <PaginationComponent
-                  count={totalPages || 1} // ensure at least 1 page
+                  count={totalPages || 1}
                   page={page}
                   onChange={handlePageChange}
                 />
               </Box>
             )}
-
           </>
         )}
       </Container>
