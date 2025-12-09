@@ -76,7 +76,9 @@ const AssetsUI = () => {
   const startIndex = (page - 1) * itemsPerPage;
   const paginatedProperties = filteredProperties.slice(startIndex, startIndex + itemsPerPage);
   const [openCarousel, setOpenCarousel] = useState(false);
-
+  // Filter by role//
+const [selectedRole, setSelectedRole] = useState('');
+const [uniqueRoles, setUniqueRoles] = useState(['Agent', 'Client', 'Admin', 'All']);
 
   // Report generation states
   const [openReportDialog, setOpenReportDialog] = useState(false);
@@ -98,28 +100,99 @@ const AssetsUI = () => {
     { id: 'builtup_area', label: 'Built-up Area', checked: false },
   ]);
 
-// Function to check if property is expired based on listing_days
+  // New state for listing days popup
+  const [openListingDaysDialog, setOpenListingDaysDialog] = useState(false);
+  const [listingDays, setListingDays] = useState('');
+  const [propertyToUpdate, setPropertyToUpdate] = useState(null);
+  const [pendingApprovalStatus, setPendingApprovalStatus] = useState('');
+
+// Function to check if property is expired based on listing_days OR expiry_date
 const isPropertyExpired = (property) => {
-  // If no listing_days is set, property never expires
-  if (!property.listing_days) {
-    return false;
+  // Check 1: If expiry_date exists, use that
+  if (property.expiry_date) {
+    const expiryDate = new Date(property.expiry_date);
+    const today = new Date();
+    
+    // Reset time part for accurate comparison
+    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const expiryDateStart = new Date(expiryDate.getFullYear(), expiryDate.getMonth(), expiryDate.getDate());
+    
+    // If today is after expiry date, property is expired
+    if (todayStart > expiryDateStart) {
+      return true;
+    }
   }
   
-  // If no created_at date, cannot calculate expiration
-  if (!property.created_at) {
-    return false;
+  // Check 2: If no expiry_date but listing_days exists, calculate expiration
+  if (!property.expiry_date && property.listing_days) {
+    // If no created_at date, cannot calculate expiration
+    if (!property.created_at) {
+      return false;
+    }
+    
+    const createdDate = new Date(property.created_at);
+    const expirationDate = new Date(createdDate);
+    
+    // Add listing_days to created date
+    expirationDate.setDate(createdDate.getDate() + parseInt(property.listing_days));
+    
+    // Check if current date is after expiration date
+    const today = new Date();
+    
+    // Reset time part for accurate comparison
+    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const expirationDateStart = new Date(expirationDate.getFullYear(), expirationDate.getMonth(), expirationDate.getDate());
+    
+    return todayStart > expirationDateStart;
   }
   
-  const createdDate = new Date(property.created_at);
-  const expirationDate = new Date(createdDate);
+  // If neither expiry_date nor listing_days is set, property never expires
+  return false;
+};
+
+// Function to get days remaining for a property
+const getDaysRemaining = (property) => {
+  // First check expiry_date
+  if (property.expiry_date) {
+    const expiryDate = new Date(property.expiry_date);
+    const today = new Date();
+    
+    // Reset time part for accurate comparison
+    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const expiryDateStart = new Date(expiryDate.getFullYear(), expiryDate.getMonth(), expiryDate.getDate());
+    
+    const timeDiff = expiryDateStart.getTime() - todayStart.getTime();
+    const daysRemaining = Math.ceil(timeDiff / (1000 * 3600 * 24));
+    
+    if (daysRemaining < 0) {
+      return 'Expired';
+    } else if (daysRemaining === 0) {
+      return 'Expires today';
+    } else {
+      return `${daysRemaining} days remaining`;
+    }
+  }
   
-  // Add listing_days to created date
-  expirationDate.setDate(createdDate.getDate() + parseInt(property.listing_days));
+  // Then check listing_days
+  if (property.listing_days && property.created_at) {
+    const createdDate = new Date(property.created_at);
+    const expirationDate = new Date(createdDate);
+    expirationDate.setDate(createdDate.getDate() + parseInt(property.listing_days));
+    
+    const today = new Date();
+    const timeDiff = expirationDate.getTime() - today.getTime();
+    const daysRemaining = Math.ceil(timeDiff / (1000 * 3600 * 24));
+    
+    if (daysRemaining < 0) {
+      return 'Expired';
+    } else if (daysRemaining === 0) {
+      return 'Expires today';
+    } else {
+      return `${daysRemaining} days remaining`;
+    }
+  }
   
-  // Check if current date is after expiration date
-  const isExpired = new Date() > expirationDate;
-  
-  return isExpired;
+  return 'Never expires';
 };
 
 // Function to filter out expired properties
@@ -127,49 +200,54 @@ const filterActiveProperties = (propertiesList) => {
   return propertiesList.filter(property => !isPropertyExpired(property));
 };
 
-// Function to get days remaining for a property
-const getDaysRemaining = (property) => {
-  if (!property.listing_days || !property.created_at) {
-    return 'Never expires';
-  }
-  
-  const createdDate = new Date(property.created_at);
-  const expirationDate = new Date(createdDate);
-  expirationDate.setDate(createdDate.getDate() + parseInt(property.listing_days));
-  
-  const today = new Date();
-  const timeDiff = expirationDate.getTime() - today.getTime();
-  const daysRemaining = Math.ceil(timeDiff / (1000 * 3600 * 24));
-  
-  if (daysRemaining < 0) {
-    return 'Expired';
-  } else if (daysRemaining === 0) {
-    return 'Expires today';
-  } else {
-    return `${daysRemaining} days remaining`;
-  }
-};
-
-  useEffect(() => {
-    const fetchProperties = async () => {
-      try {
-        const response = await fetch(`${baseurl}/property/`);
-        const data = await response.json();
-        setProperties(data);
-        //Filter out expired properties
-        setFilteredProperties(filterActiveProperties(data));
-      } catch (error) {
-        console.error('Error fetching properties:', error);
+// Update your useEffect - add console logs to debug
+useEffect(() => {
+  const fetchProperties = async () => {
+    try {
+      let endpoint = `${baseurl}/property/`;
+      
+      // If a specific role is selected, use the role-based endpoint
+      if (selectedRole && selectedRole !== 'All') {
+        endpoint = `${baseurl}/properties/by-role/${selectedRole}/`;
       }
-    };
-    fetchProperties();
-  }, []);
+      
+      console.log('Fetching from endpoint:', endpoint); // Debug log
+      console.log('Selected role:', selectedRole); // Debug log
+      
+      const response = await fetch(endpoint);
+      const data = await response.json();
+      
+      console.log('API Response data:', data); // Debug log
+      console.log('Number of properties received:', data.length); // Debug log
+      
+      setProperties(data);
+      // Filter out expired properties
+      setFilteredProperties(filterActiveProperties(data));
+    } catch (error) {
+      console.error('Error fetching properties:', error);
+      // Fallback to all properties if role-based fetch fails
+      if (selectedRole && selectedRole !== 'All') {
+        try {
+          const fallbackResponse = await fetch(`${baseurl}/property/`);
+          const fallbackData = await fallbackResponse.json();
+          setProperties(fallbackData);
+          setFilteredProperties(filterActiveProperties(fallbackData));
+        } catch (fallbackError) {
+          console.error('Error fetching fallback properties:', fallbackError);
+        }
+      }
+    }
+  };
+  
+  fetchProperties();
+}, [selectedRole]);
 
   // Apply both search and sort filters
   useEffect(() => {
     let results = [...properties];
-     results = filterActiveProperties(results);
-
+    
+    // IMPORTANT: Filter out expired properties here too
+    results = filterActiveProperties(results);
 
     // Apply search filter
     if (searchQuery.trim()) {
@@ -237,6 +315,25 @@ const getDaysRemaining = (property) => {
     setSortBy(event.target.value);
   };
 
+  // role filter
+const handleRoleChange = (event) => {
+  const newRole = event.target.value;
+  console.log('Role changed to:', newRole); // Debug log
+  setSelectedRole(newRole);
+  setPage(1); // Reset to first page when filter changes
+};
+
+// role filter
+const mapRole = (role) => {
+  switch(role) {
+    case 'Agent': return 'Team';
+    case 'Client': return 'User';
+    case 'Admin': return 'Admin';  // Changed from 'Admin' to 'ClientAdmin'
+    case 'All': return 'All Properties';
+    default: return role;
+  }
+};
+
   const handleViewDetails = (property) => {
     setSelectedProperty(property);
     setOpenDialog(true);
@@ -256,6 +353,7 @@ const getDaysRemaining = (property) => {
     setOpenCarousel(false);
     setSelectedProperty(null);
   };
+  
   const handleDelete = async (propertyId) => {
     const result = await Swal.fire({
       title: 'Are you sure?',
@@ -319,14 +417,64 @@ const getDaysRemaining = (property) => {
     }));
   };
 
-  const updateApprovalStatus = async (propertyId, newStatus) => {
+  // Modified updateApprovalStatus to show popup for "approved"
+  const handleApprovalStatusChange = (propertyId, newStatus) => {
+    const property = properties.find(p => p.property_id === propertyId);
+    setPropertyToUpdate(propertyId);
+    setPendingApprovalStatus(newStatus);
+    
+    if (newStatus === 'approved') {
+      // Show listing days popup
+      setListingDays(property?.listing_days || '');
+      setOpenListingDaysDialog(true);
+    } else {
+      // For other statuses (pending, rejected), update directly
+      updateApprovalStatus(propertyId, newStatus, null);
+    }
+  };
+
+  // Function to handle listing days confirmation
+  const handleConfirmListingDays = async () => {
+    if (!listingDays || isNaN(listingDays) || parseInt(listingDays) <= 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid Input',
+        text: 'Please enter a valid number of days (greater than 0)'
+      });
+      return;
+    }
+
+    await updateApprovalStatus(propertyToUpdate, pendingApprovalStatus, parseInt(listingDays));
+    setOpenListingDaysDialog(false);
+    setListingDays('');
+    setPropertyToUpdate(null);
+    setPendingApprovalStatus('');
+  };
+
+  // Updated updateApprovalStatus to include listing_days
+  const updateApprovalStatus = async (propertyId, newStatus, listingDaysValue) => {
     try {
+      const updateData = { approval_status: newStatus };
+      
+      // Only include listing_days if status is approved and value is provided
+      if (newStatus === 'approved' && listingDaysValue !== null) {
+        updateData.listing_days = listingDaysValue;
+        
+        // Also calculate and set expiry_date if not already set
+        if (!updateData.expiry_date) {
+          const today = new Date();
+          const expiryDate = new Date(today);
+          expiryDate.setDate(today.getDate() + parseInt(listingDaysValue));
+          updateData.expiry_date = expiryDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+        }
+      }
+      
       const response = await fetch(`${baseurl}/property/${propertyId}/`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ approval_status: newStatus })
+        body: JSON.stringify(updateData)
       });
 
       if (response.ok) {
@@ -335,7 +483,11 @@ const getDaysRemaining = (property) => {
         setProperties(prev =>
           prev.map(p =>
             p.property_id === propertyId
-              ? { ...p, approval_status: updatedData.approval_status }
+              ? { ...p, 
+                  approval_status: updatedData.approval_status,
+                  listing_days: updatedData.listing_days || p.listing_days,
+                  expiry_date: updatedData.expiry_date || p.expiry_date
+                }
               : p
           )
         );
@@ -343,7 +495,11 @@ const getDaysRemaining = (property) => {
         setFilteredProperties(prev =>
           prev.map(p =>
             p.property_id === propertyId
-              ? { ...p, approval_status: updatedData.approval_status }
+              ? { ...p, 
+                  approval_status: updatedData.approval_status,
+                  listing_days: updatedData.listing_days || p.listing_days,
+                  expiry_date: updatedData.expiry_date || p.expiry_date
+                }
               : p
           )
         );
@@ -371,7 +527,6 @@ const getDaysRemaining = (property) => {
       });
     }
   };
-
 
   // Function to get all media (images + videos) for a property
   const getAllMedia = (property) => {
@@ -608,42 +763,70 @@ const getDaysRemaining = (property) => {
     <>
       <Header />
       <Container sx={{ py: 4 }}>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 3,
-            flexDirection: { xs: "column", sm: "row" },
-            gap: 2,
-          }}
-        >
-          <Typography
-            variant="h4"
-            sx={{ textAlign: { xs: "center", sm: "left" } }}
-            fontWeight="bold"
-          >
-            Properties
-          </Typography>
+       <Box
+  sx={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    mb: 3,
+    flexDirection: { xs: "column", sm: "row" },
+    gap: 2,
+  }}
+>
+  {/* Left Title */}
+  <Typography
+    variant="h4"
+    sx={{ textAlign: { xs: "center", sm: "left" } }}
+    fontWeight="bold"
+  >
+    Properties
+  </Typography>
 
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={openReportConfiguration}
-            startIcon={<DescriptionIcon />}
-            sx={{
-              mt: { xs: 2, sm: 0 },
-              px: 3,
-              py: 1,
-              height: "55px",
-              width: { xs: "93%", sm: "auto" } // full width only on mobile
-            }}
-          >
-            Generate All Properties Report
-          </Button>
+  {/* Right-side Buttons Wrapper */}
+  <Box
+    sx={{
+      display: "flex",
+      gap: 2,
+      ml: { sm: "auto" },   // pushes both buttons to the right on small+ screens
+      width: { xs: "100%", sm: "auto" },
+      flexDirection: { xs: "column", sm: "row" }
+    }}
+  >
+    <Button
+      variant="contained"
+      sx={{
+        padding: "12px 24px",
+        borderRadius: "8px",
+        backgroundColor: "#2ECC71",
+        textTransform: "none",
+        fontWeight: 500,
+        width: { xs: "100%", sm: "auto" },
+        "&:hover": {
+          backgroundColor: "#27AE60",
+        },
+      }}
+      onClick={() => navigate("/a-addasset")}
+    >
+      Add Property
+    </Button>
 
+    <Button
+      variant="contained"
+      color="secondary"
+      onClick={openReportConfiguration}
+      startIcon={<DescriptionIcon />}
+      sx={{
+        px: 3,
+        py: 1,
+        height: "55px",
+        width: { xs: "100%", sm: "auto" },
+      }}
+    >
+      Generate All Properties Report
+    </Button>
+  </Box>
+</Box>
 
-        </Box>
 
         <Box
           sx={{
@@ -654,6 +837,7 @@ const getDaysRemaining = (property) => {
             mb: 3
           }}
         >
+       
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} md={6}>
               <TextField
@@ -671,6 +855,28 @@ const getDaysRemaining = (property) => {
                 }}
               />
             </Grid>
+                {/* ROLE FILTER - New Column */}
+    <Grid item xs={12} md={3}>
+      <FormControl fullWidth>
+        <InputLabel id="role-filter-label">Filter by Role</InputLabel>
+        <Select
+          labelId="role-filter-label"
+          value={selectedRole}
+          label="Filter by Role"
+          onChange={handleRoleChange}
+          sx={{
+            borderRadius: '8px',
+            fontSize: '15px'
+          }}
+        >
+          {uniqueRoles.map((role) => (
+            <MenuItem key={role} value={role}>
+              {mapRole(role)}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+    </Grid>
             <Grid item xs={12} md={3}>
               <FormControl fullWidth>
                 <Select
@@ -694,25 +900,6 @@ const getDaysRemaining = (property) => {
                   <MenuItem value="booked">Booked</MenuItem>
                 </Select>
               </FormControl>
-            </Grid>
-            <Grid item xs={12} md={3}>
-              <Button
-                variant="contained"
-                fullWidth
-                sx={{
-                  padding: '12px 24px',
-                  borderRadius: '8px',
-                  backgroundColor: '#2ECC71',
-                  textTransform: 'none',
-                  fontWeight: 500,
-                  '&:hover': {
-                    backgroundColor: '#27AE60'
-                  }
-                }}
-                onClick={() => navigate('/a-addasset')}
-              >
-                Add Property
-              </Button>
             </Grid>
           </Grid>
         </Box>
@@ -859,21 +1046,24 @@ const getDaysRemaining = (property) => {
                       <Typography variant="body2" color="text.secondary" mb={2}>
                         {property.city}, {property.state}
                       </Typography>
- {/* ✅ ADD THIS: Listing Days Remaining Display */}
-  {/* <Box sx={{ mb: 2 }}>
-    <Chip
-      label={getDaysRemaining(property)}
-      size="small"
-      variant="outlined"
-      sx={{
-        fontWeight: 'bold',
-        fontSize: '0.7rem'
-      }}
-    />
-  </Box> */}
-                      {/* <Typography variant="body2" color="text.secondary" mb={1}>
-                        Added By: <strong>{property.first_name}</strong>
-                      </Typography> */}
+                      {/* Add expiration info display */}
+                      {(property.expiry_date || property.listing_days) && (
+                        <Box sx={{ mb: 1 }}>
+                          <Chip
+                            label={getDaysRemaining(property)}
+                            size="small"
+                            variant="outlined"
+                            sx={{
+                              fontWeight: 'bold',
+                              fontSize: '0.7rem',
+                              borderColor: getDaysRemaining(property).includes('Expired') ? '#E74C3C' : 
+                                        getDaysRemaining(property).includes('today') ? '#E67E22' : '#2ECC71',
+                              color: getDaysRemaining(property).includes('Expired') ? '#E74C3C' : 
+                                    getDaysRemaining(property).includes('today') ? '#E67E22' : '#2ECC71',
+                            }}
+                          />
+                        </Box>
+                      )}
                       <FormControl fullWidth size="small" sx={{ mt: 2 }}>
                         <Typography variant="subtitle2" sx={{ mb: 0.5, fontWeight: 500 }}>
                           Approval Status
@@ -881,7 +1071,7 @@ const getDaysRemaining = (property) => {
                         <Select
                           value={property.approval_status || ''}
                           onChange={(e) =>
-                            updateApprovalStatus(property.property_id, e.target.value)
+                            handleApprovalStatusChange(property.property_id, e.target.value)
                           }
                           displayEmpty
                           sx={{
@@ -1141,6 +1331,38 @@ const getDaysRemaining = (property) => {
           onChange={handlePageChange}
         />
 
+        {/* Listing Days Dialog - NEW */}
+        <Dialog open={openListingDaysDialog} onClose={() => setOpenListingDaysDialog(false)} maxWidth="sm" fullWidth>
+          <DialogTitle>Set Listing Days</DialogTitle>
+          <DialogContent dividers>
+            <DialogContentText sx={{ mb: 2 }}>
+              Please enter the number of days this property should remain listed (active).
+              <br />
+              <small>The expiry date will be calculated automatically.</small>
+            </DialogContentText>
+            <TextField
+              autoFocus
+              margin="dense"
+              label="Listing Days"
+              type="number"
+              fullWidth
+              value={listingDays}
+              onChange={(e) => setListingDays(e.target.value)}
+              helperText="Enter number of days the property should be active"
+              inputProps={{ min: 1 }}
+              variant="outlined"
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenListingDaysDialog(false)} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmListingDays} variant="contained" color="primary">
+              Confirm & Update
+            </Button>
+          </DialogActions>
+        </Dialog>
+
         {/* Report Configuration Dialog */}
         <Dialog open={openReportConfigDialog} onClose={closeReportConfiguration} maxWidth="sm" fullWidth>
           <DialogTitle>Generate Property Report</DialogTitle>
@@ -1254,30 +1476,6 @@ const getDaysRemaining = (property) => {
         <Dialog open={openReportDialog} onClose={() => setOpenReportDialog(false)} maxWidth="lg" fullWidth>
           <DialogTitle>Property Report</DialogTitle>
           <DialogContent dividers>
-            {/* <Box sx={{ mb: 3 }}>
-                      <Typography variant="h6" gutterBottom>
-                        Report Summary
-                      </Typography>
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
-                        <Box>
-                          <Typography variant="subtitle2">Report Period</Typography>
-                          <Typography>{reportData.length > 0 ? reportData[0].period : ''}</Typography>
-                        </Box>
-                        <Box>
-                          <Typography variant="subtitle2">Total Properties</Typography>
-                          <Typography>{reportData.reduce((sum, group) => sum + group.count, 0)}</Typography>
-                        </Box>
-                        <Box>
-                          <Typography variant="subtitle2">Total Value</Typography>
-                          <Typography>₹{reportData.reduce((sum, group) => sum + group.totalValue, 0).toLocaleString()}</Typography>
-                        </Box>
-                        <Box>
-                          <Typography variant="subtitle2">Generated On</Typography>
-                          <Typography>{new Date().toLocaleDateString()}</Typography>
-                        </Box>
-                      </Box>
-                    </Box> */}
-
             <TableContainer component={Paper} sx={{ maxHeight: '60vh', overflow: 'auto' }}>
               <Table stickyHeader>
                 <TableHead>
