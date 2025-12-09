@@ -76,7 +76,9 @@ const AssetsUI = () => {
   const startIndex = (page - 1) * itemsPerPage;
   const paginatedProperties = filteredProperties.slice(startIndex, startIndex + itemsPerPage);
   const [openCarousel, setOpenCarousel] = useState(false);
-
+  // Filter by role//
+const [selectedRole, setSelectedRole] = useState('');
+const [uniqueRoles, setUniqueRoles] = useState(['Agent', 'Client', 'Admin', 'All']);
 
   // Report generation states
   const [openReportDialog, setOpenReportDialog] = useState(false);
@@ -150,20 +152,64 @@ const getDaysRemaining = (property) => {
   }
 };
 
-  useEffect(() => {
-    const fetchProperties = async () => {
-      try {
-        const response = await fetch(`${baseurl}/property/`);
-        const data = await response.json();
-        setProperties(data);
-        //Filter out expired properties
-        setFilteredProperties(filterActiveProperties(data));
-      } catch (error) {
-        console.error('Error fetching properties:', error);
+  // useEffect(() => {
+  //   const fetchProperties = async () => {
+  //     try {
+  //       const response = await fetch(`${baseurl}/property/`);
+  //       const data = await response.json();
+  //       setProperties(data);
+  //       //Filter out expired properties
+  //       setFilteredProperties(filterActiveProperties(data));
+  //     } catch (error) {
+  //       console.error('Error fetching properties:', error);
+  //     }
+  //   };
+  //   fetchProperties();
+  // }, []);
+
+// properties and role mix useffect
+
+// Update your useEffect - add console logs to debug
+useEffect(() => {
+  const fetchProperties = async () => {
+    try {
+      let endpoint = `${baseurl}/property/`;
+      
+      // If a specific role is selected, use the role-based endpoint
+      if (selectedRole && selectedRole !== 'All') {
+        endpoint = `${baseurl}/properties/by-role/${selectedRole}/`;
       }
-    };
-    fetchProperties();
-  }, []);
+      
+      console.log('Fetching from endpoint:', endpoint); // Debug log
+      console.log('Selected role:', selectedRole); // Debug log
+      
+      const response = await fetch(endpoint);
+      const data = await response.json();
+      
+      console.log('API Response data:', data); // Debug log
+      console.log('Number of properties received:', data.length); // Debug log
+      
+      setProperties(data);
+      // Filter out expired properties
+      setFilteredProperties(filterActiveProperties(data));
+    } catch (error) {
+      console.error('Error fetching properties:', error);
+      // Fallback to all properties if role-based fetch fails
+      if (selectedRole && selectedRole !== 'All') {
+        try {
+          const fallbackResponse = await fetch(`${baseurl}/property/`);
+          const fallbackData = await fallbackResponse.json();
+          setProperties(fallbackData);
+          setFilteredProperties(filterActiveProperties(fallbackData));
+        } catch (fallbackError) {
+          console.error('Error fetching fallback properties:', fallbackError);
+        }
+      }
+    }
+  };
+  
+  fetchProperties();
+}, [selectedRole]);
 
   // Apply both search and sort filters
   useEffect(() => {
@@ -236,6 +282,25 @@ const getDaysRemaining = (property) => {
   const handleSortChange = (event) => {
     setSortBy(event.target.value);
   };
+
+  // role filter
+const handleRoleChange = (event) => {
+  const newRole = event.target.value;
+  console.log('Role changed to:', newRole); // Debug log
+  setSelectedRole(newRole);
+  setPage(1); // Reset to first page when filter changes
+};
+
+// role filter
+const mapRole = (role) => {
+  switch(role) {
+    case 'Agent': return 'Team';
+    case 'Client': return 'User';
+    case 'Admin': return 'Admin';  // Changed from 'Admin' to 'ClientAdmin'
+    case 'All': return 'All Properties';
+    default: return role;
+  }
+};
 
   const handleViewDetails = (property) => {
     setSelectedProperty(property);
@@ -608,42 +673,70 @@ const getDaysRemaining = (property) => {
     <>
       <Header />
       <Container sx={{ py: 4 }}>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 3,
-            flexDirection: { xs: "column", sm: "row" },
-            gap: 2,
-          }}
-        >
-          <Typography
-            variant="h4"
-            sx={{ textAlign: { xs: "center", sm: "left" } }}
-            fontWeight="bold"
-          >
-            Properties
-          </Typography>
+       <Box
+  sx={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    mb: 3,
+    flexDirection: { xs: "column", sm: "row" },
+    gap: 2,
+  }}
+>
+  {/* Left Title */}
+  <Typography
+    variant="h4"
+    sx={{ textAlign: { xs: "center", sm: "left" } }}
+    fontWeight="bold"
+  >
+    Properties
+  </Typography>
 
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={openReportConfiguration}
-            startIcon={<DescriptionIcon />}
-            sx={{
-              mt: { xs: 2, sm: 0 },
-              px: 3,
-              py: 1,
-              height: "55px",
-              width: { xs: "93%", sm: "auto" } // full width only on mobile
-            }}
-          >
-            Generate All Properties Report
-          </Button>
+  {/* Right-side Buttons Wrapper */}
+  <Box
+    sx={{
+      display: "flex",
+      gap: 2,
+      ml: { sm: "auto" },   // pushes both buttons to the right on small+ screens
+      width: { xs: "100%", sm: "auto" },
+      flexDirection: { xs: "column", sm: "row" }
+    }}
+  >
+    <Button
+      variant="contained"
+      sx={{
+        padding: "12px 24px",
+        borderRadius: "8px",
+        backgroundColor: "#2ECC71",
+        textTransform: "none",
+        fontWeight: 500,
+        width: { xs: "100%", sm: "auto" },
+        "&:hover": {
+          backgroundColor: "#27AE60",
+        },
+      }}
+      onClick={() => navigate("/a-addasset")}
+    >
+      Add Property
+    </Button>
 
+    <Button
+      variant="contained"
+      color="secondary"
+      onClick={openReportConfiguration}
+      startIcon={<DescriptionIcon />}
+      sx={{
+        px: 3,
+        py: 1,
+        height: "55px",
+        width: { xs: "100%", sm: "auto" },
+      }}
+    >
+      Generate All Properties Report
+    </Button>
+  </Box>
+</Box>
 
-        </Box>
 
         <Box
           sx={{
@@ -654,6 +747,7 @@ const getDaysRemaining = (property) => {
             mb: 3
           }}
         >
+       
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} md={6}>
               <TextField
@@ -671,6 +765,28 @@ const getDaysRemaining = (property) => {
                 }}
               />
             </Grid>
+                {/* ROLE FILTER - New Column */}
+    <Grid item xs={12} md={3}>
+      <FormControl fullWidth>
+        <InputLabel id="role-filter-label">Filter by Role</InputLabel>
+        <Select
+          labelId="role-filter-label"
+          value={selectedRole}
+          label="Filter by Role"
+          onChange={handleRoleChange}
+          sx={{
+            borderRadius: '8px',
+            fontSize: '15px'
+          }}
+        >
+          {uniqueRoles.map((role) => (
+            <MenuItem key={role} value={role}>
+              {mapRole(role)}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+    </Grid>
             <Grid item xs={12} md={3}>
               <FormControl fullWidth>
                 <Select
@@ -694,25 +810,6 @@ const getDaysRemaining = (property) => {
                   <MenuItem value="booked">Booked</MenuItem>
                 </Select>
               </FormControl>
-            </Grid>
-            <Grid item xs={12} md={3}>
-              <Button
-                variant="contained"
-                fullWidth
-                sx={{
-                  padding: '12px 24px',
-                  borderRadius: '8px',
-                  backgroundColor: '#2ECC71',
-                  textTransform: 'none',
-                  fontWeight: 500,
-                  '&:hover': {
-                    backgroundColor: '#27AE60'
-                  }
-                }}
-                onClick={() => navigate('/a-addasset')}
-              >
-                Add Property
-              </Button>
             </Grid>
           </Grid>
         </Box>
