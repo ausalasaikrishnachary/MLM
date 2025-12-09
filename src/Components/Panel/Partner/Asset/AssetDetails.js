@@ -229,13 +229,48 @@ const TabPanel = (props) => {
 const AssetDetail = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { property } = location.state || {};
+   const { property: receivedProperty } = location.state || {};
   const { id } = useParams();
+  const [property, setProperty] = useState(null);
+
 
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [isPlot, setIsPlot] = useState(false);
   const [propertyTypeName, setPropertyTypeName] = useState("");
   const [tabValue, setTabValue] = useState(0);
+
+  const [categories, setCategories] = useState([]);
+  const { property: passedProperty } = location.state || {};
+
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      const catRes = await fetch(`${baseurl}/property-categories/`);
+  
+      setCategories(await catRes.json());
+    };
+  
+    fetchData();
+  }, []);
+  
+  const getCategoryName = (id) => {
+    const item = categories.find(c => c.property_category_id === id);
+    return item ? item.name : "N/A";
+  };
+  
+
+  
+
+  // Fetch property if not passed
+  useEffect(() => {
+    if (!passedProperty && id) {
+      fetch(`${baseurl}/property/${id}/`)
+        .then(res => res.json())
+        .then(data => setProperty(data))
+        .catch(err => console.error("Error fetching property:", err));
+    }
+  }, [id, passedProperty]);
+
 
 useEffect(() => {
   const fetchPropertyTypes = async () => {
@@ -264,8 +299,10 @@ useEffect(() => {
 }, [property]);
 
   if (!property) {
-    return <Typography>Loading property details...</Typography>;
-  }
+  return <Typography>Loading property details...</Typography>;
+}
+
+
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-IN', {
@@ -429,7 +466,7 @@ useEffect(() => {
                   {[
                     ['Looking to', property.looking_to],
                     ['Property Value', formatCurrency(property.property_value)],
-                    ['Category', property.category],
+                    ['Category', getCategoryName(property.category)],
                     ['Property Type', propertyTypeName],
                   ].map(([label, value], index) => (
                     <Grid item xs={12} sm={6} key={index}>

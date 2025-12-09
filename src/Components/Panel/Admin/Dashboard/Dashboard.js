@@ -132,8 +132,8 @@ useEffect(() => {
       { label:"Pending Properties", value: counts.total_pending_properties, icon:<HourglassEmpty />, path:"/a-pendingassets" },
       { label:"Approved Properties", value: counts.total_approved_properties, icon:<Verified />, path:"/a-approvedassets" },
       { label:"Rejected Properties", value: counts.total_rejected_properties, icon:<Cancel />, path:"/a-rejectedassets" },
-      { label:"Company Commissions", value:`₹${counts.total_company_commission_paid.toLocaleString("en-IN")}`, icon:<AccountBalance />, path:"/a-transactionmoniter" },
-      { label:"Agent Commissions", value:`₹${counts.total_agent_commission_paid.toLocaleString("en-IN")}`, icon:<Payments />, path:"/a-commission" },
+      { label:"Company Payout", value:`₹${counts.total_company_commission_paid.toLocaleString("en-IN")}`, icon:<AccountBalance />, path:"/a-transactionmoniter" },
+      { label:"Agent Payout", value:`₹${counts.total_agent_commission_paid.toLocaleString("en-IN")}`, icon:<Payments />, path:"/a-commission" },
     ] : [];
 
     const options = { responsive:true, plugins:{ legend:{ position:"bottom" }}, scales:{ y:{ beginAtZero:true }}, maintainAspectRatio:false };

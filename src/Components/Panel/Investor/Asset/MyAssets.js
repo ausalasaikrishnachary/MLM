@@ -12,6 +12,7 @@ import {
   CardMedia,
   CardContent,
   Typography,
+  Chip,
   Button,
   TextField,
   InputAdornment,
@@ -733,32 +734,31 @@ const PartnerMyAssets = () => {
                           {property.looking_to === 'sell' ? 'Sell' : 'Rent'}
                         </Box>
                       )} */}
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          top: 15,
-                          left: -30,
-                          width: '150px',
-                          transform: 'rotate(-45deg)',
-                          backgroundColor:
-                            property.status === 'available'
-                              ? '#2ECC71'
-                              : property.status === 'booked'
-                                ? '#E67E22'
-                                : '#E74C3C',
-                          color: 'white',
-                          textAlign: 'center',
-                          fontSize: '12px',
-                          fontWeight: 'bold',
-                          textTransform: 'uppercase',
-                          py: '4px',
-                          boxShadow: '0 2px 6px rgba(0,0,0,0.2)',
-                        }}
-                      >
-                        {property.status}
-                      </Box>
+
                     </Box>
                     <CardContent>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                        <Typography fontWeight="bold" sx={{ flex: 1, mr: 1 }}>
+                          {/* {property.property_title} */}
+                        </Typography>
+                        <Chip
+                          label={property.status}
+                          size="small"
+                          sx={{
+                            backgroundColor:
+                              property.status === 'available'
+                                ? '#2ECC71'
+                                : property.status === 'booked'
+                                  ? '#E67E22'
+                                  : '#E74C3C',
+                            color: 'white',
+                            fontWeight: 'bold',
+                            textTransform: 'uppercase',
+                            fontSize: '0.7rem',
+                            minWidth: '70px'
+                          }}
+                        />
+                      </Box>
                       <Typography fontWeight="bold" mb={1}>
                         {property.property_title}
                       </Typography>

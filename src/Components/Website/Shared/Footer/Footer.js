@@ -43,7 +43,7 @@ function Footer() {
               <h5>Quick Links</h5>
               <ul>
                 <li><a href="/">Home</a></li>
-                <li><a href="/properties">Properties</a></li>
+                
                 <li><a href="/">Why Shriraj</a></li>
                 <li><a href="/aboutus">About Us</a></li>
                 <li><a href="/contactus">Contact</a></li>
@@ -115,7 +115,7 @@ function Footer() {
         <hr className="mt-4 mb-4 footer-divider" />
         <Row>
           <Col md={6} className="text-center text-md-start">
-            <p className="mb-0">&copy; 2025 SHRIRAJ PROPERTY SOLUTIONS PRIVATE LIMITED. All rights reserved.</p>
+            <p className="mb-0">&copy; 2025 SHRIRAJ TEAM PRIVATE LIMITED. All rights reserved.</p>
           </Col>
           <Col md={6} className="text-center text-md-end">
             <p className="mb-0">

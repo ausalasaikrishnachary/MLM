@@ -67,18 +67,19 @@ export default function Header() {
     {
       label: 'Operations',
       subItems: [
-        { label: 'Company Commission', path: '/a-transactionmoniter' },
-        { label: 'Team Commission', path: '/a-commission' },
+        { label: 'Company Payout', path: '/a-transactionmoniter' },
+        { label: 'Team Payout', path: '/a-commission' },
         { label: 'Subscriptions', path: '/a-subscriptions' },
         { label: 'Booking Slab', path: '/a-bookingslab' },
         { label: 'Training Material', path: '/a-trainingmaterial' },
          { label: 'How It Works', path: '/a-upvdhowitworks' },
         { label: 'Transaction', path: '/a-transactionsummary' },
-        { label: 'Commission Master', path: '/a-commissionmaster' },
+        { label: 'Payout Master', path: '/a-commissionmaster' },
         { label: 'Create Category', path: '/tablecategory' },
         { label: 'Business', path: '/a-business' },
         { label: 'Site Visits', path: '/a-sitevisit' },
         { label: 'Chatbot', path: '/a-chatbot' },
+         { label: 'Departments', path: '/a-departments' },
       ]
     },
     { label: 'Meetings', path: '/a-meetings' },
@@ -86,6 +87,7 @@ export default function Header() {
     { label: 'Leads', path: '/a-popup-leads' },
     { label: 'Company', path: '/tableadminmeetings' },
     { label: 'Reports', path: '/a-reports' },
+    { label: 'Settings', path: '/a-settings' },
   ];
 
   // ✅ Intercept Add Property clicks
@@ -467,38 +469,42 @@ export default function Header() {
 
       </Menu>
       <MuiMenu
-        anchorEl={notificationAnchorEl}
-        open={notificationMenuOpen}
-        onClose={handleNotificationClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-      >
-        {notifications.length > 0 ? (
-          notifications.map((notif) => (
-            <MenuItem
-              key={notif.notification_status_id}
-              onClick={() => {
-                axios.post(`${baseurl}/notifications/mark-as-read/`, {
-                  user_id: parseInt(userId),
-                  notification_id: notif.notification_status_id
-                })
-                  .then(() => {
-                    setNotifications(prev => prev.filter(n => n.notification_status_id !== notif.notification_status_id));
-                    handleNotificationClose();
-                    handleNavigate('/a-asset');
-                  })
-                  .catch(error => {
-                    console.error("Error marking notification as read:", error);
-                  });
-              }}
-            >
-              {notif.message}
-            </MenuItem>
-          ))
-        ) : (
-          <MenuItem disabled>No notifications</MenuItem>
-        )}
-      </MuiMenu>
+            anchorEl={notificationAnchorEl}
+            open={notificationMenuOpen}
+            onClose={handleNotificationClose}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+          >
+            {notifications.length > 0 ? (
+              notifications.map((notif) => (
+                <MenuItem
+                  key={notif.notification_status_id}
+                  onClick={() => {
+                    axios.post(`${baseurl}/notifications/mark-as-read/`, {
+                      user_id: parseInt(userId),
+                      notification_id: notif.notification_status_id
+                    })
+                      .then(() => {
+                        setNotifications(prev => 
+                          prev.filter(n => n.notification_status_id !== notif.notification_status_id)
+                        );
+                        handleNotificationClose();
+                        
+                        // ✅ FIXED: Navigate using notif.property.id instead of assets
+                        navigate(`/a-assets/${notif.property.id}`);
+                      })
+                      .catch(error => {
+                        console.error("Error marking notification as read:", error);
+                      });
+                  }}
+                >
+                  {notif.message}
+                </MenuItem>
+              ))
+            ) : (
+              <MenuItem disabled>No notifications</MenuItem>
+            )}
+          </MuiMenu>
     </>
   );
 }

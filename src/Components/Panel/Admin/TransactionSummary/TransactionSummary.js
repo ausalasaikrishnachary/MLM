@@ -40,8 +40,8 @@ function TransactionSummary() {
         { key: 'transaction_id', label: 'Transaction ID' },
   {
   key: "transaction_date",
-  label: "Transaction Date",
-  render: (row) => formatDateTime(row.transaction_date),
+  label: "Transaction Date"
+  
 },
 
 

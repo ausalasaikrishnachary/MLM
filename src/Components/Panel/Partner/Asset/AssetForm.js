@@ -1318,7 +1318,7 @@ if (formData.amenities && formData.amenities.length > 0) {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Team Commission"
+                  label="Team Payout"
                   name="agent_commission"
                   type="number"
                   value={formData.agent_commission}

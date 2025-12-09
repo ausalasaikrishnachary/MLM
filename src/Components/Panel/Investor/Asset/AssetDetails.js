@@ -331,7 +331,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import {
   Typography, Grid, Box, Button, Divider, Chip, Card, CardContent,
-  Tabs, Tab, Container, IconButton, Table, TableBody, TableCell, TableContainer, 
+  Tabs, Tab, Container, IconButton, Table, TableBody, TableCell, TableContainer,
   TableRow, Paper
 } from '@mui/material';
 import InvestorHeader from '../../../Shared/Investor/InvestorNavbar';
@@ -366,45 +366,62 @@ const TabPanel = (props) => {
 const AssetDetail = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { property } = location.state || {};
+  const { property: passedProperty } = location.state || {};
   const { id } = useParams();
 
+  const [property, setProperty] = useState(passedProperty || null);
   const [propertyTypes, setPropertyTypes] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [isPlot, setIsPlot] = useState(false);
   const [propertyTypeName, setPropertyTypeName] = useState("");
   const [tabValue, setTabValue] = useState(0);
 
+  // Fetch categories
   useEffect(() => {
-    const fetchPropertyTypes = async () => {
-      try {
-        const res = await fetch(`${baseurl}/property-types/`);
-        const data = await res.json();
+    fetch(`${baseurl}/property-categories/`)
+      .then(res => res.json())
+      .then(setCategories)
+      .catch(console.error);
+  }, []);
+
+  // Fetch property if not passed
+  useEffect(() => {
+    if (!passedProperty && id) {
+      fetch(`${baseurl}/property/${id}/`)
+        .then(res => res.json())
+        .then(data => setProperty(data))
+        .catch(err => console.error("Error fetching property:", err));
+    }
+  }, [id, passedProperty]);
+
+  // Fetch property types + detect plot
+  useEffect(() => {
+    if (!property) return;
+
+    fetch(`${baseurl}/property-types/`)
+      .then(res => res.json())
+      .then(data => {
         setPropertyTypes(data);
-
-        if (property) {
-          const matchedType = data.find(
-            (t) => t.property_type_id === property.property_type
-          );
-          if (matchedType) {
-            setPropertyTypeName(matchedType.name);
-            if (matchedType.name.toLowerCase() === "plot") {
-              setIsPlot(true);
-            }
-          }
+        const matched = data.find(t => t.property_type_id === property.property_type);
+        if (matched) {
+          setPropertyTypeName(matched.name);
+          setIsPlot(matched.name.toLowerCase() === "plot");
         }
-      } catch (err) {
-        console.error("Error fetching property types:", err);
-      }
-    };
-
-    fetchPropertyTypes();
+      })
+      .catch(console.error);
   }, [property]);
 
   if (!property) {
     return <Typography>Loading property details...</Typography>;
   }
 
+  const getCategoryName = (id) => {
+    const cat = categories.find(c => c.property_category_id === id);
+    return cat ? cat.name : "N/A";
+  };
+
   const formatCurrency = (value) => {
+    if (!value) return 'N/A';
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
@@ -414,22 +431,26 @@ const AssetDetail = () => {
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
-    // Scroll to top of content area when tab changes
-    const contentElement = document.getElementById('tab-content');
-    if (contentElement) {
-      contentElement.scrollTop = 0;
-    }
+    const el = document.getElementById('tab-content');
+    if (el) el.scrollTop = 0;
   };
+
+  // Dynamic tab indexes (same reliable logic as Partner/Admin)
+  const featuresTabIndex = 3;
+  const additionalInfoTabIndex = isPlot ? 3 : 4;
+  const ownerTabIndex = isPlot ? 4 : 5;
+  const buyerTabIndex = property.buyer_user ? (isPlot ? 5 : 6) : -1;
+  const systemTabIndex = property.buyer_user ? (isPlot ? 6 : 7) : (isPlot ? 5 : 6);
 
   return (
     <>
       <InvestorHeader />
       <Box sx={{ background: '#f8f9fa', minHeight: '100vh', width: '100%', py: 3 }}>
         <Container maxWidth="lg">
-          {/* Back button */}
+          {/* Back Button */}
           <Box mb={3}>
-            <Button 
-              variant="outlined" 
+            <Button
+              variant="outlined"
               onClick={() => navigate(-1)}
               startIcon={<ArrowBackIosNewIcon />}
               sx={{ borderRadius: 2 }}
@@ -438,67 +459,43 @@ const AssetDetail = () => {
             </Button>
           </Box>
 
-          {/* Title + Status */}
+          {/* Title + Status + Price */}
           <Card sx={{ borderRadius: 2, boxShadow: 2, mb: 3 }}>
             <CardContent sx={{ p: 3 }}>
-              <Box
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-                flexWrap="wrap"
-                gap={2}
-              >
-                <Typography
-                  variant="h4"
-                  fontWeight={700}
-                  color="primary"
-                  gutterBottom
-                  sx={{ mb: 0 }}
-                >
-                  {property.property_title}
+              <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
+                <Typography variant="h4" fontWeight={700} color="primary" sx={{ mb: 0 }}>
+                  {property.property_title || 'Untitled Property'}
                 </Typography>
                 <Chip
-                  label={property.status.toUpperCase()}
+                  label={(property.status || 'unknown').toUpperCase()}
                   color={property.status === 'booked' ? 'secondary' : 'primary'}
-                  sx={{
-                    fontWeight: 600,
-                    fontSize: '0.9rem',
-                    py: 1
-                  }}
+                  sx={{ fontWeight: 600, fontSize: '0.9rem', py: 1 }}
                 />
               </Box>
-              
-              {/* Price */}
               <Typography variant="h5" color="text.secondary" sx={{ mt: 1 }}>
                 {formatCurrency(property.property_value)}
               </Typography>
             </CardContent>
           </Card>
 
-          {/* Property Image */}
+          {/* Main Image */}
           <Card sx={{ borderRadius: 2, boxShadow: 2, mb: 3, overflow: 'hidden' }}>
-            <Box
-              sx={{
-                width: "100%",
-                height: { xs: 250, sm: 350, md: 400 },
-                overflow: "hidden",
-              }}
-            >
-              {property.images.length > 0 ? (
+            <Box sx={{ width: "100%", height: { xs: 250, sm: 350, md: 400 } }}>
+              {property.images && property.images.length > 0 ? (
                 <img
-                  src={`${baseurl}/${property.images[0].image}`}
+                  src={`${baseurl}${property.images[0].image}`}
                   alt={property.property_title}
                   style={{ width: "100%", height: "100%", objectFit: "cover" }}
                 />
               ) : (
-                <Box 
-                  sx={{ 
-                    width: "100%", 
-                    height: "100%", 
-                    display: "flex", 
-                    alignItems: "center", 
-                    justifyContent: "center",
-                    backgroundColor: "#e9ecef"
+                <Box
+                  sx={{
+                    width: "100%",
+                    height: "100%",
+                    bgcolor: "#e9ecef",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
                   }}
                 >
                   <Typography variant="h6" color="text.secondary">
@@ -507,19 +504,17 @@ const AssetDetail = () => {
                 </Box>
               )}
             </Box>
-
-            {/* Video Info */}
-            {property.videos.length > 0 && (
+            {property.videos && property.videos.length > 0 && (
               <Box sx={{ p: 2, textAlign: 'center', bgcolor: 'background.paper' }}>
                 <Typography variant="body2" color="text.secondary">
-                  🎥 {property.videos.length} video(s) available
+                  {property.videos.length} video(s) available
                 </Typography>
               </Box>
             )}
           </Card>
 
-          {/* Tab Navigation */}
-          <Card sx={{ borderRadius: 2, boxShadow: 2, mb: 3 }}>
+          {/* Tabs */}
+          <Card sx={{ borderRadius: 2, boxShadow: 2 }}>
             <Tabs
               value={tabValue}
               onChange={handleTabChange}
@@ -529,10 +524,7 @@ const AssetDetail = () => {
               sx={{
                 borderBottom: 1,
                 borderColor: 'divider',
-                '& .MuiTab-root': {
-                  minHeight: 60,
-                  py: 1.5,
-                }
+                '& .MuiTab-root': { minHeight: 60, py: 1.5 }
               }}
             >
               <Tab icon={<InfoIcon />} iconPosition="start" label="Basic Info" />
@@ -545,133 +537,82 @@ const AssetDetail = () => {
               <Tab icon={<SettingsIcon />} iconPosition="start" label="System Info" />
             </Tabs>
 
-            {/* Tab Content */}
-            <Box id="tab-content" sx={{ maxHeight: '60vh', overflow: 'auto', p: 3 }}>
+            <Box id="tab-content" sx={{ maxHeight: '70vh', overflow: 'auto', p: 3 }}>
+
+              {/* Basic Info */}
               <TabPanel value={tabValue} index={0}>
-                <Typography
-                  variant="h5"
-                  fontWeight={600}
-                  gutterBottom
-                  sx={{
-                    color: "primary.main",
-                    mb: 3,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1
-                  }}
-                >
+                <Typography variant="h5" fontWeight={600} color="primary.main" mb={3} display="flex" alignItems="center" gap={1}>
                   <InfoIcon /> Basic Information
                 </Typography>
                 <Grid container spacing={3}>
                   {[
-                    ['Looking to', property.looking_to],
+                    ['Looking to', property.looking_to || 'N/A'],
                     ['Property Value', formatCurrency(property.property_value)],
-                    ['Category', property.category],
-                    ['Property Type', propertyTypeName],
-                  ].map(([label, value], index) => (
-                    <Grid item xs={12} sm={6} key={index}>
-                      <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
-                        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                          {label}
-                        </Typography>
-                        <Typography variant="body1" fontWeight={500}>
-                          {value}
-                        </Typography>
+                    ['Category', getCategoryName(property.category)],
+                    ['Property Type', propertyTypeName || 'N/A'],
+                  ].map(([label, value], i) => (
+                    <Grid item xs={12} sm={6} key={i}>
+                      <Box p={2} bgcolor="grey.50" borderRadius={2}>
+                        <Typography variant="subtitle2" color="text.secondary">{label}</Typography>
+                        <Typography variant="body1" fontWeight={500}>{value}</Typography>
                       </Box>
                     </Grid>
                   ))}
                   <Grid item xs={12}>
-                    <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
-                      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                        Description
-                      </Typography>
+                    <Box p={2} bgcolor="grey.50" borderRadius={2}>
+                      <Typography variant="subtitle2" color="text.secondary">Description</Typography>
                       <Typography variant="body1" fontWeight={500}>
-                        {property.description}
+                        {property.description || 'No description provided'}
                       </Typography>
                     </Box>
                   </Grid>
                 </Grid>
               </TabPanel>
 
+              {/* Address */}
               <TabPanel value={tabValue} index={1}>
-                <Typography
-                  variant="h5"
-                  fontWeight={600}
-                  gutterBottom
-                  sx={{
-                    color: "primary.main",
-                    mb: 3,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1
-                  }}
-                >
+                <Typography variant="h5" fontWeight={600} color="primary.main" mb={3} display="flex" alignItems="center" gap={1}>
                   <LocationOnIcon /> Address
                 </Typography>
-                <Box sx={{ p: 3, bgcolor: 'grey.50', borderRadius: 2 }}>
-                  <Typography variant="h6" gutterBottom>
-                    {property.address}
-                  </Typography>
+                <Box p={3} bgcolor="grey.50" borderRadius={2}>
+                  <Typography variant="h6">{property.address || 'N/A'}</Typography>
                   <Typography variant="body1" paragraph>
-                    {property.city}, {property.state}, {property.country} - {property.pin_code}
+                    {[property.city, property.state, property.country].filter(Boolean).join(', ')}
+                    {property.pin_code ? ` - ${property.pin_code}` : ''}
                   </Typography>
                   <Divider sx={{ my: 2 }} />
                   <Typography variant="body2" color="text.secondary">
-                    <strong>Coordinates:</strong> {property.latitude}, {property.longitude}
+                    <strong>Coordinates:</strong> {property.latitude || 'N/A'}, {property.longitude || 'N/A'}
                   </Typography>
                 </Box>
               </TabPanel>
 
+              {/* Dimensions */}
               <TabPanel value={tabValue} index={2}>
-                <Typography
-                  variant="h5"
-                  fontWeight={600}
-                  gutterBottom
-                  sx={{
-                    color: "primary.main",
-                    mb: 3,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1
-                  }}
-                >
+                <Typography variant="h5" fontWeight={600} color="primary.main" mb={3} display="flex" alignItems="center" gap={1}>
                   <SquareFootIcon /> Dimensions
                 </Typography>
                 <Grid container spacing={3}>
                   {[
-                    ['Area', `${property.area} ${property.area_unit}`],
-                    ['Built-up Area', `${property.builtup_area} ${property.area_unit}`],
-                    ['Length', `${property.length_ft} ft`],
-                    ['Breadth', `${property.breadth_ft} ft`],
-                  ].map(([label, value], index) => (
-                    <Grid item xs={12} sm={6} key={index}>
-                      <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 2, height: '100%' }}>
-                        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                          {label}
-                        </Typography>
-                        <Typography variant="h6" fontWeight={600}>
-                          {value}
-                        </Typography>
+                    ['Area', `${property.area || 'N/A'} ${property.area_unit || ''}`],
+                    ['Built-up Area', `${property.builtup_area || 'N/A'} ${property.area_unit || ''}`],
+                    ['Length', `${property.length_ft || 'N/A'} ft`],
+                    ['Breadth', `${property.breadth_ft || 'N/A'} ft`],
+                  ].map(([l, v], i) => (
+                    <Grid item xs={12} sm={6} key={i}>
+                      <Box p={2} bgcolor="grey.50" borderRadius={2}>
+                        <Typography variant="subtitle2" color="text.secondary">{l}</Typography>
+                        <Typography variant="h6" fontWeight={600}>{v}</Typography>
                       </Box>
                     </Grid>
                   ))}
                 </Grid>
               </TabPanel>
 
+              {/* Features (only for non-plot) */}
               {!isPlot && (
-                <TabPanel value={tabValue} index={3}>
-                  <Typography
-                    variant="h5"
-                    fontWeight={600}
-                    gutterBottom
-                    sx={{
-                      color: "primary.main",
-                      mb: 3,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 1
-                    }}
-                  >
+                <TabPanel value={tabValue} index={featuresTabIndex}>
+                  <Typography variant="h5" fontWeight={600} color="primary.main" mb={3} display="flex" alignItems="center" gap={1}>
                     <HomeIcon /> Features
                   </Typography>
                   <Grid container spacing={3}>
@@ -680,23 +621,19 @@ const AssetDetail = () => {
                       ['Facing', property.facing],
                       ['Open Sides', property.number_of_open_sides],
                       ['Roads', property.number_of_roads],
-                      ['Road Width 1', `${property.road_width_1_ft} ft`],
-                      ['Road Width 2', `${property.road_width_2_ft} ft`],
+                      ['Road Width 1', property.road_width_1_ft ? `${property.road_width_1_ft} ft` : 'N/A'],
+                      ['Road Width 2', property.road_width_2_ft ? `${property.road_width_2_ft} ft` : 'N/A'],
                       ['Floor', property.floor || 'N/A'],
                       ['Furnishing Status', property.furnishing_status || 'N/A'],
-                      ['Ownership', property.ownership_type],
+                      ['Ownership', property.ownership_type || 'N/A'],
                       ['Bedrooms', property.number_of_bedrooms || 'N/A'],
                       ['Bathrooms', property.number_of_bathrooms || 'N/A'],
                       ['Balconies', property.number_of_balconies || 'N/A'],
-                    ].map(([label, value], index) => (
-                      <Grid item xs={12} sm={6} md={4} key={index}>
-                        <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 2, height: '100%' }}>
-                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                            {label}
-                          </Typography>
-                          <Typography variant="body1" fontWeight={500}>
-                            {value}
-                          </Typography>
+                    ].map(([l, v], i) => (
+                      <Grid item xs={12} sm={6} md={4} key={i}>
+                        <Box p={2} bgcolor="grey.50" borderRadius={2}>
+                          <Typography variant="subtitle2" color="text.secondary">{l}</Typography>
+                          <Typography variant="body1" fontWeight={500}>{v}</Typography>
                         </Box>
                       </Grid>
                     ))}
@@ -704,19 +641,9 @@ const AssetDetail = () => {
                 </TabPanel>
               )}
 
-              <TabPanel value={tabValue} index={isPlot ? 3 : 4}>
-                <Typography
-                  variant="h5"
-                  fontWeight={600}
-                  gutterBottom
-                  sx={{
-                    color: "primary.main",
-                    mb: 3,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1
-                  }}
-                >
+              {/* Additional Info */}
+              <TabPanel value={tabValue} index={additionalInfoTabIndex}>
+                <Typography variant="h5" fontWeight={600} color="primary.main" mb={3} display="flex" alignItems="center" gap={1}>
                   <DetailsIcon /> Additional Information
                 </Typography>
                 <Grid container spacing={3}>
@@ -724,82 +651,52 @@ const AssetDetail = () => {
                     ['Property Uniqueness', property.property_uniqueness],
                     ['Location Advantages', property.location_advantages],
                     ['Other Features', property.other_features],
-                  ].map(([label, value], index) => (
-                    <Grid item xs={12} key={index}>
-                      <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
-                        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                          {label}
-                        </Typography>
-                        <Typography variant="body1" fontWeight={500}>
-                          {value || 'N/A'}
-                        </Typography>
+                  ].map(([l, v], i) => (
+                    <Grid item xs={12} key={i}>
+                      <Box p={2} bgcolor="grey.50" borderRadius={2}>
+                        <Typography variant="subtitle2" color="text.secondary">{l}</Typography>
+                        <Typography variant="body1" fontWeight={500}>{v || 'N/A'}</Typography>
                       </Box>
                     </Grid>
                   ))}
                 </Grid>
               </TabPanel>
 
-              <TabPanel value={tabValue} index={isPlot ? 4 : 5}>
-                <Typography
-                  variant="h5"
-                  fontWeight={600}
-                  gutterBottom
-                  sx={{
-                    color: "primary.main",
-                    mb: 3,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1
-                  }}
-                >
+              {/* Owner Details */}
+              <TabPanel value={tabValue} index={ownerTabIndex}>
+                <Typography variant="h5" fontWeight={600} color="primary.main" mb={3} display="flex" alignItems="center" gap={1}>
                   <PersonIcon /> Owner Details
                 </Typography>
                 <TableContainer component={Paper} sx={{ boxShadow: 2 }}>
                   <Table>
                     <TableBody>
                       <TableRow>
-                        <TableCell component="th" scope="row" sx={{ fontWeight: 600, width: '30%' }}>
-                          Name
-                        </TableCell>
-                        <TableCell>{property.owner_name}</TableCell>
+                        <TableCell sx={{ fontWeight: 600, width: '30%' }}>Name</TableCell>
+                        <TableCell>{property.owner_name || 'N/A'}</TableCell>
                       </TableRow>
                       <TableRow>
-                        <TableCell component="th" scope="row" sx={{ fontWeight: 600 }}>
-                          Contact
-                        </TableCell>
+                        <TableCell sx={{ fontWeight: 600 }}>Contact</TableCell>
                         <TableCell>
                           <Box display="flex" alignItems="center">
-                            {property.owner_contact}
-                            <IconButton
-                              size="small"
-                              onClick={() => {
-                                navigator.clipboard.writeText(property.owner_contact);
-                              }}
-                              sx={{ ml: 1 }}
-                              title="Copy contact number"
-                            >
-                              <FileCopyIcon fontSize="small" />
-                            </IconButton>
+                            {property.owner_contact || 'N/A'}
+                            {property.owner_contact && (
+                              <IconButton size="small" onClick={() => navigator.clipboard.writeText(property.owner_contact)} sx={{ ml: 1 }}>
+                                <FileCopyIcon fontSize="small" />
+                              </IconButton>
+                            )}
                           </Box>
                         </TableCell>
                       </TableRow>
                       <TableRow>
-                        <TableCell component="th" scope="row" sx={{ fontWeight: 600 }}>
-                          Email
-                        </TableCell>
+                        <TableCell sx={{ fontWeight: 600 }}>Email</TableCell>
                         <TableCell>
                           <Box display="flex" alignItems="center">
-                            {property.owner_email}
-                            <IconButton
-                              size="small"
-                              onClick={() => {
-                                navigator.clipboard.writeText(property.owner_email);
-                              }}
-                              sx={{ ml: 1 }}
-                              title="Copy email"
-                            >
-                              <FileCopyIcon fontSize="small" />
-                            </IconButton>
+                            {property.owner_email || 'N/A'}
+                            {property.owner_email && (
+                              <IconButton size="small" onClick={() => navigator.clipboard.writeText(property.owner_email)} sx={{ ml: 1 }}>
+                                <FileCopyIcon fontSize="small" />
+                              </IconButton>
+                            )}
                           </Box>
                         </TableCell>
                       </TableRow>
@@ -808,20 +705,10 @@ const AssetDetail = () => {
                 </TableContainer>
               </TabPanel>
 
+              {/* Buyer Details */}
               {property.buyer_user && (
-                <TabPanel value={tabValue} index={isPlot ? 5 : 6}>
-                  <Typography
-                    variant="h5"
-                    fontWeight={600}
-                    gutterBottom
-                    sx={{
-                      color: "primary.main",
-                      mb: 3,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 1
-                    }}
-                  >
+                <TabPanel value={tabValue} index={buyerTabIndex}>
+                  <Typography variant="h5" fontWeight={600} color="primary.main" mb={3} display="flex" alignItems="center" gap={1}>
                     <PersonIcon /> Buyer Details
                   </Typography>
                   <TableContainer component={Paper} sx={{ boxShadow: 2 }}>
@@ -834,12 +721,10 @@ const AssetDetail = () => {
                           ['Email', property.buyer_user.email],
                           ['Booking Date', property.buyer_user.booking_date],
                           ['Purchase Date', property.buyer_user.purchase_date],
-                        ].map(([label, value], index) => (
-                          <TableRow key={index}>
-                            <TableCell component="th" scope="row" sx={{ fontWeight: 600, width: '30%' }}>
-                              {label}
-                            </TableCell>
-                            <TableCell>{value}</TableCell>
+                        ].map(([l, v], i) => (
+                          <TableRow key={i}>
+                            <TableCell sx={{ fontWeight: 600, width: '30%' }}>{l}</TableCell>
+                            <TableCell>{v || 'N/A'}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -848,40 +733,29 @@ const AssetDetail = () => {
                 </TabPanel>
               )}
 
-              <TabPanel value={tabValue} index={property.buyer_user ? (isPlot ? 6 : 7) : (isPlot ? 5 : 6)}>
-                <Typography
-                  variant="h5"
-                  fontWeight={600}
-                  gutterBottom
-                  sx={{
-                    color: "primary.main",
-                    mb: 3,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1
-                  }}
-                >
+              {/* System Info */}
+              <TabPanel value={tabValue} index={systemTabIndex}>
+                <Typography variant="h5" fontWeight={600} color="primary.main" mb={3} display="flex" alignItems="center" gap={1}>
                   <SettingsIcon /> System Information
                 </Typography>
                 <TableContainer component={Paper} sx={{ boxShadow: 2 }}>
                   <Table>
                     <TableBody>
                       {[
-                        ['Created At', new Date(property.created_at).toLocaleString()],
-                        ['Updated At', new Date(property.updated_at).toLocaleString()],
-                        ['User ID', property.user_id],
-                      ].map(([label, value], index) => (
-                        <TableRow key={index}>
-                          <TableCell component="th" scope="row" sx={{ fontWeight: 600, width: '30%' }}>
-                            {label}
-                          </TableCell>
-                          <TableCell>{value}</TableCell>
+                        ['Created At', property.created_at ? new Date(property.created_at).toLocaleString() : 'N/A'],
+                        ['Updated At', property.updated_at ? new Date(property.updated_at).toLocaleString() : 'N/A'],
+                        ['User ID', property.user_id || 'N/A'],
+                      ].map(([l, v], i) => (
+                        <TableRow key={i}>
+                          <TableCell sx={{ fontWeight: 600, width: '30%' }}>{l}</TableCell>
+                          <TableCell>{v}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
                   </Table>
                 </TableContainer>
               </TabPanel>
+
             </Box>
           </Card>
         </Container>

@@ -227,8 +227,8 @@ const PartnerDashboard = () => {
     { label: 'Bookings', value: transactionSummary?.bookings?.properties?.count ?? 0, icon: <FontAwesomeIcon icon={faUserPlus} />, path: '/p-bookedassets', bgColor: cardColors[4 % cardColors.length] },
     { label: 'Purchased', value: transactionSummary?.purchased?.properties?.count ?? 0, icon: <FontAwesomeIcon icon={faTags} />, path: '/p-purchasedassets', bgColor: cardColors[5 % cardColors.length] },
     { label: 'Sold', value: property?.total_sold_properties ?? 0, icon: <FontAwesomeIcon icon={faCheckCircle} />, path: '/p-soldassets', bgColor: cardColors[6 % cardColors.length] },
-    { label: 'Team Commissions Paid', value: `₹${commissionSummary.total_agent_commission_paid.toLocaleString('en-IN')}`, icon: <FontAwesomeIcon icon={faMoneyBillWave} />, path: '/p-commission', bgColor: cardColors[7 % cardColors.length] },
-    { label: 'Company Commissions Paid', value: `₹${commissionSummary.total_company_commission_paid.toLocaleString('en-IN')}`, icon: <FontAwesomeIcon icon={faMoneyBillWave} />, path: '/p-commission', bgColor: cardColors[8 % cardColors.length] },
+    { label: 'Team Payout', value: `₹${commissionSummary.total_agent_commission_paid.toLocaleString('en-IN')}`, icon: <FontAwesomeIcon icon={faMoneyBillWave} />, path: '/p-commission', bgColor: cardColors[7 % cardColors.length] },
+    { label: 'Company Payout', value: `₹${commissionSummary.total_company_commission_paid.toLocaleString('en-IN')}`, icon: <FontAwesomeIcon icon={faMoneyBillWave} />, path: '/p-commission', bgColor: cardColors[8 % cardColors.length] },
   ];
 
   const options = {

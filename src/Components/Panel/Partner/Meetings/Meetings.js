@@ -2,32 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from "../../../Shared/Partner/PartnerNavbar";
 import { Box, Card, CardContent, Typography, Button, Grid, Avatar, Modal } from '@mui/material';
-import TableLayout from '../../../Shared/TableLayout';
 import DisplayRequest from './DisplayRequests';
 import axios from 'axios';
 import { baseurl } from '../../../BaseURL/BaseURL';
-
-const profiles = [
-    {
-        id: 1,
-        label: 'Admin',
-        image: '/images/coach.png',
-        buttonText: 'Request Meeting',
-    },
-    {
-        id: 2,
-        label: 'Sales & Marketing',
-        image: '/images/psychologist.png',
-        buttonText: 'Request Meeting',
-    },
-];
+import { Pagination } from "@mui/material";
 
 function Meetings() {
     const navigate = useNavigate();
     const [subscriptionPaid, setSubscriptionPaid] = useState(false);
     const [openModal, setOpenModal] = useState(false);
-     const userId = localStorage.getItem("user_id");
+    const [departments, setDepartments] = useState([]); // ⬅ Dynamic Data State
+    const userId = localStorage.getItem("user_id");
+        const [page, setPage] = useState(1);
+    const cardsPerPage = 10; // 10 departments → next page
+    const paginatedDepartments = departments.slice(
+      (page - 1) * cardsPerPage,
+      page * cardsPerPage
+    );
+    
+    const totalPages = Math.ceil(departments.length / cardsPerPage);
+    
 
+    // Fetch Subscription Status
     useEffect(() => {
         if (userId) {
             axios.get(`${baseurl}/user-subscriptions/user-id/${userId}/`)
@@ -41,10 +37,19 @@ function Meetings() {
         }
     }, [userId]);
 
-    const handleRequestMeeting = (profileType) => {
+    // ⬅ Fetch Departments API
+    useEffect(() => {
+        axios.get(`${baseurl}/departments/`)
+            .then(res => {
+                setDepartments(res.data); // Save dynamic departments
+            })
+            .catch(err => console.log("Departments fetch error:", err));
+    }, []);
+
+    const handleRequestMeeting = (departmentName,id) => {
         if (subscriptionPaid) {
             navigate("/p-meetingrequest", {
-                state: { profileType },
+                state: { profileType: departmentName,departmentId:id },
             });
         } else {
             setOpenModal(true);
@@ -58,18 +63,22 @@ function Meetings() {
         <>
             <Header />
             <Box sx={{ p: 3 }}>
-                <Grid container spacing={3} justifyContent="center" >
-                    {profiles.map((profile) => (
-                        <Grid item xs={12} sm={6} md={4} key={profile.id}>
+                <Grid container spacing={3} justifyContent="center">
+                    
+                    {/* Dynamic Cards */}
+                    {paginatedDepartments.map((dept) => (
+                        <Grid item xs={6} sm={4} md={2.4} key={dept.id}>
                             <Card
-                                sx={{
-                                    borderRadius: 4,
+                                  sx={{
+                                    borderRadius: 3,
                                     textAlign: 'center',
                                     background: 'linear-gradient(180deg, #fdf9ff 0%, #e7f2ff 100%)',
-                                    boxShadow: 3,
+                                    boxShadow: 2,
                                     position: 'relative',
                                     overflow: 'visible',
-                                    mb:1
+                                    minHeight: 200,
+                                    padding: 1,
+
                                 }}
                             >
                                 <CardContent>
@@ -83,22 +92,17 @@ function Meetings() {
                                             color: '#4A4A4A',
                                         }}
                                     >
-                                        {profile.label}
+                                        {dept.name}
                                     </Typography>
 
                                     <Avatar
-                                        src={profile.image}
-                                        alt={profile.label}
-                                        sx={{
-                                            width: 100,
-                                            height: 100,
-                                            margin: '60px auto 20px',
-                                        }}
+                                        src="/images/coach.png"  // You can update to dynamic if needed
+                                        alt={dept.name}
+                                        sx={{ width: 70, height: 70, margin: '30px auto 15px' }}
                                     />
 
                                     <Button
                                         variant="contained"
-                                        color="secondary"
                                         sx={{
                                             borderRadius: 10,
                                             px: 4,
@@ -111,18 +115,34 @@ function Meetings() {
                                                 backgroundColor: '#f3e5f5',
                                             },
                                         }}
-                                        onClick={() => handleRequestMeeting(profile.label)}
+                                        onClick={() => handleRequestMeeting(dept.name,dept.id)}
                                     >
-                                        {profile.buttonText}
+                                        Request Meeting
                                     </Button>
                                 </CardContent>
                             </Card>
                         </Grid>
                     ))}
-                </Grid>
-                <DisplayRequest/>
 
-                {/* Subscription Required Modal */}
+                </Grid>
+                                {/* Pagination */}
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                  <Pagination
+                    count={totalPages}
+                    page={page}
+                    onChange={(e, value) => setPage(value)}
+                    color="primary"
+                    sx={{
+                      '& .MuiPaginationItem-root': {
+                        borderRadius: '0px',
+                      },
+                    }}
+                  />
+                </Box>
+                
+                <DisplayRequest />
+
+                {/* Subscription Modal */}
                 <Modal open={openModal} onClose={handleCloseModal}>
                     <Box sx={{
                         position: 'absolute',
@@ -135,25 +155,22 @@ function Meetings() {
                         p: 4,
                         borderRadius: '8px'
                     }}>
-                                           <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-                              Subscription Required
-                            </Typography>
-                            <Typography variant="body1" sx={{ mb: 3 }}>
-                              You need an active subscription to <Box component="span" sx={{ fontWeight: 'bold' }}>request meetings</Box>.
-                            </Typography>
+                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+                            Subscription Required
+                        </Typography>
+                        <Typography variant="body1" sx={{ mb: 3 }}>
+                            You need an active subscription to <Box component="span" sx={{ fontWeight: 'bold' }}>request meetings</Box>.
+                        </Typography>
                         <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
                             <Button variant="outlined" onClick={handleCloseModal}>
                                 Cancel
                             </Button>
-                            <Button 
-                                variant="contained" 
+                            <Button
+                                variant="contained"
                                 onClick={handleSubscribe}
-                                sx={{ 
-                                    backgroundColor: '#673ab7', 
-                                    '&:hover': { backgroundColor: '#5e35b1' } 
-                                }}
+                                sx={{ backgroundColor: '#673ab7', '&:hover': { backgroundColor: '#5e35b1' } }}
                             >
-                                Subscribe Now 
+                                Subscribe Now
                             </Button>
                         </Box>
                     </Box>

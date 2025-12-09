@@ -927,8 +927,9 @@ const handleCloseLogoModal = () => {
           <div className="row align-items-left">
             <div className="col-lg-6" data-aos="fade-right">
               <h2 className="section-title">Welcome to Shriraj Commercial Real Estate</h2>
-              <p>We specialize in connecting investors with premium commercial real estate opportunities across various sectors including warehouses, office buildings, retail spaces, and industrial complexes.</p>
-              <p>Our team of experts thoroughly vets each property to ensure it meets our high standards for investment potential, location quality, and long-term value appreciation.</p>
+              {/* <p>We specialize in connecting investors with premium commercial real estate opportunities across various sectors including warehouses, office buildings, retail spaces, and industrial complexes.</p> */}
+              {/* <p>Our team of experts thoroughly vets each property to ensure it meets our high standards for investment potential, location quality, and long-term value appreciation.</p> */}
+              <p>ShriRaj Team Business Community is a group where entrepreneurs, business owners, and professionals connect with each other, share experiences, expand their network, and create growth opportunities together.</p>
               <div className="text-center text-lg-start mt-4">
                 <a href="/properties" className="btn view-property-btn mt-3">View Properties</a>
               </div>

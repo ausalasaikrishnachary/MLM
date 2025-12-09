@@ -74,15 +74,16 @@
 // export default AssetDetails;
 
 
-
 import React, { useState, useEffect } from 'react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import {
   Typography, Grid, Box, Button, Divider, Chip, Card, CardContent,
-  Dialog, IconButton, Tabs, Tab, Container
+  Dialog, IconButton, Tabs, Tab, Container, Table, TableBody, TableCell,
+  TableContainer, TableRow, Paper, CircularProgress, Alert, Snackbar
 } from '@mui/material';
 import Header from '../../../Shared/Navbar/Navbar';
-// icons
+
+// Icons
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import CloseIcon from "@mui/icons-material/Close";
@@ -93,9 +94,9 @@ import HomeIcon from '@mui/icons-material/Home';
 import DetailsIcon from '@mui/icons-material/Details';
 import PersonIcon from '@mui/icons-material/Person';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { baseurl } from '../../../BaseURL/BaseURL';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-
+import FileCopyIcon from '@mui/icons-material/FileCopy';
+import { baseurl } from '../../../BaseURL/BaseURL';
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -114,102 +115,126 @@ const TabPanel = (props) => {
 
 const AssetDetails = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const location = useLocation();
+  const { property: passedProperty } = location.state || {};
 
-
-  const [openMedia, setOpenMedia] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [property, setProperty] = useState(passedProperty || null);
   const [propertyTypes, setPropertyTypes] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [isPlot, setIsPlot] = useState(false);
   const [tabValue, setTabValue] = useState(0);
-  const [formData, setFormData] = useState({
-  files: [],
-  agreement_video: null,
-  agreement_file: null,
-});
- const [uploading, setUploading] = useState(false);
+  const [openMedia, setOpenMedia] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [loading, setLoading] = useState(!passedProperty);
+  const [error, setError] = useState(null);
 
+  // Fetch property if not passed via state
+  useEffect(() => {
+    if (!passedProperty && id) {
+      const fetchProperty = async () => {
+        try {
+          setLoading(true);
+          setError(null);
+          
+          // Try both endpoints - check which one works for your admin panel
+          const endpoints = [
+            `${baseurl}/property/${id}/`,      // Same as partner panel
+            `${baseurl}/properties/${id}/`,    // Current admin endpoint
+            `${baseurl}/admin/property/${id}/` // Possible admin-specific endpoint
+          ];
 
-const { id } = useParams();
-const location = useLocation();
-const { property: passedProperty } = location.state || {};
+          let response = null;
+          let data = null;
 
-// ✅ State
-const [property, setProperty] = useState(passedProperty || null);
+          // Try each endpoint until one works
+          for (const endpoint of endpoints) {
+            try {
+              console.log(`Trying endpoint: ${endpoint}`);
+              response = await fetch(endpoint);
+              if (response.ok) {
+                data = await response.json();
+                console.log('Success with endpoint:', endpoint);
+                break;
+              }
+            } catch (err) {
+              console.warn(`Endpoint ${endpoint} failed:`, err.message);
+              continue;
+            }
+          }
 
-// ✅ Fetch Property (including files, video, agreement)
-useEffect(() => {
-  if (!passedProperty) {
-    const fetchPropertyById = async () => {
+          if (!data) {
+            throw new Error('Failed to fetch property from all endpoints');
+          }
+
+          setProperty({
+            ...data,
+            images: Array.isArray(data.images) ? data.images : [],
+            videos: Array.isArray(data.videos) ? data.videos : [],
+            files: Array.isArray(data.files) ? data.files : [],
+          });
+        } catch (err) {
+          console.error("Error fetching property:", err);
+          setError(err.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchProperty();
+    }
+  }, [id, passedProperty]);
+
+  // Fetch categories
+  useEffect(() => {
+    const fetchCategories = async () => {
       try {
-        const response = await fetch(`${baseurl}properties/${id}/`);
-        const data = await response.json();
-
-        // Ensure 'files' is always an array
-        setProperty({
-          ...data,
-          files: Array.isArray(data.files) ? data.files : [],
-        });
-      } catch (error) {
-        console.error("Error fetching property:", error);
+        const res = await fetch(`${baseurl}/property-categories/`);
+        if (!res.ok) throw new Error('Failed to fetch categories');
+        const data = await res.json();
+        setCategories(data);
+      } catch (err) {
+        console.error('Error fetching categories:', err);
       }
     };
+    fetchCategories();
+  }, []);
 
-    fetchPropertyById();
-  }
-}, [id, passedProperty]);
-
-
-
-
+  // Fetch property types and detect if it's a plot
   useEffect(() => {
-    // fetch property types
     const fetchPropertyTypes = async () => {
+      if (!property) return;
+      
       try {
-        const res = await fetch(`${baseurl}property-types/`);
+        const res = await fetch(`${baseurl}/property-types/`);
+        if (!res.ok) throw new Error('Failed to fetch property types');
         const data = await res.json();
         setPropertyTypes(data);
-        if (property) {
-          // find matched type
-          const matchedType = data.find(
-            (t) => t.property_type_id === property.property_type
-          );
-          if (matchedType?.name.toLowerCase() === "plot") {
-            setIsPlot(true);
-          }
-        }
+        
+        const type = data.find(t => t.property_type_id === property.property_type);
+        setIsPlot(type?.name?.toLowerCase() === "plot");
       } catch (err) {
-        console.error("Error fetching property types:", err);
+        console.error('Error fetching property types:', err);
       }
     };
+
     fetchPropertyTypes();
   }, [property]);
 
-  if (!property) {
-    return <Typography>Loading property details...</Typography>;
-  }
-
-  // Merge images + videos into one list
-  const media = [
-    ...property.images.map((img) => ({ type: "image", url: `${baseurl}${img.image}` })),
-    ...property.videos.map((vid) => ({ type: "video", url: `${baseurl}${vid.video}` }))
-  ];
-
-  const handleOpenMedia = (index) => {
-    setCurrentIndex(index);
-    setOpenMedia(true);
+  const getCategoryName = (id) => {
+    if (!id) return "N/A";
+    const cat = categories.find(c => c.property_category_id === id);
+    return cat ? cat.name : "N/A";
   };
 
-  const handleClose = () => setOpenMedia(false);
-
-  const handlePrev = () => {
-    setCurrentIndex((prev) => (prev === 0 ? media.length - 1 : prev - 1));
-  };
-
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev === media.length - 1 ? 0 : prev + 1));
+  const getPropertyTypeName = (id) => {
+    if (!id) return "N/A";
+    const type = propertyTypes.find(t => t.property_type_id === id);
+    return type ? type.name : "N/A";
   };
 
   const formatCurrency = (value) => {
+    if (!value || isNaN(value)) return 'N/A';
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
@@ -217,378 +242,319 @@ useEffect(() => {
     }).format(value);
   };
 
-  const handleTabChange = (event, newValue) => {
-    setTabValue(newValue);
-    // Scroll to top of content area when tab changes
-    const contentElement = document.getElementById('tab-content');
-    if (contentElement) {
-      contentElement.scrollTop = 0;
-    }
-  };
-
-  // Unique gradients for each section
-  const gradients = [
-    "linear-gradient(135deg, #6a11cb, #2575fc)",
-    "linear-gradient(135deg, #ff0051, #fe5196)",
-    "linear-gradient(135deg, #f76329, #ff8a65)",
-    "linear-gradient(135deg, #0f99b8, #4fc3f7)",
-    "linear-gradient(135deg, #0803a1, #5c6bc0)",
-    "linear-gradient(135deg, #cc7a07, #ffb74d)",
-    "linear-gradient(135deg, #b786e5, #d1c4e9)",
-    "linear-gradient(135deg, #f77062, #ff8a80)",
+  // Combined media array (images + videos)
+  const media = [
+    ...(property?.images || []).map(img => ({ 
+      type: "image", 
+      url: img.image?.startsWith('http') ? img.image : `${baseurl}${img.image}` 
+    })),
+    ...(property?.videos || []).map(vid => ({ 
+      type: "video", 
+      url: vid.video?.startsWith('http') ? vid.video : `${baseurl}${vid.video}` 
+    }))
   ];
 
-  const VisuallyHiddenInput = (props) => (
-  <input
-    {...props}
-    style={{
-      clip: 'rect(0 0 0 0)',
-      clipPath: 'inset(50%)',
-      height: 1,
-      overflow: 'hidden',
-      position: 'absolute',
-      bottom: 0,
-      left: 0,
-      whiteSpace: 'nowrap',
-      width: 1,
-    }}
-  />
-);
+  const handleOpenMedia = (index) => {
+    setCurrentIndex(index);
+    setOpenMedia(true);
+  };
 
-// Handle agreement document upload
-const handleAgreementFileUpload = (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    setFormData(prev => ({
-      ...prev,
-      agreement_file: file,
-    }));
-  }
-};
+  const handlePrev = () => setCurrentIndex(prev => (prev === 0 ? media.length - 1 : prev - 1));
+  const handleNext = () => setCurrentIndex(prev => (prev === media.length - 1 ? 0 : prev + 1));
+  const handleClose = () => setOpenMedia(false);
 
-// Remove agreement document
-const removeAgreementFile = () => {
-  setFormData(prev => ({
-    ...prev,
-    agreement_file: null,
-  }));
-};
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
+    const el = document.getElementById('tab-content');
+    if (el) el.scrollTop = 0;
+  };
 
-
-// Handle property documents upload
-const handleFileUpload = (e, field) => {
-  const selectedFiles = Array.from(e.target.files);
-  setFormData(prev => ({
-    ...prev,
-    [field]: [...prev[field], ...selectedFiles],
-  }));
-};
-
-// Remove uploaded document
-const removeFile = (index, field) => {
-  setFormData(prev => ({
-    ...prev,
-    [field]: prev[field].filter((_, i) => i !== index),
-  }));
-};
-
-const handleSaveFiles = async () => {
-  if (!id) {
-    alert("Property ID missing!");
-    return;
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
+          <CircularProgress />
+        </Box>
+      </>
+    );
   }
 
-  const formDataToSend = new FormData();
-
-  // Add property documents
-  formData.files.forEach((file) => {
-    formDataToSend.append("files", file);
-  });
-
-  // Add agreement video
-  if (formData.agreement_video) {
-    formDataToSend.append("agreement_video", formData.agreement_video);
+  if (error) {
+    return (
+      <>
+        <Header />
+        <Container maxWidth="lg" sx={{ mt: 4 }}>
+          <Alert severity="error" sx={{ mb: 2 }}>
+            Error loading property: {error}
+          </Alert>
+          <Button variant="outlined" onClick={() => navigate(-1)}>
+            Go Back
+          </Button>
+        </Container>
+      </>
+    );
   }
 
-  // Add agreement document
-  if (formData.agreement_file) {
-    formDataToSend.append("agreement_file", formData.agreement_file);
+  if (!property) {
+    return (
+      <>
+        <Header />
+        <Container maxWidth="lg" sx={{ mt: 4 }}>
+          <Alert severity="warning">Property not found</Alert>
+          <Button variant="outlined" onClick={() => navigate(-1)} sx={{ mt: 2 }}>
+            Go Back
+          </Button>
+        </Container>
+      </>
+    );
   }
 
-  try {
-    const response = await fetch(`${baseurl}properties/${id}/`, {
-      method: "PUT",
-      body: formDataToSend,
-    });
+  // Dynamic tab indexes calculation
+  const getTabIndexes = () => {
+    const baseIndexes = {
+      basic: 0,
+      address: 1,
+      dimensions: 2,
+      features: !isPlot ? 3 : null,
+      additionalInfo: !isPlot ? 4 : 3,
+      owner: !isPlot ? 5 : 4,
+      buyer: null,
+      system: null,
+      documents: null
+    };
 
-    if (response.ok) {
-      alert("Files uploaded successfully!");
-    } else {
-      const errorData = await response.json();
-      console.error("Upload failed:", errorData);
-      alert("Upload failed. Check console for details.");
+    let indexCounter = baseIndexes.additionalInfo + 1; // Start after additional info
+
+    // Buyer tab
+    if (property.buyer_user) {
+      baseIndexes.buyer = indexCounter;
+      indexCounter++;
     }
-  } catch (error) {
-    console.error("Error uploading files:", error);
-    alert("Something went wrong while uploading files.");
-  }
-};
 
-// Handle agreement video upload
-const handleAgreementVideoUpload = (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    setFormData(prev => ({
-      ...prev,
-      agreement_video: file,
-    }));
-  }
-};
+    // System tab
+    baseIndexes.system = indexCounter;
+    indexCounter++;
 
-// Remove agreement video
-const removeAgreementVideo = () => {
-  setFormData(prev => ({
-    ...prev,
-    agreement_video: null,
-  }));
-};
+    // Documents tab
+    baseIndexes.documents = indexCounter;
 
+    return baseIndexes;
+  };
 
-
-// // Handle agreement document upload
-// const handleAgreementFileUpload = (e) => {
-//   const file = e.target.files[0];
-//   if (file) {
-//     setFormData(prev => ({
-//       ...prev,
-//       agreement_file: file,
-//     }));
-//   }
-// };
-
-// Remove agreement document
-// const removeAgreementFile = () => {
-//   setFormData(prev => ({
-//     ...prev,
-//     agreement_file: null,
-//   }));
-// };
+  const tabIndexes = getTabIndexes();
 
   return (
     <>
       <Header />
-      <Box sx={{ background: '#f8f9fa', minHeight: '100vh', width: '100%', py: 3 }}>
+      <Box sx={{ background: '#f8f9fa', minHeight: '100vh', py: 4 }}>
         <Container maxWidth="lg">
-          {/* Back button */}
-          <Box mb={3}>
-            <Button
-              variant="outlined"
-              onClick={() => navigate(-1)}
-              startIcon={<ArrowBackIosNewIcon />}
-              sx={{ borderRadius: 2 }}
+          {/* Debug info - remove in production */}
+          <Snackbar
+            open={!!error}
+            autoHideDuration={6000}
+            onClose={() => setError(null)}
+          >
+            <Alert severity="error" onClose={() => setError(null)}>
+              {error}
+            </Alert>
+          </Snackbar>
+
+          <Box mb={4}>
+            <Button 
+              variant="outlined" 
+              onClick={() => navigate(-1)} 
+              startIcon={<ArrowBackIosNewIcon />} 
+              sx={{ borderRadius: 3 }}
             >
               Back
             </Button>
           </Box>
-          {/* Title + Status */}
-          <Card sx={{ borderRadius: 2, boxShadow: 2, mb: 3 }}>
-            <CardContent sx={{ p: 3 }}>
-              <Box
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-                flexWrap="wrap"
-                gap={2}
-              >
-                <Typography
-                  variant="h4"
-                  fontWeight={700}
-                  color="primary"
-                  gutterBottom
-                  sx={{ mb: 0 }}
-                >
-                  {property.property_title}
+
+          {/* Title & Price */}
+          <Card sx={{ borderRadius: 3, boxShadow: 3, mb: 4 }}>
+            <CardContent sx={{ p: 4 }}>
+              <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
+                <Typography variant="h4" fontWeight={700} color="primary">
+                  {property.property_title || 'Property Details'}
                 </Typography>
                 <Chip
-                  label={property.status.toUpperCase()}
+                  label={(property.status || 'available').toUpperCase()}
                   color={property.status === 'booked' ? 'secondary' : 'primary'}
-                  sx={{
-                    fontWeight: 600,
-                    fontSize: '0.9rem',
-                    py: 1
-                  }}
+                  sx={{ fontWeight: 600, fontSize: '1rem', py: 2.5, px: 2 }}
                 />
               </Box>
-             
-              {/* Price */}
-              <Typography variant="h5" color="text.secondary" sx={{ mt: 1 }}>
-                {formatCurrency(property.total_property_value)}
+              <Typography variant="h5" color="text.secondary" mt={2}>
+                {formatCurrency(property.total_property_value || property.property_value)}
               </Typography>
             </CardContent>
           </Card>
-          {/* Media Preview with Arrows */}
-          <Card sx={{ borderRadius: 2, boxShadow: 2, mb: 3, overflow: 'hidden' }}>
-            <Box
-              sx={{
-                position: "relative",
-                width: "100%",
-                height: { xs: 250, sm: 350, md: 400 },
-                overflow: "hidden",
-              }}
-            >
-              {media.length > 0 ? (
+
+          {/* Media Carousel - only show if property has media */}
+          {(property.images?.length > 0 || property.videos?.length > 0) && (
+            <Card sx={{ borderRadius: 3, boxShadow: 3, mb: 4, overflow: 'hidden' }}>
+              <Box sx={{ position: 'relative', height: { xs: 280, sm: 400, md: 500 } }}>
+                {media.length > 0 ? (
+                  <>
+                    {media[currentIndex].type === "video" ? (
+                      <video
+                        src={media[currentIndex].url}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'pointer' }}
+                        onClick={() => handleOpenMedia(currentIndex)}
+                        controls
+                      />
+                    ) : (
+                      <img
+                        src={media[currentIndex].url}
+                        alt="Property"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'pointer' }}
+                        onClick={() => handleOpenMedia(currentIndex)}
+                      />
+                    )}
+
+                    {media.length > 1 && (
+                      <>
+                        <IconButton 
+                          onClick={handlePrev} 
+                          sx={{ 
+                            position: 'absolute', 
+                            top: '50%', 
+                            left: 16, 
+                            transform: 'translateY(-50%)', 
+                            bgcolor: 'rgba(0,0,0,0.6)', 
+                            color: 'white',
+                            '&:hover': { bgcolor: 'rgba(0,0,0,0.8)' }
+                          }}
+                        >
+                          <ArrowBackIosNewIcon />
+                        </IconButton>
+                        <IconButton 
+                          onClick={handleNext} 
+                          sx={{ 
+                            position: 'absolute', 
+                            top: '50%', 
+                            right: 16, 
+                            transform: 'translateY(-50%)', 
+                            bgcolor: 'rgba(0,0,0,0.6)', 
+                            color: 'white',
+                            '&:hover': { bgcolor: 'rgba(0,0,0,0.8)' }
+                          }}
+                        >
+                          <ArrowForwardIosIcon />
+                        </IconButton>
+                        <Box sx={{ 
+                          position: 'absolute', 
+                          bottom: 16, 
+                          right: 16, 
+                          bgcolor: 'rgba(0,0,0,0.7)', 
+                          color: 'white', 
+                          px: 2, 
+                          py: 1, 
+                          borderRadius: 2 
+                        }}>
+                          {currentIndex + 1} / {media.length}
+                        </Box>
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <Box sx={{ 
+                    height: '100%', 
+                    bgcolor: '#e9ecef', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center' 
+                  }}>
+                    <Typography variant="h6" color="text.secondary">
+                      No media available
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+            </Card>
+          )}
+
+          {/* Fullscreen Media Dialog */}
+          <Dialog open={openMedia} onClose={handleClose} maxWidth="lg" fullWidth>
+            <Box sx={{ 
+              position: 'relative', 
+              bgcolor: 'black', 
+              height: '90vh', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center' 
+            }}>
+              <IconButton 
+                onClick={handleClose} 
+                sx={{ 
+                  position: 'absolute', 
+                  top: 16, 
+                  right: 16, 
+                  color: 'white', 
+                  zIndex: 10 
+                }}
+              >
+                <CloseIcon fontSize="large" />
+              </IconButton>
+              {media.length > 1 && (
                 <>
-                  {media[currentIndex]?.type === "video" ? (
-                    <video
-                      src={media[currentIndex].url}
-                      style={{ width: "100%", height: "100%", objectFit: "cover", cursor: "pointer" }}
-                      onClick={() => handleOpenMedia(currentIndex)}
-                    />
-                  ) : (
-                    <img
-                      src={media[currentIndex]?.url}
-                      alt="Property Media"
-                      style={{ width: "100%", height: "100%", objectFit: "cover", cursor: "pointer" }}
-                      onClick={() => handleOpenMedia(currentIndex)}
-                    />
-                  )}
-                  {/* Left Arrow */}
-                  {media.length > 1 && (
-                    <IconButton
-                      onClick={handlePrev}
-                      sx={{
-                        position: "absolute",
-                        top: "50%",
-                        left: 10,
-                        transform: "translateY(-50%)",
-                        color: "white",
-                        backgroundColor: "rgba(0,0,0,0.4)",
-                        "&:hover": { backgroundColor: "rgba(0,0,0,0.7)" },
-                      }}
-                    >
-                      <ArrowBackIosNewIcon />
-                    </IconButton>
-                  )}
-                  {/* Right Arrow */}
-                  {media.length > 1 && (
-                    <IconButton
-                      onClick={handleNext}
-                      sx={{
-                        position: "absolute",
-                        top: "50%",
-                        right: 10,
-                        transform: "translateY(-50%)",
-                        color: "white",
-                        backgroundColor: "rgba(0,0,0,0.4)",
-                        "&:hover": { backgroundColor: "rgba(0,0,0,0.7)" },
-                      }}
-                    >
-                      <ArrowForwardIosIcon />
-                    </IconButton>
-                  )}
-                  {/* Media Counter */}
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      bottom: 10,
-                      right: 10,
-                      backgroundColor: "rgba(0,0,0,0.6)",
-                      color: "white",
-                      px: 1.5,
-                      py: 0.5,
-                      borderRadius: 4,
-                      fontSize: "0.8rem"
+                  <IconButton 
+                    onClick={handlePrev} 
+                    sx={{ 
+                      position: 'absolute', 
+                      left: 32, 
+                      color: 'white', 
+                      zIndex: 10 
                     }}
                   >
-                    {currentIndex + 1} / {media.length}
-                  </Box>
+                    <ArrowBackIosNewIcon fontSize="large" />
+                  </IconButton>
+                  <IconButton 
+                    onClick={handleNext} 
+                    sx={{ 
+                      position: 'absolute', 
+                      right: 32, 
+                      color: 'white', 
+                      zIndex: 10 
+                    }}
+                  >
+                    <ArrowForwardIosIcon fontSize="large" />
+                  </IconButton>
                 </>
-              ) : (
-                <Box
-                  sx={{
-                    width: "100%",
-                    height: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    backgroundColor: "#e9ecef"
-                  }}
-                >
-                  <Typography variant="h6" color="text.secondary">
-                    No media available
-                  </Typography>
-                </Box>
               )}
-            </Box>
-            {/* Video Info */}
-            {property.videos.length > 0 && (
-              <Box sx={{ p: 2, textAlign: 'center', bgcolor: 'background.paper' }}>
-                <Typography variant="body2" color="text.secondary">
-                  🎥 {property.videos.length} video(s) available
-                </Typography>
-              </Box>
-            )}
-          </Card>
-          {/* Full-size Media Dialog */}
-          <Dialog open={openMedia} onClose={handleClose} maxWidth="lg" fullWidth>
-            <Box
-              sx={{
-                position: "relative",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                bgcolor: "black",
-                height: "80vh",
-              }}
-            >
-              <IconButton
-                onClick={handleClose}
-                sx={{ position: "absolute", top: 10, right: 10, color: "white", zIndex: 10 }}
-              >
-                <CloseIcon />
-              </IconButton>
-              <IconButton
-                onClick={handlePrev}
-                sx={{ position: "absolute", left: 10, color: "white", zIndex: 10 }}
-              >
-                <ArrowBackIosNewIcon fontSize="large" />
-              </IconButton>
               {media[currentIndex]?.type === "video" ? (
-                <video
-                  src={media[currentIndex].url}
-                  controls
-                  style={{ maxHeight: "100%", maxWidth: "100%" }}
+                <video 
+                  src={media[currentIndex].url} 
+                  controls 
+                  autoPlay 
+                  style={{ maxHeight: '100%', maxWidth: '100%' }} 
                 />
               ) : (
-                <img
-                  src={media[currentIndex]?.url}
-                  alt="Property Media"
-                  style={{ maxHeight: "100%", maxWidth: "100%" }}
+                <img 
+                  src={media[currentIndex]?.url} 
+                  alt="Full view" 
+                  style={{ 
+                    maxHeight: '100%', 
+                    maxWidth: '100%', 
+                    objectFit: 'contain' 
+                  }} 
                 />
               )}
-              <IconButton
-                onClick={handleNext}
-                sx={{ position: "absolute", right: 10, color: "white", zIndex: 10 }}
-              >
-                <ArrowForwardIosIcon fontSize="large" />
-              </IconButton>
             </Box>
           </Dialog>
-          {/* Tab Navigation */}
-          <Card sx={{ borderRadius: 2, boxShadow: 2, mb: 3 }}>
+
+          {/* Tabs */}
+          <Card sx={{ borderRadius: 3, boxShadow: 3 }}>
             <Tabs
               value={tabValue}
               onChange={handleTabChange}
               variant="scrollable"
               scrollButtons="auto"
               allowScrollButtonsMobile
-              sx={{
-                borderBottom: 1,
-                borderColor: 'divider',
-                '& .MuiTab-root': {
-                  minHeight: 60,
-                  py: 1.5,
-                }
+              sx={{ 
+                borderBottom: 1, 
+                borderColor: 'divider', 
+                '& .MuiTab-root': { minHeight: 68, py: 2 } 
               }}
             >
               <Tab icon={<InfoIcon />} iconPosition="start" label="Basic Info" />
@@ -599,137 +565,87 @@ const removeAgreementVideo = () => {
               <Tab icon={<PersonIcon />} iconPosition="start" label="Owner Details" />
               {property.buyer_user && <Tab icon={<PersonIcon />} iconPosition="start" label="Buyer Details" />}
               <Tab icon={<SettingsIcon />} iconPosition="start" label="System Info" />
-              <Tab icon={<UploadFileIcon />} iconPosition="start" label="File Info" />
-
+              <Tab icon={<UploadFileIcon />} iconPosition="start" label="Documents" />
             </Tabs>
-            {/* Tab Content */}
-            <Box id="tab-content" sx={{ maxHeight: '60vh', overflow: 'auto', p: 3 }}>
-              <TabPanel value={tabValue} index={0}>
-                <Typography
-                  variant="h5"
-                  fontWeight={600}
-                  gutterBottom
-                  sx={{
-                    background: gradients[0],
-                    color: "white",
-                    px: 2,
-                    py: 1,
-                    borderRadius: 1,
-                    mb: 3
-                  }}
-                >
-                  Basic Information
+
+            <Box id="tab-content" sx={{ maxHeight: '70vh', overflow: 'auto', p: 4 }}>
+              {/* Basic Info */}
+              <TabPanel value={tabValue} index={tabIndexes.basic}>
+                <Typography variant="h5" fontWeight={600} color="primary.main" mb={3} display="flex" alignItems="center" gap={1}>
+                  <InfoIcon /> Basic Information
                 </Typography>
                 <Grid container spacing={3}>
                   {[
-                    ['Looking to', property.looking_to],
-                    ['Property Value', formatCurrency(property.total_property_value)],
-                    ['Category', property.category],
-                    ['Property Type', property.property_type],
-                  ].map(([label, value], index) => (
-                    <Grid item xs={12} sm={6} key={index}>
-                      <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
-                        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                          {label}
-                        </Typography>
-                        <Typography variant="body1" fontWeight={500}>
-                          {value}
-                        </Typography>
+                    ['Looking to', property.looking_to || 'N/A'],
+                    ['Property Value', formatCurrency(property.total_property_value || property.property_value)],
+                    ['Category', getCategoryName(property.category)],
+                    ['Property Type', getPropertyTypeName(property.property_type)]
+                  ].map(([label, value], i) => (
+                    <Grid item xs={12} sm={6} key={i}>
+                      <Box p={2.5} bgcolor="grey.50" borderRadius={2}>
+                        <Typography variant="subtitle2" color="text.secondary">{label}</Typography>
+                        <Typography variant="body1" fontWeight={500}>{value}</Typography>
                       </Box>
                     </Grid>
                   ))}
                   <Grid item xs={12}>
-                    <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
-                      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                        Description
-                      </Typography>
+                    <Box p={2.5} bgcolor="grey.50" borderRadius={2}>
+                      <Typography variant="subtitle2" color="text.secondary">Description</Typography>
                       <Typography variant="body1" fontWeight={500}>
-                        {property.description}
+                        {property.description || 'No description available'}
                       </Typography>
                     </Box>
                   </Grid>
                 </Grid>
               </TabPanel>
-              <TabPanel value={tabValue} index={1}>
-                <Typography
-                  variant="h5"
-                  fontWeight={600}
-                  gutterBottom
-                  sx={{
-                    background: gradients[1],
-                    color: "white",
-                    px: 2,
-                    py: 1,
-                    borderRadius: 1,
-                    mb: 3
-                  }}
-                >
-                  Address
+
+              {/* Address */}
+              <TabPanel value={tabValue} index={tabIndexes.address}>
+                <Typography variant="h5" fontWeight={600} color="primary.main" mb={3} display="flex" alignItems="center" gap={1}>
+                  <LocationOnIcon /> Address
                 </Typography>
-                <Box sx={{ p: 3, bgcolor: 'grey.50', borderRadius: 2 }}>
+                <Box p={4} bgcolor="grey.50" borderRadius={2}>
                   <Typography variant="h6" gutterBottom>
-                    {property.address}
+                    {property.address || 'N/A'}
                   </Typography>
-                  <Typography variant="body1" paragraph>
-                    {property.city}, {property.state}, {property.country} - {property.pin_code}
+                  <Typography variant="body1">
+                    {[property.city, property.state, property.country].filter(Boolean).join(', ')}
+                    {property.pin_code ? ` - ${property.pin_code}` : ''}
                   </Typography>
                   <Divider sx={{ my: 2 }} />
                   <Typography variant="body2" color="text.secondary">
-                    <strong>Coordinates:</strong> {property.latitude}, {property.longitude}
+                    <strong>Coordinates:</strong> {property.latitude || 'N/A'}, {property.longitude || 'N/A'}
                   </Typography>
                 </Box>
               </TabPanel>
-              <TabPanel value={tabValue} index={2}>
-                <Typography
-                  variant="h5"
-                  fontWeight={600}
-                  gutterBottom
-                  sx={{
-                    background: gradients[2],
-                    color: "white",
-                    px: 2,
-                    py: 1,
-                    borderRadius: 1,
-                    mb: 3
-                  }}
-                >
-                  Dimensions
+
+              {/* Dimensions */}
+              <TabPanel value={tabValue} index={tabIndexes.dimensions}>
+                <Typography variant="h5" fontWeight={600} color="primary.main" mb={3} display="flex" alignItems="center" gap={1}>
+                  <SquareFootIcon /> Dimensions
                 </Typography>
                 <Grid container spacing={3}>
                   {[
-                    ['Area', `${property.area} ${property.area_unit}`],
-                    ['Length', `${property.length_ft} ft`],
-                    ['Breadth', `${property.breadth_ft} ft`],
-                  ].map(([label, value], index) => (
-                    <Grid item xs={12} sm={6} md={4} key={index}>
-                      <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 2, height: '100%' }}>
-                        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                          {label}
-                        </Typography>
-                        <Typography variant="h6" fontWeight={600}>
-                          {value}
-                        </Typography>
+                    ['Area', `${property.area || 'N/A'} ${property.area_unit || ''}`],
+                    ['Built-up Area', `${property.builtup_area || 'N/A'} ${property.area_unit || ''}`],
+                    ['Length', `${property.length_ft || 'N/A'} ft`],
+                    ['Breadth', `${property.breadth_ft || 'N/A'} ft`]
+                  ].map(([label, value], i) => (
+                    <Grid item xs={12} sm={6} key={i}>
+                      <Box p={2.5} bgcolor="grey.50" borderRadius={2}>
+                        <Typography variant="subtitle2" color="text.secondary">{label}</Typography>
+                        <Typography variant="h6" fontWeight={600}>{value}</Typography>
                       </Box>
                     </Grid>
                   ))}
                 </Grid>
               </TabPanel>
+
+              {/* Features - only for non-plot properties */}
               {!isPlot && (
-                <TabPanel value={tabValue} index={3}>
-                  <Typography
-                    variant="h5"
-                    fontWeight={600}
-                    gutterBottom
-                    sx={{
-                      background: gradients[3],
-                      color: "white",
-                      px: 2,
-                      py: 1,
-                      borderRadius: 1,
-                      mb: 3
-                    }}
-                  >
-                    Features
+                <TabPanel value={tabValue} index={tabIndexes.features}>
+                  <Typography variant="h5" fontWeight={600} color="primary.main" mb={3} display="flex" alignItems="center" gap={1}>
+                    <HomeIcon /> Features
                   </Typography>
                   <Grid container spacing={3}>
                     {[
@@ -737,56 +653,40 @@ const removeAgreementVideo = () => {
                       ['Facing', property.facing],
                       ['Open Sides', property.number_of_open_sides],
                       ['Roads', property.number_of_roads],
-                      ['Road Width 1', `${property.road_width_1_ft} ft`],
-                      ['Road Width 2', `${property.road_width_2_ft} ft`],
+                      ['Road Width 1', property.road_width_1_ft ? `${property.road_width_1_ft} ft` : 'N/A'],
+                      ['Road Width 2', property.road_width_2_ft ? `${property.road_width_2_ft} ft` : 'N/A'],
                       ['Floor', property.floor || 'N/A'],
-                      ['Furnishing Status', property.furnishing_status || 'N/A'],
-                      ['Ownership', property.ownership_type],
+                      ['Furnishing', property.furnishing_status || 'N/A'],
+                      ['Ownership', property.ownership_type || 'N/A'],
                       ['Bedrooms', property.number_of_bedrooms || 'N/A'],
                       ['Bathrooms', property.number_of_bathrooms || 'N/A'],
-                      ['Balconies', property.number_of_balconies || 'N/A'],
-                    ].map(([label, value], index) => (
-                      <Grid item xs={12} sm={6} md={4} key={index}>
-                        <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 2, height: '100%' }}>
-                          <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                            {label}
-                          </Typography>
-                          <Typography variant="body1" fontWeight={500}>
-                            {value}
-                          </Typography>
+                      ['Balconies', property.number_of_balconies || 'N/A']
+                    ].map(([label, value], i) => (
+                      <Grid item xs={12} sm={6} md={4} key={i}>
+                        <Box p={2.5} bgcolor="grey.50" borderRadius={2}>
+                          <Typography variant="subtitle2" color="text.secondary">{label}</Typography>
+                          <Typography variant="body1" fontWeight={500}>{value}</Typography>
                         </Box>
                       </Grid>
                     ))}
                   </Grid>
                 </TabPanel>
               )}
-              <TabPanel value={tabValue} index={isPlot ? 3 : 4}>
-                <Typography
-                  variant="h5"
-                  fontWeight={600}
-                  gutterBottom
-                  sx={{
-                    background: gradients[4],
-                    color: "white",
-                    px: 2,
-                    py: 1,
-                    borderRadius: 1,
-                    mb: 3
-                  }}
-                >
-                  Additional Information
+
+              {/* Additional Info */}
+              <TabPanel value={tabValue} index={tabIndexes.additionalInfo}>
+                <Typography variant="h5" fontWeight={600} color="primary.main" mb={3} display="flex" alignItems="center" gap={1}>
+                  <DetailsIcon /> Additional Information
                 </Typography>
                 <Grid container spacing={3}>
                   {[
                     ['Property Uniqueness', property.property_uniqueness],
                     ['Location Advantages', property.location_advantages],
-                    ['Other Features', property.other_features],
-                  ].map(([label, value], index) => (
-                    <Grid item xs={12} key={index}>
-                      <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
-                        <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                          {label}
-                        </Typography>
+                    ['Other Features', property.other_features]
+                  ].map(([label, value], i) => (
+                    <Grid item xs={12} key={i}>
+                      <Box p={2.5} bgcolor="grey.50" borderRadius={2}>
+                        <Typography variant="subtitle2" color="text.secondary">{label}</Typography>
                         <Typography variant="body1" fontWeight={500}>
                           {value || 'N/A'}
                         </Typography>
@@ -795,236 +695,171 @@ const removeAgreementVideo = () => {
                   ))}
                 </Grid>
               </TabPanel>
-              <TabPanel value={tabValue} index={isPlot ? 4 : 5}>
-                <Typography
-                  variant="h5"
-                  fontWeight={600}
-                  gutterBottom
-                  sx={{
-                    background: gradients[5],
-                    color: "white",
-                    px: 2,
-                    py: 1,
-                    borderRadius: 1,
-                    mb: 3
-                  }}
-                >
-                  Owner Details
+
+              {/* Owner Details */}
+              <TabPanel value={tabValue} index={tabIndexes.owner}>
+                <Typography variant="h5" fontWeight={600} color="primary.main" mb={3} display="flex" alignItems="center" gap={1}>
+                  <PersonIcon /> Owner Details
                 </Typography>
-                <Box sx={{ p: 3, bgcolor: 'grey.50', borderRadius: 2 }}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                      <Typography variant="subtitle2" color="text.secondary">
-                        Name
-                      </Typography>
-                      <Typography variant="body1" fontWeight={500}>
-                        {property.owner_name}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <Typography variant="subtitle2" color="text.secondary">
-                        Contact
-                      </Typography>
-                      <Typography variant="body1" fontWeight={500}>
-                        {property.owner_contact}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <Typography variant="subtitle2" color="text.secondary">
-                        Email
-                      </Typography>
-                      <Typography variant="body1" fontWeight={500}>
-                        {property.owner_email}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Box>
+                <TableContainer component={Paper} sx={{ boxShadow: 2 }}>
+                  <Table>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell sx={{ fontWeight: 600, width: '30%' }}>Name</TableCell>
+                        <TableCell>{property.owner_name || 'N/A'}</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell sx={{ fontWeight: 600 }}>Contact</TableCell>
+                        <TableCell>
+                          <Box display="flex" alignItems="center">
+                            {property.owner_contact || 'N/A'}
+                            {property.owner_contact && (
+                              <IconButton 
+                                size="small" 
+                                onClick={() => navigator.clipboard.writeText(property.owner_contact)} 
+                                sx={{ ml: 1 }}
+                                title="Copy contact number"
+                              >
+                                <FileCopyIcon fontSize="small" />
+                              </IconButton>
+                            )}
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell sx={{ fontWeight: 600 }}>Email</TableCell>
+                        <TableCell>
+                          <Box display="flex" alignItems="center">
+                            {property.owner_email || 'N/A'}
+                            {property.owner_email && (
+                              <IconButton 
+                                size="small" 
+                                onClick={() => navigator.clipboard.writeText(property.owner_email)} 
+                                sx={{ ml: 1 }}
+                                title="Copy email"
+                              >
+                                <FileCopyIcon fontSize="small" />
+                              </IconButton>
+                            )}
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </TableContainer>
               </TabPanel>
+
+              {/* Buyer Details - only if buyer_user exists */}
               {property.buyer_user && (
-                <TabPanel value={tabValue} index={isPlot ? 5 : 6}>
-                  <Typography
-                    variant="h5"
-                    fontWeight={600}
-                    gutterBottom
-                    sx={{
-                      background: gradients[6],
-                      color: "white",
-                      px: 2,
-                      py: 1,
-                      borderRadius: 1,
-                      mb: 3
-                    }}
-                  >
-                    Buyer Details
+                <TabPanel value={tabValue} index={tabIndexes.buyer}>
+                  <Typography variant="h5" fontWeight={600} color="primary.main" mb={3} display="flex" alignItems="center" gap={1}>
+                    <PersonIcon /> Buyer Details
                   </Typography>
-                  <Box sx={{ p: 3, bgcolor: 'grey.50', borderRadius: 2 }}>
-                    <Grid container spacing={2}>
-                      {[
-                        ['Username', property.buyer_user.username],
-                        ['Referral ID', property.buyer_user.referral_id],
-                        ['Contact', property.buyer_user.phone_number],
-                        ['Email', property.buyer_user.email],
-                        ['Booking Date', property.buyer_user.booking_date],
-                        ['Purchase Date', property.buyer_user.purchase_date],
-                      ].map(([label, value], index) => (
-                        <Grid item xs={12} sm={6} key={index}>
-                          <Typography variant="subtitle2" color="text.secondary">
-                            {label}
-                          </Typography>
-                          <Typography variant="body1" fontWeight={500}>
-                            {value}
-                          </Typography>
-                        </Grid>
-                      ))}
-                    </Grid>
-                  </Box>
+                  <TableContainer component={Paper} sx={{ boxShadow: 2 }}>
+                    <Table>
+                      <TableBody>
+                        {[
+                          ['Username', property.buyer_user.username],
+                          ['Referral ID', property.buyer_user.referral_id],
+                          ['Contact', property.buyer_user.phone_number],
+                          ['Email', property.buyer_user.email],
+                          ['Booking Date', property.buyer_user.booking_date],
+                          ['Purchase Date', property.buyer_user.purchase_date]
+                        ].map(([label, value], i) => (
+                          <TableRow key={i}>
+                            <TableCell sx={{ fontWeight: 600, width: '30%' }}>{label}</TableCell>
+                            <TableCell>{value || 'N/A'}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
                 </TabPanel>
               )}
-              <TabPanel value={tabValue} index={property.buyer_user ? (isPlot ? 6 : 7) : (isPlot ? 5 : 6)}>
-                <Typography
-                  variant="h5"
-                  fontWeight={600}
-                  gutterBottom
-                  sx={{
-                    background: gradients[7],
-                    color: "white",
-                    px: 2,
-                    py: 1,
-                    borderRadius: 1,
-                    mb: 3
-                  }}
-                >
-                  System Information
+
+              {/* System Info */}
+              <TabPanel value={tabValue} index={tabIndexes.system}>
+                <Typography variant="h5" fontWeight={600} color="primary.main" mb={3} display="flex" alignItems="center" gap={1}>
+                  <SettingsIcon /> System Information
                 </Typography>
-                <Box sx={{ p: 3, bgcolor: 'grey.50', borderRadius: 2 }}>
-                  <Grid container spacing={2}>
-                    {[
-                      ['Created At', new Date(property.created_at).toLocaleString()],
-                      ['Updated At', new Date(property.updated_at).toLocaleString()],
-                      ['User ID', property.user_id],
-                    ].map(([label, value], index) => (
-                      <Grid item xs={12} sm={6} key={index}>
-                        <Typography variant="subtitle2" color="text.secondary">
-                          {label}
-                        </Typography>
-                        <Typography variant="body1" fontWeight={500}>
-                          {value}
-                        </Typography>
-                      </Grid>
-                    ))}
-                  </Grid>
-                </Box>
+                <TableContainer component={Paper} sx={{ boxShadow: 2 }}>
+                  <Table>
+                    <TableBody>
+                      {[
+                        ['Created At', property.created_at ? new Date(property.created_at).toLocaleString() : 'N/A'],
+                        ['Updated At', property.updated_at ? new Date(property.updated_at).toLocaleString() : 'N/A'],
+                        ['User ID', property.user_id || 'N/A']
+                      ].map(([label, value], i) => (
+                        <TableRow key={i}>
+                          <TableCell sx={{ fontWeight: 600, width: '30%' }}>{label}</TableCell>
+                          <TableCell>{value}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
               </TabPanel>
-<TabPanel
-  value={tabValue}
-  index={
-    property?.buyer_user
-      ? (isPlot ? 7 : 8)
-      : (isPlot ? 6 : 7)
-  }
->
-  <Typography
-    variant="h5"
-    fontWeight={600}
-    gutterBottom
-    sx={{
-      background: "linear-gradient(135deg, #673ab7, #9575cd)",
-      color: "white",
-      px: 2,
-      py: 1,
-      borderRadius: 1,
-      mb: 3,
-    }}
-  >
-    File Information
-  </Typography>
 
-  {!property ? (
-    <Typography>Loading property details...</Typography>
-  ) : (
-    <Grid container spacing={3}>
-      {/* Uploaded Property Documents */}
-      {property.files && property.files.length > 0 && (
-        <Grid item xs={12}>
-          <Typography variant="h6" gutterBottom>
-            Uploaded Documents
-          </Typography>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-            {property.files.map((fileObj, index) => {
-              const filePath = fileObj.file || fileObj;
-              const fileName = filePath.split("/").pop();
+              {/* Documents Tab */}
+              <TabPanel value={tabValue} index={tabIndexes.documents}>
+                <Typography variant="h5" fontWeight={600} color="primary.main" mb={3} display="flex" alignItems="center" gap={1}>
+                  <UploadFileIcon /> Documents & Agreement
+                </Typography>
+                <Grid container spacing={3}>
+                  {property.files?.length > 0 && (
+                    <Grid item xs={12}>
+                      <Typography variant="h6" gutterBottom>Uploaded Documents</Typography>
+                      {property.files.map((file, i) => {
+                        const path = typeof file === 'string' ? file : file.file || '';
+                        const filename = path.split('/').pop() || `Document ${i + 1}`;
+                        const url = path.startsWith('http') ? path : `${baseurl}${path}`;
+                        return (
+                          <Button
+                            key={i}
+                            variant="outlined"
+                            href={url}
+                            target="_blank"
+                            rel="noopener"
+                            startIcon={<FileCopyIcon />}
+                            sx={{ mr: 2, mb: 2, textTransform: 'none' }}
+                          >
+                            {filename}
+                          </Button>
+                        );
+                      })}
+                    </Grid>
+                  )}
 
-              return (
-                <Button
-                  key={index}
-                  variant="text"
-                  color="secondary"
-                  href={`${baseurl}${filePath}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  sx={{ textTransform: "none", justifyContent: "flex-start" }}
-                >
-                  📄 {fileName}
-                </Button>
-              );
-            })}
-          </Box>
-        </Grid>
-      )}
+                  {property.agreement_video && (
+                    <Grid item xs={12}>
+                      <Typography variant="h6" gutterBottom>Agreement Video</Typography>
+                      <video 
+                        src={`${baseurl}${property.agreement_video}`} 
+                        controls 
+                        style={{ width: '100%', maxWidth: 720, borderRadius: 8 }} 
+                      />
+                    </Grid>
+                  )}
 
-      {/* Agreement Video */}
-      {property.agreement_video && (
-        <Grid item xs={12}>
-          <Typography variant="h6" gutterBottom>
-            Agreement Video
-          </Typography>
-          <video
-            src={`${baseurl}${property.agreement_video}`}
-            controls
-            style={{
-              width: "100%",
-              maxWidth: 600,
-              borderRadius: 8,
-              boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-            }}
-          />
-        </Grid>
-      )}
+                  {property.agreement_file && (
+                    <Grid item xs={12}>
+                      <Typography variant="h6" gutterBottom>Agreement Document</Typography>
+                      <Button 
+                        variant="outlined" 
+                        href={`${baseurl}${property.agreement_file}`} 
+                        target="_blank"
+                        startIcon={<FileCopyIcon />}
+                      >
+                        Download Agreement PDF
+                      </Button>
+                    </Grid>
+                  )}
 
-      {/* Agreement Document */}
-      {property.agreement_file && (
-        <Grid item xs={12}>
-          <Typography variant="h6" gutterBottom>
-            Agreement Document
-          </Typography>
-          <Button
-            variant="outlined"
-            color="primary"
-            href={`${baseurl}${property.agreement_file}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            View Agreement File
-          </Button>
-        </Grid>
-      )}
-
-      {/* No files fallback */}
-      {!property.agreement_video &&
-        !property.agreement_file &&
-        (!property.files || property.files.length === 0) && (
-          <Grid item xs={12}>
-            <Typography variant="body1" color="text.secondary">
-              No files available for this property.
-            </Typography>
-          </Grid>
-        )}
-    </Grid>
-  )}
-</TabPanel>
-
-
-
+                  {(!property.files || property.files.length === 0) && !property.agreement_video && !property.agreement_file && (
+                    <Typography color="text.secondary">No documents available.</Typography>
+                  )}
+                </Grid>
+              </TabPanel>
             </Box>
           </Card>
         </Container>
@@ -1033,4 +868,4 @@ const removeAgreementVideo = () => {
   );
 };
 
-export default AssetDetails;  
+export default AssetDetails;

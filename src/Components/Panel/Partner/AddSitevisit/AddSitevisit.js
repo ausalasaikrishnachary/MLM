@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -6,6 +6,10 @@ import {
   TextField,
   Typography,
   Container,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select,
 } from "@mui/material";
 import PartnerHeader from "../../../Shared/Partner/PartnerNavbar";
 import axios from "axios";
@@ -16,20 +20,44 @@ function AddSitevisit() {
   const navigate = useNavigate();
   const agentId = localStorage.getItem("user_id");
 
+  const [agents, setAgents] = useState([]);
   const [formData, setFormData] = useState({
     date: "",
-    time: "", // <-- keep time field
-    user_id: agentId, // backend expects agent_id
+    time: "",
+    agent_id: "", // Changed from user_id to agent_id for dropdown
     site_name: "",
     site_owner_name: "",
     site_owner_mobile_number: "",
-    site_owner_email: "",
+    user_id: agentId, // Keep user_id as the logged-in agent
     site_location: "",
     customer_name: "",
     customer_mobile_number: "",
     remarks: "",
     site_photo: null,
   });
+
+  // Fetch agents for dropdown
+  useEffect(() => {
+    const fetchAgents = async () => {
+      try {
+        const referralId = localStorage.getItem('referral_id');
+        if (referralId) {
+          const response = await axios.get(`${baseurl}/agents/referral-id/${referralId}/`);
+          // Extract agents from response and format for dropdown
+          const agentsList = response.data.agents.map(agent => ({
+            id: agent.user_id,
+            name: agent.first_name,
+            referral_id: agent.referral_id
+          }));
+          setAgents(agentsList);
+        }
+      } catch (error) {
+        console.error("Error fetching agents:", error);
+      }
+    };
+
+    fetchAgents();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -47,9 +75,7 @@ function AddSitevisit() {
 
       // Append fields
       Object.entries(formData).forEach(([key, value]) => {
-        if (key === "user_id") {
-          payload.append("agent_id", parseInt(value)); // backend expects agent_id
-        } else {
+        if (value !== null && value !== "") {
           payload.append(key, value);
         }
       });
@@ -82,8 +108,6 @@ function AddSitevisit() {
         </Box>
 
         <form onSubmit={handleSubmit}>
-         
-
           <Grid container spacing={3}>
             {/* Row 1 */}
             <Grid item xs={12} md={4}>
@@ -114,17 +138,24 @@ function AddSitevisit() {
               />
             </Grid>
 
-            {/* <Grid item xs={12} md={4}>
-              <TextField
-                fullWidth
-                label="Agent ID"
-                name="agent_id"
-                value={formData.agent_id}
-                onChange={handleChange}
-                variant="outlined"
-                disabled
-              />
-            </Grid> */}
+            {/* Agent ID Dropdown */}
+            <Grid item xs={12} md={4}>
+              <FormControl fullWidth variant="outlined" required>
+                <InputLabel>Agent ID</InputLabel>
+                <Select
+                  name="agent_id"
+                  value={formData.agent_id}
+                  onChange={handleChange}
+                  label="Agent ID"
+                >
+                  {agents.map((agent) => (
+                    <MenuItem key={agent.id} value={agent.id}>
+                      {agent.name} - {agent.referral_id}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
 
             {/* Row 2 */}
             <Grid item xs={12} md={4}>
@@ -161,19 +192,7 @@ function AddSitevisit() {
               />
             </Grid>
 
-            {/* Row 3 */}
-            <Grid item xs={12} md={4}>
-              <TextField
-                fullWidth
-                label="Site Owner Email"
-                name="site_owner_email"
-                value={formData.site_owner_email}
-                onChange={handleChange}
-                variant="outlined"
-                type="email"
-              />
-            </Grid>
-
+            {/* Row 3 - Removed site_owner_email */}
             <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
@@ -240,16 +259,15 @@ function AddSitevisit() {
           </Grid>
 
           {/* Submit Button */}
-        <Box textAlign="center" mt={4}>
-  <Button
-    type="submit"
-    variant="contained"
-    sx={{ bgcolor: "#1A0033", px: 5, py: 1.5 }}
-  >
-    Submit
-  </Button>
-</Box>
-
+          <Box textAlign="center" mt={4}>
+            <Button
+              type="submit"
+              variant="contained"
+              sx={{ bgcolor: "#1A0033", px: 5, py: 1.5 }}
+            >
+              Submit
+            </Button>
+          </Box>
         </form>
       </Container>
     </>

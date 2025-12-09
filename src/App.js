@@ -187,17 +187,31 @@ import InvestorReportsPage from "./Components/Panel/Investor/Reports/InvestorRep
 import TableCategory from "./Components/Panel/Admin/Category/TableCategory";
 import EditCategory from "./Components/Panel/Admin/Category/EditCategory";
 import PropertyCategoryform from "./Components/Panel/Admin/Category/PropertyCategoryform";
+import ProductDetails from "./Components/Panel/Partner/Business/ProductDetails";
+import I_ProductDetails from "./Components/Panel/Investor/InvestorBusiness/I-ProductDetails";
+import WebBusinessProducts from "./Components/Website/Pages/Business/WebBusinessProducts";
+import WebProductDetails from "./Components/Website/Pages/Business/WebProductDetails";
+import Departments from "./Components/Panel/Admin/Departments/Departments";
+import AddDepartments from "./Components/Panel/Admin/Departments/AddDepartments";
+import PartnerLandingPage from "./Components/Panel/Partner/PartnerLandingPage/PartnerLandingPage";
+import InvestorLandingPage from "./Components/Panel/Investor/InvestorLandingPage/InvestorLandingPage";
+import AdminLandingPage from "./Components/Panel/Admin/AdminLandingPage/AdminLandingPage";
+import UiProps from "./Components/Ui/UiProps";
+import SettingsMain from './Components/Panel/Admin/Settings/SettingsMain';
+import AddReferralPrefix from './Components/Panel/Admin/Settings/AddReferralPrefix';
+import EditReferralPrefix from './Components/Panel/Admin/Settings/EditReferralPrefix';
+import HowToUse from "./Components/Website/Pages/HowToUse/HowToUse";
 
 
 function Layout() {
-   const location = useLocation();
+  const location = useLocation();
   const navigate = useNavigate();
   const [showPopup, setShowPopup] = useState(false);
   const [showChat, setShowChat] = useState(false);
 
   // Define paths where Header and Footer should be visible
-  const publicPaths = ["/", "/aboutus", "/FAQ", "/contactus", "/properties", "/propertydetails", "/termsandconditions", "/privacypolicy", "/refundpolicy", "/filteredproperties", "/viewpropertiesdetails/:id", "/business"];
-  const footerPaths = ["/", "/aboutus", "/FAQ", "/contactus", "/properties", "/termsandconditions", "/privacypolicy", "/refundpolicy", "/filteredproperties", "/viewpropertiesdetails/:id", "/business"]; // Removed '/propertydetails'
+  const publicPaths = ["/", "/aboutus", "/FAQ", "/contactus","/how-to-use", "/properties", "/propertydetails", "/termsandconditions", "/privacypolicy", "/refundpolicy", "/filteredproperties", "/viewpropertiesdetails/:id", "/business", "/web-businessproducts/:id", "/web-product-details/:id"];
+  const footerPaths = ["/", "/aboutus", "/FAQ", "/contactus","/how-to-use", "/properties", "/termsandconditions", "/privacypolicy", "/refundpolicy", "/filteredproperties", "/viewpropertiesdetails/:id", "/business"]; // Removed '/propertydetails'
 
   // Trigger popup after 60 seconds on public pages
   useEffect(() => {
@@ -216,10 +230,19 @@ function Layout() {
   return (
 
     <>
-      {publicPaths.includes(location.pathname) && <Header />}
+      {publicPaths.some(path => {
+        if (path.includes(":id")) {
+          const base = path.split("/:")[0]; // "/web-businessproducts"
+          return location.pathname.startsWith(base);
+        }
+        return location.pathname === path;
+      }) && <Header />}
+
 
       <div className="main-container">
         <Routes>
+          {/* UI Improvement */}
+          <Route path="/uiprops" element={<UiProps />} />
 
           <Route path="/" element={<Home />} />
           <Route path="/popup" element={<Popup />} />
@@ -231,6 +254,8 @@ function Layout() {
           <Route path="/propertydetails" element={<PropertyDetail />} />
           <Route path="/viewpropertiesdetails/:id" element={<ViewPropertiesDetails />} />
           <Route path="/business" element={<Business />} />
+          <Route path="/web-businessproducts/:id" element={<WebBusinessProducts />} />
+          <Route path="/how-to-use" element={<HowToUse />} />
 
 
           <Route path="/a-trainingmaterial" element={<TrainingMaterial />} />
@@ -250,6 +275,7 @@ function Layout() {
           <Route path="/a-table-carousel" element={<CarouselList />} />
           <Route path="/View_Tmanagement" element={<View_Tmanagement />} />
           <Route path="/Edit_Tmanagement" element={<Edit_Tmanagement />} />
+          <Route path="/web-product-details/:id" element={<WebProductDetails />} />
 
           <Route path="/a-transactionmoniter" element={<Tmoniter />} />
           <Route path="/a-investment-page" element={<InvestmentPage />} />
@@ -291,18 +317,21 @@ function Layout() {
           <Route path="/a-add-commissionmaster" element={<AddCommissionLevels />} />
           <Route path="/a-edit-commissionmaster/:id" element={<EditCommissionLevels />} />
           <Route path="/a-category" element={<Category />} />
-           <Route path="/tablecategory" element={<TableCategory/>} />
-           <Route path="/propertycategoryform" element={<PropertyCategoryform/>} />
-           <Route path="/editcategory/:id" element={<EditCategory/>} />
+          <Route path="/tablecategory" element={<TableCategory />} />
+          <Route path="/a-departments" element={<Departments />} />
+          <Route path="/adddepartment" element={<AddDepartments />} />
+          <Route path="/propertycategoryform" element={<PropertyCategoryform />} />
+          <Route path="/editcategory/:id" element={<EditCategory />} />
           <Route path="/a-business" element={<AdminBussiness />} />
           <Route path="/a-editbusiness/:id" element={<AdminBussinessEdit />} />
           <Route path="/a-businessproducts/:id" element={<AdminBussinessProducts />} />
           <Route path="/a-editbusinessproducts/:id" element={<EditBussinessProducts />} />
           <Route path="/a-chatbot" element={<Chatbot />} />
           <Route path="/a-createq&a" element={<CreateQA />} />
-           <Route path="/a-editqa/:id" element={<EditQA/>} />
-           <Route path="/a-sitevisit" element={<SiteVisits/>} />
-           <Route path="/a-admiteditsite/:id" element={<AdminEdit/>} />
+          <Route path="/a-editqa/:id" element={<EditQA />} />
+          <Route path="/a-sitevisit" element={<SiteVisits />} />
+          <Route path="/a-admiteditsite/:id" element={<AdminEdit />} />
+          <Route path="/adminlandingpage" element={<AdminLandingPage />} />
 
 
 
@@ -317,7 +346,7 @@ function Layout() {
           <Route path="/i-transaction-details" element={<Tdetails />} />
           <Route path="/i-payment-form" element={<Payment />} />
           <Route path="/i-profile" element={<InvestorProfile />} />
-           <Route path="/i-reports" element={<InvestorReportsPage />} />
+          <Route path="/i-reports" element={<InvestorReportsPage />} />
           <Route path="/clienteditprofile" element={<ClientEditProfile />} />
           <Route path="/i-servies" element={<Services />} />
           <Route path="/i-profiledetails" element={<Kyc />} />
@@ -334,9 +363,11 @@ function Layout() {
           <Route path="/i-addbusiness" element={<AddInvestorBusiness />} />
           <Route path="/i-business" element={<InvestorBusiness />} />
           <Route path="/i-businessproducts/:id" element={<InvestorBusinessproducts />} />
-           <Route path="/i-wishlist" element={<InvestorWishlist/>} />
-          
-          
+          <Route path="/i-wishlist" element={<InvestorWishlist />} />
+          <Route path="/investorlandingpage" element={<InvestorLandingPage />} />
+
+
+
           <Route path="/i-editbusiness/:id" element={<EditInvestorBusiness />} />
 
 
@@ -355,14 +386,14 @@ function Layout() {
           <Route path="/editprofile" element={<EditProfile />} />
           <Route path="/p-leads" element={<Leads />} />
           <Route path="/p-addleads" element={<PAddLead />} />
-          <Route path="/p-commission" element={<PartnerCommission />} />a
+          <Route path="/p-commission" element={<PartnerCommission />} />
           <Route path="/p-plans" element={<PartnerPlans />} />
           <Route path="/p-assets/:id" element={<AssetDetail />} />
           <Route path="/p-myassets" element={<PartnerMyAssets />} />
           <Route path="/audio" element={<SearchBox />} />
           <Route path="/p-myteam" element={<MyTeam />} />
           <Route path="/p-sitevisits" element={<Sitevisit />} />
-          <Route path="/p-addsitevisit" element={<AddSitevisit/>} />
+          <Route path="/p-addsitevisit" element={<AddSitevisit />} />
           <Route path="/p-editsitevisit/:id" element={<EditSitevisit />} />
 
           <Route path="/p-latestassets" element={<LatestAssets />} />
@@ -390,9 +421,15 @@ function Layout() {
           <Route path="/p-editbusiness/:id" element={<EditBusiness />} />
           <Route path="/p-allbusinesses" element={<AllBusinesses />} />
           <Route path="/p-businessproducts/:id" element={<BusinessProducts />} />
+          <Route path="/partnerlandingpage" element={<PartnerLandingPage />} />
+          <Route path="/a-settings" element={<SettingsMain />} />
+          <Route path="/add-referral-prefix" element={<AddReferralPrefix />} />
+          <Route path="/edit-referral-prefix/:id" element={<EditReferralPrefix />} />
 
 
           <Route path="/termsandconditions" element={<Termsandconditions />} />
+          <Route path="/product-details/:id" element={<ProductDetails />} />
+          <Route path="/i-product-details/:id" element={<I_ProductDetails />} />
           <Route path="/privacypolicy" element={<Privacypolicy />} />
           <Route path="/refundpolicy" element={<Refundpolicy />} />
           <Route path="/legalnavbar" element={<LegalNavbar />} />
@@ -409,7 +446,7 @@ function Layout() {
       {footerPaths.includes(location.pathname) && <Footer />}
       {showPopup && <Popup onClose={() => setShowPopup(false)} />}
 
-       {/* Chatbot Floating Button */}
+      {/* Chatbot Floating Button */}
       {publicPaths.includes(location.pathname) && !showChat && (
         <Box sx={{ position: "fixed", bottom: 20, right: 20, zIndex: 1000 }}>
           <IconButton

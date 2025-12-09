@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { baseurl } from '../../../BaseURL/BaseURL';
 import Header from '../../../Shared/Navbar/Navbar';
 import {
@@ -20,12 +20,25 @@ function AddTrainingMaterial() {
 
     const [formData, setFormData] = useState({
         title: '',
-        category: '',
+        department: '',
         description: ''
     });
 
+    const [departments, setDepartments] = useState([]);
     const [videoFile, setVideoFile] = useState(null);
     const [loading, setLoading] = useState(false);
+
+    // Fetch departments from API
+    useEffect(() => {
+        axios
+            .get(`${baseurl}/departments/`)
+            .then((res) => {
+                setDepartments(res.data);
+            })
+            .catch((err) => {
+                console.error("Error fetching departments:", err);
+            });
+    }, []);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -41,81 +54,74 @@ function AddTrainingMaterial() {
         }
     };
 
-   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
 
-    const data = new FormData();
-    data.append('title', formData.title);
-    data.append('category', formData.category);
-    data.append('description', formData.description);
-    if (videoFile) {
-        data.append('video', videoFile);
-    }
+        const data = new FormData();
+        data.append('title', formData.title);
+        data.append('department', formData.department); // sending department ID
+        data.append('description', formData.description);
 
-    try {
-        await axios.post(`${baseurl}/training-materials/`, data, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        });
+        if (videoFile) {
+            data.append('video', videoFile);
+        }
 
-        Swal.fire({
-            icon: 'success',
-            title: 'Success',
-            text: 'Training material uploaded successfully!',
-            confirmButtonText: 'OK'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                navigate("/a-trainingmaterial"); // ✅ redirect after success
-            }
-        });
+        try {
+            await axios.post(`${baseurl}/training-materials/`, data, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
 
-        setFormData({ title: '', category: '', description: '' });
-        setVideoFile(null);
-    } catch (error) {
-        console.error(error);
-        Swal.fire({
-            icon: 'error',
-            title: 'Upload Failed',
-            text: 'Error uploading training material.'
-        });
-    } finally {
-        setLoading(false);
-    }
-};
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Training material uploaded successfully!',
+                confirmButtonText: 'OK',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    navigate("/a-trainingmaterial");
+                }
+            });
 
+            setFormData({ title: '', department: '', description: '' });
+            setVideoFile(null);
+
+        } catch (error) {
+            console.error(error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Upload Failed',
+                text: 'Error uploading training material.',
+            });
+
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div>
             <Header />
             <Container maxWidth="md" sx={{ mt: 4 }}>
                 <Paper sx={{ p: 4 }}>
-                    {/* <Typography variant="h5" gutterBottom>
-                        Add Training Material
-                    </Typography> */}
 
-                                 <Typography
-                            variant="h4"
-                            gutterBottom
-                            sx={{
-                              fontSize: {
-                                xs: "1.6rem",
-                                sm: "2.1rem",
-                                md: "2.2rem",
-                              },
-                              fontWeight: "bold",
-                              textAlign: "center",
-                              whiteSpace: "nowrap",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              marginBottom: "15px",
-                            }}
-                          >
-                    Add Training Material
-                      </Typography>
+                    <Typography
+                        variant="h4"
+                        gutterBottom
+                        sx={{
+                            fontSize: { xs: "1.6rem", sm: "2.1rem", md: "2.2rem" },
+                            fontWeight: "bold",
+                            textAlign: "center",
+                            marginBottom: "15px",
+                        }}
+                    >
+                        Add Training Material
+                    </Typography>
 
                     <Box component="form" onSubmit={handleSubmit} noValidate autoComplete="off">
+
                         <TextField
                             label="Title"
                             name="title"
@@ -126,20 +132,22 @@ function AddTrainingMaterial() {
                             required
                         />
 
-                        {/* Category Dropdown */}
+                        {/* Department Dropdown */}
                         <TextField
                             select
-                            label="Category"
-                            name="category"
+                            label="Departments"
+                            name="department"
                             fullWidth
                             margin="normal"
-                            value={formData.category}
+                            value={formData.department}
                             onChange={handleChange}
                             required
                         >
-                            <MenuItem value="Sales">Sales</MenuItem>
-                            <MenuItem value="Marketing">Marketing</MenuItem>
-                            <MenuItem value="Admin">Admin</MenuItem>
+                            {departments.map((dept) => (
+                                <MenuItem key={dept.id} value={dept.id}>
+                                    {dept.name}
+                                </MenuItem>
+                            ))}
                         </TextField>
 
                         <TextField
@@ -182,6 +190,7 @@ function AddTrainingMaterial() {
                                 {loading ? 'Uploading...' : 'Submit'}
                             </Button>
                         </Box>
+
                     </Box>
                 </Paper>
             </Container>

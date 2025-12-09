@@ -22,7 +22,8 @@ const [form, setForm] = useState({
 
     const location = useLocation();
     const navigate = useNavigate();
-    const { profileType } = location.state || {};
+    const { profileType, departmentId, departmentName } = location.state || {};
+
     const agentId = localStorage.getItem("user_id");  // agent = user_id
 
 
@@ -41,6 +42,7 @@ const handleSubmit = async (e) => {
         profile_type: profileType,
         requested_date: form.date,
         requested_time: form.startTime,
+        department: departmentId,
     };
 
     try {
@@ -111,7 +113,7 @@ const handleSubmit = async (e) => {
                                 required
                             />
                         </Grid>
-                        <Grid item xs={12} sm={4}>
+                        {/* <Grid item xs={12} sm={4}>
                             <TextField
                                 fullWidth
                                 name="referralId"
@@ -119,7 +121,7 @@ const handleSubmit = async (e) => {
                                 value={form.referralId}
                                 onChange={handleChange}
                             />
-                        </Grid>
+                        </Grid> */}
                         <Grid item xs={12} sm={4}>
                             <TextField
                                 fullWidth

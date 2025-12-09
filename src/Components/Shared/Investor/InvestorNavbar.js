@@ -29,6 +29,7 @@ import { Badge, Menu as MuiMenu } from '@mui/material';
 import axios from 'axios';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import './InvvestorNavbar.css'
+import FavoriteIcon from "@mui/icons-material/Favorite";
 
 
 export default function InvestorHeader() {
@@ -41,7 +42,7 @@ export default function InvestorHeader() {
     // { label: 'Add Business', path: '/i-addbusiness' },
     { label: 'Business', path: '/i-business' },
     { label: 'Transactions', path: '/i-transactions' },
-    { label: 'Wishlist', path: '/i-wishlist' }, // Direct link to transactions page
+    // { label: 'Wishlist', path: '/i-wishlist' }, // Direct link to transactions page
     { label: 'Plans', path: '/i-plans' },
     { label: 'Meetings', path: '/i-meetings' },
     // { label: 'Reports', path: '/i-reports' },
@@ -317,6 +318,11 @@ export default function InvestorHeader() {
 ))}
               </Box>
 
+                {/* Wishlist Heart Icon */}
+  <IconButton sx={{ color: "#ee1111ff", mr: 1 }} onClick={() => navigate("/i-wishlist")}>
+    <FavoriteIcon />
+  </IconButton>
+
               {/* Right: Notification, Username, Profile Avatar */}
               <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
                 <Badge badgeContent={notifications.length} color="error">
@@ -407,38 +413,42 @@ export default function InvestorHeader() {
       </Menu>
 
       <MuiMenu
-        anchorEl={notificationAnchorEl}
-        open={notificationMenuOpen}
-        onClose={handleNotificationClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+  anchorEl={notificationAnchorEl}
+  open={notificationMenuOpen}
+  onClose={handleNotificationClose}
+  anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+  transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+>
+  {notifications.length > 0 ? (
+    notifications.map((notif) => (
+      <MenuItem
+        key={notif.notification_status_id}
+        onClick={() => {
+          axios.post(`${baseurl}/notifications/mark-as-read/`, {
+            user_id: parseInt(userId),
+            notification_id: notif.notification_status_id
+          })
+            .then(() => {
+              setNotifications(prev => 
+                prev.filter(n => n.notification_status_id !== notif.notification_status_id)
+              );
+              handleNotificationClose();
+              
+              // ✅ FIXED: Navigate using notif.property.id instead of assets
+              navigate(`/i-assets/${notif.property.id}`);
+            })
+            .catch(error => {
+              console.error("Error marking notification as read:", error);
+            });
+        }}
       >
-        {notifications.length > 0 ? (
-          notifications.map((notif) => (
-            <MenuItem
-              key={notif.notification_status_id}
-              onClick={() => {
-                axios.post(`${baseurl}/notifications/mark-as-read/`, {
-                  user_id: parseInt(userId),
-                  notification_id: notif.notification_status_id
-                })
-                  .then(() => {
-                    setNotifications(prev => prev.filter(n => n.notification_status_id !== notif.notification_status_id));
-                    handleNotificationClose();
-                    navigate('/i-asset');
-                  })
-                  .catch(error => {
-                    console.error("Error marking notification as read:", error);
-                  });
-              }}
-            >
-              {notif.message}
-            </MenuItem>
-          ))
-        ) : (
-          <MenuItem disabled>No notifications</MenuItem>
-        )}
-      </MuiMenu>
+        {notif.message}
+      </MenuItem>
+    ))
+  ) : (
+    <MenuItem disabled>No notifications</MenuItem>
+  )}
+</MuiMenu>
     </>
   );
 }

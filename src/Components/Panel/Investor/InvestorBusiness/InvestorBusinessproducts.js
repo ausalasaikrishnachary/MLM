@@ -22,17 +22,69 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import PaginationComponent from "../../../Shared/Pagination";
 import InvestorHeader from "../../../Shared/Investor/InvestorNavbar";
 import { baseurl } from "../../../BaseURL/BaseURL";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 
-function AdminBussinessProducts() {
+function AdminBussinessProducts() { 
     const { id } = useParams(); // get business_id from URL
     const [products, setProducts] = useState([]);
     const [commissions, setCommissions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [businesses, setBusinesses] = useState([]);
-
+ const userId = localStorage.getItem("user_id");
     const [anchorEl, setAnchorEl] = useState(null);
     const [hoveredProduct, setHoveredProduct] = useState(null);
     const navigate = useNavigate();
+
+        const [wishlist, setWishlist] = useState([]);
+
+    useEffect(() => {
+  const fetchWishlist = async () => {
+    try {
+      const res = await axios.get(`${baseurl}/wishlist/`);
+      const userWishlist = res.data
+        .filter(item => item.user === parseInt(userId)) // Only user's wishlist
+        .map(item => item.product); // <-- PRODUCT ID
+      setWishlist(userWishlist);
+    } catch (err) {
+      console.error("Error fetching wishlist:", err);
+    }
+  };
+
+  if (userId) fetchWishlist();
+}, [userId]);
+
+
+const handleWishlistToggle = async (productId) => {
+  if (!userId) {
+    alert("Please log in to add to wishlist.");
+    return;
+  }
+
+  try {
+    if (wishlist.includes(productId)) {
+      // ❌ REMOVE (DELETE)
+      const res = await axios.get(`${baseurl}/wishlist/`);
+      const item = res.data.find(
+        (entry) => entry.user === parseInt(userId) && entry.product === productId
+      );
+
+      if (item) {
+        await axios.delete(`${baseurl}/wishlist/${item.id}/`);
+        setWishlist((prev) => prev.filter((id) => id !== productId));
+      }
+    } else {
+      // ❤️ ADD (POST)
+      await axios.post(`${baseurl}/wishlist/`, {
+        user: parseInt(userId),
+        product: productId,
+      });
+      setWishlist((prev) => [...prev, productId]);
+    }
+  } catch (error) {
+    console.error("Error updating wishlist:", error);
+  }
+};
 
     useEffect(() => {
         fetch(`${baseurl}/products/`)
@@ -104,12 +156,31 @@ function AdminBussinessProducts() {
     const handlePageChange = (event, value) => {
         setPage(value);
     };
+     const handleViewDetails = async (product) => {
+  try {
+    await fetch(`${baseurl}/products/${product.id}/`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        view_count: (product.view_count || 0) + 1,
+      }),
+    });
+
+    console.log("View count updated");
+
+    // Now navigate after update
+    navigate(`/i-product-details/${product.id}`);
+  } catch (error) {
+    console.log("Error updating view count:", error);
+    // Still navigate even if update fails
+    navigate(`i-/product-details/${product.id}`);
+  }
+};
 
     // ✅ Calculate pagination based on products, not businesses
     const totalPages = Math.ceil(products.length / itemsPerPage);
     const startIndex = (page - 1) * itemsPerPage;
     const paginatedProducts = products.slice(startIndex, startIndex + itemsPerPage);
-
 
     return (
         <>
@@ -170,6 +241,20 @@ function AdminBussinessProducts() {
                                             <Typography variant="h6" fontWeight="bold">
                                                 {product.product_name}
                                             </Typography>
+                                            {/* ❤️ Wishlist Icon */}
+  <IconButton
+    onClick={() => handleWishlistToggle(product.id)}
+    sx={{
+      backgroundColor: "rgba(255,255,255,0.8)",
+      "&:hover": { backgroundColor: "rgba(255,255,255,1)" },
+    }}
+  >
+    {wishlist.includes(product.id) ? (
+      <FavoriteIcon sx={{ color: "red" }} />
+    ) : (
+      <FavoriteBorderIcon sx={{ color: "red" }} />
+    )}
+  </IconButton>
 
                                             {/* <Box display="flex" alignItems="center" gap={1}>
                                                 <Button
@@ -212,6 +297,24 @@ function AdminBussinessProducts() {
                                                 <strong>Description:</strong> {product.description}
                                             </Typography>
                                         )}
+                                        <Box sx={{ mt: 2 }}>
+                                                           <Button
+                                          onClick={() => handleViewDetails(product)}
+                                          fullWidth
+                                          variant="contained"
+                                          sx={{
+                                            color: "white",
+                                            textTransform: "none",
+                                            "&:hover": { color: "rgb(5,5,5)" },
+                                            mb: 1,
+                                            backgroundColor: "green",
+                                          }}
+                                        >
+                                          View Details
+                                        </Button>
+                                        
+                                        
+                                                            </Box>
 
                                         {/* ✅ Payout Button with Hover Popover */}
                                         <Box sx={{ mt: 2 }}>

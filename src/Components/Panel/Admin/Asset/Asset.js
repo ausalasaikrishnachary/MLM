@@ -21,7 +21,7 @@ import {
   Pagination,
   IconButton,
   Tooltip,
-   Table,
+  Table,
   TableBody,
   TableCell,
   TableContainer,
@@ -34,11 +34,11 @@ import {
   FormGroup,
   Stack,
   InputLabel
-  
+
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import Header from '../../../Shared/Navbar/Navbar';
- import Swal from 'sweetalert2';
+import Swal from 'sweetalert2';
 import { useNavigate } from "react-router-dom";
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
@@ -61,7 +61,7 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import EventIcon from '@mui/icons-material/Event';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
-const AssetsUI = () => { 
+const AssetsUI = () => {
   const [sortBy, setSortBy] = useState('latest');
   const [properties, setProperties] = useState([]);
   const [filteredProperties, setFilteredProperties] = useState([]);
@@ -78,25 +78,77 @@ const AssetsUI = () => {
   const [openCarousel, setOpenCarousel] = useState(false);
 
 
-      // Report generation states
-    const [openReportDialog, setOpenReportDialog] = useState(false);
-    const [openReportConfigDialog, setOpenReportConfigDialog] = useState(false);
-    const [startDate, setStartDate] = useState(new Date(new Date().setMonth(new Date().getMonth() - 1)));
-    const [endDate, setEndDate] = useState(new Date());
-    const [reportType, setReportType] = useState('monthly');
-    const [reportData, setReportData] = useState([]);
-    const [reportColumns, setReportColumns] = useState([
-      { id: 'property_title', label: 'Property Title', checked: true },
-      { id: 'city', label: 'City', checked: true },
-      { id: 'state', label: 'State', checked: true },
-      { id: 'property_value', label: 'Value (₹)', checked: true },
-      { id: 'status', label: 'Status', checked: true },
-      { id: 'created_at', label: 'Date Added', checked: true },
-      { id: 'owner_name', label: 'Owner', checked: false },
-      { id: 'owner_contact', label: 'Contact', checked: false },
-      { id: 'area', label: 'Area', checked: false },
-      { id: 'builtup_area', label: 'Built-up Area', checked: false },
-    ]);
+  // Report generation states
+  const [openReportDialog, setOpenReportDialog] = useState(false);
+  const [openReportConfigDialog, setOpenReportConfigDialog] = useState(false);
+  const [startDate, setStartDate] = useState(new Date(new Date().setMonth(new Date().getMonth() - 1)));
+  const [endDate, setEndDate] = useState(new Date());
+  const [reportType, setReportType] = useState('monthly');
+  const [reportData, setReportData] = useState([]);
+  const [reportColumns, setReportColumns] = useState([
+    { id: 'property_title', label: 'Property Title', checked: true },
+    { id: 'city', label: 'City', checked: true },
+    { id: 'state', label: 'State', checked: true },
+    { id: 'property_value', label: 'Value (₹)', checked: true },
+    { id: 'status', label: 'Status', checked: true },
+    { id: 'created_at', label: 'Date Added', checked: true },
+    { id: 'owner_name', label: 'Owner', checked: false },
+    { id: 'owner_contact', label: 'Contact', checked: false },
+    { id: 'area', label: 'Area', checked: false },
+    { id: 'builtup_area', label: 'Built-up Area', checked: false },
+  ]);
+
+// Function to check if property is expired based on listing_days
+const isPropertyExpired = (property) => {
+  // If no listing_days is set, property never expires
+  if (!property.listing_days) {
+    return false;
+  }
+  
+  // If no created_at date, cannot calculate expiration
+  if (!property.created_at) {
+    return false;
+  }
+  
+  const createdDate = new Date(property.created_at);
+  const expirationDate = new Date(createdDate);
+  
+  // Add listing_days to created date
+  expirationDate.setDate(createdDate.getDate() + parseInt(property.listing_days));
+  
+  // Check if current date is after expiration date
+  const isExpired = new Date() > expirationDate;
+  
+  return isExpired;
+};
+
+// Function to filter out expired properties
+const filterActiveProperties = (propertiesList) => {
+  return propertiesList.filter(property => !isPropertyExpired(property));
+};
+
+// Function to get days remaining for a property
+const getDaysRemaining = (property) => {
+  if (!property.listing_days || !property.created_at) {
+    return 'Never expires';
+  }
+  
+  const createdDate = new Date(property.created_at);
+  const expirationDate = new Date(createdDate);
+  expirationDate.setDate(createdDate.getDate() + parseInt(property.listing_days));
+  
+  const today = new Date();
+  const timeDiff = expirationDate.getTime() - today.getTime();
+  const daysRemaining = Math.ceil(timeDiff / (1000 * 3600 * 24));
+  
+  if (daysRemaining < 0) {
+    return 'Expired';
+  } else if (daysRemaining === 0) {
+    return 'Expires today';
+  } else {
+    return `${daysRemaining} days remaining`;
+  }
+};
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -104,7 +156,8 @@ const AssetsUI = () => {
         const response = await fetch(`${baseurl}/property/`);
         const data = await response.json();
         setProperties(data);
-        setFilteredProperties(data);
+        //Filter out expired properties
+        setFilteredProperties(filterActiveProperties(data));
       } catch (error) {
         console.error('Error fetching properties:', error);
       }
@@ -115,6 +168,8 @@ const AssetsUI = () => {
   // Apply both search and sort filters
   useEffect(() => {
     let results = [...properties];
+     results = filterActiveProperties(results);
+
 
     // Apply search filter
     if (searchQuery.trim()) {
@@ -201,51 +256,51 @@ const AssetsUI = () => {
     setOpenCarousel(false);
     setSelectedProperty(null);
   };
-const handleDelete = async (propertyId) => {
-  const result = await Swal.fire({
-    title: 'Are you sure?',
-    text: "Do you really want to delete this property?",
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#3085d6',
-    confirmButtonText: 'Yes, delete it!'
-  });
-
-  if (!result.isConfirmed) return;
-
-  try {
-    const response = await fetch(`${baseurl}/property/${propertyId}/`, {
-      method: 'DELETE',
+  const handleDelete = async (propertyId) => {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "Do you really want to delete this property?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
     });
 
-    if (response.ok) {
-      setProperties(prev => prev.filter(p => p.property_id !== propertyId));
-      setFilteredProperties(prev => prev.filter(p => p.property_id !== propertyId));
+    if (!result.isConfirmed) return;
 
-      Swal.fire({
-        icon: 'success',
-        title: 'Deleted!',
-        text: 'Property has been deleted.',
-        timer: 2000,
-        showConfirmButton: false
+    try {
+      const response = await fetch(`${baseurl}/property/${propertyId}/`, {
+        method: 'DELETE',
       });
-    } else {
+
+      if (response.ok) {
+        setProperties(prev => prev.filter(p => p.property_id !== propertyId));
+        setFilteredProperties(prev => prev.filter(p => p.property_id !== propertyId));
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Deleted!',
+          text: 'Property has been deleted.',
+          timer: 2000,
+          showConfirmButton: false
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Deletion Failed',
+          text: `Failed to delete property. Status: ${response.status}`
+        });
+      }
+    } catch (error) {
+      console.error('Error deleting property:', error);
       Swal.fire({
         icon: 'error',
-        title: 'Deletion Failed',
-        text: `Failed to delete property. Status: ${response.status}`
+        title: 'Error',
+        text: 'An error occurred while deleting the property.'
       });
     }
-  } catch (error) {
-    console.error('Error deleting property:', error);
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'An error occurred while deleting the property.'
-    });
-  }
-};
+  };
 
 
   const handleNextImage = (propertyId, totalImages) => (e) => {
@@ -264,58 +319,58 @@ const handleDelete = async (propertyId) => {
     }));
   };
 
-const updateApprovalStatus = async (propertyId, newStatus) => {
-  try {
-    const response = await fetch(`${baseurl}/property/${propertyId}/`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ approval_status: newStatus })
-    });
-
-    if (response.ok) {
-      const updatedData = await response.json();
-
-      setProperties(prev =>
-        prev.map(p =>
-          p.property_id === propertyId
-            ? { ...p, approval_status: updatedData.approval_status }
-            : p
-        )
-      );
-
-      setFilteredProperties(prev =>
-        prev.map(p =>
-          p.property_id === propertyId
-            ? { ...p, approval_status: updatedData.approval_status }
-            : p
-        )
-      );
-
-      Swal.fire({
-        icon: 'success',
-        title: 'Success!',
-        text: 'Approval status updated successfully.',
-        timer: 2000,
-        showConfirmButton: false
+  const updateApprovalStatus = async (propertyId, newStatus) => {
+    try {
+      const response = await fetch(`${baseurl}/property/${propertyId}/`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ approval_status: newStatus })
       });
-    } else {
+
+      if (response.ok) {
+        const updatedData = await response.json();
+
+        setProperties(prev =>
+          prev.map(p =>
+            p.property_id === propertyId
+              ? { ...p, approval_status: updatedData.approval_status }
+              : p
+          )
+        );
+
+        setFilteredProperties(prev =>
+          prev.map(p =>
+            p.property_id === propertyId
+              ? { ...p, approval_status: updatedData.approval_status }
+              : p
+          )
+        );
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: 'Approval status updated successfully.',
+          timer: 2000,
+          showConfirmButton: false
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Update Failed',
+          text: `Failed to update approval status. Status: ${response.status}`
+        });
+      }
+    } catch (error) {
+      console.error('Error updating approval status:', error);
       Swal.fire({
         icon: 'error',
-        title: 'Update Failed',
-        text: `Failed to update approval status. Status: ${response.status}`
+        title: 'Error',
+        text: 'An error occurred while updating the approval status.'
       });
     }
-  } catch (error) {
-    console.error('Error updating approval status:', error);
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'An error occurred while updating the approval status.'
-    });
-  }
-};
+  };
 
 
   // Function to get all media (images + videos) for a property
@@ -362,7 +417,7 @@ const updateApprovalStatus = async (propertyId, newStatus) => {
   };
 
 
-      // Report generation functions
+  // Report generation functions
   const openReportConfiguration = () => {
     setOpenReportConfigDialog(true);
   };
@@ -373,7 +428,7 @@ const updateApprovalStatus = async (propertyId, newStatus) => {
 
   const generateReport = () => {
     let filtered = [...properties];
-    
+
     filtered = filtered.filter(property => {
       const propertyDate = new Date(property.created_at);
       return propertyDate >= startDate && propertyDate <= endDate;
@@ -383,7 +438,7 @@ const updateApprovalStatus = async (propertyId, newStatus) => {
       const grouped = filtered.reduce((acc, property) => {
         const date = new Date(property.created_at);
         const monthYear = `${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
-        
+
         if (!acc[monthYear]) {
           acc[monthYear] = [];
         }
@@ -403,7 +458,7 @@ const updateApprovalStatus = async (propertyId, newStatus) => {
       const grouped = filtered.reduce((acc, property) => {
         const date = new Date(property.created_at);
         const year = date.getFullYear().toString();
-        
+
         if (!acc[year]) {
           acc[year] = [];
         }
@@ -434,11 +489,11 @@ const updateApprovalStatus = async (propertyId, newStatus) => {
 
   const exportToCSV = () => {
     const activeColumns = reportColumns.filter(col => col.checked).map(col => col.id);
-    
-    let csv = activeColumns.map(col => 
+
+    let csv = activeColumns.map(col =>
       reportColumns.find(rc => rc.id === col)?.label || col
     ).join(',') + '\n';
-    
+
     reportData.forEach(group => {
       group.properties.forEach(property => {
         const row = activeColumns.map(col => {
@@ -450,13 +505,13 @@ const updateApprovalStatus = async (propertyId, newStatus) => {
         csv += row + '\n';
       });
     });
-    
+
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.setAttribute('hidden', '');
     a.setAttribute('href', url);
-    a.setAttribute('download', `property_report_${new Date().toISOString().slice(0,10)}.csv`);
+    a.setAttribute('download', `property_report_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -470,17 +525,17 @@ const updateApprovalStatus = async (propertyId, newStatus) => {
       Total Properties: ${reportData.reduce((sum, group) => sum + group.count, 0)}\n
       Total Value: ₹${reportData.reduce((sum, group) => sum + group.totalValue, 0).toLocaleString()}\n\n
       ${reportColumns.filter(col => col.checked).map(col => col.label).join(' | ')}\n
-      ${reportData.flatMap(group => 
-        group.properties.map(property => 
-          reportColumns.filter(col => col.checked).map(col => 
-            col.id === 'created_at' 
-              ? new Date(property[col.id]).toLocaleDateString() 
-              : property[col.id] || ''
-          ).join(' | ')
-        ).join('\n')
-      ).join('\n')}
+      ${reportData.flatMap(group =>
+      group.properties.map(property =>
+        reportColumns.filter(col => col.checked).map(col =>
+          col.id === 'created_at'
+            ? new Date(property[col.id]).toLocaleDateString()
+            : property[col.id] || ''
+        ).join(' | ')
+      ).join('\n')
+    ).join('\n')}
     `;
-    
+
     alert('In a real implementation, this would generate a PDF with the following content:\n\n' + pdfContent);
   };
 
@@ -519,19 +574,18 @@ const updateApprovalStatus = async (propertyId, newStatus) => {
               </tr>
             </thead>
             <tbody>
-              ${reportData.flatMap(group => 
-                group.properties.map(property => 
-                  `<tr>
-                    ${reportColumns.filter(col => col.checked).map(col => 
-                      `<td>${
-                        col.id === 'created_at' 
-                          ? new Date(property[col.id]).toLocaleDateString() 
-                          : property[col.id] || ''
-                      }</td>`
-                    ).join('')}
+              ${reportData.flatMap(group =>
+      group.properties.map(property =>
+        `<tr>
+                    ${reportColumns.filter(col => col.checked).map(col =>
+          `<td>${col.id === 'created_at'
+            ? new Date(property[col.id]).toLocaleDateString()
+            : property[col.id] || ''
+          }</td>`
+        ).join('')}
                   </tr>`
-                ).join('')
-              ).join('')}
+      ).join('')
+    ).join('')}
             </tbody>
           </table>
           <script>
@@ -543,7 +597,7 @@ const updateApprovalStatus = async (propertyId, newStatus) => {
         </body>
       </html>
     `;
-    
+
     const printWindow = window.open('', '_blank');
     printWindow.document.write(printContent);
     printWindow.document.close();
@@ -554,42 +608,42 @@ const updateApprovalStatus = async (propertyId, newStatus) => {
     <>
       <Header />
       <Container sx={{ py: 4 }}>
- <Box
-  sx={{
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    mb: 3,
-    flexDirection: { xs: "column", sm: "row" }, 
-    gap: 2,
-  }}
->
-  <Typography
-    variant="h4"
-    sx={{ textAlign: { xs: "center", sm: "left" } }} 
-    fontWeight="bold"
-  >
-    Properties
-  </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 3,
+            flexDirection: { xs: "column", sm: "row" },
+            gap: 2,
+          }}
+        >
+          <Typography
+            variant="h4"
+            sx={{ textAlign: { xs: "center", sm: "left" } }}
+            fontWeight="bold"
+          >
+            Properties
+          </Typography>
 
-<Button
-  variant="contained"
-  color="secondary"
-  onClick={openReportConfiguration}
-  startIcon={<DescriptionIcon />}
-  sx={{
-    mt: { xs: 2, sm: 0 },
-    px: 3,
-    py: 1,
-    height: "55px",
-    width: { xs: "93%", sm: "auto" } // full width only on mobile
-  }}
->
-  Generate All Properties Report
-</Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={openReportConfiguration}
+            startIcon={<DescriptionIcon />}
+            sx={{
+              mt: { xs: 2, sm: 0 },
+              px: 3,
+              py: 1,
+              height: "55px",
+              width: { xs: "93%", sm: "auto" } // full width only on mobile
+            }}
+          >
+            Generate All Properties Report
+          </Button>
 
 
-</Box>
+        </Box>
 
         <Box
           sx={{
@@ -663,148 +717,160 @@ const updateApprovalStatus = async (propertyId, newStatus) => {
           </Grid>
         </Box>
 
-       {/* Cards Section */}
-{filteredProperties.length > 0 ? (
-  <Grid container spacing={3}>
-    {paginatedProperties.map((property) => {
-      const media = getAllMedia(property);
-      const currentIndex = currentImageIndices[property.property_id] || 0;
-      const totalMedia = media.length;
+        {/* Cards Section */}
+        {filteredProperties.length > 0 ? (
+          <Grid container spacing={3}>
+            {paginatedProperties.map((property) => {
+              const media = getAllMedia(property);
+              const currentIndex = currentImageIndices[property.property_id] || 0;
+              const totalMedia = media.length;
 
-      return (
-        <Grid item xs={12} md={6} lg={4} key={property.id}>
-          <Card
-            sx={{
-              height: 770,
-              borderRadius: 2,
-              transition: 'all 0.3s ease',
-              position: 'relative',
-              '&:hover': {
-                transform: 'translateY(-5px)',
-                boxShadow: '0 4px 15px rgba(0,0,0,0.749)',
-              }
-            }}
-          >
-            <Box sx={{ position: 'relative' }}>
-              {isCurrentMediaVideo(property) ? (
-                <Box sx={{ height: '220px', position: 'relative' }}>
-                  <video
-                    controls
-                    style={{
-                      width: '100%',
-                      height: '220px',
-                      objectFit: 'cover',
-                      borderRadius: '12px 12px 0 0',
-                      cursor: 'pointer'
-                    }}
-                    onClick={() => handleImageClick(property)}
-                  >
-                    <source src={getCurrentMediaUrl(property)} type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
-                  <VideocamIcon
+              return (
+                <Grid item xs={12} md={6} lg={4} key={property.id}>
+                  <Card
                     sx={{
-                      position: 'absolute',
-                      top: 8,
-                      left: 8,
-                      color: 'white',
-                      backgroundColor: 'rgba(0,0,0,0.5)',
-                      borderRadius: '50%',
-                      padding: '4px'
-                    }}
-                  />
-                </Box>
-              ) : (
-                <CardMedia
-                  component="img"
-                  height="220"
-                  image={getCurrentMediaUrl(property)}
-                  alt={property.property_title}
-                  sx={{ objectFit: 'cover', borderRadius: '12px 12px 0 0', cursor: 'pointer' }}
-                  onClick={() => handleImageClick(property)}
-                />
-              )}
-
-              {/* Navigation arrows when there are multiple media items */}
-              {totalMedia > 1 && (
-                <>
-                  <IconButton
-                    sx={{
-                      position: 'absolute',
-                      left: 10,
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      backgroundColor: 'rgba(36, 36, 36, 0.5)',
-                      color: 'white',
+                      height: 800,
+                      borderRadius: 2,
+                      transition: 'all 0.3s ease',
+                      position: 'relative',
                       '&:hover': {
-                        backgroundColor: 'rgba(0,0,0,0.7)'
+                        transform: 'translateY(-5px)',
+                        boxShadow: '0 4px 15px rgba(0,0,0,0.749)',
                       }
                     }}
-                    onClick={handlePrevImage(property.property_id, totalMedia)}
                   >
-                    <ChevronLeftIcon />
-                  </IconButton>
-                  <IconButton
-                    sx={{
-                      position: 'absolute',
-                      right: 10,
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      backgroundColor: 'rgba(90, 81, 81, 0.5)',
-                      color: 'white',
-                      '&:hover': {
-                        backgroundColor: 'rgba(0,0,0,0.7)'
-                      }
-                    }}
-                    onClick={handleNextImage(property.property_id, totalMedia)}
-                  >
-                    <ChevronRightIcon />
-                  </IconButton>
-                  {/* Media counter */}
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      bottom: 10,
-                      right: 10,
-                      backgroundColor: 'rgba(0,0,0,0.5)',
-                      color: 'white',
-                      px: 1,
-                      borderRadius: '4px',
-                      fontSize: '0.75rem'
-                    }}
-                  >
-                    {`${currentIndex + 1}/${totalMedia}`}
-                  </Box>
-                </>
-              )}
-            </Box>
-            <CardContent>
-              {/* Property title with status badge */}
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                <Typography fontWeight="bold" sx={{ flex: 1, mr: 1 }}>
-                  {property.property_title}
-                </Typography>
-                <Chip 
-                  label={property.status} 
-                  size="small"
-                  sx={{
-                    backgroundColor: 
-                      property.status === 'available'
-                        ? '#2ECC71'
-                        : property.status === 'booked'
-                          ? '#E67E22'
-                          : '#E74C3C',
-                    color: 'white',
-                    fontWeight: 'bold',
-                    textTransform: 'uppercase',
-                    fontSize: '0.7rem',
-                    minWidth: '70px'
-                  }}
-                />
-              </Box>
-              <Typography variant="body2" color="text.secondary" mb={2}>
-                {property.city}, {property.state}
+                    <Box sx={{ position: 'relative' }}>
+                      {isCurrentMediaVideo(property) ? (
+                        <Box sx={{ height: '220px', position: 'relative' }}>
+                          <video
+                            controls
+                            style={{
+                              width: '100%',
+                              height: '220px',
+                              objectFit: 'cover',
+                              borderRadius: '12px 12px 0 0',
+                              cursor: 'pointer'
+                            }}
+                            onClick={() => handleImageClick(property)}
+                          >
+                            <source src={getCurrentMediaUrl(property)} type="video/mp4" />
+                            Your browser does not support the video tag.
+                          </video>
+                          <VideocamIcon
+                            sx={{
+                              position: 'absolute',
+                              top: 8,
+                              left: 8,
+                              color: 'white',
+                              backgroundColor: 'rgba(0,0,0,0.5)',
+                              borderRadius: '50%',
+                              padding: '4px'
+                            }}
+                          />
+                        </Box>
+                      ) : (
+                        <CardMedia
+                          component="img"
+                          height="220"
+                          image={getCurrentMediaUrl(property)}
+                          alt={property.property_title}
+                          sx={{ objectFit: 'cover', borderRadius: '12px 12px 0 0', cursor: 'pointer' }}
+                          onClick={() => handleImageClick(property)}
+                        />
+                      )}
+
+                      {/* Navigation arrows when there are multiple media items */}
+                      {totalMedia > 1 && (
+                        <>
+                          <IconButton
+                            sx={{
+                              position: 'absolute',
+                              left: 10,
+                              top: '50%',
+                              transform: 'translateY(-50%)',
+                              backgroundColor: 'rgba(36, 36, 36, 0.5)',
+                              color: 'white',
+                              '&:hover': {
+                                backgroundColor: 'rgba(0,0,0,0.7)'
+                              }
+                            }}
+                            onClick={handlePrevImage(property.property_id, totalMedia)}
+                          >
+                            <ChevronLeftIcon />
+                          </IconButton>
+                          <IconButton
+                            sx={{
+                              position: 'absolute',
+                              right: 10,
+                              top: '50%',
+                              transform: 'translateY(-50%)',
+                              backgroundColor: 'rgba(90, 81, 81, 0.5)',
+                              color: 'white',
+                              '&:hover': {
+                                backgroundColor: 'rgba(0,0,0,0.7)'
+                              }
+                            }}
+                            onClick={handleNextImage(property.property_id, totalMedia)}
+                          >
+                            <ChevronRightIcon />
+                          </IconButton>
+                          {/* Media counter */}
+                          <Box
+                            sx={{
+                              position: 'absolute',
+                              bottom: 10,
+                              right: 10,
+                              backgroundColor: 'rgba(0,0,0,0.5)',
+                              color: 'white',
+                              px: 1,
+                              borderRadius: '4px',
+                              fontSize: '0.75rem'
+                            }}
+                          >
+                            {`${currentIndex + 1}/${totalMedia}`}
+                          </Box>
+                        </>
+                      )}
+                    </Box>
+                    <CardContent>
+                      {/* Property title with status badge */}
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                        <Typography fontWeight="bold" sx={{ flex: 1, mr: 1 }}>
+                          {property.property_title}
+                        </Typography>
+                        <Chip
+                          label={property.status}
+                          size="small"
+                          sx={{
+                            backgroundColor:
+                              property.status === 'available'
+                                ? '#2ECC71'
+                                : property.status === 'booked'
+                                  ? '#E67E22'
+                                  : '#E74C3C',
+                            color: 'white',
+                            fontWeight: 'bold',
+                            textTransform: 'uppercase',
+                            fontSize: '0.7rem',
+                            minWidth: '70px'
+                          }}
+                        />
+                      </Box>
+                      <Typography variant="body2" color="text.secondary" mb={2}>
+                        {property.city}, {property.state}
                       </Typography>
+ {/* ✅ ADD THIS: Listing Days Remaining Display */}
+  {/* <Box sx={{ mb: 2 }}>
+    <Chip
+      label={getDaysRemaining(property)}
+      size="small"
+      variant="outlined"
+      sx={{
+        fontWeight: 'bold',
+        fontSize: '0.7rem'
+      }}
+    />
+  </Box> */}
                       {/* <Typography variant="body2" color="text.secondary" mb={1}>
                         Added By: <strong>{property.first_name}</strong>
                       </Typography> */}
@@ -814,22 +880,26 @@ const updateApprovalStatus = async (propertyId, newStatus) => {
                         </Typography>
                         <Select
                           value={property.approval_status || ''}
-                          onChange={(e) => updateApprovalStatus(property.property_id, e.target.value)}
+                          onChange={(e) =>
+                            updateApprovalStatus(property.property_id, e.target.value)
+                          }
                           displayEmpty
                           sx={{
                             borderRadius: '8px',
                             backgroundColor: '#f9f9f9',
                             '&:hover': {
-                              backgroundColor: '#f0f0f0'
-                            }
+                              backgroundColor: '#f0f0f0',
+                            },
                           }}
                         >
-                          <MenuItem value={property.approval_status}>
-                            <em>{property.approval_status}</em>
+                          <MenuItem value="">
+                            <em>Select Status</em>
                           </MenuItem>
+                          <MenuItem value="pending">Pending</MenuItem>
                           <MenuItem value="approved">Approved</MenuItem>
                           <MenuItem value="rejected">Rejected</MenuItem>
                         </Select>
+
                       </FormControl>
 
                       <Grid
@@ -1072,119 +1142,119 @@ const updateApprovalStatus = async (propertyId, newStatus) => {
         />
 
         {/* Report Configuration Dialog */}
-                <Dialog open={openReportConfigDialog} onClose={closeReportConfiguration} maxWidth="sm" fullWidth>
-                  <DialogTitle>Generate Property Report</DialogTitle>
-                  <DialogContent dividers>
-                    <Stack spacing={3} sx={{ mt: 2 }}>
-                      <FormControl fullWidth>
-                        <InputLabel id="report-type-label">Report Type</InputLabel>
-                        <Select
-                          labelId="report-type-label"
-                          value={reportType}
-                          onChange={(e) => setReportType(e.target.value)}
-                          label="Report Type"
-                        >
-                          <MenuItem value="monthly">Monthly</MenuItem>
-                          <MenuItem value="yearly">Yearly</MenuItem>
-                          <MenuItem value="custom">Custom Date Range</MenuItem>
-                        </Select>
-                      </FormControl>
-        
-                      <Box sx={{ display: 'flex', gap: 2 }}>
-                        <Box sx={{ flex: 1 }}>
-                          <Typography variant="subtitle2" gutterBottom>
-                            Start Date
-                          </Typography>
-                          <DatePicker
-                            selected={startDate}
-                            onChange={(date) => setStartDate(date)}
-                            selectsStart
-                            startDate={startDate}
-                            endDate={endDate}
-                            customInput={
-                              <TextField
-                                fullWidth
-                                variant="outlined"
-                                InputProps={{
-                                  startAdornment: (
-                                    <InputAdornment position="start">
-                                      <EventIcon color="action" />
-                                    </InputAdornment>
-                                  ),
-                                }}
-                              />
-                            }
-                          />
-                        </Box>
-                        <Box sx={{ flex: 1 }}>
-                          <Typography variant="subtitle2" gutterBottom>
-                            End Date
-                          </Typography>
-                          <DatePicker
-                            selected={endDate}
-                            onChange={(date) => setEndDate(date)}
-                            selectsEnd
-                            startDate={startDate}
-                            endDate={endDate}
-                            minDate={startDate}
-                            customInput={
-                              <TextField
-                                fullWidth
-                                variant="outlined"
-                                InputProps={{
-                                  startAdornment: (
-                                    <InputAdornment position="start">
-                                      <CalendarMonthIcon color="action" />
-                                    </InputAdornment>
-                                  ),
-                                }}
-                              />
-                            }
-                          />
-                        </Box>
-                      </Box>
-        
-                      <Box>
-                        <Typography variant="subtitle2" gutterBottom>
-                          Select Columns to Include
-                        </Typography>
-                        <FormGroup>
-                          {reportColumns.map((column) => (
-                            <FormControlLabel
-                              key={column.id}
-                              control={
-                                <Checkbox
-                                  checked={column.checked}
-                                  onChange={(e) => {
-                                    const updatedColumns = reportColumns.map(col => 
-                                      col.id === column.id ? { ...col, checked: e.target.checked } : col
-                                    );
-                                    setReportColumns(updatedColumns);
-                                  }}
-                                />
-                              }
-                              label={column.label}
-                            />
-                          ))}
-                        </FormGroup>
-                      </Box>
-                    </Stack>
-                  </DialogContent>
-                  <DialogActions>
-                    <Button onClick={closeReportConfiguration} color="primary">
-                      Cancel
-                    </Button>
-                    <Button onClick={generateReport} variant="contained" color="primary">
-                      Generate Report
-                    </Button>
-                  </DialogActions>
-                </Dialog>
-        
-                {/* Report Display Dialog */}
-                <Dialog open={openReportDialog} onClose={() => setOpenReportDialog(false)} maxWidth="lg" fullWidth>
-                  <DialogTitle>Property Report</DialogTitle>
-                  <DialogContent dividers>
-                    {/* <Box sx={{ mb: 3 }}>
+        <Dialog open={openReportConfigDialog} onClose={closeReportConfiguration} maxWidth="sm" fullWidth>
+          <DialogTitle>Generate Property Report</DialogTitle>
+          <DialogContent dividers>
+            <Stack spacing={3} sx={{ mt: 2 }}>
+              <FormControl fullWidth>
+                <InputLabel id="report-type-label">Report Type</InputLabel>
+                <Select
+                  labelId="report-type-label"
+                  value={reportType}
+                  onChange={(e) => setReportType(e.target.value)}
+                  label="Report Type"
+                >
+                  <MenuItem value="monthly">Monthly</MenuItem>
+                  <MenuItem value="yearly">Yearly</MenuItem>
+                  <MenuItem value="custom">Custom Date Range</MenuItem>
+                </Select>
+              </FormControl>
+
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <Box sx={{ flex: 1 }}>
+                  <Typography variant="subtitle2" gutterBottom>
+                    Start Date
+                  </Typography>
+                  <DatePicker
+                    selected={startDate}
+                    onChange={(date) => setStartDate(date)}
+                    selectsStart
+                    startDate={startDate}
+                    endDate={endDate}
+                    customInput={
+                      <TextField
+                        fullWidth
+                        variant="outlined"
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <EventIcon color="action" />
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    }
+                  />
+                </Box>
+                <Box sx={{ flex: 1 }}>
+                  <Typography variant="subtitle2" gutterBottom>
+                    End Date
+                  </Typography>
+                  <DatePicker
+                    selected={endDate}
+                    onChange={(date) => setEndDate(date)}
+                    selectsEnd
+                    startDate={startDate}
+                    endDate={endDate}
+                    minDate={startDate}
+                    customInput={
+                      <TextField
+                        fullWidth
+                        variant="outlined"
+                        InputProps={{
+                          startAdornment: (
+                            <InputAdornment position="start">
+                              <CalendarMonthIcon color="action" />
+                            </InputAdornment>
+                          ),
+                        }}
+                      />
+                    }
+                  />
+                </Box>
+              </Box>
+
+              <Box>
+                <Typography variant="subtitle2" gutterBottom>
+                  Select Columns to Include
+                </Typography>
+                <FormGroup>
+                  {reportColumns.map((column) => (
+                    <FormControlLabel
+                      key={column.id}
+                      control={
+                        <Checkbox
+                          checked={column.checked}
+                          onChange={(e) => {
+                            const updatedColumns = reportColumns.map(col =>
+                              col.id === column.id ? { ...col, checked: e.target.checked } : col
+                            );
+                            setReportColumns(updatedColumns);
+                          }}
+                        />
+                      }
+                      label={column.label}
+                    />
+                  ))}
+                </FormGroup>
+              </Box>
+            </Stack>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={closeReportConfiguration} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={generateReport} variant="contained" color="primary">
+              Generate Report
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Report Display Dialog */}
+        <Dialog open={openReportDialog} onClose={() => setOpenReportDialog(false)} maxWidth="lg" fullWidth>
+          <DialogTitle>Property Report</DialogTitle>
+          <DialogContent dividers>
+            {/* <Box sx={{ mb: 3 }}>
                       <Typography variant="h6" gutterBottom>
                         Report Summary
                       </Typography>
@@ -1207,51 +1277,51 @@ const updateApprovalStatus = async (propertyId, newStatus) => {
                         </Box>
                       </Box>
                     </Box> */}
-        
-                    <TableContainer component={Paper} sx={{ maxHeight: '60vh', overflow: 'auto' }}>
-                      <Table stickyHeader>
-                        <TableHead>
-                          <TableRow>
-                            {reportColumns.filter(col => col.checked).map(column => (
-                              <TableCell key={column.id} sx={{ fontWeight: 'bold', color:"#4A90E2" }} >{column.label}</TableCell>
-                            ))}
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {reportData.flatMap(group => 
-                            group.properties.map((property, idx) => (
-                              <TableRow key={`${group.period}-${idx}`}>
-                                {reportColumns.filter(col => col.checked).map(column => (
-                                  <TableCell key={`${property.id}-${column.id}`}>
-                                    {column.id === 'created_at' 
-                                      ? new Date(property[column.id]).toLocaleDateString() 
-                                      : column.id === 'property_value'
-                                        ? `₹${property[column.id]?.toLocaleString() || '-'}`
-                                        : property[column.id] || '-'}
-                                  </TableCell>
-                                ))}
-                              </TableRow>
-                            ))
-                          )}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </DialogContent>
-                  <DialogActions>
-                    <Button onClick={() => setOpenReportDialog(false)} color="primary">
-                      Close
-                    </Button>
-                    <Button onClick={printReport} startIcon={<PrintIcon />} color="primary">
-                      Print
-                    </Button>
-                    <Button onClick={exportToPDF} startIcon={<PictureAsPdfIcon />} color="primary">
-                      PDF
-                    </Button>
-                    <Button onClick={exportToCSV} startIcon={<DescriptionIcon />} color="primary">
-                      CSV
-                    </Button>
-                  </DialogActions>
-                </Dialog>
+
+            <TableContainer component={Paper} sx={{ maxHeight: '60vh', overflow: 'auto' }}>
+              <Table stickyHeader>
+                <TableHead>
+                  <TableRow>
+                    {reportColumns.filter(col => col.checked).map(column => (
+                      <TableCell key={column.id} sx={{ fontWeight: 'bold', color: "#4A90E2" }} >{column.label}</TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {reportData.flatMap(group =>
+                    group.properties.map((property, idx) => (
+                      <TableRow key={`${group.period}-${idx}`}>
+                        {reportColumns.filter(col => col.checked).map(column => (
+                          <TableCell key={`${property.id}-${column.id}`}>
+                            {column.id === 'created_at'
+                              ? new Date(property[column.id]).toLocaleDateString()
+                              : column.id === 'property_value'
+                                ? `₹${property[column.id]?.toLocaleString() || '-'}`
+                                : property[column.id] || '-'}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenReportDialog(false)} color="primary">
+              Close
+            </Button>
+            <Button onClick={printReport} startIcon={<PrintIcon />} color="primary">
+              Print
+            </Button>
+            <Button onClick={exportToPDF} startIcon={<PictureAsPdfIcon />} color="primary">
+              PDF
+            </Button>
+            <Button onClick={exportToCSV} startIcon={<DescriptionIcon />} color="primary">
+              CSV
+            </Button>
+          </DialogActions>
+        </Dialog>
 
         {/* Property Details Dialog */}
         {selectedProperty && (

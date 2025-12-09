@@ -23,16 +23,13 @@ function Category() {
 
   const navigate = useNavigate();
 
-  const CATEGORY_URL = `${baseurl}/property-categories/`;
-  const TYPE_URL = `${baseurl}/property-types/`;
-
   useEffect(() => {
     fetchCategories();
   }, []);
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get(CATEGORY_URL);
+      const res = await axios.get(`${baseurl}/property-categories/`);
       setAllCategories(res.data);
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -44,7 +41,7 @@ function Category() {
       return Swal.fire('Error', 'Please enter a category name', 'error');
 
     try {
-      await axios.post(CATEGORY_URL, { name: categoryName });
+      await axios.post(`${baseurl}/property-categories/`, { name: categoryName });
       Swal.fire('Success', 'Category Created', 'success');
       setCategoryName('');
       fetchCategories();
@@ -59,13 +56,16 @@ function Category() {
     }
 
     try {
-      await axios.post(TYPE_URL, {
+      await axios.post(`${baseurl}/property-types/`, {
         category: selectedCategory,
         name: typeName,
       });
+
       Swal.fire('Success', 'Type Created', 'success');
       setTypeName('');
       setSelectedCategory('');
+
+      navigate("/tablecategory");
     } catch (err) {
       Swal.fire('Error', 'Failed to create type', 'error');
     }
@@ -76,39 +76,10 @@ function Category() {
       <Header />
       <Container maxWidth="sm" sx={{ mt: 4 }}>
 
-        {/* Title */}
-        <Typography variant="h5" gutterBottom>
-          Create Category
-        </Typography>
-
-        {/* Category Input Row */}
-        <Grid container spacing={2} alignItems="center" mb={3}>
-          <Grid item xs={8}>
-            <TextField
-              label="Category Name"
-              fullWidth
-              value={categoryName}
-              onChange={(e) => setCategoryName(e.target.value)}
-            />
-          </Grid>
-
-          <Grid item xs={4}>
-            <Button
-              variant="contained"
-              fullWidth
-              sx={{ height: '56px' }}
-              onClick={handleCreateCategory}
-            >
-              Add Category
-            </Button>
-          </Grid>
-        </Grid>
-
         <Typography variant="h5" gutterBottom>
           Create Type Under Category
         </Typography>
 
-        {/* Select Category */}
         <TextField
           select
           label="Select Category"
@@ -124,7 +95,6 @@ function Category() {
           ))}
         </TextField>
 
-        {/* Type Name Input */}
         <TextField
           label="Type Name"
           fullWidth
@@ -132,15 +102,11 @@ function Category() {
           onChange={(e) => setTypeName(e.target.value)}
         />
 
-        {/* Submit Button */}
         <Button
           variant="contained"
           color="primary"
           sx={{ mt: 3, width: '100%' }}
-          onClick={() => {
-            handleCreateType();
-            navigate("/tablecategory");
-          }}
+          onClick={handleCreateType}
         >
           Submit
         </Button>

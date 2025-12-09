@@ -22,7 +22,7 @@ const [form, setForm] = useState({
 
     const location = useLocation();
     const navigate = useNavigate();
-    const { profileType } = location.state || {};
+    const { profileType,departmentId } = location.state || {};
     const agentId = localStorage.getItem("user_id");  // agent = user_id
 
 
@@ -38,7 +38,8 @@ const handleSubmit = async (e) => {
         referral_id: form.referralId,
         name: form.name,
         email: form.email,
-        profile_type: profileType,
+        // profile_type: profileType,
+        department: departmentId,
         requested_date: form.date,
         requested_time: form.startTime,
     };
