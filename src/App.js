@@ -203,6 +203,10 @@ import EditReferralPrefix from './Components/Panel/Admin/Settings/EditReferralPr
 import HowToUse from "./Components/Website/Pages/HowToUse/HowToUse";
 
 
+import OfferTable from "./Components/Panel/Admin/Offers/OffersTable"
+import AddOffer from "./Components/Panel/Admin/Offers/AddOffersForm"
+
+
 function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -423,6 +427,9 @@ function Layout() {
           <Route path="/p-businessproducts/:id" element={<BusinessProducts />} />
           <Route path="/partnerlandingpage" element={<PartnerLandingPage />} />
           <Route path="/a-settings" element={<SettingsMain />} />
+          <Route path="/a-offers" element={<OfferTable />} />
+           <Route path="/add-offer" element={<AddOffer />} />
+           <Route path="/edit-offer/:id" element={<AddOffer />} />
           <Route path="/add-referral-prefix" element={<AddReferralPrefix />} />
           <Route path="/edit-referral-prefix/:id" element={<EditReferralPrefix />} />
 
