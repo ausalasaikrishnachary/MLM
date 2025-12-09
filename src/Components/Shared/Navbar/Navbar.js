@@ -58,11 +58,11 @@ export default function Header() {
   }, [userId]);
 
 
-  // Navigation items with Operations dropdown
+  // Navigation items with Operations and Settings dropdowns
   const navItems = [
     { label: 'Dashboard', path: '/a-dashboard' },
     { label: 'Add Property', path: '/a-addasset' },
-        { label: 'Properties', path: '/a-asset' },
+    { label: 'Properties', path: '/a-asset' },
     { label: 'Users', path: '/a-investormanagement' },
     {
       label: 'Operations',
@@ -72,14 +72,14 @@ export default function Header() {
         { label: 'Subscriptions', path: '/a-subscriptions' },
         { label: 'Booking Slab', path: '/a-bookingslab' },
         { label: 'Training Material', path: '/a-trainingmaterial' },
-         { label: 'How It Works', path: '/a-upvdhowitworks' },
+        { label: 'How It Works', path: '/a-upvdhowitworks' },
         { label: 'Transaction', path: '/a-transactionsummary' },
         { label: 'Payout Master', path: '/a-commissionmaster' },
         { label: 'Create Category', path: '/tablecategory' },
         { label: 'Business', path: '/a-business' },
         { label: 'Site Visits', path: '/a-sitevisit' },
         { label: 'Chatbot', path: '/a-chatbot' },
-         { label: 'Departments', path: '/a-departments' },
+        { label: 'Departments', path: '/a-departments' },
       ]
     },
     { label: 'Meetings', path: '/a-meetings' },
@@ -87,7 +87,14 @@ export default function Header() {
     { label: 'Leads', path: '/a-popup-leads' },
     { label: 'Company', path: '/tableadminmeetings' },
     { label: 'Reports', path: '/a-reports' },
-    { label: 'Settings', path: '/a-settings' },
+    {
+      label: 'Settings',
+      subItems: [
+        { label: 'Settings', path: '/a-settings' },
+        { label: 'Offers', path: '/a-offers' }, // Added Offers under Settings
+        // Add more Settings sub-items here if needed
+      ]
+    },
   ];
 
   // ✅ Intercept Add Property clicks
@@ -140,12 +147,15 @@ export default function Header() {
   const user_name = localStorage.getItem("user_name");
 
   const [showOperations, setShowOperations] = useState(false);
+  const [showSettings, setShowSettings] = useState(false); // Added state for Settings dropdown in mobile
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileAnchorEl, setProfileAnchorEl] = useState(null);
   const [operationsAnchorEl, setOperationsAnchorEl] = useState(null);
+  const [settingsAnchorEl, setSettingsAnchorEl] = useState(null); // Added for Settings dropdown
 
   const profileMenuOpen = Boolean(profileAnchorEl);
   const operationsMenuOpen = Boolean(operationsAnchorEl);
+  const settingsMenuOpen = Boolean(settingsAnchorEl); // Added for Settings dropdown
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
@@ -168,6 +178,17 @@ export default function Header() {
     setOperationsAnchorEl(null);
   };
 
+  // Added: Handle Settings dropdown click
+  const handleSettingsClick = (event) => {
+    setSettingsAnchorEl(event.currentTarget);
+    triggerAvatarBlink(); // Trigger blink on Settings click
+  };
+
+  // Added: Handle Settings dropdown close
+  const handleSettingsMenuClose = () => {
+    setSettingsAnchorEl(null);
+  };
+
   // Trigger avatar blink animation
   const triggerAvatarBlink = () => {
     setAvatarBlink(true);
@@ -185,7 +206,12 @@ export default function Header() {
 
   const isOperationsActive = navItems
     .find(item => item.label === 'Operations')
-    ?.subItems.some(subItem => location.pathname === subItem.path);
+    ?.subItems?.some(subItem => location.pathname === subItem.path);
+
+  // Added: Check if Settings is active
+  const isSettingsActive = navItems
+    .find(item => item.label === 'Settings')
+    ?.subItems?.some(subItem => location.pathname === subItem.path);
 
   const drawer = (
     <Box sx={{ width: 250 }}>
@@ -223,19 +249,25 @@ export default function Header() {
                     onClick={() => {
                       if (item.label === 'Operations') {
                         setShowOperations((prev) => !prev);
-                        triggerAvatarBlink(); // Trigger blink on Operations toggle
+                        triggerAvatarBlink();
+                      }
+                      if (item.label === 'Settings') {
+                        setShowSettings((prev) => !prev);
+                        triggerAvatarBlink();
                       }
                     }}
-                    className={isOperationsActive ? 'active' : ''}
+                    className={item.label === 'Operations' ? (isOperationsActive ? 'active' : '') : 
+                              item.label === 'Settings' ? (isSettingsActive ? 'active' : '') : ''}
                   >
                     <ListItemText
                       primary={item.label}
                       primaryTypographyProps={{ fontWeight: 'bold' }}
                     />
-                    {item.label === 'Operations' && (
+                    {(item.label === 'Operations' || item.label === 'Settings') && (
                       <ArrowDropDownIcon
                         style={{
-                          transform: showOperations ? 'rotate(180deg)' : 'rotate(0deg)',
+                          transform: (item.label === 'Operations' ? showOperations : showSettings) 
+                            ? 'rotate(180deg)' : 'rotate(0deg)',
                           transition: 'transform 0.3s ease',
                         }}
                       />
@@ -243,6 +275,25 @@ export default function Header() {
                   </ListItemButton>
                 </ListItem>
                 {item.label === 'Operations' && showOperations && item.subItems?.map((subItem) => (
+                  <ListItem key={subItem.label} disablePadding sx={{ pl: 4 }}>
+                    <ListItemButton
+                      onClick={() => {
+                        handleDrawerToggle();
+                        handleNavigate(subItem.path);
+                      }}
+                      className={location.pathname === subItem.path ? 'active' : ''}
+                    >
+                      <ListItemText
+                        primary={subItem.label}
+                        primaryTypographyProps={{
+                          color: location.pathname === subItem.path ? '#FFA500' : 'inherit',
+                          fontWeight: 'bold',
+                        }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+                {item.label === 'Settings' && showSettings && item.subItems?.map((subItem) => (
                   <ListItem key={subItem.label} disablePadding sx={{ pl: 4 }}>
                     <ListItemButton
                       onClick={() => {
@@ -358,11 +409,16 @@ export default function Header() {
                   ) : (
                     <Button
                       key={item.label}
-                      onClick={handleOperationsClick}
+                      onClick={item.label === 'Operations' ? handleOperationsClick : handleSettingsClick}
                       endIcon={<ArrowDropDownIcon />}
-                      className={isOperationsActive ? 'active' : ''}
+                      className={
+                        item.label === 'Operations' ? (isOperationsActive ? 'active' : '') :
+                        item.label === 'Settings' ? (isSettingsActive ? 'active' : '') : ''
+                      }
                       sx={{
-                        color: isOperationsActive ? '#FFA500' : '#000',
+                        color: 
+                          item.label === 'Operations' ? (isOperationsActive ? '#FFA500' : '#000') :
+                          item.label === 'Settings' ? (isSettingsActive ? '#FFA500' : '#000') : '#000',
                         fontWeight: 'bold',
                         textTransform: 'none',
                         fontSize: "16px"
@@ -400,6 +456,8 @@ export default function Header() {
           {drawer}
         </Drawer>
       </AppBar>
+      
+      {/* Operations Menu */}
       <Menu
         anchorEl={operationsAnchorEl}
         open={operationsMenuOpen}
@@ -424,6 +482,33 @@ export default function Header() {
           </MenuItem>
         ))}
       </Menu>
+      
+      {/* Settings Menu (Added) */}
+      <Menu
+        anchorEl={settingsAnchorEl}
+        open={settingsMenuOpen}
+        onClose={handleSettingsMenuClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        {navItems.find(item => item.label === 'Settings')?.subItems.map((subItem) => (
+          <MenuItem
+            key={subItem.label}
+            onClick={() => {
+              handleSettingsMenuClose();
+              handleNavigate(subItem.path);
+            }}
+            sx={{
+              fontWeight: 'bold',
+              color: location.pathname === subItem.path ? '#FFA500' : 'inherit',
+              fontSize: "16px"
+            }}
+          >
+            {subItem.label}
+          </MenuItem>
+        ))}
+      </Menu>
+      
       <Menu
         anchorEl={profileAnchorEl}
         open={profileMenuOpen}
@@ -469,42 +554,42 @@ export default function Header() {
 
       </Menu>
       <MuiMenu
-            anchorEl={notificationAnchorEl}
-            open={notificationMenuOpen}
-            onClose={handleNotificationClose}
-            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-          >
-            {notifications.length > 0 ? (
-              notifications.map((notif) => (
-                <MenuItem
-                  key={notif.notification_status_id}
-                  onClick={() => {
-                    axios.post(`${baseurl}/notifications/mark-as-read/`, {
-                      user_id: parseInt(userId),
-                      notification_id: notif.notification_status_id
-                    })
-                      .then(() => {
-                        setNotifications(prev => 
-                          prev.filter(n => n.notification_status_id !== notif.notification_status_id)
-                        );
-                        handleNotificationClose();
-                        
-                        // ✅ FIXED: Navigate using notif.property.id instead of assets
-                        navigate(`/a-assets/${notif.property.id}`);
-                      })
-                      .catch(error => {
-                        console.error("Error marking notification as read:", error);
-                      });
-                  }}
-                >
-                  {notif.message}
-                </MenuItem>
-              ))
-            ) : (
-              <MenuItem disabled>No notifications</MenuItem>
-            )}
-          </MuiMenu>
+        anchorEl={notificationAnchorEl}
+        open={notificationMenuOpen}
+        onClose={handleNotificationClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+      >
+        {notifications.length > 0 ? (
+          notifications.map((notif) => (
+            <MenuItem
+              key={notif.notification_status_id}
+              onClick={() => {
+                axios.post(`${baseurl}/notifications/mark-as-read/`, {
+                  user_id: parseInt(userId),
+                  notification_id: notif.notification_status_id
+                })
+                  .then(() => {
+                    setNotifications(prev => 
+                      prev.filter(n => n.notification_status_id !== notif.notification_status_id)
+                    );
+                    handleNotificationClose();
+                    
+                    // ✅ FIXED: Navigate using notif.property.id instead of assets
+                    navigate(`/a-assets/${notif.property.id}`);
+                  })
+                  .catch(error => {
+                    console.error("Error marking notification as read:", error);
+                  });
+              }}
+            >
+              {notif.message}
+            </MenuItem>
+          ))
+        ) : (
+          <MenuItem disabled>No notifications</MenuItem>
+        )}
+      </MuiMenu>
     </>
   );
 }

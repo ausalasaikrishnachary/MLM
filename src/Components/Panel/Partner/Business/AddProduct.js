@@ -27,14 +27,14 @@ const AddProduct = () => {
     selling_price: "",
     mrp: "",
     units: "",
-    tax_percent: "",
-    cgst_percent: "",
-    cgst_amount: "",
-    sgst_percent: "",
-    sgst_amount: "",
-    available_qty: "",
-    company_commission: "",
-    product_commission: "",
+    // tax_percent: "",
+    // cgst_percent: "",
+    // cgst_amount: "",
+    // sgst_percent: "",
+    // sgst_amount: "",
+    // available_qty: "",
+    // company_commission: "",
+    // product_commission: "",
     discount_percent: "",
     product_image: null,
   });
@@ -52,14 +52,14 @@ const AddProduct = () => {
         selling_price: productData.selling_price || "",
         mrp: productData.mrp || "",
         units: productData.units || "",
-        tax_percent: productData.tax_percent || "",
-        cgst_percent: productData.cgst_percent || "",
-        cgst_amount: productData.cgst_amount || "",
-        sgst_percent: productData.sgst_percent || "",
-        sgst_amount: productData.sgst_amount || "",
-        available_qty: productData.available_qty || "",
-        company_commission: productData.company_commission || "",
-        product_commission: productData.distribution_commission || "",
+        // tax_percent: productData.tax_percent || "",
+        // cgst_percent: productData.cgst_percent || "",
+        // cgst_amount: productData.cgst_amount || "",
+        // sgst_percent: productData.sgst_percent || "",
+        // sgst_amount: productData.sgst_amount || "",
+        // available_qty: productData.available_qty || "",
+        // company_commission: productData.company_commission || "",
+        // product_commission: productData.distribution_commission || "",
         discount_percent: "", // Add this field if it exists in your data
         product_image: null, // Keep as null, we'll handle file separately
       });
@@ -162,7 +162,7 @@ const AddProduct = () => {
             </Grid>
 
             {/* Pricing */}
-            <Grid item xs={12} md={4}>
+            {/* <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
                 type="number"
@@ -172,7 +172,7 @@ const AddProduct = () => {
                 onChange={handleChange}
                 variant="outlined"
               />
-            </Grid>
+            </Grid> */}
 
             <Grid item xs={12} md={4}>
               <TextField
@@ -202,7 +202,7 @@ const AddProduct = () => {
             <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
-                label="Units"
+                label="Available Quantity"
                 name="units"
                 value={formData.units}
                 onChange={handleChange}
@@ -210,7 +210,7 @@ const AddProduct = () => {
               />
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            {/* <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
                 type="number"
@@ -220,9 +220,9 @@ const AddProduct = () => {
                 onChange={handleChange}
                 variant="outlined"
               />
-            </Grid>
+            </Grid> */}
 
-            <Grid item xs={12} md={4}>
+            {/* <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
                 type="number"
@@ -232,9 +232,9 @@ const AddProduct = () => {
                 onChange={handleChange}
                 variant="outlined"
               />
-            </Grid>
+            </Grid> */}
 
-            <Grid item xs={12} md={4}>
+            {/* <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
                 type="number"
@@ -244,9 +244,9 @@ const AddProduct = () => {
                 onChange={handleChange}
                 variant="outlined"
               />
-            </Grid>
+            </Grid> */}
 
-            <Grid item xs={12} md={4}>
+            {/* <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
                 type="number"
@@ -256,9 +256,9 @@ const AddProduct = () => {
                 onChange={handleChange}
                 variant="outlined"
               />
-            </Grid>
+            </Grid> */}
 
-            <Grid item xs={12} md={4}>
+            {/* <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
                 type="number"
@@ -268,10 +268,10 @@ const AddProduct = () => {
                 onChange={handleChange}
                 variant="outlined"
               />
-            </Grid>
+            </Grid> */}
 
             {/* Quantity & Commissions */}
-            <Grid item xs={12} md={4}>
+            {/* <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
                 type="number"
@@ -281,9 +281,9 @@ const AddProduct = () => {
                 onChange={handleChange}
                 variant="outlined"
               />
-            </Grid>
+            </Grid> */}
 
-            <Grid item xs={12} md={4}>
+            {/* <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
                 type="number"
@@ -293,9 +293,9 @@ const AddProduct = () => {
                 onChange={handleChange}
                 variant="outlined"
               />
-            </Grid>
+            </Grid> */}
 
-            <Grid item xs={12} md={4}>
+            {/* <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
                 type="number"
@@ -305,13 +305,13 @@ const AddProduct = () => {
                 onChange={handleChange}
                 variant="outlined"
               />
-            </Grid>
+            </Grid> */}
 
             <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
                 type="number"
-                label="Discount (%)"
+                label="Discount"
                 name="discount_percent"
                 value={formData.discount_percent}
                 onChange={handleChange}

@@ -25,6 +25,8 @@ function EditBusiness() {
         phone: "",
         address: "",
         offer_title: "",
+        company_commission: "",      // NEW FIELD
+        distribution_commission: "", // NEW FIELD
         offer_description: "",
         logo: "",        
         documents: "",   
@@ -50,6 +52,8 @@ function EditBusiness() {
                     phone: data.phone,
                     address: data.address,
                     offer_title: data.offer_title,
+                    company_commission: data.company_commission || "",      // NEW FIELD
+                    distribution_commission: data.distribution_commission || "", // NEW FIELD
                     offer_description: data.offer_description,
                     logo: data.logo,
                     documents: data.documents,
@@ -79,51 +83,51 @@ function EditBusiness() {
         setDocumentFile(e.target.files[0]);
     };
 
-const handleSubmit = (e) => {
-    e.preventDefault();
-    setSaving(true);
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        setSaving(true);
 
-    const formData = new FormData();
+        const formData = new FormData();
 
-    // Append all text fields
-    const textFields = [
-        "business_name",
-        "business_type",
-        "description",
-        "website",
-        "email",
-        "phone",
-        "address",
-        "offer_title",
-        "offer_description",
-        "is_active",
-    ];
+        // Append all text fields
+        const textFields = [
+            "business_name",
+            "business_type",
+            "description",
+            "website",
+            "email",
+            "phone",
+            "address",
+            "offer_title",
+            "company_commission",        // NEW FIELD
+            "distribution_commission",   // NEW FIELD
+            "offer_description",
+            "is_active",
+        ];
 
-    textFields.forEach((key) => {
-        formData.append(key, businessData[key]);
-    });
+        textFields.forEach((key) => {
+            formData.append(key, businessData[key]);
+        });
 
-    // Append files only if new files are selected
-    if (logoFile) formData.append("logo", logoFile);
-    if (documentFile) formData.append("documents", documentFile);
+        // Append files only if new files are selected
+        if (logoFile) formData.append("logo", logoFile);
+        if (documentFile) formData.append("documents", documentFile);
 
-    fetch(`${baseurl}/business/${id}/`, {
-        method: "PUT",
-        body: formData,
-    })
-        .then((res) => res.json())
-        .then((data) => {
-            alert("Business updated successfully!");
-            navigate("/p-viewbusiness");
+        fetch(`${baseurl}/business/${id}/`, {
+            method: "PUT",
+            body: formData,
         })
-        .catch((err) => {
-            console.error("Error updating business:", err);
-            alert("Failed to update business.");
-        })
-        .finally(() => setSaving(false));
-};
-
-
+            .then((res) => res.json())
+            .then((data) => {
+                alert("Business updated successfully!");
+                navigate("/p-viewbusiness");
+            })
+            .catch((err) => {
+                console.error("Error updating business:", err);
+                alert("Failed to update business.");
+            })
+            .finally(() => setSaving(false));
+    };
 
     if (loading) {
         return (
@@ -185,9 +189,6 @@ const handleSubmit = (e) => {
                             />
                         </Grid>
 
-
-                        
-
                         <Grid item xs={12} sm={4}>
                             <TextField
                                 fullWidth
@@ -208,7 +209,6 @@ const handleSubmit = (e) => {
                             />
                         </Grid>
 
-
                         <Grid item xs={12} sm={4}>
                             <TextField
                                 fullWidth
@@ -219,138 +219,156 @@ const handleSubmit = (e) => {
                             />
                         </Grid>
 
-<Grid item xs={12} sm={6} md={6}>
-      <TextField
-    fullWidth
-    multiline
-    rows={3}
-    label="Offer Description"
-    name="offer_description"
-    value={businessData.offer_description}
-    onChange={handleChange}
-  />
-</Grid>
+                        <Grid item xs={12} sm={6} md={6}>
+                            <TextField
+                                fullWidth
+                                multiline
+                                rows={3}
+                                label="Offer Description"
+                                name="offer_description"
+                                value={businessData.offer_description}
+                                onChange={handleChange}
+                            />
+                        </Grid>
 
-<Grid item xs={12}  sm={6} md={6}>
-      <TextField
-    fullWidth
-    multiline
-    rows={3}
-    label="Description"
-    name="description"
-    value={businessData.description}
-    onChange={handleChange}
-  />
-</Grid>
+                        <Grid item xs={12} sm={6} md={6}>
+                            <TextField
+                                fullWidth
+                                multiline
+                                rows={3}
+                                label="Description"
+                                name="description"
+                                value={businessData.description}
+                                onChange={handleChange}
+                            />
+                        </Grid>
 
+                        {/* Offer Title and Commission Fields - All in one row */}
+                        <Grid item xs={12} sm={4}>
+                            <TextField
+                                fullWidth
+                                label="Offer Title"
+                                name="offer_title"
+                                value={businessData.offer_title}
+                                onChange={handleChange}
+                            />
+                        </Grid>
 
-           
-<Grid
-  item
-  xs={12}
-  sm={4}
-  
->
-  <TextField
-    fullWidth
-    label="Offer Title"
-    name="offer_title"
-    value={businessData.offer_title}
-    onChange={handleChange}
-  />
-</Grid>
+                        {/* NEW: Company Commission Field */}
+                        <Grid item xs={12} sm={4}>
+                            <TextField
+                                fullWidth
+                                label="Company Commission (%)"
+                                name="company_commission"
+                                value={businessData.company_commission}
+                                onChange={handleChange}
+                                type="number"
+                                inputProps={{ min: 0, max: 100, step: 0.01 }}
+                                helperText="Enter percentage (e.g., 10.5)"
+                            />
+                        </Grid>
 
+                        {/* NEW: Distribution Commission Field */}
+                        <Grid item xs={12} sm={4}>
+                            <TextField
+                                fullWidth
+                                label="Distribution Commission (%)"
+                                name="distribution_commission"
+                                value={businessData.distribution_commission}
+                                onChange={handleChange}
+                                type="number"
+                                inputProps={{ min: 0, max: 100, step: 0.01 }}
+                                helperText="Enter percentage (e.g., 5.0)"
+                            />
+                        </Grid>
 
-                       {/* Logo Upload Section */}
-<Grid item xs={12} sm={4}>
-  <Button variant="outlined" component="label" fullWidth>
-    Upload Image
-    <input
-      type="file"
-      hidden
-      onChange={handleLogoChange}
-      accept="image/*"
-    />
-  </Button>
+                        {/* Logo Upload Section */}
+                        <Grid item xs={12} sm={4}>
+                            <Button variant="outlined" component="label" fullWidth>
+                                Upload Image
+                                <input
+                                    type="file"
+                                    hidden
+                                    onChange={handleLogoChange}
+                                    accept="image/*"
+                                />
+                            </Button>
 
-  {/* Label and file name BELOW the button */}
-  <Typography variant="subtitle2" mt={1}>
-    Image File:
-  </Typography>
+                            {/* Label and file name BELOW the button */}
+                            <Typography variant="subtitle2" mt={1}>
+                                Image File:
+                            </Typography>
 
-  {logoFile ? (
-    <Typography variant="body2" mt={0.5}>
-      {logoFile.name}
-    </Typography>
-  ) : businessData.logo ? (
-    <Typography variant="body2" mt={0.5}>
-      {getFileName(businessData.logo)}
-    </Typography>
-  ) : (
-    <Typography variant="body2" mt={0.5}>
-      No image uploaded
-    </Typography>
-  )}
-</Grid>
+                            {logoFile ? (
+                                <Typography variant="body2" mt={0.5}>
+                                    {logoFile.name}
+                                </Typography>
+                            ) : businessData.logo ? (
+                                <Typography variant="body2" mt={0.5}>
+                                    {getFileName(businessData.logo)}
+                                </Typography>
+                            ) : (
+                                <Typography variant="body2" mt={0.5}>
+                                    No image uploaded
+                                </Typography>
+                            )}
+                        </Grid>
 
-{/* Document Upload Section */}
-<Grid item xs={12} sm={4}>
-  <Button variant="outlined" component="label" fullWidth>
-    Upload Document
-    <input
-      type="file"
-      hidden
-      onChange={handleDocumentChange}
-      accept=".pdf,.doc,.docx"
-    />
-  </Button>
+                        {/* Document Upload Section */}
+                        <Grid item xs={12} sm={4}>
+                            <Button variant="outlined" component="label" fullWidth>
+                                Upload Document
+                                <input
+                                    type="file"
+                                    hidden
+                                    onChange={handleDocumentChange}
+                                    accept=".pdf,.doc,.docx"
+                                />
+                            </Button>
 
-  {/* Label and file name BELOW the button */}
-  <Typography variant="subtitle2" mt={1}>
-    Document File:
-  </Typography>
+                            {/* Label and file name BELOW the button */}
+                            <Typography variant="subtitle2" mt={1}>
+                                Document File:
+                            </Typography>
 
-  {documentFile ? (
-    <Typography variant="body2" mt={0.5}>
-      {documentFile.name}
-    </Typography>
-  ) : businessData.documents ? (
-    <Typography variant="body2" mt={0.5}>
-      {getFileName(businessData.documents)}
-    </Typography>
-  ) : (
-    <Typography variant="body2" mt={0.5}>
-      No document uploaded
-    </Typography>
-  )}
-</Grid>
+                            {documentFile ? (
+                                <Typography variant="body2" mt={0.5}>
+                                    {documentFile.name}
+                                </Typography>
+                            ) : businessData.documents ? (
+                                <Typography variant="body2" mt={0.5}>
+                                    {getFileName(businessData.documents)}
+                                </Typography>
+                            ) : (
+                                <Typography variant="body2" mt={0.5}>
+                                    No document uploaded
+                                </Typography>
+                            )}
+                        </Grid>
 
-
-                  
                     </Grid>
 
+                    {/* Active Checkbox */}
+                    <Grid item xs={12} sm={4}>
+                        <Box display="flex" alignItems="center" justifyContent="start" gap={0.5} mt={3}>
+                            <input
+                                type="checkbox"
+                                name="is_active"
+                                checked={businessData.is_active}
+                                onChange={handleChange}
+                                style={{ width: '20px', height: '15px', cursor: 'pointer' }}
+                            />
+                            <Typography variant="h6" sx={{ cursor: 'pointer' }}>
+                                Active
+                            </Typography>
+                        </Box>
+                    </Grid>
 
-
-                              {/* Active Checkbox */}
-                     <Grid item xs={12} sm={4}>
-    <Box display="flex" alignItems="center" justifyContent="start" gap={0.5} mt={3}>
-        <input
-            type="checkbox"
-            name="is_active"
-            checked={businessData.is_active}
-            onChange={handleChange}
-            style={{ width: '20px', height: '15px', cursor: 'pointer' }} // ✅ bigger checkbox
-        />
-        <Typography variant="h6" sx={{ cursor: 'pointer' }}>
-            Active
-        </Typography>
-    </Box>
-</Grid>
                     <Button
                         type="submit"
                         variant="contained"
                         color="primary"
-                        sx={{ mt: 1.5}}
+                        sx={{ mt: 1.5 }}
                         disabled={saving}
                     >
                         {saving ? "Saving..." : "Update Business"}
