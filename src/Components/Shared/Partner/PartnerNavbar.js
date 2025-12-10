@@ -19,7 +19,11 @@ import {
   useTheme,
   useMediaQuery,
   Badge,
-  Menu as MuiMenu
+  Menu as MuiMenu,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from '@mui/material';
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
@@ -38,6 +42,27 @@ export default function PartnerHeader() {
   const [notifications, setNotifications] = useState([]);
   const [notificationAnchorEl, setNotificationAnchorEl] = useState(null);
   const notificationMenuOpen = Boolean(notificationAnchorEl);
+  
+  // Add subscription state for Add Property check
+  const [subscriptionPaid, setSubscriptionPaid] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+
+  // ✅ Subscription check for Add Property
+  useEffect(() => {
+    if (userId) {
+      axios
+        .get(`${baseurl}/user-subscriptions/user-id/${userId}/`)
+        .then((response) => {
+          const latest = response.data.find(
+            (item) => item.latest_status !== undefined
+          );
+          setSubscriptionPaid(latest?.latest_status === "paid");
+        })
+        .catch((error) => {
+          console.error("Subscription fetch error:", error);
+        });
+    }
+  }, [userId]);
 
   const handleNotificationClick = (event) => {
     setNotificationAnchorEl(event.currentTarget);
@@ -81,36 +106,35 @@ export default function PartnerHeader() {
         });
     };
 
-  const fetchNotifications = () => {
-  axios
-    .get(`${baseurl}/notifications/user-id/${userId}/`)
-    .then(response => {
+    const fetchNotifications = () => {
+      axios
+        .get(`${baseurl}/notifications/user-id/${userId}/`)
+        .then(response => {
+          // ✅ Add this line
+          console.log("NOTIFICATIONS FROM API:", response.data);
 
-      // ✅ Add this line
-      console.log("NOTIFICATIONS FROM API:", response.data);
+          const unread = response.data.filter(n => !n.is_read);
 
-      const unread = response.data.filter(n => !n.is_read);
+          setNotifications(prev => {
+            const all = [...unread, ...prev];
 
-      setNotifications(prev => {
-        const all = [...unread, ...prev];
+            const unique = [];
+            const seen = new Set();
 
-        const unique = [];
-        const seen = new Set();
+            for (let n of all) {
+              if (!seen.has(n.notification_status_id)) {
+                unique.push(n);
+                seen.add(n.notification_status_id);
+              }
+            }
 
-        for (let n of all) {
-          if (!seen.has(n.notification_status_id)) {
-            unique.push(n);
-            seen.add(n.notification_status_id);
-          }
-        }
-
-        return unique;
-      });
-    })
-    .catch(error => {
-      console.error("Error fetching notifications:", error);
-    });
-};
+            return unique;
+          });
+        })
+        .catch(error => {
+          console.error("Error fetching notifications:", error);
+        });
+    };
 
     fetchProfileImageAndBirthday();
     fetchNotifications();
@@ -118,13 +142,12 @@ export default function PartnerHeader() {
     return () => clearInterval(interval);
   }, [userId]);
 
-
+  // ✅ Updated navItems - Removed Settings dropdown
   const navItems = [
     { label: 'Dashboard', path: '/p-dashboard' },
     { label: 'Add Property', path: '/p-addasset' },
     { label: 'My Properties', path: '/p-myassets' },
     { label: 'Properties', path: '/p-assets' },
-    
     { label: 'Businesses', path: '/p-allbusinesses' },
     { label: 'My Business', path: '/p-viewbusiness' },
     {
@@ -137,11 +160,24 @@ export default function PartnerHeader() {
         { label: 'My Team', path: '/p-myteam' },
         { label: 'Site Visits', path: '/p-sitevisits' },
         // { label: 'Wishlist', path: '/p-wishlist' },
-       
       ]
     },
     { label: 'Meetings', path: '/p-meetings' },
+    { label: 'Offers', path: '/p-offers' }, // ✅ Added Offers tab
   ];
+
+  // ✅ Handle Add Property click with subscription check
+  const handleNavClick = (path) => {
+    if (path === "/p-addasset") {
+      if (subscriptionPaid) {
+        navigate(path);
+      } else {
+        setOpenModal(true);
+      }
+    } else {
+      navigate(path);
+    }
+  };
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -180,9 +216,8 @@ export default function PartnerHeader() {
   };
 
   const handleClick = (notif) => {
-  navigate(`/p-assets/${notif.property.id}`);
-};
-
+    navigate(`/p-assets/${notif.property.id}`);
+  };
 
   const [openOperationsMobile, setOpenOperationsMobile] = useState(false);
 
@@ -210,24 +245,23 @@ export default function PartnerHeader() {
               {openOperationsMobile && (
                 <Box sx={{ pl: 4 }}>
                   {item.subItems.map((subItem) => (
-                 <ListItemButton
-  key={subItem.label}
-  onClick={() => {
-    navigate(subItem.path);
-    handleDrawerToggle();
-  }}
-  className={`partner-nav-list-item ${
-    location.pathname === subItem.path ? 'active' : ''
-  }`}
->
-  <ListItemText
-    primary={subItem.label}
-    primaryTypographyProps={{
-      fontWeight: 'Bold',
-    }}
-  />
-</ListItemButton>
-
+                    <ListItemButton
+                      key={subItem.label}
+                      onClick={() => {
+                        navigate(subItem.path);
+                        handleDrawerToggle();
+                      }}
+                      className={`partner-nav-list-item ${
+                        location.pathname === subItem.path ? 'active' : ''
+                      }`}
+                    >
+                      <ListItemText
+                        primary={subItem.label}
+                        primaryTypographyProps={{
+                          fontWeight: 'Bold',
+                        }}
+                      />
+                    </ListItemButton>
                   ))}
                 </Box>
               )}
@@ -236,8 +270,18 @@ export default function PartnerHeader() {
             <ListItem key={item.label} disablePadding>
               <ListItemButton
                 onClick={() => {
-                  navigate(item.path);
-                  handleDrawerToggle();
+                  // Handle Add Property with subscription check in mobile
+                  if (item.path === "/p-addasset") {
+                    if (subscriptionPaid) {
+                      navigate(item.path);
+                    } else {
+                      setOpenModal(true);
+                    }
+                    handleDrawerToggle();
+                  } else {
+                    navigate(item.path);
+                    handleDrawerToggle();
+                  }
                 }}
               >
                 <ListItemText
@@ -282,33 +326,30 @@ export default function PartnerHeader() {
                   <img src={Logo} alt="logo" style={{ height: '50px', maxWidth: '150px', transform: 'scale(2.0)', }} />
                 </Link>
               </Box>
-           <Box display="flex" alignItems="center">
+              <Box display="flex" alignItems="center">
+                {/* Wishlist Heart Icon */}
+                <IconButton sx={{ color: "#ee1111ff", mr: 1 }} onClick={() => navigate("/p-wishlist")}>
+                  <FavoriteIcon />
+                </IconButton>
 
-  {/* Wishlist Heart Icon */}
-  <IconButton sx={{ color: "#ee1111ff", mr: 1 }} onClick={() => navigate("/p-wishlist")}>
-    <FavoriteIcon />
-  </IconButton>
+                {/* Notification Icon */}
+                <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
+                  <Badge badgeContent={notifications.length} color="error">
+                    <NotificationsNoneIcon />
+                  </Badge>
+                </IconButton>
 
-  {/* Notification Icon */}
-  <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
-    <Badge badgeContent={notifications.length} color="error">
-      <NotificationsNoneIcon />
-    </Badge>
-  </IconButton>
+                <Typography sx={{ ml: 2, mr: 2, color: '#000', fontWeight: 'bold' }}>
+                  {first_name} ({referral_id})
+                </Typography>
 
-  <Typography sx={{ ml: 2, mr: 2, color: '#000', fontWeight: 'bold' }}>
-    {first_name} ({referral_id})
-  </Typography>
-
-  <Avatar
-    onClick={handleAvatarClick}
-    sx={{ width: 40, height: 40, cursor: 'pointer' }}
-    alt="Profile Avatar"
-    src={profileImage ? `${baseurl}${profileImage}` : "https://via.placeholder.com/40"}
-  />
-</Box>
-
-
+                <Avatar
+                  onClick={handleAvatarClick}
+                  sx={{ width: 40, height: 40, cursor: 'pointer' }}
+                  alt="Profile Avatar"
+                  src={profileImage ? `${baseurl}${profileImage}` : "https://via.placeholder.com/40"}
+                />
+              </Box>
             </Box>
           ) : (
             <>
@@ -325,8 +366,8 @@ export default function PartnerHeader() {
                   color: '#000',
                   borderRadius: '12px',
                   padding: '8px',
-                  marginLeft: '20px', // left padding from edge of screen
-                  marginRight: '10px', // space between button and logo
+                  marginLeft: '20px',
+                  marginRight: '10px',
                   transition: 'all 0.3s ease',
                   '&:hover': {
                     backgroundColor: '#e0e0e0',
@@ -337,42 +378,46 @@ export default function PartnerHeader() {
                 <ArrowBackIcon />
               </IconButton>
 
-            <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', gap: 3 }}>
-  {navItems.map((item) =>
-    item.path ? (
-      <Button
-        key={item.label}
-        sx={{ color: 'black',fontWeight:'bold' }}
-        onClick={() => navigate(item.path)}
-        className={`partner-nav-btn ${location.pathname === item.path ? 'active' : ''}`}
-      >
-        {item.label}
-      </Button>
-    ) : (
-      <Button
-        key={item.label}
-        onClick={handleOperationsClick}
-        endIcon={<ArrowDropDownIcon />}
-        className={`partner-nav-btn ${isOperationsActive ? 'active' : ''}`}
-        sx={{ color: 'black', fontWeight: 'bold' }} // Add this sx prop
-      >
-        {item.label}
-      </Button>
-    )
-  )}
-</Box>
-  {/* Wishlist Heart Icon */}
-  <IconButton sx={{ color: "#ee1111ff", mr: 1 }} onClick={() => navigate("/p-wishlist")}>
-    <FavoriteIcon />
-  </IconButton>
+              <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', gap: 3 }}>
+                {navItems.map((item) =>
+                  item.path ? (
+                    <Button
+                      key={item.label}
+                      sx={{ color: 'black', fontWeight: 'bold' }}
+                      onClick={() => handleNavClick(item.path)}
+                      className={`partner-nav-btn ${location.pathname === item.path ? 'active' : ''}`}
+                    >
+                      {item.label}
+                    </Button>
+                  ) : (
+                    <Button
+                      key={item.label}
+                      onClick={handleOperationsClick}
+                      endIcon={<ArrowDropDownIcon />}
+                      className={`partner-nav-btn ${isOperationsActive ? 'active' : ''}`}
+                      sx={{ color: 'black', fontWeight: 'bold' }}
+                    >
+                      {item.label}
+                    </Button>
+                  )
+                )}
+              </Box>
+              
+              {/* Wishlist Heart Icon */}
+              <IconButton sx={{ color: "#ee1111ff", mr: 1 }} onClick={() => navigate("/p-wishlist")}>
+                <FavoriteIcon />
+              </IconButton>
+              
               <IconButton sx={{ color: '#000' }} onClick={handleNotificationClick}>
                 <Badge badgeContent={notifications.length} color="error">
                   <NotificationsNoneIcon />
                 </Badge>
               </IconButton>
+              
               <Typography sx={{ ml: 2, mr: 2, color: '#000', fontWeight: 'bold' }}>
                 {first_name} ({referral_id})
               </Typography>
+              
               <Avatar
                 onClick={handleAvatarClick}
                 sx={{ width: 40, height: 40, cursor: 'pointer' }}
@@ -392,6 +437,7 @@ export default function PartnerHeader() {
         </Drawer>
       </AppBar>
 
+      {/* Operations Menu */}
       <Menu
         anchorEl={operationsAnchorEl}
         open={operationsMenuOpen}
@@ -405,10 +451,9 @@ export default function PartnerHeader() {
             onClick={() => {
               handleOperationsMenuClose();
               navigate(subItem.path);
-         
             }}
             sx={{
-            color:'black',
+              color: 'black',
               fontWeight: 'bold',
               color: location.pathname === subItem.path ? '#ffa000' : 'inherit',
               fontSize: "16px"
@@ -419,6 +464,7 @@ export default function PartnerHeader() {
         ))}
       </Menu>
 
+      {/* Profile Menu */}
       <Menu
         anchorEl={profileAnchorEl}
         open={profileMenuOpen}
@@ -459,6 +505,7 @@ export default function PartnerHeader() {
         </MenuItem>
       </Menu>
 
+      {/* Notifications Menu */}
       <MuiMenu
         anchorEl={notificationAnchorEl}
         open={notificationMenuOpen}
@@ -468,36 +515,57 @@ export default function PartnerHeader() {
       >
         {notifications.length > 0 ? (
           notifications.map((notif) => (
-<MenuItem
-  key={notif.notification_status_id}
-  onClick={() => {
-    axios.post(`${baseurl}/notifications/mark-as-read/`, {
-      user_id: parseInt(userId),
-      notification_id: notif.notification_status_id
-    })
-      .then(() => {
-        setNotifications(prev =>
-          prev.filter(n => n.notification_status_id !== notif.notification_status_id)
-        );
-        handleNotificationClose();
+            <MenuItem
+              key={notif.notification_status_id}
+              onClick={() => {
+                axios.post(`${baseurl}/notifications/mark-as-read/`, {
+                  user_id: parseInt(userId),
+                  notification_id: notif.notification_status_id
+                })
+                  .then(() => {
+                    setNotifications(prev =>
+                      prev.filter(n => n.notification_status_id !== notif.notification_status_id)
+                    );
+                    handleNotificationClose();
 
-        // ⭐ Correct navigation
-        navigate(`/p-assets/${notif.property.id}`);
-      })
-      .catch(error => {
-        console.error("Error marking notification as read:", error);
-      });
-  }}
->
-  {notif.message}
-</MenuItem>
-
-
+                    // ⭐ Correct navigation
+                    navigate(`/p-assets/${notif.property.id}`);
+                  })
+                  .catch(error => {
+                    console.error("Error marking notification as read:", error);
+                  });
+              }}
+            >
+              {notif.message}
+            </MenuItem>
           ))
         ) : (
           <MenuItem disabled>No notifications</MenuItem>
         )}
       </MuiMenu>
+
+      {/* Subscription Required Modal */}
+      <Dialog open={openModal} onClose={() => setOpenModal(false)}>
+        <DialogTitle>Subscription Required</DialogTitle>
+        <DialogContent>
+          <Typography>
+            You need an active subscription to add properties. Please subscribe to a plan first.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenModal(false)}>Cancel</Button>
+          <Button 
+            onClick={() => {
+              setOpenModal(false);
+              navigate('/p-plans');
+            }} 
+            variant="contained" 
+            color="primary"
+          >
+            View Plans
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

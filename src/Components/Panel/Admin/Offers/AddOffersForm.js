@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import Header from "../../../Shared/Navbar/Navbar";
+import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
 import {
   Box, Button, TextField, Typography, MenuItem,
   Grid, FormControl, InputLabel, Select, Alert,
@@ -105,7 +105,7 @@ const OfferForm = () => {
     } catch (error) {
       console.error('Error fetching offer:', error);
       showAlert('error', 'Error', 'Failed to load offer data.');
-      navigate('/a-offers');
+      navigate('/p-offers');
     } finally {
       setLoading(false);
     }
@@ -235,10 +235,10 @@ const OfferForm = () => {
         'warning',
         'Unsaved Changes',
         'You have unsaved changes. Are you sure you want to leave?',
-        () => navigate('/a-offers')
+        () => navigate('/p-offers')
       );
     } else {
-      navigate('/a-offers');
+      navigate('/p-offers');
     }
   };
 
@@ -262,7 +262,7 @@ const OfferForm = () => {
 
       // Navigate back to offers table after 2 seconds
       setTimeout(() => {
-        navigate('/a-offers');
+        navigate('/p-offers');
       }, 2000);
     } catch (error) {
       console.error('Error:', error);
@@ -399,7 +399,7 @@ const OfferForm = () => {
   if (loading) {
     return (
       <>
-        <Header />
+        <PartnerHeader />
         <Container maxWidth="md" sx={{ mt: '100px', mb: 4, textAlign: 'center' }}>
           <CircularProgress />
           <Typography sx={{ mt: 2 }}>Loading offer data...</Typography>
@@ -410,7 +410,7 @@ const OfferForm = () => {
 
   return (
     <>
-      <Header />
+      <PartnerHeader />
       <Container maxWidth="md" sx={{ mt: '100px', mb: 4 }}>
         <Box sx={{ textAlign: 'center', mb: 4 }}>
           <Typography

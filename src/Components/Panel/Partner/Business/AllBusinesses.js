@@ -13,7 +13,9 @@ import {
   Link,
   IconButton,
   Tooltip,
-  TextField
+  TextField,
+  Button,
+  Popover,
 } from "@mui/material";
 import BusinessIcon from "@mui/icons-material/Business";
 import LanguageIcon from "@mui/icons-material/Language";
@@ -24,19 +26,25 @@ import DescriptionIcon from "@mui/icons-material/Description";
 import DownloadIcon from "@mui/icons-material/Download";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import axios from "axios";
 
 import PartnerHeader from "../../../Shared/Partner/PartnerNavbar";
 import { useNavigate } from "react-router-dom";
 import { baseurl } from "../../../BaseURL/BaseURL";
 import PaginationComponent from "../../../Shared/Pagination";
-import { Pointer } from "lucide-react";
 
 function AllBusinesses() { 
   const userId = localStorage.getItem("user_id");
   const [businesses, setBusinesses] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState(''); // Added search term state
+  const [searchTerm, setSearchTerm] = useState('');
+  
+  // Payout states
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [hoveredBusiness, setHoveredBusiness] = useState(null);
+  const [commissions, setCommissions] = useState([]);
+  const [businessProducts, setBusinessProducts] = useState([]);
 
   // Pagination states
   const [page, setPage] = useState(1);
@@ -62,6 +70,78 @@ function AllBusinesses() {
       });
   }, []);
 
+  // Fetch commissions data (for Payout popover)
+  useEffect(() => {
+    const fetchCommissions = async () => {
+      try {
+        const response = await axios.get(`${baseurl}/commissions-master/`);
+        setCommissions(response.data);
+      } catch (error) {
+        console.error("Error fetching commissions:", error);
+      }
+    };
+
+    fetchCommissions();
+  }, []);
+
+  // Fetch products for all businesses
+  useEffect(() => {
+    const fetchAllProducts = async () => {
+      try {
+        const response = await axios.get(`${baseurl}/products/`);
+        // Filter products that belong to businesses (not necessarily current user's businesses)
+        setBusinessProducts(response.data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    if (businesses.length > 0) {
+      fetchAllProducts();
+    }
+  }, [businesses]);
+
+  // Get products for a specific business
+  const getBusinessProducts = (businessId) => {
+    return businessProducts.filter(
+      (product) => String(product.business_id) === String(businessId)
+    );
+  };
+
+  // Calculate total commission for a business
+  const calculateTotalCommission = (businessId) => {
+    const products = getBusinessProducts(businessId);
+    if (products.length === 0) return { total: 0, details: [] };
+
+    const commissionDetails = commissions.map((commission) => {
+      let totalAmount = 0;
+      products.forEach((product) => {
+        const amount = (parseFloat(commission.percentage) * 
+          parseFloat(product.distribution_commission || 0)) / 100;
+        totalAmount += amount;
+      });
+      return {
+        level_no: commission.level_no,
+        amount: totalAmount
+      };
+    });
+
+    const total = commissionDetails.reduce((sum, detail) => sum + detail.amount, 0);
+
+    return { total, details: commissionDetails };
+  };
+
+  // Payout Popover handlers
+  const handlePopoverOpen = (event, businessId) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+    setHoveredBusiness(businessId);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+    setHoveredBusiness(null);
+  };
 
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this business?")) {
@@ -83,7 +163,7 @@ function AllBusinesses() {
     setPage(value);
   };
 
-    // Filter businesses based on business_type
+  // Filter businesses based on business_type
   const filteredBusinesses = businesses.filter(business => {
     if (!searchTerm) return true; // Show all if no search term
     
@@ -98,6 +178,8 @@ function AllBusinesses() {
     startIndex + itemsPerPage
   );
 
+  const open = Boolean(anchorEl);
+
   return (
     <>
       <PartnerHeader />
@@ -108,41 +190,24 @@ function AllBusinesses() {
           </Typography>
         </Box>
         {/* Search Bar */}
-                        <Box sx={{ mb: 3, maxWidth: 400 }}>
-                          <TextField
-                            fullWidth
-                            label="Search by business category or type..."
-                            variant="outlined"
-                            value={searchTerm}
-                            onChange={(e) => {
-                              setSearchTerm(e.target.value);
-                              setPage(1); // Reset to first page when searching
-                            }}
-                            sx={{
-                              '& .MuiOutlinedInput-root': {
-                                borderRadius: '12px',
-                                backgroundColor: 'white',
-                              }
-                            }}
-                          />
-                        </Box>
-
-        {/* <Box display="flex" justifyContent="flex-end" mb={3}>
-          <button
-            style={{
-              padding: "10px 20px",
-              borderRadius: "8px",
-              backgroundColor: "#1976d2",
-              color: "white",
-              border: "none",
-              cursor: "pointer",
-              fontWeight: "bold",
+        <Box sx={{ mb: 3, maxWidth: 400 }}>
+          <TextField
+            fullWidth
+            label="Search by business category or type..."
+            variant="outlined"
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setPage(1); // Reset to first page when searching
             }}
-            onClick={() => navigate("/p-addbusiness")}
-          >
-            + Add Business
-          </button>
-        </Box> */}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '12px',
+                backgroundColor: 'white',
+              }
+            }}
+          />
+        </Box>
 
         {loading ? (
           <Box display="flex" justifyContent="center" alignItems="center" mt={5}>
@@ -160,196 +225,306 @@ function AllBusinesses() {
         ) : (
           <>
             <Grid container spacing={3}>
-              {paginatedBusinesses.map((business) => (
-                <Grid item xs={12} sm={6} md={4} key={business.business_id}>
-                  <Card
-                    sx={{
-                      borderRadius: "20px",
-                      p: 2,
-                      boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
-                      bgcolor: "#fff",
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "space-between",
-                      width: "100%",
-                      height: "100%",
-                      position: "relative",
-                      overflow: "visible",
-                      cursor: 'pointer',
-
-                    }}
-                    onClick={() => navigate(`/p-businessproducts/${business.business_id}`)}
-                  >
-                    {/* Offer Ribbon */}
-                    {business.offer_title && (
-                      <Box
-                        sx={{
-                          position: "absolute",
-                          top: -5,
-                          left: -5,
-                          zIndex: 1,
-                          transform: "rotate(-5deg)",
-                        }}
-                      >
+              {paginatedBusinesses.map((business) => {
+                const businessProductsCount = getBusinessProducts(business.business_id).length;
+                const commissionData = calculateTotalCommission(business.business_id);
+                
+                return (
+                  <Grid item xs={12} sm={6} md={4} key={business.business_id}>
+                    <Box
+                      sx={{
+                        borderRadius: "20px",
+                        p: 2,
+                        boxShadow: "0 6px 18px rgba(0,0,0,0.08)",
+                        bgcolor: "#fff",
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "space-between",
+                        width: "100%",
+                        height: "100%",
+                        position: "relative",
+                        overflow: "visible",
+                        cursor: 'pointer',
+                        transition: "transform 0.2s, box-shadow 0.2s",
+                        "&:hover": {
+                          transform: "translateY(-4px)",
+                          boxShadow: "0 10px 25px rgba(0,0,0,0.12)",
+                        },
+                      }}
+                      onClick={() => navigate(`/p-businessproducts/${business.business_id}`)}
+                    >
+                      {/* Offer Ribbon */}
+                      {business.offer_title && (
                         <Box
                           sx={{
-                            backgroundColor: "#ff6b6b",
-                            color: "white",
-                            px: 2,
-                            py: 0.5,
-                            borderRadius: "8px 8px 8px 0",
-                            fontSize: "0.75rem",
-                            fontWeight: "bold",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.5px",
+                            position: "absolute",
+                            top: -5,
+                            left: -5,
+                            zIndex: 1,
+                            transform: "rotate(-5deg)",
                           }}
                         >
-                          {business.offer_title.toUpperCase()}
+                          <Box
+                            sx={{
+                              backgroundColor: "#ff6b6b",
+                              color: "white",
+                              px: 2,
+                              py: 0.5,
+                              borderRadius: "8px 8px 8px 0",
+                              fontSize: "0.75rem",
+                              fontWeight: "bold",
+                              textTransform: "uppercase",
+                              letterSpacing: "0.5px",
+                            }}
+                          >
+                            {business.offer_title.toUpperCase()}
+                          </Box>
                         </Box>
-                      </Box>
-                    )}
+                      )}
 
-                    {/* Business Logo */}
-                    {business.logo ? (
-                      <CardMedia
-                        component="img"
-                        alt={business.business_name || "Business Logo"}
-                        image={
-                          business.logo ? `${baseurl}/${business.logo}` : "/default-logo.png"
-                        }
-                        sx={{ objectFit: "contain" }}
-                      />
-                    ) : (
-                      <Box
-                        height="160px"
-                        display="flex"
-                        justifyContent="center"
-                        alignItems="center"
-                        bgcolor="#f5f5f5"
-                      >
-                        <BusinessIcon sx={{ fontSize: 60, color: "gray" }} />
-                      </Box>
-                    )}
-
-                    {/* Business Info */}
-                    <CardContent sx={{ flexGrow: 1 }}>
-                      <Typography variant="h6" fontWeight="bold" gutterBottom>
-                        {business.business_name}
-                      </Typography>
-
-                      <Chip
-                        label={business.business_type}
-                        color="primary"
-                        size="small"
-                        sx={{ mb: 1 }}
-                      />
-
-                      <Divider sx={{ my: 1.5 }} />
-
-                      {/* Website */}
-                      <Box display="flex" alignItems="center" gap={1} mb={1}>
-                        <LanguageIcon fontSize="small" color="primary" />
-                        <Link
-                          href={business.website}
-                          target="_blank"
-                          rel="noopener"
-                          underline="hover"
+                      {/* Business Logo */}
+                      {business.logo ? (
+                        <CardMedia
+                          component="img"
+                          height="200"
+                          alt={business.business_name || "Business Logo"}
+                          image={
+                            business.logo ? `${baseurl}/${business.logo}` : "/default-logo.png"
+                          }
+                          sx={{
+                            objectFit: "contain",
+                            bgcolor: "#f5f5f5"
+                          }}
+                        />
+                      ) : (
+                        <Box
+                          height="160px"
+                          display="flex"
+                          justifyContent="center"
+                          alignItems="center"
+                          bgcolor="#f5f5f5"
                         >
-                          {business.website}
-                        </Link>
-                      </Box>
-
-                      {/* Email */}
-                      <Box display="flex" alignItems="center" gap={1} mb={1}>
-                        <EmailIcon fontSize="small" color="primary" />
-                        <Typography variant="body2">{business.email}</Typography>
-                      </Box>
-
-                      {/* Phone */}
-                      <Box display="flex" alignItems="center" gap={1} mb={1}>
-                        <PhoneIcon fontSize="small" color="primary" />
-                        <Typography variant="body2">{business.phone}</Typography>
-                      </Box>
-
-                      {/* Location */}
-                      {business.address && (
-                        <Box display="flex" alignItems="center" gap={1} mb={1}>
-                          <LocationOnIcon fontSize="small" color="primary" />
-                          <Typography variant="body2" color="text.secondary">
-                            {business.address}
-                          </Typography>
+                          <BusinessIcon sx={{ fontSize: 60, color: "gray" }} />
                         </Box>
                       )}
 
-                      {/* Description */}
-                      {business.description && (
-                        <Box display="flex" alignItems="flex-start" mb={1}>
-                          <DescriptionIcon
-                            fontSize="small"
-                            color="primary"
-                            sx={{ mr: 0.5, mt: 0.3 }}
+                      {/* Business Info */}
+                      <CardContent sx={{ flexGrow: 1 }}>
+                        <Box
+                          display="flex"
+                          justifyContent="space-between"
+                          alignItems="center"
+                          mb={1}
+                        >
+                          <Typography variant="h6" fontWeight="bold">
+                            {business.business_name}
+                          </Typography>
+
+                          {/* Product Count Badge */}
+                          <Chip
+                            label={`${businessProductsCount} products`}
+                            size="small"
+                            color="secondary"
                           />
-                          <Typography variant="body2" color="text.secondary">
-                            {business.description}
-                          </Typography>
                         </Box>
-                      )}
-                    </CardContent>
 
-                    {/* Action Buttons */}
-                    <Box display="flex" justifyContent="flex-end" p={1}>
-                      {/* Download Document */}
-                      {business.documents && (
-                        <Tooltip title="Download">
-                          <IconButton
-                            component="a"
-                            href={`${baseurl}/${business.documents}`}
+                        <Chip
+                          label={business.business_type}
+                          color="primary"
+                          size="small"
+                          sx={{ mb: 1 }}
+                        />
+
+                        <Divider sx={{ my: 1.5 }} />
+
+                        {/* Website */}
+                        <Box display="flex" alignItems="center" gap={1} mb={1}>
+                          <LanguageIcon fontSize="small" color="primary" />
+                          <Link
+                            href={business.website}
                             target="_blank"
                             rel="noopener"
-                            color="primary"
+                            underline="hover"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              window.open(business.website, '_blank', 'noopener,noreferrer');
+                            }}
                           >
-                            <DownloadIcon />
+                            {business.website}
+                          </Link>
+                        </Box>
+
+                        {/* Email */}
+                        <Box display="flex" alignItems="center" gap={1} mb={1}>
+                          <EmailIcon fontSize="small" color="primary" />
+                          <Typography variant="body2">{business.email}</Typography>
+                        </Box>
+
+                        {/* Phone */}
+                        <Box display="flex" alignItems="center" gap={1} mb={1}>
+                          <PhoneIcon fontSize="small" color="primary" />
+                          <Typography variant="body2">{business.phone}</Typography>
+                        </Box>
+
+                        {/* Location */}
+                        {business.address && (
+                          <Box display="flex" alignItems="center" gap={1} mb={1}>
+                            <LocationOnIcon fontSize="small" color="primary" />
+                            <Typography variant="body2" color="text.secondary">
+                              {business.address}
+                            </Typography>
+                          </Box>
+                        )}
+
+                        {/* Description */}
+                        {business.description && (
+                          <Box display="flex" alignItems="flex-start" mb={1}>
+                            <DescriptionIcon
+                              fontSize="small"
+                              color="primary"
+                              sx={{ mr: 0.5, mt: 0.3 }}
+                            />
+                            <Typography variant="body2" color="text.secondary">
+                              {business.description}
+                            </Typography>
+                          </Box>
+                        )}
+
+                        {/* ✅ Payout Button with Hover Popover */}
+                        {businessProductsCount > 0 && (
+                          <Box sx={{ mt: 2 }}>
+                            <Button
+                              onMouseEnter={(e) => handlePopoverOpen(e, business.business_id)}
+                              onMouseLeave={handlePopoverClose}
+                              fullWidth
+                              variant="contained"
+                              sx={{
+                                color: "white",
+                                textTransform: "none",
+                                "&:hover": { color: "rgb(5,5,5)" },
+                                marginBottom: "9px",
+                              }}
+                            >
+                              Payout
+                            </Button>
+
+                            <Popover
+                              id="mouse-over-popover"
+                              sx={{ pointerEvents: "none" }}
+                              open={open && hoveredBusiness === business.business_id}
+                              anchorEl={anchorEl}
+                              anchorOrigin={{
+                                vertical: "bottom",
+                                horizontal: "left",
+                              }}
+                              transformOrigin={{
+                                vertical: "top",
+                                horizontal: "left",
+                              }}
+                              onClose={handlePopoverClose}
+                              disableRestoreFocus
+                            >
+                              <Box sx={{ p: 2 }}>
+                                <Typography fontWeight="bold" gutterBottom>
+                                  Commission Summary
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary" gutterBottom>
+                                  {businessProductsCount} products
+                                </Typography>
+                                
+                                {commissionData.details.length > 0 ? (
+                                  <>
+                                    {commissionData.details.map((c) => (
+                                      <Typography key={c.level_no} variant="body2">
+                                        Team {c.level_no}: ₹
+                                        {c.amount.toLocaleString(undefined, {
+                                          minimumFractionDigits: 2,
+                                        })}
+                                      </Typography>
+                                    ))}
+                                    <Divider sx={{ my: 1 }} />
+                                    <Typography variant="body1" fontWeight="bold">
+                                      Total: ₹
+                                      {commissionData.total.toLocaleString(undefined, {
+                                        minimumFractionDigits: 2,
+                                      })}
+                                    </Typography>
+                                  </>
+                                ) : (
+                                  <Typography variant="body2" color="text.secondary">
+                                    No commission data
+                                  </Typography>
+                                )}
+                              </Box>
+                            </Popover>
+                          </Box>
+                        )}
+                      </CardContent>
+
+                      {/* Action Buttons */}
+                      <Box display="flex" justifyContent="flex-end" p={1} sx={{ borderTop: '1px solid #e0e0e0' }}>
+                        {/* Download Document */}
+                        {business.documents && (
+                          <Tooltip title="Download">
+                            <IconButton
+                              component="a"
+                              href={`${baseurl}/${business.documents}`}
+                              target="_blank"
+                              rel="noopener"
+                              color="primary"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                window.open(`${baseurl}/${business.documents}`, '_blank', 'noopener,noreferrer');
+                              }}
+                            >
+                              <DownloadIcon />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+
+                        {/* Commented out Edit and Delete buttons since they're not needed for AllBusinesses */}
+                        {/* <Tooltip title="Edit">
+                          <IconButton
+                            color="primary"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/p-editbusiness/${business.business_id}`);
+                            }}
+                          >
+                            <EditIcon />
                           </IconButton>
                         </Tooltip>
-                      )}
 
-                      {/* <Tooltip title="Edit">
-                        <IconButton
-                          color="primary"
-                          onClick={() =>
-                            navigate(`/p-editbusiness/${business.business_id}`)
-                          }
-                        >
-                          <EditIcon />
-                        </IconButton>
-                      </Tooltip> */}
-
-                      {/* <Tooltip title="Delete">
-                        <IconButton
-                          color="error"
-                          onClick={() => handleDelete(business.business_id)}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </Tooltip> */}
+                        <Tooltip title="Delete">
+                          <IconButton
+                            color="error"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDelete(business.business_id);
+                            }}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </Tooltip> */}
+                      </Box>
                     </Box>
-                  </Card>
-                </Grid>
-              ))}
+                  </Grid>
+                );
+              })}
             </Grid>
 
-            {/* Pagination */}
             {/* Pagination */}
             {totalPages >= 1 && (
               <Box display="flex" justifyContent="flex-end" mt={2}>
                 <PaginationComponent
-                  count={totalPages || 1} // ensure at least 1 page
+                  count={totalPages || 1}
                   page={page}
                   onChange={handlePageChange}
                 />
               </Box>
             )}
-
           </>
         )}
       </Container>

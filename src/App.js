@@ -427,7 +427,7 @@ function Layout() {
           <Route path="/p-businessproducts/:id" element={<BusinessProducts />} />
           <Route path="/partnerlandingpage" element={<PartnerLandingPage />} />
           <Route path="/a-settings" element={<SettingsMain />} />
-          <Route path="/a-offers" element={<OfferTable />} />
+          <Route path="/p-offers" element={<OfferTable />} />
            <Route path="/add-offer" element={<AddOffer />} />
            <Route path="/edit-offer/:id" element={<AddOffer />} />
           <Route path="/add-referral-prefix" element={<AddReferralPrefix />} />

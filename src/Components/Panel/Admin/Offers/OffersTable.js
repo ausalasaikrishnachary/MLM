@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Header from "../../../Shared/Navbar/Navbar";
+import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
 import {
   Table, TableBody, TableCell, TableHead, TableRow,
   Box, Button, IconButton, Container, Pagination, Typography,
@@ -168,7 +168,7 @@ function TableOffers() {
 
   return (
     <>
-      <Header />
+      <PartnerHeader />
       <Container maxWidth="lg" sx={{ mt: '100px', mb: 4 }}>
         <div style={{ textAlign: 'center', marginTop: "20px" }}>
           <Typography

@@ -31,14 +31,12 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { baseurl } from '../../BaseURL/BaseURL';
 import { Badge, Menu as MuiMenu } from '@mui/material';
 import axios from 'axios';
-import './Navbar.css'; // Import the updated CSS file
+import './Navbar.css';
 
 export default function Header() {
-
   const [subscriptionPaid, setSubscriptionPaid] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const userId = localStorage.getItem("user_id");
-
 
   // ✅ Subscription check
   useEffect(() => {
@@ -57,8 +55,7 @@ export default function Header() {
     }
   }, [userId]);
 
-
-  // Navigation items with Operations and Settings dropdowns
+  // Updated navItems - Removed "Offer" and simplified dropdown
   const navItems = [
     { label: 'Dashboard', path: '/a-dashboard' },
     { label: 'Add Property', path: '/a-addasset' },
@@ -83,37 +80,15 @@ export default function Header() {
       ]
     },
     { label: 'Meetings', path: '/a-meetings' },
-    { label: 'Offer', path: '/a-table-carousel' },
     { label: 'Leads', path: '/a-popup-leads' },
     { label: 'Company', path: '/tableadminmeetings' },
     { label: 'Reports', path: '/a-reports' },
-    {
-      label: 'Settings',
-      subItems: [
-        { label: 'Settings', path: '/a-settings' },
-        { label: 'Offers', path: '/a-offers' }, // Added Offers under Settings
-        // Add more Settings sub-items here if needed
-      ]
-    },
+    { label: 'Prefix',  path: '/a-settings'}
   ];
-
-  // ✅ Intercept Add Property clicks
-  const handleNavClick = (path) => {
-    if (path === "/p-addasset") {
-      if (subscriptionPaid) {
-        navigate(path);
-      } else {
-        setOpenModal(true);
-      }
-    } else {
-      navigate(path);
-    }
-  };
-
 
   const [notifications, setNotifications] = useState([]);
   const [notificationAnchorEl, setNotificationAnchorEl] = useState(null);
-  const [avatarBlink, setAvatarBlink] = useState(false); // State for avatar blink
+  const [avatarBlink, setAvatarBlink] = useState(false);
   const notificationMenuOpen = Boolean(notificationAnchorEl);
   const navigate = useNavigate();
   const location = useLocation();
@@ -121,6 +96,7 @@ export default function Header() {
   const handleNotificationClick = (event) => {
     setNotificationAnchorEl(event.currentTarget);
   };
+
   const handleNotificationClose = () => {
     setNotificationAnchorEl(null);
   };
@@ -137,8 +113,8 @@ export default function Header() {
         });
     };
 
-    fetchNotifications(); // Initial load
-    const interval = setInterval(fetchNotifications, 10000); // Every 10s
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 10000);
     return () => clearInterval(interval);
   }, [userId]);
 
@@ -147,15 +123,15 @@ export default function Header() {
   const user_name = localStorage.getItem("user_name");
 
   const [showOperations, setShowOperations] = useState(false);
-  const [showSettings, setShowSettings] = useState(false); // Added state for Settings dropdown in mobile
+  const [showSettings, setShowSettings] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileAnchorEl, setProfileAnchorEl] = useState(null);
   const [operationsAnchorEl, setOperationsAnchorEl] = useState(null);
-  const [settingsAnchorEl, setSettingsAnchorEl] = useState(null); // Added for Settings dropdown
+  const [settingsAnchorEl, setSettingsAnchorEl] = useState(null);
 
   const profileMenuOpen = Boolean(profileAnchorEl);
   const operationsMenuOpen = Boolean(operationsAnchorEl);
-  const settingsMenuOpen = Boolean(settingsAnchorEl); // Added for Settings dropdown
+  const settingsMenuOpen = Boolean(settingsAnchorEl);
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
@@ -171,36 +147,32 @@ export default function Header() {
 
   const handleOperationsClick = (event) => {
     setOperationsAnchorEl(event.currentTarget);
-    triggerAvatarBlink(); // Trigger blink on Operations click
+    triggerAvatarBlink();
   };
 
   const handleOperationsMenuClose = () => {
     setOperationsAnchorEl(null);
   };
 
-  // Added: Handle Settings dropdown click
   const handleSettingsClick = (event) => {
     setSettingsAnchorEl(event.currentTarget);
-    triggerAvatarBlink(); // Trigger blink on Settings click
+    triggerAvatarBlink();
   };
 
-  // Added: Handle Settings dropdown close
   const handleSettingsMenuClose = () => {
     setSettingsAnchorEl(null);
   };
 
-  // Trigger avatar blink animation
   const triggerAvatarBlink = () => {
     setAvatarBlink(true);
-    setTimeout(() => setAvatarBlink(false), 1000); // Reset after animation duration
+    setTimeout(() => setAvatarBlink(false), 1000);
   };
 
-  // Handle navigation with smooth scroll and blink
   const handleNavigate = (path) => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setTimeout(() => {
       navigate(path);
-      triggerAvatarBlink(); // Trigger blink on navigation
+      triggerAvatarBlink();
     }, 200);
   };
 
@@ -208,7 +180,6 @@ export default function Header() {
     .find(item => item.label === 'Operations')
     ?.subItems?.some(subItem => location.pathname === subItem.path);
 
-  // Added: Check if Settings is active
   const isSettingsActive = navItems
     .find(item => item.label === 'Settings')
     ?.subItems?.some(subItem => location.pathname === subItem.path);
@@ -483,7 +454,7 @@ export default function Header() {
         ))}
       </Menu>
       
-      {/* Settings Menu (Added) */}
+      {/* Settings Menu */}
       <Menu
         anchorEl={settingsAnchorEl}
         open={settingsMenuOpen}
@@ -528,8 +499,6 @@ export default function Header() {
         <MenuItem
           onClick={() => {
             handleProfileMenuClose();
-
-            // Remove specific keys from localStorage
             localStorage.removeItem("user_id");
             localStorage.removeItem("email");
             localStorage.removeItem("username");
@@ -537,8 +506,6 @@ export default function Header() {
             localStorage.removeItem("referral_id");
             localStorage.removeItem("referred_by");
             localStorage.removeItem("user_name");
-
-            // Redirect to home (or login page)
             handleNavigate('/');
           }}
           sx={{
@@ -551,8 +518,8 @@ export default function Header() {
         >
           Logout <LogoutIcon sx={{ ml: 1 }} />
         </MenuItem>
-
       </Menu>
+      
       <MuiMenu
         anchorEl={notificationAnchorEl}
         open={notificationMenuOpen}
@@ -574,8 +541,6 @@ export default function Header() {
                       prev.filter(n => n.notification_status_id !== notif.notification_status_id)
                     );
                     handleNotificationClose();
-                    
-                    // ✅ FIXED: Navigate using notif.property.id instead of assets
                     navigate(`/a-assets/${notif.property.id}`);
                   })
                   .catch(error => {

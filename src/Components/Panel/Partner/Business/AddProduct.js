@@ -6,16 +6,24 @@ import {
   TextField,
   Button,
   Box,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Select,
 } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import PartnerHeader from "../../../Shared/Partner/PartnerNavbar";
 import { baseurl } from "../../../BaseURL/BaseURL";
+import axios from "axios";
 
 const AddProduct = () => {
   const userId = localStorage.getItem("user_id");
   const navigate = useNavigate();
   const location = useLocation();
   const { business, editMode, productData } = location.state || {};
+
+  const [offers, setOffers] = useState([]); // State to store offers
+  const [loading, setLoading] = useState(true);
 
   const [formData, setFormData] = useState({
     agent_id: userId,
@@ -35,9 +43,31 @@ const AddProduct = () => {
     // available_qty: "",
     // company_commission: "",
     // product_commission: "",
-    discount_percent: "",
+    offer_id: "", // Changed from discount_percent to offer_id
     product_image: null,
   });
+
+  // Fetch offers from API
+  useEffect(() => {
+    const fetchOffers = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${baseurl}/offers/`);
+        console.log('Fetched offers:', response.data);
+        
+        // Filter only active offers if needed
+        const activeOffers = response.data.filter(offer => offer.is_active === true);
+        setOffers(activeOffers);
+      } catch (error) {
+        console.error('Error fetching offers:', error);
+        alert('Failed to load offers. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOffers();
+  }, []);
 
   // Pre-fill form if in edit mode
   useEffect(() => {
@@ -52,19 +82,54 @@ const AddProduct = () => {
         selling_price: productData.selling_price || "",
         mrp: productData.mrp || "",
         units: productData.units || "",
-        // tax_percent: productData.tax_percent || "",
-        // cgst_percent: productData.cgst_percent || "",
-        // cgst_amount: productData.cgst_amount || "",
-        // sgst_percent: productData.sgst_percent || "",
-        // sgst_amount: productData.sgst_amount || "",
-        // available_qty: productData.available_qty || "",
-        // company_commission: productData.company_commission || "",
-        // product_commission: productData.distribution_commission || "",
-        discount_percent: "", // Add this field if it exists in your data
-        product_image: null, // Keep as null, we'll handle file separately
+        offer_id: productData.offer_id || "", // Use offer_id instead of discount_percent
+        product_image: null,
       });
     }
   }, [editMode, productData, business, userId]);
+
+  // Format offer display text
+  const getOfferDisplayText = (offer) => {
+    if (!offer) return '';
+    
+    const formatDate = (dateString) => {
+      if (!dateString) return '';
+      const [day, month, year] = dateString.split('-');
+      return `${day}/${month}/${year}`;
+    };
+
+    const getOfferTypeDisplay = (type) => {
+      const types = {
+        'discount_percent': 'Discount %',
+        'discount_flat': 'Flat Discount',
+        'buy_x_get_y': 'Buy X Get Y',
+        'free_gift': 'Free Gift'
+      };
+      return types[type] || type;
+    };
+
+    const formatOfferValue = (offer) => {
+      switch(offer.offer_type) {
+        case 'discount_percent':
+          return `${offer.value}%`;
+        case 'discount_flat':
+          return `₹${offer.value}`;
+        case 'buy_x_get_y':
+          return `Buy ${offer.x_quantity} Get ${offer.y_quantity}`;
+        case 'free_gift':
+          return offer.description || 'Free Gift';
+        default:
+          return offer.value || '';
+      }
+    };
+
+    const offerValue = formatOfferValue(offer);
+    const offerType = getOfferTypeDisplay(offer.offer_type);
+    const startDate = formatDate(offer.start_date);
+    const endDate = formatDate(offer.end_date);
+    
+    return `${offerType}`;
+  };
 
   // Handle text input
   const handleChange = (e) => {
@@ -84,7 +149,9 @@ const AddProduct = () => {
     try {
       const payload = new FormData();
       Object.entries(formData).forEach(([key, value]) => {
-        if (value !== null && value !== "") payload.append(key, value);
+        if (value !== null && value !== "") {
+          payload.append(key, value);
+        }
       });
 
       let res;
@@ -162,18 +229,6 @@ const AddProduct = () => {
             </Grid>
 
             {/* Pricing */}
-            {/* <Grid item xs={12} md={4}>
-              <TextField
-                fullWidth
-                type="number"
-                label="Team Payout"
-                name="price"
-                value={formData.price}
-                onChange={handleChange}
-                variant="outlined"
-              />
-            </Grid> */}
-
             <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
@@ -198,7 +253,6 @@ const AddProduct = () => {
               />
             </Grid>
 
-            {/* Tax */}
             <Grid item xs={12} md={4}>
               <TextField
                 fullWidth
@@ -210,113 +264,41 @@ const AddProduct = () => {
               />
             </Grid>
 
-            {/* <Grid item xs={12} md={4}>
-              <TextField
-                fullWidth
-                type="number"
-                label="Tax (%)"
-                name="tax_percent"
-                value={formData.tax_percent}
-                onChange={handleChange}
-                variant="outlined"
-              />
-            </Grid> */}
-
-            {/* <Grid item xs={12} md={4}>
-              <TextField
-                fullWidth
-                type="number"
-                label="CGST (%)"
-                name="cgst_percent"
-                value={formData.cgst_percent}
-                onChange={handleChange}
-                variant="outlined"
-              />
-            </Grid> */}
-
-            {/* <Grid item xs={12} md={4}>
-              <TextField
-                fullWidth
-                type="number"
-                label="CGST Amount"
-                name="cgst_amount"
-                value={formData.cgst_amount}
-                onChange={handleChange}
-                variant="outlined"
-              />
-            </Grid> */}
-
-            {/* <Grid item xs={12} md={4}>
-              <TextField
-                fullWidth
-                type="number"
-                label="SGST (%)"
-                name="sgst_percent"
-                value={formData.sgst_percent}
-                onChange={handleChange}
-                variant="outlined"
-              />
-            </Grid> */}
-
-            {/* <Grid item xs={12} md={4}>
-              <TextField
-                fullWidth
-                type="number"
-                label="SGST Amount"
-                name="sgst_amount"
-                value={formData.sgst_amount}
-                onChange={handleChange}
-                variant="outlined"
-              />
-            </Grid> */}
-
-            {/* Quantity & Commissions */}
-            {/* <Grid item xs={12} md={4}>
-              <TextField
-                fullWidth
-                type="number"
-                label="Available Quantity"
-                name="available_qty"
-                value={formData.available_qty}
-                onChange={handleChange}
-                variant="outlined"
-              />
-            </Grid> */}
-
-            {/* <Grid item xs={12} md={4}>
-              <TextField
-                fullWidth
-                type="number"
-                label="Company Payout (%)"
-                name="company_commission"
-                value={formData.company_commission}
-                onChange={handleChange}
-                variant="outlined"
-              />
-            </Grid> */}
-
-            {/* <Grid item xs={12} md={4}>
-              <TextField
-                fullWidth
-                type="number"
-                label="Product Commission (%)"
-                name="product_commission"
-                value={formData.product_commission}
-                onChange={handleChange}
-                variant="outlined"
-              />
-            </Grid> */}
-
+            {/* Offer Selection */}
             <Grid item xs={12} md={4}>
-              <TextField
-                fullWidth
-                type="number"
-                label="Discount"
-                name="discount_percent"
-                value={formData.discount_percent}
-                onChange={handleChange}
-                variant="outlined"
-              />
+              <FormControl fullWidth variant="outlined">
+                <InputLabel id="offer-select-label">Select Offer</InputLabel>
+                <Select
+                  labelId="offer-select-label"
+                  id="offer_id"
+                  name="offer_id"
+                  value={formData.offer_id}
+                  onChange={handleChange}
+                  label="Select Offer"
+                >
+                  <MenuItem value="">
+                    <em>No Offer</em>
+                  </MenuItem>
+                  {loading ? (
+                    <MenuItem value="" disabled>
+                      Loading offers...
+                    </MenuItem>
+                  ) : offers.length > 0 ? (
+                    offers.map((offer) => (
+                      <MenuItem key={offer.id} value={offer.id}>
+                        {getOfferDisplayText(offer)}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem value="" disabled>
+                      No active offers available
+                    </MenuItem>
+                  )}
+                </Select>
+              </FormControl>
+              <Typography variant="caption" color="textSecondary" sx={{ mt: 1, display: 'block' }}>
+                Select an offer to apply to this product
+              </Typography>
             </Grid>
 
             {/* Product Image Upload */}
