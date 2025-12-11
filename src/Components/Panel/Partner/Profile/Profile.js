@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -46,16 +47,53 @@ const PartnerProfile = () => {
       .catch((error) => console.error("Error fetching user data:", error));
   }, [userId]);
 
-  const handleDeleteAccount = () => {
-    const adminEmail = "shrirajteam@gmail.com";
-    const subject = encodeURIComponent("Account Deletion Request");
-    const body = encodeURIComponent(
-      `Hello Admin,\n\nI would like to request deletion of my account.\n\nUser Details:\nName: ${userData.first_name} ${userData.last_name}\nEmail: ${userData.email}\nPhone: ${userData.phone_number}\nUser ID: ${userId}\n\nPlease confirm once my account has been deleted.\n\nThank you.`
+ const handleDeleteAccount = async () => {
+  try {
+    const response = await fetch(
+      `${baseurl}/users/${userId}/`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
     );
 
-    window.location.href = `mailto:${adminEmail}?subject=${subject}&body=${body}`;
-    setOpenDeleteDialog(false);
-  };
+    if (response.ok) {
+      // 🔥 SweetAlert success dialog
+      await Swal.fire({
+        title: "Account Deleted",
+        text: "Your account has been deleted successfully.",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+
+      // Clear user session
+      localStorage.removeItem("token");
+      localStorage.removeItem("userData");
+
+      // Redirect to login page
+      window.location.href = "/login";
+
+    } else {
+      Swal.fire({
+        title: "Failed",
+        text: "Unable to delete account. Please try again.",
+        icon: "error",
+      });
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    Swal.fire({
+      title: "Error",
+      text: "Something went wrong. Please try again.",
+      icon: "error",
+    });
+  }
+
+  setOpenDeleteDialog(false);
+};
+
 
   if (!userData)
     return (
@@ -189,7 +227,7 @@ const PartnerProfile = () => {
               }}
               onClick={() => setOpenDeleteDialog(true)}
             >
-              Request Account Deletion
+                Delete Account
             </Button>
           </Box>
         </Card>
@@ -203,24 +241,26 @@ const PartnerProfile = () => {
       />
 
       {/* Delete Account Confirmation Dialog */}
-      <Dialog
-        open={openDeleteDialog}
-        onClose={() => setOpenDeleteDialog(false)}
-      >
-        <DialogTitle>Request Account Deletion</DialogTitle>
-        <DialogContent>
-          <Typography>
-            Are you sure you want to request account deletion? You will be
-            redirected to your email app to send a request to our support team.
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDeleteDialog(false)}>Cancel</Button>
-          <Button onClick={handleDeleteAccount} color="error" variant="contained">
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
+   <Dialog
+    open={openDeleteDialog}
+    onClose={() => setOpenDeleteDialog(false)}
+  >
+    <DialogTitle>Delete Account</DialogTitle>
+  
+    <DialogContent>
+      <Typography>
+        Are you sure you want to permanently delete your account? 
+        This action cannot be undone.
+      </Typography>
+    </DialogContent>
+  
+    <DialogActions>
+      <Button onClick={() => setOpenDeleteDialog(false)}>Cancel</Button>
+      <Button onClick={handleDeleteAccount} color="error" variant="contained">
+        Delete Account
+      </Button>
+    </DialogActions>
+  </Dialog>
     </>
   );
 };
