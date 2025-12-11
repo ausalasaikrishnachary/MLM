@@ -31,6 +31,8 @@ const InvestorProfile = () => {
       .catch((error) => console.error("Error fetching user data:", error));
   }, []);
 
+  
+
  const handleDeleteAccount = async () => {
   try {
     const response = await fetch(
@@ -77,6 +79,14 @@ const InvestorProfile = () => {
 
   setOpenDeleteDialog(false);
 };
+
+const confirmDelete = () => {
+  setOpenDeleteDialog(false); // Close dialog first
+  setTimeout(() => {
+    handleDeleteAccount(); // Run delete after dialog fades out
+  }, 200); // small delay to allow closing animation
+};
+
 
 
 
@@ -221,9 +231,10 @@ const InvestorProfile = () => {
 
   <DialogActions>
     <Button onClick={() => setOpenDeleteDialog(false)}>Cancel</Button>
-    <Button onClick={handleDeleteAccount} color="error" variant="contained">
-      Delete Account
-    </Button>
+   <Button onClick={confirmDelete} color="error" variant="contained">
+  Delete Account
+</Button>
+
   </DialogActions>
 </Dialog>
 

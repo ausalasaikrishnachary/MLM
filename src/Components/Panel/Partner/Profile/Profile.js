@@ -94,6 +94,14 @@ const PartnerProfile = () => {
   setOpenDeleteDialog(false);
 };
 
+const confirmDelete = () => {
+  setOpenDeleteDialog(false); // Close dialog first
+  setTimeout(() => {
+    handleDeleteAccount(); // Run delete after dialog fades out
+  }, 200); // small delay to allow closing animation
+};
+
+
 
   if (!userData)
     return (
@@ -256,7 +264,7 @@ const PartnerProfile = () => {
   
     <DialogActions>
       <Button onClick={() => setOpenDeleteDialog(false)}>Cancel</Button>
-      <Button onClick={handleDeleteAccount} color="error" variant="contained">
+      <Button onClick={confirmDelete} color="error" variant="contained">
         Delete Account
       </Button>
     </DialogActions>
