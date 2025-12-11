@@ -24,9 +24,24 @@ import {
     Divider,
     Link,
     IconButton,
-    Tooltip
+    Tooltip,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper,
+    Checkbox,
+    FormGroup,
+    FormControlLabel,
+    Stack,
+    InputLabel,
+    Pagination,
+    Autocomplete
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import FilterListIcon from '@mui/icons-material/FilterList';
 import InvestorHeader from "../../../Shared/Investor/InvestorNavbar";
 import { useNavigate } from "react-router-dom";
 import { Carousel } from 'react-responsive-carousel';
@@ -41,6 +56,23 @@ import PhoneIcon from "@mui/icons-material/Phone";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import DescriptionIcon from "@mui/icons-material/Description";
 import DownloadIcon from "@mui/icons-material/Download";
+import CallIcon from '@mui/icons-material/Call';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import VideocamIcon from '@mui/icons-material/Videocam';
+import PrintIcon from '@mui/icons-material/Print';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import EventIcon from '@mui/icons-material/Event';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
+import ThumbUpAltOutlinedIcon from '@mui/icons-material/ThumbUpAltOutlined';
+import ClearIcon from '@mui/icons-material/Clear';
+import axios from 'axios';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+
 
 const InvestorLandingPage = () => {
     const [activeTab, setActiveTab] = useState(0);
@@ -48,43 +80,308 @@ const InvestorLandingPage = () => {
     const userId = localStorage.getItem("user_id");
 
     // Properties states
-    const [sortBy, setSortBy] = useState('');
     const [properties, setProperties] = useState([]);
+    const [filteredProperties, setFilteredProperties] = useState([]);
     const [selectedProperty, setSelectedProperty] = useState(null);
     const [openDialog, setOpenDialog] = useState(false);
-    const [filteredProperties, setFilteredProperties] = useState([]);
+    const [uniqueRoles, setUniqueRoles] = useState(['Agent', 'Client', 'Admin', 'All']);
+    const [selectedRole, setSelectedRole] = useState('');
+
+    // Filter states
     const [searchQuery, setSearchQuery] = useState('');
+    const [sortBy, setSortBy] = useState('latest');
+    const [filters, setFilters] = useState({
+        propertyType: '',
+        priceRange: { min: '', max: '' },
+        areaRange: { min: '', max: '' },
+        bedrooms: '',
+        bathrooms: '',
+        city: '',
+        state: '',
+        status: '',
+        facing: '',
+        ownershipType: '',
+        builtupArea: { min: '', max: '' },
+        areaUnit: ''
+    });
+    const [availableCities, setAvailableCities] = useState([]);
+    const [availableStates, setAvailableStates] = useState([]);
+    const [showFilters, setShowFilters] = useState(false);
+
+    const [subscriptionPaid, setSubscriptionPaid] = useState(false);
+    const [currentImageIndices, setCurrentImageIndices] = useState({});
     const [propertiesPage, setPropertiesPage] = useState(1);
-    const propertiesPerPage = 9;
+    const propertiesPerPage = 30;
+    const propertiesTotalPages = Math.ceil(filteredProperties.length / propertiesPerPage);
+    const propertiesStartIndex = (propertiesPage - 1) * propertiesPerPage;
+    const paginatedProperties = filteredProperties.slice(propertiesStartIndex, propertiesStartIndex + propertiesPerPage);
+
+    // Wishlist and Likes
+    const [likedProperties, setLikedProperties] = useState([]);
+    const [wishlist, setWishlist] = useState([]);
+
+    // Report generation states
+    const [openReportDialog, setOpenReportDialog] = useState(false);
+    const [openReportConfigDialog, setOpenReportConfigDialog] = useState(false);
+    const [startDate, setStartDate] = useState(new Date(new Date().setMonth(new Date().getMonth() - 1)));
+    const [endDate, setEndDate] = useState(new Date());
+    const [reportType, setReportType] = useState('monthly');
+    const [reportData, setReportData] = useState([]);
+    const [reportColumns, setReportColumns] = useState([
+        { id: 'property_title', label: 'Property Title', checked: true },
+        { id: 'city', label: 'City', checked: true },
+        { id: 'state', label: 'State', checked: true },
+        { id: 'property_value', label: 'Value (₹)', checked: true },
+        { id: 'status', label: 'Status', checked: true },
+        { id: 'created_at', label: 'Date Added', checked: true },
+        { id: 'owner_name', label: 'Owner', checked: false },
+        { id: 'owner_contact', label: 'Contact', checked: false },
+        { id: 'area', label: 'Area', checked: false },
+        { id: 'builtup_area', label: 'Built-up Area', checked: false },
+    ]);
 
     // Businesses states
     const [businesses, setBusinesses] = useState([]);
     const [loadingBusinesses, setLoadingBusinesses] = useState(true);
     const [businessSearchTerm, setBusinessSearchTerm] = useState('');
+    const [businessFilters, setBusinessFilters] = useState({
+        businessType: '',
+        city: '',
+        state: ''
+    });
     const [businessesPage, setBusinessesPage] = useState(1);
     const businessesPerPage = 9;
 
     // Carousel state
     const [openCarousel, setOpenCarousel] = useState(false);
 
+    // Fetch subscription status
     useEffect(() => {
-        const fetchLatestProperties = async () => {
+        if (userId) {
+            axios.get(`${baseurl}/user-subscriptions/user-id/${userId}/`)
+                .then(response => {
+                    const data = response.data;
+                    const latest = data.find(item => item.latest_status !== undefined);
+                    if (latest && latest.latest_status === "paid") {
+                        setSubscriptionPaid(true);
+                    } else {
+                        setSubscriptionPaid(false);
+                    }
+                })
+                .catch(error => {
+                    console.error("Subscription fetch error:", error);
+                });
+        }
+    }, [userId]);
+
+    // Fetch properties
+    useEffect(() => {
+        const fetchProperties = async () => {
+            const userId = localStorage.getItem("user_id");
             try {
-                const response = await fetch(`${baseurl}/latest-properties/`);
+                const response = await fetch(`${baseurl}/properties/approval-status/approved/`);
                 const data = await response.json();
 
-                // API returns array directly
-                setProperties(data);
-                setFilteredProperties(data);
+                // Filter out properties where user_id matches the current user's id
+                const filteredProperties = data.filter(
+                    (property) => property.user_id?.toString() !== userId
+                );
 
+                setProperties(filteredProperties);
+                setFilteredProperties(filteredProperties);
+
+                // Extract unique cities and states for filters
+                const cities = [...new Set(filteredProperties.map(p => p.city).filter(Boolean))].sort();
+                const states = [...new Set(filteredProperties.map(p => p.state).filter(Boolean))].sort();
+                setAvailableCities(cities);
+                setAvailableStates(states);
             } catch (error) {
-                console.error("Error fetching latest properties:", error);
+                console.error('Error fetching properties:', error);
             }
         };
 
-        fetchLatestProperties();
+        fetchProperties();
     }, []);
 
+    // Filter and sort properties
+    useEffect(() => {
+        let results = [...properties];
+
+        // Apply text search filter
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase();
+            results = results.filter(property => {
+                const searchFields = [
+                    property.property_title,
+                    property.first_name,
+                    property.city,
+                    property.state,
+                    property.owner_name,
+                    property.owner_contact,
+                    property.address,
+                    property.description,
+                    property.property_value?.toString(),
+                    property.total_property_value?.toString(),
+                    property.area?.toString(),
+                    property.builtup_area?.toString(),
+                    property.property_type,
+                    property.looking_to
+                ].filter(Boolean);
+
+                return searchFields.some(field => field.toLowerCase().includes(query));
+            });
+        }
+
+        // Apply advanced filters
+        if (filters.city) {
+            results = results.filter(property =>
+                property.city?.toLowerCase() === filters.city.toLowerCase()
+            );
+        }
+
+        if (filters.state) {
+            results = results.filter(property =>
+                property.state?.toLowerCase() === filters.state.toLowerCase()
+            );
+        }
+
+        if (filters.propertyType) {
+            results = results.filter(property =>
+                property.property_type === filters.propertyType
+            );
+        }
+
+        if (filters.status) {
+            results = results.filter(property =>
+                property.status?.toLowerCase() === filters.status.toLowerCase()
+            );
+        }
+
+        if (filters.facing) {
+            results = results.filter(property =>
+                property.facing === filters.facing
+            );
+        }
+
+        if (filters.ownershipType) {
+            results = results.filter(property =>
+                property.ownership_type === filters.ownershipType
+            );
+        }
+
+        if (filters.areaUnit) {
+            results = results.filter(property =>
+                property.area_unit === filters.areaUnit
+            );
+        }
+
+        // Price range filter
+        if (filters.priceRange.min) {
+            const minPrice = parseFloat(filters.priceRange.min);
+            results = results.filter(property => {
+                const price = property.total_property_value || property.property_value || 0;
+                return price >= minPrice;
+            });
+        }
+
+        if (filters.priceRange.max) {
+            const maxPrice = parseFloat(filters.priceRange.max);
+            results = results.filter(property => {
+                const price = property.total_property_value || property.property_value || 0;
+                return price <= maxPrice;
+            });
+        }
+
+        // Area range filter
+        if (filters.areaRange.min) {
+            const minArea = parseFloat(filters.areaRange.min);
+            results = results.filter(property => {
+                const area = parseFloat(property.area) || 0;
+                return area >= minArea;
+            });
+        }
+
+        if (filters.areaRange.max) {
+            const maxArea = parseFloat(filters.areaRange.max);
+            results = results.filter(property => {
+                const area = parseFloat(property.area) || 0;
+                return area <= maxArea;
+            });
+        }
+
+        // Built-up area filter
+        if (filters.builtupArea.min) {
+            const minBuiltup = parseFloat(filters.builtupArea.min);
+            results = results.filter(property => {
+                const builtup = parseFloat(property.builtup_area) || 0;
+                return builtup >= minBuiltup;
+            });
+        }
+
+        if (filters.builtupArea.max) {
+            const maxBuiltup = parseFloat(filters.builtupArea.max);
+            results = results.filter(property => {
+                const builtup = parseFloat(property.builtup_area) || 0;
+                return builtup <= maxBuiltup;
+            });
+        }
+
+        // Bedrooms filter
+        if (filters.bedrooms) {
+            results = results.filter(property =>
+                property.bedrooms === parseInt(filters.bedrooms)
+            );
+        }
+
+        // Bathrooms filter
+        if (filters.bathrooms) {
+            results = results.filter(property =>
+                property.bathrooms === parseInt(filters.bathrooms)
+            );
+        }
+
+        // Apply sort filter
+        switch (sortBy) {
+            case 'latest':
+                results.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                break;
+            case 'oldest':
+                results.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+                break;
+            case 'price-high':
+                results.sort((a, b) =>
+                    (b.total_property_value || b.property_value || 0) -
+                    (a.total_property_value || a.property_value || 0)
+                );
+                break;
+            case 'price-low':
+                results.sort((a, b) =>
+                    (a.total_property_value || a.property_value || 0) -
+                    (b.total_property_value || b.property_value || 0)
+                );
+                break;
+            case 'area-high':
+                results.sort((a, b) => (parseFloat(b.area) || 0) - (parseFloat(a.area) || 0));
+                break;
+            case 'area-low':
+                results.sort((a, b) => (parseFloat(a.area) || 0) - (parseFloat(b.area) || 0));
+                break;
+            case 'sold':
+                results = results.filter((property) => property.status?.toLowerCase() === 'sold');
+                break;
+            case 'available':
+                results = results.filter((property) => property.status?.toLowerCase() === 'available');
+                break;
+            case 'booked':
+                results = results.filter((property) => property.status?.toLowerCase() === 'booked');
+                break;
+            default:
+                break;
+        }
+
+        setFilteredProperties(results);
+        setPropertiesPage(1); // Reset to first page when filters change
+    }, [searchQuery, sortBy, filters, properties]);
 
     // Fetch businesses
     useEffect(() => {
@@ -101,80 +398,70 @@ const InvestorLandingPage = () => {
                 console.error("Error fetching businesses:", error);
                 setLoadingBusinesses(false);
             });
-    }, []);
+    }, [userId]);
 
-    const parseDate = (dateStr) => {
-        const [day, month, yearAndTime] = dateStr.split("-");
-        const [year, time] = yearAndTime.split(" ");
-        return new Date(`${year}-${month}-${day} ${time}`);
-    };
-
-
-    // Filter and sort properties
+    // Fetch likes
     useEffect(() => {
-        // Check if properties is iterable (an array)
-        if (!Array.isArray(properties)) {
-            setFilteredProperties([]);
-            return;
-        }
-        let results = [...properties];
+        const fetchLikes = async () => {
+            try {
+                const res = await axios.get(`${baseurl}/likes/`);
+                const userLikes = res.data
+                    .filter(item => item.user === parseInt(userId))
+                    .map(item => item.property);
+                setLikedProperties(userLikes);
+            } catch (err) {
+                console.error("Error fetching likes:", err);
+            }
+        };
 
-        // Apply search filter
-        if (searchQuery.trim()) {
-            const query = searchQuery.toLowerCase();
-            results = results.filter(property => {
-                const searchFields = [
-                    property.property_title,
-                    property.first_name,
-                    property.city,
-                    property.state,
-                    property.owner_name,
-                    property.owner_contact,
-                    property.address,
-                    property.description,
-                    property.property_value?.toString(),
-                    property.area?.toString(),
-                    property.builtup_area?.toString()
-                ].filter(Boolean);
+        if (userId) fetchLikes();
+    }, [userId]);
 
-                return searchFields.some(field => field.toLowerCase().includes(query));
-            });
-        }
+    // Fetch wishlist
+    useEffect(() => {
+        const fetchWishlist = async () => {
+            try {
+                const res = await axios.get(`${baseurl}/wishlist/`);
+                const userWishlist = res.data
+                    .filter(item => item.user === parseInt(userId))
+                    .map(item => item.property);
+                setWishlist(userWishlist);
+            } catch (err) {
+                console.error("Error fetching wishlist:", err);
+            }
+        };
 
-        // Apply sort filter
-        switch (sortBy) {
-            case 'latest':
-                results.sort((a, b) => parseDate(b.created_at) - parseDate(a.created_at));
-                break;
-            case 'oldest':
-                results.sort((a, b) => parseDate(a.created_at) - parseDate(b.created_at));
-                break;
-            case 'price-high':
-                results.sort((a, b) => b.property_value - a.property_value);
-                break;
-            case 'price-low':
-                results.sort((a, b) => a.property_value - b.property_value);
-                break;
-            default:
-                break;
-        }
-
-        setFilteredProperties(results);
-    }, [searchQuery, sortBy, properties]);
+        if (userId) fetchWishlist();
+    }, [userId]);
 
     // Filter businesses
     const filteredBusinesses = businesses.filter(business => {
-        if (!businessSearchTerm) return true;
-        return business.business_type?.toLowerCase().includes(businessSearchTerm.toLowerCase());
-    });
+        if (businessSearchTerm) {
+            const matchesSearch = business.business_type?.toLowerCase().includes(businessSearchTerm.toLowerCase()) ||
+                business.business_name?.toLowerCase().includes(businessSearchTerm.toLowerCase());
+            if (!matchesSearch) return false;
+        }
 
-    // Pagination calculations
-    const propertiesTotalPages = Math.ceil(filteredProperties.length / propertiesPerPage);
-    const propertiesStartIndex = (propertiesPage - 1) * propertiesPerPage;
-    //const paginatedProperties = filteredProperties.slice(propertiesStartIndex, propertiesStartIndex + propertiesPerPage);
-    const paginatedProperties = Array.isArray(filteredProperties)
-        ? filteredProperties.slice(propertiesStartIndex, propertiesStartIndex + propertiesPerPage)
-        : [];
+        if (businessFilters.businessType) {
+            if (business.business_type?.toLowerCase() !== businessFilters.businessType.toLowerCase()) {
+                return false;
+            }
+        }
+
+        if (businessFilters.city) {
+            if (business.city?.toLowerCase() !== businessFilters.city.toLowerCase()) {
+                return false;
+            }
+        }
+
+        if (businessFilters.state) {
+            if (business.state?.toLowerCase() !== businessFilters.state.toLowerCase()) {
+                return false;
+            }
+        }
+
+        return true;
+    });
 
     const businessesTotalPages = Math.ceil(filteredBusinesses.length / businessesPerPage);
     const businessesStartIndex = (businessesPage - 1) * businessesPerPage;
@@ -183,6 +470,116 @@ const InvestorLandingPage = () => {
     // Handlers
     const handleTabChange = (event, newValue) => {
         setActiveTab(newValue);
+    };
+
+    const handleSearchChange = (event) => {
+        setSearchQuery(event.target.value);
+    };
+
+    const handleSortChange = (event) => {
+        setSortBy(event.target.value);
+    };
+
+    const handleFilterChange = (field, value) => {
+        setFilters(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+
+    const handlePriceRangeChange = (field, value) => {
+        setFilters(prev => ({
+            ...prev,
+            priceRange: {
+                ...prev.priceRange,
+                [field]: value
+            }
+        }));
+    };
+
+    const handleAreaRangeChange = (field, value) => {
+        setFilters(prev => ({
+            ...prev,
+            areaRange: {
+                ...prev.areaRange,
+                [field]: value
+            }
+        }));
+    };
+
+    const handleRoleChange = (event) => {
+        const newRole = event.target.value;
+        setSelectedRole(newRole);
+        setPropertiesPage(1);
+    };
+
+    const mapRole = (role) => {
+        switch (role) {
+            case 'Agent': return 'Team';
+            case 'Client': return 'User';
+            case 'Admin': return 'Admin';
+            case 'All': return 'All Properties';
+            default: return role;
+        }
+    };
+
+    const handleBuiltupAreaChange = (field, value) => {
+        setFilters(prev => ({
+            ...prev,
+            builtupArea: {
+                ...prev.builtupArea,
+                [field]: value
+            }
+        }));
+    };
+
+    const clearFilters = () => {
+        setFilters({
+            propertyType: '',
+            priceRange: { min: '', max: '' },
+            areaRange: { min: '', max: '' },
+            bedrooms: '',
+            bathrooms: '',
+            city: '',
+            state: '',
+            status: '',
+            facing: '',
+            ownershipType: '',
+            builtupArea: { min: '', max: '' },
+            areaUnit: ''
+        });
+        setSearchQuery('');
+        setSortBy('latest');
+    };
+
+    const handleBusinessFilterChange = (field, value) => {
+        setBusinessFilters(prev => ({
+            ...prev,
+            [field]: value
+        }));
+        setBusinessesPage(1);
+    };
+
+    const clearBusinessFilters = () => {
+        setBusinessFilters({
+            businessType: '',
+            city: '',
+            state: ''
+        });
+        setBusinessSearchTerm('');
+    };
+
+    const handlePropertiesPageChange = (event, value) => {
+        setPropertiesPage(value);
+    };
+
+    const handleBusinessSearchChange = (event) => {
+        setBusinessSearchTerm(event.target.value);
+        setBusinessesPage(1);
+    };
+
+    const handleBusinessesPageChange = (event, value) => {
+        setBusinessesPage(value);
     };
 
     const handleCloseDialog = () => {
@@ -200,26 +597,337 @@ const InvestorLandingPage = () => {
         setSelectedProperty(null);
     };
 
-    const handleSearchChange = (event) => {
-        setSearchQuery(event.target.value);
-        setPropertiesPage(1);
+    // Like toggle handler
+    const handleLikeToggle = async (propertyId) => {
+        if (!userId) {
+            alert("Please log in to like a property.");
+            return;
+        }
+
+        try {
+            if (likedProperties.includes(propertyId)) {
+                // Remove like
+                const res = await axios.get(`${baseurl}/likes/`);
+                const item = res.data.find(
+                    (entry) => entry.user === parseInt(userId) && entry.property === propertyId
+                );
+                if (item) {
+                    await axios.delete(`${baseurl}/likes/${item.id}/`);
+                    setLikedProperties(prev => prev.filter(id => id !== propertyId));
+                }
+            } else {
+                // Add like
+                await axios.post(`${baseurl}/likes/`, {
+                    user: parseInt(userId),
+                    property: propertyId
+                });
+                setLikedProperties(prev => [...prev, propertyId]);
+            }
+        } catch (error) {
+            console.error("Error updating likes:", error);
+        }
     };
 
-    const handleSortChange = (event) => {
-        setSortBy(event.target.value);
+    // Wishlist toggle handler
+    const handleWishlistToggle = async (propertyId) => {
+        if (!userId) {
+            alert("Please log in to add to wishlist.");
+            return;
+        }
+
+        try {
+            if (wishlist.includes(propertyId)) {
+                // Remove from wishlist
+                const res = await axios.get(`${baseurl}/wishlist/`);
+                const item = res.data.find(
+                    (entry) => entry.user === parseInt(userId) && entry.property === propertyId
+                );
+
+                if (item) {
+                    await axios.delete(`${baseurl}/wishlist/${item.id}/`);
+                    setWishlist((prev) => prev.filter((id) => id !== propertyId));
+                }
+            } else {
+                // Add to wishlist
+                await axios.post(`${baseurl}/wishlist/`, {
+                    user: parseInt(userId),
+                    property: propertyId,
+                });
+                setWishlist((prev) => [...prev, propertyId]);
+            }
+        } catch (error) {
+            console.error("Error updating wishlist:", error);
+        }
     };
 
-    const handlePropertiesPageChange = (event, value) => {
-        setPropertiesPage(value);
+    // Image navigation handlers
+    const handleNextImage = (propertyId, totalMedia) => (e) => {
+        e.stopPropagation();
+        setCurrentImageIndices(prev => ({
+            ...prev,
+            [propertyId]: (prev[propertyId] || 0) < totalMedia - 1 ? (prev[propertyId] || 0) + 1 : 0
+        }));
     };
 
-    const handleBusinessSearchChange = (event) => {
-        setBusinessSearchTerm(event.target.value);
-        setBusinessesPage(1);
+    const handlePrevImage = (propertyId, totalMedia) => (e) => {
+        e.stopPropagation();
+        setCurrentImageIndices(prev => ({
+            ...prev,
+            [propertyId]: (prev[propertyId] || 0) > 0 ? (prev[propertyId] || 0) - 1 : totalMedia - 1
+        }));
     };
 
-    const handleBusinessesPageChange = (event, value) => {
-        setBusinessesPage(value);
+    // Get all media (images + videos) for a property
+    const getAllMedia = (property) => {
+        const media = [];
+
+        // Add images
+        if (property.images && property.images.length > 0) {
+            media.push(...property.images.map(img => ({
+                type: 'image',
+                url: `${baseurl}${img.image}`,
+                alt: `Property image`
+            })));
+        }
+
+        // Add videos
+        if (property.videos && property.videos.length > 0) {
+            media.push(...property.videos.map(vid => ({
+                type: 'video',
+                url: `${baseurl}${vid.video}`,
+                alt: `Property video`
+            })));
+        }
+
+        return media;
+    };
+
+    // Get current media URL
+    const getCurrentMediaUrl = (property) => {
+        const media = getAllMedia(property);
+        if (media.length === 0) return 'https://via.placeholder.com/300';
+
+        const currentIndex = currentImageIndices[property.property_id] || 0;
+        return media[currentIndex]?.url || 'https://via.placeholder.com/300';
+    };
+
+    // Check if current media is video
+    const isCurrentMediaVideo = (property) => {
+        const media = getAllMedia(property);
+        if (media.length === 0) return false;
+
+        const currentIndex = currentImageIndices[property.property_id] || 0;
+        return media[currentIndex]?.type === 'video';
+    };
+
+    // View details handler
+const handleViewDetails = async (property) => {
+  try {
+    await fetch(`${baseurl}/property/${property.property_id}/`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        view_count: (property.view_count || 0) + 1
+      })
+    });
+
+    console.log("View count updated");
+  } catch (error) {
+    console.log("Error updating view count:", error);
+  }
+
+  // navigate after update
+  navigate(`/p-assets/${property.property_id}`, {
+    state: { property }
+  });
+};
+
+    // Report generation functions
+    const openReportConfiguration = () => {
+        setOpenReportConfigDialog(true);
+    };
+
+    const closeReportConfiguration = () => {
+        setOpenReportConfigDialog(false);
+    };
+
+    const generateReport = () => {
+        let filtered = [...properties];
+
+        filtered = filtered.filter(property => {
+            const propertyDate = new Date(property.created_at);
+            return propertyDate >= startDate && propertyDate <= endDate;
+        });
+
+        if (reportType === 'monthly') {
+            const grouped = filtered.reduce((acc, property) => {
+                const date = new Date(property.created_at);
+                const monthYear = `${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
+
+                if (!acc[monthYear]) {
+                    acc[monthYear] = [];
+                }
+                acc[monthYear].push(property);
+                return acc;
+            }, {});
+
+            const report = Object.entries(grouped).map(([monthYear, properties]) => ({
+                period: monthYear,
+                count: properties.length,
+                totalValue: properties.reduce((sum, p) => sum + (p.total_property_value || p.property_value || 0), 0),
+                properties
+            }));
+
+            setReportData(report);
+        } else if (reportType === 'yearly') {
+            const grouped = filtered.reduce((acc, property) => {
+                const date = new Date(property.created_at);
+                const year = date.getFullYear().toString();
+
+                if (!acc[year]) {
+                    acc[year] = [];
+                }
+                acc[year].push(property);
+                return acc;
+            }, {});
+
+            const report = Object.entries(grouped).map(([year, properties]) => ({
+                period: year,
+                count: properties.length,
+                totalValue: properties.reduce((sum, p) => sum + (p.total_property_value || p.property_value || 0), 0),
+                properties
+            }));
+
+            setReportData(report);
+        } else {
+            setReportData([{
+                period: `${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()}`,
+                count: filtered.length,
+                totalValue: filtered.reduce((sum, p) => sum + (p.total_property_value || p.property_value || 0), 0),
+                properties: filtered
+            }]);
+        }
+
+        setOpenReportConfigDialog(false);
+        setOpenReportDialog(true);
+    };
+
+    const exportToCSV = () => {
+        const activeColumns = reportColumns.filter(col => col.checked).map(col => col.id);
+
+        let csv = activeColumns.map(col =>
+            reportColumns.find(rc => rc.id === col)?.label || col
+        ).join(',') + '\n';
+
+        reportData.forEach(group => {
+            group.properties.forEach(property => {
+                const row = activeColumns.map(col => {
+                    if (col === 'created_at') {
+                        return `"${new Date(property[col]).toLocaleDateString()}"`;
+                    }
+                    if (col === 'property_value') {
+                        return `"₹${property.total_property_value || property.property_value || 0}"`;
+                    }
+                    return `"${property[col] || ''}"`;
+                }).join(',');
+                csv += row + '\n';
+            });
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.setAttribute('hidden', '');
+        a.setAttribute('href', url);
+        a.setAttribute('download', `property_report_${new Date().toISOString().slice(0, 10)}.csv`);
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    };
+
+    const exportToPDF = () => {
+        const pdfContent = `
+            Property Report\n\n
+            Period: ${reportData[0]?.period || ''}\n
+            Total Properties: ${reportData.reduce((sum, group) => sum + group.count, 0)}\n
+            Total Value: ₹${reportData.reduce((sum, group) => sum + group.totalValue, 0).toLocaleString()}\n\n
+            ${reportColumns.filter(col => col.checked).map(col => col.label).join(' | ')}\n
+            ${reportData.flatMap(group =>
+            group.properties.map(property =>
+                reportColumns.filter(col => col.checked).map(col =>
+                    col.id === 'created_at'
+                        ? new Date(property[col.id]).toLocaleDateString()
+                        : property[col.id] || ''
+                ).join(' | ')
+            ).join('\n')
+        ).join('\n')}
+        `;
+
+        alert('In a real implementation, this would generate a PDF with the following content:\n\n' + pdfContent);
+    };
+
+    const printReport = () => {
+        const printContent = `
+            <html>
+                <head>
+                    <title>Property Report</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        h1 { color: #333; }
+                        .report-header { margin-bottom: 20px; }
+                        .report-summary { margin-bottom: 30px; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+                        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                        th { background-color: #f2f2f2; }
+                        .period { font-weight: bold; margin-top: 20px; }
+                        .summary-item { margin: 5px 0; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Property Report</h1>
+                    <div class="report-header">
+                        <div class="summary-item">Generated on: ${new Date().toLocaleDateString()}</div>
+                        <div class="summary-item">Report period: ${reportData[0]?.period || ''}</div>
+                    </div>
+                    <div class="report-summary">
+                        <h3>Summary</h3>
+                        <div class="summary-item">Total properties: ${reportData.reduce((sum, group) => sum + group.count, 0)}</div>
+                        <div class="summary-item">Total value: ₹${reportData.reduce((sum, group) => sum + group.totalValue, 0).toLocaleString()}</div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                ${reportColumns.filter(col => col.checked).map(col => `<th>${col.label}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${reportData.flatMap(group =>
+            group.properties.map(property =>
+                `<tr>
+                            ${reportColumns.filter(col => col.checked).map(col =>
+                    `<td>${col.id === 'created_at'
+                        ? new Date(property[col.id]).toLocaleDateString()
+                        : property[col.id] || ''
+                    }</td>`
+                ).join('')}
+                        </tr>`
+            ).join('')
+        ).join('')}
+                        </tbody>
+                    </table>
+                    <script>
+                        window.onload = function() {
+                            window.print();
+                            setTimeout(function() { window.close(); }, 1000);
+                        };
+                    </script>
+                </body>
+            </html>
+        `;
+
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(printContent);
+        printWindow.document.close();
     };
 
     const handleDeleteBusiness = (id) => {
@@ -238,30 +946,71 @@ const InvestorLandingPage = () => {
         }
     };
 
+    // Property type options
+    const propertyTypeOptions = [
+        'Residential',
+        'Commercial',
+        'Industrial',
+        'Agricultural',
+        'Mixed Use',
+        'Land'
+    ];
+
+    // Status options
+    const statusOptions = ['Available', 'Sold', 'Booked', 'Rented'];
+
+    // Facing options
+    const facingOptions = [
+        'North',
+        'South',
+        'East',
+        'West',
+        'North-East',
+        'North-West',
+        'South-East',
+        'South-West'
+    ];
+
+    // Ownership type options
+    const ownershipTypeOptions = [
+        'Freehold',
+        'Leasehold',
+        'Co-operative Society',
+        'Power of Attorney'
+    ];
+
+    // Area unit options
+    const areaUnitOptions = [
+        'sq.ft',
+        'sq.m',
+        'sq.yard',
+        'acre',
+        'hectare',
+        'gunta',
+        'bigha'
+    ];
+
+    // Bedroom options
+    const bedroomOptions = ['1', '2', '3', '4', '5+'];
+
+    // Bathroom options
+    const bathroomOptions = ['1', '2', '3', '4+'];
+
     return (
         <>
             <InvestorHeader />
             <Container sx={{ py: 4 }}>
                 {/* Header Section */}
-                <Box position="relative" mb={3} height="56px">
-                    <Box position="absolute" left={0} top={0}>
-                        <Button
-                            variant="outlined"
-                            startIcon={<ArrowBackIcon />}
-                            onClick={() => navigate(-1)}
-                        >
-                            Back
-                        </Button>
-                    </Box>
+                {/* <Box position="relative" mb={3} height="56px">
                     <Typography variant="h4" align="center" sx={{ lineHeight: '46px' }}>
-                        Investor Dashboard
+                        client Dashboard
                     </Typography>
-                </Box>
+                </Box> */}
 
                 {/* Tabs Section */}
                 <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
                     <Tabs value={activeTab} onChange={handleTabChange} centered>
-                        <Tab label="Latest Properties" />
+                        <Tab label="Properties" />
                         <Tab label="Businesses" />
                     </Tabs>
                 </Box>
@@ -269,7 +1018,69 @@ const InvestorLandingPage = () => {
                 {/* Properties Tab Content */}
                 {activeTab === 0 && (
                     <>
-                        {/* Search and Filter Section */}
+                        {/* Header with Add Property and Report Buttons */}
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                mb: 3,
+                                flexDirection: { xs: "column", sm: "row" },
+                                gap: 2,
+                            }}
+                        >
+                            {/* <Typography
+                                                    variant="h4"
+                                                    sx={{ textAlign: { xs: "center", sm: "left" } }}
+                                                    fontWeight="bold"
+                                                >
+                                                    Properties
+                                                </Typography> */}
+
+                            {/* <Box
+                                                    sx={{
+                                                        display: "flex",
+                                                        gap: 2,
+                                                        ml: { sm: "auto" },
+                                                        width: { xs: "100%", sm: "auto" },
+                                                        flexDirection: { xs: "column", sm: "row" }
+                                                    }}
+                                                >
+                                                    <Button
+                                                        variant="contained"
+                                                        sx={{
+                                                            padding: "12px 24px",
+                                                            borderRadius: "8px",
+                                                            backgroundColor: "#2ECC71",
+                                                            textTransform: "none",
+                                                            fontWeight: 500,
+                                                            width: { xs: "100%", sm: "auto" },
+                                                            "&:hover": {
+                                                                backgroundColor: "#27AE60",
+                                                            },
+                                                        }}
+                                                        onClick={() => navigate("/add-property")}
+                                                    >
+                                                        Add Property
+                                                    </Button>
+                    
+                                                    <Button
+                                                        variant="contained"
+                                                        color="secondary"
+                                                        onClick={openReportConfiguration}
+                                                        startIcon={<DescriptionIcon />}
+                                                        sx={{
+                                                            px: 3,
+                                                            py: 1,
+                                                            height: "55px",
+                                                            width: { xs: "100%", sm: "auto" },
+                                                        }}
+                                                    >
+                                                        Generate All Properties Report
+                                                    </Button>
+                                                </Box> */}
+                        </Box>
+                        {/* Search, Sort and Filter Section */}
                         <Box
                             sx={{
                                 backgroundColor: 'white',
@@ -280,7 +1091,7 @@ const InvestorLandingPage = () => {
                             }}
                         >
                             <Grid container spacing={2} alignItems="center">
-                                <Grid item xs={12} md={6}>
+                                <Grid item xs={12} md={4}>
                                     <TextField
                                         fullWidth
                                         placeholder="Search properties..."
@@ -296,7 +1107,30 @@ const InvestorLandingPage = () => {
                                         }}
                                     />
                                 </Grid>
-                                <Grid item xs={12} md={6}>
+
+                                {/* ROLE FILTER */}
+                                {/* <Grid item xs={12} md={4}>
+                                    <FormControl fullWidth>
+                                        <InputLabel id="role-filter-label">Filter by Role</InputLabel>
+                                        <Select
+                                            labelId="role-filter-label"
+                                            value={selectedRole}
+                                            label="Filter by Role"
+                                            onChange={handleRoleChange}
+                                            sx={{
+                                                borderRadius: '8px',
+                                                fontSize: '15px'
+                                            }}
+                                        >
+                                            {uniqueRoles.map((role) => (
+                                                <MenuItem key={role} value={role}>
+                                                    {mapRole(role)}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                </Grid> */}
+                                {/* <Grid item xs={12} md={4}>
                                     <FormControl fullWidth>
                                         <Select
                                             value={sortBy}
@@ -314,205 +1148,540 @@ const InvestorLandingPage = () => {
                                             <MenuItem value="oldest">Oldest</MenuItem>
                                             <MenuItem value="price-high">Price: High to Low</MenuItem>
                                             <MenuItem value="price-low">Price: Low to High</MenuItem>
+                                            <MenuItem value="area-high">Area: High to Low</MenuItem>
+                                            <MenuItem value="area-low">Area: Low to High</MenuItem>
+                                            <MenuItem value="sold">Sold</MenuItem>
+                                            <MenuItem value="available">Available</MenuItem>
+                                            <MenuItem value="booked">Booked</MenuItem>
                                         </Select>
                                     </FormControl>
-                                </Grid>
+                                </Grid> */}
+
                             </Grid>
+
+                            {/* Advanced Filters Panel */}
+                            {showFilters && (
+                                <Box sx={{ mt: 3, p: 2, backgroundColor: '#f8f9fa', borderRadius: 2 }}>
+                                    <Grid container spacing={2}>
+                                        <Grid item xs={12} md={4}>
+                                            <Autocomplete
+                                                options={availableCities}
+                                                value={filters.city}
+                                                onChange={(event, newValue) => handleFilterChange('city', newValue)}
+                                                renderInput={(params) => (
+                                                    <TextField {...params} label="City" variant="outlined" />
+                                                )}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12} md={4}>
+                                            <Autocomplete
+                                                options={availableStates}
+                                                value={filters.state}
+                                                onChange={(event, newValue) => handleFilterChange('state', newValue)}
+                                                renderInput={(params) => (
+                                                    <TextField {...params} label="State" variant="outlined" />
+                                                )}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12} md={4}>
+                                            <FormControl fullWidth>
+                                                <InputLabel>Property Type</InputLabel>
+                                                <Select
+                                                    value={filters.propertyType}
+                                                    onChange={(e) => handleFilterChange('propertyType', e.target.value)}
+                                                    label="Property Type"
+                                                >
+                                                    <MenuItem value="">All</MenuItem>
+                                                    {propertyTypeOptions.map(type => (
+                                                        <MenuItem key={type} value={type}>{type}</MenuItem>
+                                                    ))}
+                                                </Select>
+                                            </FormControl>
+                                        </Grid>
+
+                                        <Grid item xs={12} md={4}>
+                                            <FormControl fullWidth>
+                                                <InputLabel>Status</InputLabel>
+                                                <Select
+                                                    value={filters.status}
+                                                    onChange={(e) => handleFilterChange('status', e.target.value)}
+                                                    label="Status"
+                                                >
+                                                    <MenuItem value="">All</MenuItem>
+                                                    {statusOptions.map(status => (
+                                                        <MenuItem key={status} value={status.toLowerCase()}>{status}</MenuItem>
+                                                    ))}
+                                                </Select>
+                                            </FormControl>
+                                        </Grid>
+
+                                        <Grid item xs={12} md={4}>
+                                            <FormControl fullWidth>
+                                                <InputLabel>Facing</InputLabel>
+                                                <Select
+                                                    value={filters.facing}
+                                                    onChange={(e) => handleFilterChange('facing', e.target.value)}
+                                                    label="Facing"
+                                                >
+                                                    <MenuItem value="">Any</MenuItem>
+                                                    {facingOptions.map(facing => (
+                                                        <MenuItem key={facing} value={facing}>{facing}</MenuItem>
+                                                    ))}
+                                                </Select>
+                                            </FormControl>
+                                        </Grid>
+
+                                        <Grid item xs={12} md={4}>
+                                            <FormControl fullWidth>
+                                                <InputLabel>Ownership Type</InputLabel>
+                                                <Select
+                                                    value={filters.ownershipType}
+                                                    onChange={(e) => handleFilterChange('ownershipType', e.target.value)}
+                                                    label="Ownership Type"
+                                                >
+                                                    <MenuItem value="">Any</MenuItem>
+                                                    {ownershipTypeOptions.map(type => (
+                                                        <MenuItem key={type} value={type}>{type}</MenuItem>
+                                                    ))}
+                                                </Select>
+                                            </FormControl>
+                                        </Grid>
+
+                                        <Grid item xs={12} md={3}>
+                                            <TextField
+                                                fullWidth
+                                                label="Min Price (₹)"
+                                                type="number"
+                                                value={filters.priceRange.min}
+                                                onChange={(e) => handlePriceRangeChange('min', e.target.value)}
+                                                variant="outlined"
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12} md={3}>
+                                            <TextField
+                                                fullWidth
+                                                label="Max Price (₹)"
+                                                type="number"
+                                                value={filters.priceRange.max}
+                                                onChange={(e) => handlePriceRangeChange('max', e.target.value)}
+                                                variant="outlined"
+                                            />
+                                        </Grid>
+
+                                        <Grid item xs={12} md={3}>
+                                            <TextField
+                                                fullWidth
+                                                label="Min Area"
+                                                type="number"
+                                                value={filters.areaRange.min}
+                                                onChange={(e) => handleAreaRangeChange('min', e.target.value)}
+                                                variant="outlined"
+                                            />
+                                        </Grid>
+                                        <Grid item xs={12} md={3}>
+                                            <TextField
+                                                fullWidth
+                                                label="Max Area"
+                                                type="number"
+                                                value={filters.areaRange.max}
+                                                onChange={(e) => handleAreaRangeChange('max', e.target.value)}
+                                                variant="outlined"
+                                            />
+                                        </Grid>
+
+                                        <Grid item xs={12} md={3}>
+                                            <FormControl fullWidth>
+                                                <InputLabel>Bedrooms</InputLabel>
+                                                <Select
+                                                    value={filters.bedrooms}
+                                                    onChange={(e) => handleFilterChange('bedrooms', e.target.value)}
+                                                    label="Bedrooms"
+                                                >
+                                                    <MenuItem value="">Any</MenuItem>
+                                                    {bedroomOptions.map(bed => (
+                                                        <MenuItem key={bed} value={bed}>{bed}</MenuItem>
+                                                    ))}
+                                                </Select>
+                                            </FormControl>
+                                        </Grid>
+
+                                        <Grid item xs={12} md={3}>
+                                            <FormControl fullWidth>
+                                                <InputLabel>Bathrooms</InputLabel>
+                                                <Select
+                                                    value={filters.bathrooms}
+                                                    onChange={(e) => handleFilterChange('bathrooms', e.target.value)}
+                                                    label="Bathrooms"
+                                                >
+                                                    <MenuItem value="">Any</MenuItem>
+                                                    {bathroomOptions.map(bath => (
+                                                        <MenuItem key={bath} value={bath}>{bath}</MenuItem>
+                                                    ))}
+                                                </Select>
+                                            </FormControl>
+                                        </Grid>
+
+                                        <Grid item xs={12} md={3}>
+                                            <FormControl fullWidth>
+                                                <InputLabel>Area Unit</InputLabel>
+                                                <Select
+                                                    value={filters.areaUnit}
+                                                    onChange={(e) => handleFilterChange('areaUnit', e.target.value)}
+                                                    label="Area Unit"
+                                                >
+                                                    <MenuItem value="">Any</MenuItem>
+                                                    {areaUnitOptions.map(unit => (
+                                                        <MenuItem key={unit} value={unit}>{unit}</MenuItem>
+                                                    ))}
+                                                </Select>
+                                            </FormControl>
+                                        </Grid>
+
+                                        <Grid item xs={12} md={3}>
+                                            <Box sx={{ display: 'flex', gap: 1 }}>
+                                                <Button
+                                                    variant="contained"
+                                                    color="error"
+                                                    onClick={clearFilters}
+                                                    startIcon={<ClearIcon />}
+                                                >
+                                                    Clear Filters
+                                                </Button>
+                                            </Box>
+                                        </Grid>
+                                    </Grid>
+                                </Box>
+                            )}
                         </Box>
+
+                        {/* Properties Count */}
+                        <Typography variant="body1" sx={{ mb: 2, color: 'text.secondary' }}>
+                            Showing {filteredProperties.length} of {properties.length} properties
+                        </Typography>
 
                         {/* Properties Cards */}
                         {filteredProperties.length > 0 ? (
                             <>
                                 <Grid container spacing={3}>
-                                    {paginatedProperties.map((property) => (
-                                        <Grid item xs={12} md={6} lg={4} key={property.property_id}>
-                                            <Card
-                                                sx={{
-                                                    borderRadius: 2,
-                                                    transition: 'all 0.3s ease',
-                                                    position: 'relative',
-                                                    '&:hover': {
-                                                        transform: 'translateY(-5px)',
-                                                        boxShadow: '0 4px 15px rgba(0,0,0,0.749)',
-                                                    }
-                                                }}
-                                            >
-                                                <Box sx={{ position: 'relative' }}>
-                                                    <CardMedia
-                                                        component="img"
-                                                        height="220"
-                                                        image={
-                                                            property.images.length > 0
-                                                                ? `${baseurl}${property.images[0].image}`
-                                                                : "https://via.placeholder.com/300"
-                                                        }
-                                                        alt={property.property_title}
-                                                        sx={{ objectFit: "cover", borderRadius: "12px 12px 0 0", cursor: "pointer" }}
-                                                        onClick={() => handleImageClick(property)}
-                                                    />
-                                                </Box>
+                                    {paginatedProperties.map((property) => {
+                                        const media = getAllMedia(property);
+                                        const currentIndex = currentImageIndices[property.property_id] || 0;
+                                        const totalMedia = media.length;
 
-                                                {/* CHIPS BELOW IMAGE */}
-                                                <Box
+                                        return (
+                                            <Grid item xs={12} md={6} lg={4} key={property.property_id}>
+                                                <Card
                                                     sx={{
-                                                        display: "flex",
-                                                        justifyContent: "space-between",
-                                                        alignItems: "center",
-                                                        mt: 1,
-                                                        px: 1,
+                                                        borderRadius: 2,
+                                                        transition: 'all 0.3s ease',
+                                                        position: 'relative',
+                                                        '&:hover': {
+                                                            transform: 'translateY(-5px)',
+                                                            boxShadow: '0 4px 15px rgba(0,0,0,0.749)',
+                                                        }
                                                     }}
                                                 >
-                                                    {/* LOOKING_TO CHIP (only if property.status !== 'sold') */}
-                                                    {property.status !== "sold" && (
-                                                        <Chip
-                                                            label={property.looking_to === "sell" ? "Sell" : "Rent"}
-                                                            size="small"
-                                                            sx={{
-                                                                backgroundColor: property.looking_to === "sell" ? "#3498DB" : "#9B59B6",
-                                                                color: "white",
-                                                                fontWeight: "bold",
-                                                                textTransform: "uppercase",
-                                                                fontSize: "0.7rem",
-                                                                minWidth: "70px",
-                                                            }}
-                                                        />
-                                                    )}
-
-                                                    {/* STATUS CHIP */}
-                                                    <Chip
-                                                        label={property.status}
-                                                        size="small"
-                                                        sx={{
-                                                            backgroundColor:
-                                                                property.status === "available"
-                                                                    ? "#2ECC71"
-                                                                    : property.status === "booked"
-                                                                        ? "#E67E22"
-                                                                        : "#E74C3C",
-                                                            color: "white",
-                                                            fontWeight: "bold",
-                                                            textTransform: "uppercase",
-                                                            fontSize: "0.7rem",
-                                                            minWidth: "70px",
-                                                        }}
-                                                    />
-                                                </Box>
-
-                                                <CardContent>
-                                                    <Typography fontWeight="bold" mb={1}>
-                                                        {property.property_title}
-                                                    </Typography>
-                                                    <Typography variant="body2" color="text.secondary" mb={2}>
-                                                        {property.city}, {property.state}
-                                                    </Typography>
-                                                    <Typography variant="body2" color="text.secondary" mb={1}>
-                                                        Added By: <strong>{property.first_name}</strong>
-                                                    </Typography>
-                                                    <Grid
-                                                        container
-                                                        spacing={2}
-                                                        sx={{
-                                                            p: 1.5,
-                                                            borderRadius: 1,
-                                                            mb: 2
-                                                        }}
-                                                    >
-                                                        <Grid item xs={6}>
-                                                            <Typography variant="caption" color="text.secondary">
-                                                                Area
-                                                            </Typography>
-                                                            <Typography fontWeight="600" color="#4A90E2">
-                                                                {property.area} {property.area_unit}
-                                                            </Typography>
-                                                        </Grid>
-                                                        <Grid item xs={6}>
-                                                            <Typography variant="caption" color="text.secondary">
-                                                                Built-up Area
-                                                            </Typography>
-                                                            <Typography fontWeight="600" color="#4A90E2">
-                                                                {property.builtup_area} {property.area_unit}
-                                                            </Typography>
-                                                        </Grid>
-                                                        <Grid item xs={6}>
-                                                            <Typography variant="caption" color="text.secondary">
-                                                                Property Value
-                                                            </Typography>
-                                                            <Typography fontWeight="600" color="#4A90E2">
-                                                                ₹{property.property_value}
-                                                            </Typography>
-                                                        </Grid>
-                                                        <Grid item xs={6}>
-                                                            <Typography variant="caption" color="text.secondary">
-                                                                Floors
-                                                            </Typography>
-                                                            <Typography fontWeight="600" color="#4A90E2">
-                                                                {property.number_of_floors}
-                                                            </Typography>
-                                                        </Grid>
-                                                    </Grid>
-                                                    <Box
-                                                        sx={{
-                                                            backgroundColor: '#F8F9FA',
-                                                            borderRadius: 1,
-                                                            p: 1.5,
-                                                            mb: 2
-                                                        }}
-                                                    >
-                                                        <Grid container>
-                                                            <Grid item xs={6}>
-                                                                <Typography variant="body2" color="text.secondary">
-                                                                    Owner Email
-                                                                </Typography>
-                                                            </Grid>
-                                                            <Grid item xs={6}>
-                                                                <Typography
-                                                                    variant="body2"
-                                                                    fontWeight="bold"
-                                                                    color="#4A90E2"
-                                                                    align="right"
+                                                    <Box sx={{ position: 'relative' }}>
+                                                        {isCurrentMediaVideo(property) ? (
+                                                            <Box sx={{ height: '220px', position: 'relative' }}>
+                                                                <video
+                                                                    controls
+                                                                    style={{
+                                                                        width: '100%',
+                                                                        height: '220px',
+                                                                        objectFit: 'cover',
+                                                                        borderRadius: '12px 12px 0 0',
+                                                                        cursor: 'pointer'
+                                                                    }}
+                                                                    onClick={() => handleImageClick(property)}
                                                                 >
-                                                                    {property.owner_email}
-                                                                </Typography>
-                                                            </Grid>
+                                                                    <source src={getCurrentMediaUrl(property)} type="video/mp4" />
+                                                                    Your browser does not support the video tag.
+                                                                </video>
+                                                                <VideocamIcon
+                                                                    sx={{
+                                                                        position: 'absolute',
+                                                                        top: 8,
+                                                                        left: 8,
+                                                                        color: 'white',
+                                                                        backgroundColor: 'rgba(0,0,0,0.5)',
+                                                                        borderRadius: '50%',
+                                                                        padding: '4px'
+                                                                    }}
+                                                                />
+                                                            </Box>
+                                                        ) : (
+                                                            <CardMedia
+                                                                component="img"
+                                                                height="220"
+                                                                image={getCurrentMediaUrl(property)}
+                                                                alt={property.property_title}
+                                                                sx={{ objectFit: 'cover', borderRadius: '12px 12px 0 0', cursor: 'pointer' }}
+                                                                onClick={() => handleImageClick(property)}
+                                                            />
+                                                        )}
 
-                                                            <Grid item xs={6}>
-                                                                <Typography variant="body2" color="text.secondary">
-                                                                    Owner Contact
-                                                                </Typography>
-                                                            </Grid>
-                                                            <Grid item xs={6}>
-                                                                <Typography
-                                                                    variant="body2"
-                                                                    fontWeight="bold"
-                                                                    color="text.secondary"
-                                                                    align="right"
+                                                        {/* Navigation arrows when there are multiple media items */}
+                                                        {totalMedia > 1 && (
+                                                            <>
+                                                                <IconButton
+                                                                    sx={{
+                                                                        position: 'absolute',
+                                                                        left: 10,
+                                                                        top: '50%',
+                                                                        transform: 'translateY(-50%)',
+                                                                        backgroundColor: 'rgba(36, 36, 36, 0.5)',
+                                                                        color: 'white',
+                                                                        '&:hover': {
+                                                                            backgroundColor: 'rgba(0,0,0,0.7)'
+                                                                        }
+                                                                    }}
+                                                                    onClick={handlePrevImage(property.property_id, totalMedia)}
                                                                 >
-                                                                    {property.owner_contact}
-                                                                </Typography>
-                                                            </Grid>
-                                                        </Grid>
+                                                                    <ChevronLeftIcon />
+                                                                </IconButton>
+                                                                <IconButton
+                                                                    sx={{
+                                                                        position: 'absolute',
+                                                                        right: 10,
+                                                                        top: '50%',
+                                                                        transform: 'translateY(-50%)',
+                                                                        backgroundColor: 'rgba(90, 81, 81, 0.5)',
+                                                                        color: 'white',
+                                                                        '&:hover': {
+                                                                            backgroundColor: 'rgba(0,0,0,0.7)'
+                                                                        }
+                                                                    }}
+                                                                    onClick={handleNextImage(property.property_id, totalMedia)}
+                                                                >
+                                                                    <ChevronRightIcon />
+                                                                </IconButton>
+                                                                {/* Media counter */}
+                                                                <Box
+                                                                    sx={{
+                                                                        position: 'absolute',
+                                                                        bottom: 10,
+                                                                        right: 10,
+                                                                        backgroundColor: 'rgba(0,0,0,0.5)',
+                                                                        color: 'white',
+                                                                        px: 1,
+                                                                        borderRadius: '4px',
+                                                                        fontSize: '0.75rem'
+                                                                    }}
+                                                                >
+                                                                    {`${currentIndex + 1}/${totalMedia}`}
+                                                                </Box>
+                                                            </>
+                                                        )}
                                                     </Box>
-                                                    <Grid container spacing={1}>
-                                                        <Grid item xs={12}>
-                                                            <Button
-                                                                fullWidth
-                                                                variant="contained"
+                                                    <CardContent>
+                                                        <Box display="flex" alignItems="center" justifyContent="space-between" mb={1}>
+                                                            <Typography fontWeight="bold">
+                                                                {property.property_title}
+                                                            </Typography>
+                                                            <Chip
+                                                                label={property.status}
+                                                                size="small"
                                                                 sx={{
-                                                                    backgroundColor: '#149c33',
+                                                                    backgroundColor:
+                                                                        property.status === 'available'
+                                                                            ? '#2ECC71'
+                                                                            : property.status === 'booked'
+                                                                                ? '#E67E22'
+                                                                                : property.status === 'sold'
+                                                                                    ? '#E74C3C'
+                                                                                    : '#95A5A6',
                                                                     color: 'white',
-                                                                    textTransform: 'none',
-                                                                    '&:hover': { backgroundColor: '#59ed7c', color: 'rgb(5,5,5)' }
+                                                                    fontWeight: 'bold',
+                                                                    textTransform: 'uppercase',
+                                                                    fontSize: '0.7rem',
+                                                                    minWidth: '70px'
                                                                 }}
-                                                                onClick={() => navigate(`/i-assets/${property.property_id}`, { state: { property } })}
-                                                            >
-                                                                VIEW DETAILS
-                                                            </Button>
+                                                            />
+                                                        </Box>
+
+                                                        <Typography variant="body2" color="text.secondary" mb={2}>
+                                                            {property.city}, {property.state}
+                                                        </Typography>
+                                                        <Grid
+                                                            container
+                                                            spacing={2}
+                                                            sx={{
+                                                                p: 1.5,
+                                                                borderRadius: 1,
+                                                                mb: 2
+                                                            }}
+                                                        >
+                                                            <Grid item xs={6}>
+                                                                <Typography variant="caption" color="text.secondary">
+                                                                    Area
+                                                                </Typography>
+                                                                <Typography fontWeight="600" color="#4A90E2">
+                                                                    {property.area} {property.area_unit}
+                                                                </Typography>
+                                                            </Grid>
+                                                            <Grid item xs={6}>
+                                                                <Typography variant="caption" color="text.secondary">
+                                                                    Built-up Area
+                                                                </Typography>
+                                                                <Typography fontWeight="600" color="#4A90E2">
+                                                                    {property.builtup_area} {property.area_unit}
+                                                                </Typography>
+                                                            </Grid>
+                                                            <Grid item xs={6}>
+                                                                <Typography variant="caption" color="text.secondary">
+                                                                    Property Value
+                                                                </Typography>
+                                                                <Typography fontWeight="600" color="#4A90E2">
+                                                                    ₹{property.total_property_value || property.property_value}
+                                                                </Typography>
+                                                            </Grid>
+                                                            <Grid item xs={6}>
+                                                                <Typography variant="caption" color="text.secondary">
+                                                                    Type
+                                                                </Typography>
+                                                                <Typography fontWeight="600" color="#4A90E2">
+                                                                    {property.property_type}
+                                                                </Typography>
+                                                            </Grid>
                                                         </Grid>
-                                                    </Grid>
-                                                </CardContent>
-                                            </Card>
-                                        </Grid>
-                                    ))}
+                                                        <Grid item xs={12}>
+                                                            <Box
+                                                                sx={{
+                                                                    display: 'flex',
+                                                                    justifyContent: 'flex-end',
+                                                                    alignItems: 'center',
+                                                                    gap: 1.5,
+                                                                    mt: 0.5,
+                                                                }}
+                                                            >
+                                                                {/* Wishlist Button */}
+                                                                <IconButton
+                                                                    onClick={() => handleWishlistToggle(property.property_id)}
+                                                                    sx={{
+                                                                        backgroundColor: 'rgba(255,255,255,0.8)',
+                                                                        '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
+                                                                    }}
+                                                                >
+                                                                    {wishlist.includes(property.property_id) ? (
+                                                                        <FavoriteIcon sx={{ color: 'red' }} />
+                                                                    ) : (
+                                                                        <FavoriteBorderIcon sx={{ color: 'red' }} />
+                                                                    )}
+                                                                </IconButton>
+
+                                                                {/* Like Button */}
+                                                                <IconButton
+                                                                    onClick={() => handleLikeToggle(property.property_id)}
+                                                                    size="small"
+                                                                    sx={{
+                                                                        backgroundColor: 'rgba(255,255,255,0.8)',
+                                                                        '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
+                                                                        color: likedProperties.includes(property.property_id)
+                                                                            ? '#1a73e8'
+                                                                            : 'grey',
+                                                                    }}
+                                                                >
+                                                                    {likedProperties.includes(property.property_id) ? (
+                                                                        <ThumbUpAltIcon />
+                                                                    ) : (
+                                                                        <ThumbUpAltOutlinedIcon />
+                                                                    )}
+                                                                </IconButton>
+
+                                                                {/* Call Button */}
+                                                                <IconButton
+                                                                    component="a"
+                                                                    href={`tel:${subscriptionPaid ? property.owner_contact : '9074307248'}`}
+                                                                    size="small"
+                                                                    sx={{
+                                                                        backgroundColor: 'rgba(255,255,255,0.8)',
+                                                                        '&:hover': { backgroundColor: 'rgba(255,255,255,1)' },
+                                                                        color: '#4caf50',
+                                                                    }}
+                                                                >
+                                                                    <CallIcon />
+                                                                </IconButton>
+                                                            </Box>
+                                                        </Grid>
+                                                        <Box
+                                                            sx={{
+                                                                backgroundColor: '#F8F9FA',
+                                                                borderRadius: 1,
+                                                                p: 1.5,
+                                                                mb: 2
+                                                            }}
+                                                        >
+                                                            <Grid container>
+                                                                {subscriptionPaid && property.referral_id ? (
+                                                                    <Grid item xs={12}>
+                                                                        <Typography
+                                                                            variant="body2"
+                                                                            fontWeight="bold"
+                                                                            color="#E67E22"
+                                                                            textAlign="center"
+                                                                            display="flex"
+                                                                            justifyContent="center"
+                                                                            alignItems="center"
+                                                                            gap={1}
+                                                                        >
+                                                                            Added by: {property.username}
+                                                                        </Typography>
+                                                                        <Typography
+                                                                            variant="body2"
+                                                                            fontWeight="bold"
+                                                                            color="#E67E22"
+                                                                            textAlign="center"
+                                                                            display="flex"
+                                                                            justifyContent="center"
+                                                                            alignItems="center"
+                                                                            gap={1}
+                                                                        >
+                                                                            Referral ID: {property.referral_id}
+                                                                        </Typography>
+                                                                    </Grid>
+                                                                ) : null}
+                                                            </Grid>
+                                                        </Box>
+
+                                                        <Grid container spacing={1}>
+                                                            <Grid item xs={12}>
+                                                                <Button
+  fullWidth
+  variant="contained"
+  sx={{
+    color: 'white',
+    textTransform: 'none',
+    '&:hover': { color: 'rgb(5,5,5)' }
+  }}
+  disabled={!subscriptionPaid}
+  onClick={(e) => handleViewDetails(property, e)}
+>
+  VIEW DETAILS
+</Button>
+                                                            </Grid>
+                                                            <Grid item xs={12}>
+                                                                <Button
+                                                                    fullWidth
+                                                                    variant="contained"
+                                                                    sx={{
+                                                                        backgroundColor: '#1976d2',
+                                                                        color: 'white',
+                                                                        textTransform: 'none',
+                                                                        '&:hover': { backgroundColor: '#115293' }
+                                                                    }}
+                                                                    disabled={!subscriptionPaid || property.status !== 'available'}
+                                                                    onClick={() => navigate(`/i-bookingassets?property_id=${property.property_id}`)}
+                                                                >
+                                                                    {property.looking_to === 'sell' ? 'Buy Now' : 'Rent Now'}
+                                                                </Button>
+                                                            </Grid>
+                                                        </Grid>
+                                                    </CardContent>
+                                                </Card>
+                                            </Grid>
+                                        );
+                                    })}
                                 </Grid>
 
                                 {/* Properties Pagination */}
@@ -537,22 +1706,70 @@ const InvestorLandingPage = () => {
                 {/* Businesses Tab Content */}
                 {activeTab === 1 && (
                     <>
-                        {/* Business Search */}
-                        <Box sx={{ mb: 3, maxWidth: 400 }}>
-                            <TextField
-                                fullWidth
-                                label="Search by business category or type..."
-                                variant="outlined"
-                                value={businessSearchTerm}
-                                onChange={handleBusinessSearchChange}
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        borderRadius: '12px',
-                                        backgroundColor: 'white',
-                                    }
-                                }}
-                            />
+                        {/* Business Search and Filters */}
+                        <Box
+                            sx={{
+                                backgroundColor: 'white',
+                                p: 2,
+                                borderRadius: 2,
+                                boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
+                                mb: 3
+                            }}
+                        >
+                            <Grid container spacing={2} alignItems="center">
+                                <Grid item xs={12} md={3}>
+                                    <TextField
+                                        fullWidth
+                                        label="Search businesses..."
+                                        variant="outlined"
+                                        value={businessSearchTerm}
+                                        onChange={handleBusinessSearchChange}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} md={3}>
+                                    <TextField
+                                        fullWidth
+                                        label="Business Type"
+                                        variant="outlined"
+                                        value={businessFilters.businessType}
+                                        onChange={(e) => handleBusinessFilterChange('businessType', e.target.value)}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} md={3}>
+                                    <TextField
+                                        fullWidth
+                                        label="City"
+                                        variant="outlined"
+                                        value={businessFilters.city}
+                                        onChange={(e) => handleBusinessFilterChange('city', e.target.value)}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} md={3}>
+                                    <Box sx={{ display: 'flex', gap: 1 }}>
+                                        <Button
+                                            variant="outlined"
+                                            color="error"
+                                            onClick={clearBusinessFilters}
+                                            startIcon={<ClearIcon />}
+                                        >
+                                            Clear Filters
+                                        </Button>
+                                        <Button
+                                            variant="contained"
+                                            color="primary"
+                                            onClick={() => navigate('/add-business')}
+                                        >
+                                            Add Business
+                                        </Button>
+                                    </Box>
+                                </Grid>
+                            </Grid>
                         </Box>
+
+                        {/* Business Count */}
+                        <Typography variant="body1" sx={{ mb: 2, color: 'text.secondary' }}>
+                            Showing {filteredBusinesses.length} of {businesses.length} businesses
+                        </Typography>
 
                         {loadingBusinesses ? (
                             <Box display="flex" justifyContent="center" alignItems="center" mt={5}>
@@ -741,7 +1958,7 @@ const InvestorLandingPage = () => {
                 {/* Image Carousel Dialog */}
                 <Dialog open={openCarousel} onClose={handleCloseCarousel} maxWidth="md" fullWidth>
                     <Box sx={{ p: 2, background: '#000' }}>
-                        {selectedProperty && selectedProperty.images && selectedProperty.images.length > 0 ? (
+                        {selectedProperty && getAllMedia(selectedProperty).length > 0 ? (
                             <Carousel
                                 showThumbs={false}
                                 infiniteLoop
@@ -750,20 +1967,209 @@ const InvestorLandingPage = () => {
                                 autoPlay
                                 emulateTouch
                             >
-                                {selectedProperty.images.map((imgObj, idx) => (
-                                    <div key={idx}>
-                                        <img
-                                            src={`${baseurl}${imgObj.image}`}
-                                            alt={`property-img-${idx}`}
-                                            style={{ borderRadius: 8, maxHeight: '550px', objectFit: 'cover' }}
-                                        />
-                                    </div>
-                                ))}
+                                {getAllMedia(selectedProperty)
+                                    .filter((media) => media.type === 'image')
+                                    .map((media, idx) => (
+                                        <div key={idx}>
+                                            <img
+                                                src={media.url}
+                                                alt={media.alt || `Image ${idx + 1}`}
+                                                style={{
+                                                    borderRadius: 8,
+                                                    maxHeight: '550px',
+                                                    objectFit: 'cover',
+                                                    width: '100%',
+                                                }}
+                                            />
+                                        </div>
+                                    ))}
                             </Carousel>
                         ) : (
-                            <Typography color="white">No images available.</Typography>
+                            <Typography color="white">No media available.</Typography>
                         )}
                     </Box>
+                </Dialog>
+
+                {/* Report Configuration Dialog */}
+                <Dialog open={openReportConfigDialog} onClose={closeReportConfiguration} maxWidth="sm" fullWidth>
+                    <DialogTitle>Generate Property Report</DialogTitle>
+                    <DialogContent dividers>
+                        <Stack spacing={3} sx={{ mt: 2 }}>
+                            <FormControl fullWidth>
+                                <InputLabel id="report-type-label">Report Type</InputLabel>
+                                <Select
+                                    labelId="report-type-label"
+                                    value={reportType}
+                                    onChange={(e) => setReportType(e.target.value)}
+                                    label="Report Type"
+                                >
+                                    <MenuItem value="monthly">Monthly</MenuItem>
+                                    <MenuItem value="yearly">Yearly</MenuItem>
+                                    <MenuItem value="custom">Custom Date Range</MenuItem>
+                                </Select>
+                            </FormControl>
+
+                            <Box sx={{ display: 'flex', gap: 2 }}>
+                                <Box sx={{ flex: 1 }}>
+                                    <Typography variant="subtitle2" gutterBottom>
+                                        Start Date
+                                    </Typography>
+                                    <DatePicker
+                                        selected={startDate}
+                                        onChange={(date) => setStartDate(date)}
+                                        selectsStart
+                                        startDate={startDate}
+                                        endDate={endDate}
+                                        customInput={
+                                            <TextField
+                                                fullWidth
+                                                variant="outlined"
+                                                InputProps={{
+                                                    startAdornment: (
+                                                        <InputAdornment position="start">
+                                                            <EventIcon color="action" />
+                                                        </InputAdornment>
+                                                    ),
+                                                }}
+                                            />
+                                        }
+                                    />
+                                </Box>
+                                <Box sx={{ flex: 1 }}>
+                                    <Typography variant="subtitle2" gutterBottom>
+                                        End Date
+                                    </Typography>
+                                    <DatePicker
+                                        selected={endDate}
+                                        onChange={(date) => setEndDate(date)}
+                                        selectsEnd
+                                        startDate={startDate}
+                                        endDate={endDate}
+                                        minDate={startDate}
+                                        customInput={
+                                            <TextField
+                                                fullWidth
+                                                variant="outlined"
+                                                InputProps={{
+                                                    startAdornment: (
+                                                        <InputAdornment position="start">
+                                                            <CalendarMonthIcon color="action" />
+                                                        </InputAdornment>
+                                                    ),
+                                                }}
+                                            />
+                                        }
+                                    />
+                                </Box>
+                            </Box>
+
+                            <Box>
+                                <Typography variant="subtitle2" gutterBottom>
+                                    Select Columns to Include
+                                </Typography>
+                                <FormGroup>
+                                    {reportColumns.map((column) => (
+                                        <FormControlLabel
+                                            key={column.id}
+                                            control={
+                                                <Checkbox
+                                                    checked={column.checked}
+                                                    onChange={(e) => {
+                                                        const updatedColumns = reportColumns.map(col =>
+                                                            col.id === column.id ? { ...col, checked: e.target.checked } : col
+                                                        );
+                                                        setReportColumns(updatedColumns);
+                                                    }}
+                                                />
+                                            }
+                                            label={column.label}
+                                        />
+                                    ))}
+                                </FormGroup>
+                            </Box>
+                        </Stack>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={closeReportConfiguration} color="primary">
+                            Cancel
+                        </Button>
+                        <Button onClick={generateReport} variant="contained" color="primary">
+                            Generate Report
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+
+                {/* Report Display Dialog */}
+                <Dialog open={openReportDialog} onClose={() => setOpenReportDialog(false)} maxWidth="lg" fullWidth>
+                    <DialogTitle>Property Report</DialogTitle>
+                    <DialogContent dividers>
+                        <Box sx={{ mb: 3 }}>
+                            <Typography variant="h6" gutterBottom>
+                                Report Summary
+                            </Typography>
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3 }}>
+                                <Box>
+                                    <Typography variant="subtitle2">Report Period</Typography>
+                                    <Typography>{reportData.length > 0 ? reportData[0].period : ''}</Typography>
+                                </Box>
+                                <Box>
+                                    <Typography variant="subtitle2">Total Properties</Typography>
+                                    <Typography>{reportData.reduce((sum, group) => sum + group.count, 0)}</Typography>
+                                </Box>
+                                <Box>
+                                    <Typography variant="subtitle2">Total Value</Typography>
+                                    <Typography>₹{reportData.reduce((sum, group) => sum + group.totalValue, 0).toLocaleString()}</Typography>
+                                </Box>
+                                <Box>
+                                    <Typography variant="subtitle2">Generated On</Typography>
+                                    <Typography>{new Date().toLocaleDateString()}</Typography>
+                                </Box>
+                            </Box>
+                        </Box>
+
+                        <TableContainer component={Paper} sx={{ maxHeight: '60vh', overflow: 'auto' }}>
+                            <Table stickyHeader>
+                                <TableHead>
+                                    <TableRow>
+                                        {reportColumns.filter(col => col.checked).map(column => (
+                                            <TableCell key={column.id}>{column.label}</TableCell>
+                                        ))}
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {reportData.flatMap(group =>
+                                        group.properties.map((property, idx) => (
+                                            <TableRow key={`${group.period}-${idx}`}>
+                                                {reportColumns.filter(col => col.checked).map(column => (
+                                                    <TableCell key={`${property.id}-${column.id}`}>
+                                                        {column.id === 'created_at'
+                                                            ? new Date(property[column.id]).toLocaleDateString()
+                                                            : column.id === 'property_value'
+                                                                ? `₹${property.total_property_value || property.property_value || 0}`
+                                                                : property[column.id] || '-'}
+                                                    </TableCell>
+                                                ))}
+                                            </TableRow>
+                                        ))
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setOpenReportDialog(false)} color="primary">
+                            Close
+                        </Button>
+                        <Button onClick={printReport} startIcon={<PrintIcon />} color="primary">
+                            Print
+                        </Button>
+                        <Button onClick={exportToPDF} startIcon={<PictureAsPdfIcon />} color="primary">
+                            PDF
+                        </Button>
+                        <Button onClick={exportToCSV} startIcon={<DescriptionIcon />} color="primary">
+                            CSV
+                        </Button>
+                    </DialogActions>
                 </Dialog>
 
                 {/* Property Details Dialog */}

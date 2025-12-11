@@ -606,7 +606,7 @@ const AssetsUI = () => {
       <InvestorHeader />
       <Container sx={{ py: 4 }}>
         <Box sx={{ mb: 4 }}>
-          <Typography
+          {/* <Typography
             variant="h4"
             gutterBottom
             sx={{
@@ -624,7 +624,7 @@ const AssetsUI = () => {
             }}
           >
             Properties
-          </Typography>
+          </Typography> */}
 
           {/* Optional Button */}
           {/* <Button

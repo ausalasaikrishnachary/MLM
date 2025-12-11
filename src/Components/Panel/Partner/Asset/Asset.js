@@ -45,11 +45,6 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import ThumbUpAltOutlinedIcon from '@mui/icons-material/ThumbUpAltOutlined';
 
-
-
-
-
-
 const AssetsUI = () => {
   const [sortBy, setSortBy] = useState('latest');
   const [properties, setProperties] = useState([]);

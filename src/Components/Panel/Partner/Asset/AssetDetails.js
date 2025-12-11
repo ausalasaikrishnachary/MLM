@@ -1,195 +1,3 @@
-// import React from 'react';
-// import { useLocation, useParams } from 'react-router-dom';
-// import {
-//   Container, Typography, Grid, Box, Button, Divider, Chip
-// } from '@mui/material';
-// import PartnerHeader from '../../../Shared/Partner/PartnerNavbar';
-// import { baseurl } from '../../../BaseURL/BaseURL';
-// import { useNavigate } from "react-router-dom";
-
-// const AssetDetail = () => {
-//   const navigate = useNavigate();
-//   const location = useLocation();
-//   const { property } = location.state || {};
-//   const { id } = useParams();
-
-//   if (!property) {
-//     return <Typography>Loading property details...</Typography>;
-//   }
-
-//   // Format currency
-//   const formatCurrency = (value) => {
-//     return new Intl.NumberFormat('en-IN', {
-//       style: 'currency',
-//       currency: 'INR',
-//       maximumFractionDigits: 0
-//     }).format(value);
-//   };
-
-//   return (
-//     <>
-//       <PartnerHeader />
-//       <Container sx={{ py: 4 }}>
-//         <Box mt={1}>
-//           <Button variant="outlined" onClick={() => navigate(-1)}>Back</Button>
-//         </Box>
-//         <Box display="flex" alignItems="center" gap={2} mb={3}>
-//           <Typography variant="h4">{property.property_title}</Typography>
-//           <Chip
-//             label={property.status.toUpperCase()}
-//             color={property.status === 'booked' ? 'secondary' : 'primary'}
-//           />
-//         </Box>
-
-//         <Grid container spacing={3}>
-//           {/* Property Image */}
-//           <Grid item xs={12} md={6}>
-//             <Box
-//               component="img"
-//               src={property.images.length > 0 ? `${baseurl}${property.images[0].image}` : 'https://via.placeholder.com/300'}
-//               alt={property.property_title}
-//               sx={{
-//                 width: '100%',
-//                 borderRadius: 2,
-//                 mb: 2
-//               }}
-//             />
-//             {property.videos.length > 0 && (
-//               <Typography variant="body2" mb={2}>Videos available: {property.videos.length}</Typography>
-//             )}
-
-//             <Typography variant="h6" gutterBottom>Features</Typography>
-//             <Divider sx={{ mb: 2 }} />
-//             <Grid container spacing={2}>
-//               <Grid item xs={6}>
-//                 <Typography><strong>Floors:</strong> {property.number_of_floors}</Typography>
-//               </Grid>
-//               <Grid item xs={6}>
-//                 <Typography><strong>Facing:</strong> {property.facing}</Typography>
-//               </Grid>
-//               <Grid item xs={6}>
-//                 <Typography><strong>Open Sides:</strong> {property.number_of_open_sides}</Typography>
-//               </Grid>
-//               <Grid item xs={6}>
-//                 <Typography><strong>Roads:</strong> {property.number_of_roads}</Typography>
-//               </Grid>
-//               <Grid item xs={6}>
-//                 <Typography><strong>Road Width 1:</strong> {property.road_width_1_ft} ft</Typography>
-//               </Grid>
-//               <Grid item xs={6}>
-//                 <Typography><strong>Road Width 2:</strong> {property.road_width_2_ft} ft</Typography>
-//               </Grid>
-//               <Grid item xs={6}><Typography><strong>Floor:</strong> {property.floor || 'N/A'}</Typography></Grid>
-//               <Grid item xs={6}><Typography><strong>Furnishing Status:</strong> {property.furnishing_status || 'N/A'}</Typography></Grid>
-//               <Grid item xs={6}>
-//                 <Typography><strong>Ownership:</strong> {property.ownership_type}</Typography>
-//               </Grid>
-//               <Grid item xs={6}>
-//                 <Typography><strong>Bedrooms:</strong> {property.number_of_bedrooms || 'N/A'}</Typography>
-//               </Grid>
-//               <Grid item xs={6}>
-//                 <Typography><strong>Bathrooms:</strong> {property.number_of_bathrooms || 'N/A'}</Typography>
-//               </Grid>
-//               <Grid item xs={6}>
-//                 <Typography><strong>Balconies:</strong> {property.number_of_balconies || 'N/A'}</Typography>
-//               </Grid>
-//             </Grid>
-
-//             <Typography variant="h6" mt={3} gutterBottom>Additional Information</Typography>
-//             <Divider sx={{ mb: 2 }} />
-//             <Typography><strong>Property Uniqueness:</strong> {property.property_uniqueness || 'N/A'}</Typography>
-//             <Typography><strong>Location Advantages:</strong> {property.location_advantages || 'N/A'}</Typography>
-//             <Typography><strong>Other Features:</strong> {property.other_features || 'N/A'}</Typography>
-//           </Grid>
-
-//           {/* Property Details */}
-//           <Grid item xs={12} md={6}>
-//             <Typography variant="h6" gutterBottom>Basic Information</Typography>
-//             <Divider sx={{ mb: 2 }} />
-
-//             <Grid container spacing={2} mb={3}>
-//               <Grid item xs={6}>
-//                 <Typography><strong>Looking to:</strong> {property.looking_to}</Typography>
-//               </Grid>
-//               <Grid item xs={6}>
-//                 <Typography><strong>Property Value:</strong> {formatCurrency(property.property_value)}</Typography>
-//               </Grid>
-//               <Grid item xs={6}>
-//                 <Typography><strong>Category:</strong> {property.category}</Typography>
-//               </Grid>
-//               <Grid item xs={6}>
-//                 <Typography><strong>Property Type:</strong> {property.property_type}</Typography>
-//               </Grid>
-//               <Grid item xs={12}>
-//                 <Typography><strong>Description:</strong> {property.description}</Typography>
-//               </Grid>
-//             </Grid>
-
-//             <Typography variant="h6" gutterBottom>Address</Typography>
-//             <Divider sx={{ mb: 2 }} />
-//             <Typography mb={3}>
-//               {property.address}, {property.city}, {property.state}, {property.country} - {property.pin_code}
-//             </Typography>
-//             <Typography><strong>Coordinates:</strong> {property.latitude}, {property.longitude}</Typography>
-
-//             <Typography variant="h6" mt={3} gutterBottom>Dimensions</Typography>
-//             <Divider sx={{ mb: 2 }} />
-//             <Grid container spacing={2} mb={3}>
-//               <Grid item xs={6}>
-//                 <Typography><strong>Area:</strong> {property.area} {property.area_unit}</Typography>
-//               </Grid>
-//               <Grid item xs={6}>
-//                 <Typography><strong>Built-up Area:</strong> {property.builtup_area} {property.area_unit}</Typography>
-//               </Grid>
-//               <Grid item xs={6}>
-//                 <Typography><strong>Length:</strong> {property.length_ft} ft</Typography>
-//               </Grid>
-//               <Grid item xs={6}>
-//                 <Typography><strong>Breadth:</strong> {property.breadth_ft} ft</Typography>
-//               </Grid>
-//             </Grid>
-
-//             {/* <Typography variant="h6" gutterBottom>Owner Details</Typography>
-//             <Divider sx={{ mb: 2 }} />
-//             <Typography mb={3}>
-//               <strong>Name:</strong> {property.owner_name}<br />
-//               <strong>Contact:</strong> {property.owner_contact}<br />
-//               <strong>Email:</strong> {property.owner_email}
-//             </Typography> */}
-//             <Typography variant="h6" gutterBottom>Buyer Details</Typography>
-//             <Divider sx={{ mb: 2 }} />
-//             {property.buyer_user ? (
-//               <Typography mb={3}>
-//                 <strong>Username:</strong> {property.buyer_user.username}<br />
-//                 <strong>Referral ID:</strong> {property.buyer_user.referral_id}<br />
-//                 <strong>Contact:</strong> {property.buyer_user.phone_number}<br />
-//                 <strong>Email:</strong> {property.buyer_user.email}<br />
-//                 <strong>Booking Date:</strong> {property.buyer_user.booking_date}<br />
-//                 <strong>Purchase Date:</strong> {property.buyer_user.purchase_date}
-//               </Typography>
-//             ) : (
-//               <Typography mb={3}>No buyer information available</Typography>
-//             )}
-
-//             <Typography variant="h6" gutterBottom>System Information</Typography>
-//             <Divider sx={{ mb: 2 }} />
-//             <Typography variant="body2">
-//               <strong>Created At:</strong> {new Date(property.created_at).toLocaleString()}<br />
-//               <strong>Updated At:</strong> {new Date(property.updated_at).toLocaleString()}<br />
-//               <strong>User ID:</strong> {property.user_id}
-//             </Typography>
-//           </Grid>
-//         </Grid>
-
-
-//       </Container>
-//     </>
-//   );
-// };
-
-// export default AssetDetail;
-
-
 import React, { useState, useEffect } from 'react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import {
@@ -229,25 +37,23 @@ const TabPanel = (props) => {
 const AssetDetail = () => {
   const navigate = useNavigate();
   const location = useLocation();
-   const { property: receivedProperty } = location.state || {};
   const { id } = useParams();
-  const [property, setProperty] = useState(null);
-
-
+  const [property, setProperty] = useState(location.state?.property || null);
   const [propertyTypes, setPropertyTypes] = useState([]);
   const [isPlot, setIsPlot] = useState(false);
   const [propertyTypeName, setPropertyTypeName] = useState("");
   const [tabValue, setTabValue] = useState(0);
-
   const [categories, setCategories] = useState([]);
-  const { property: passedProperty } = location.state || {};
-
+  const [loading, setLoading] = useState(true);
   
   useEffect(() => {
     const fetchData = async () => {
-      const catRes = await fetch(`${baseurl}/property-categories/`);
-  
-      setCategories(await catRes.json());
+      try {
+        const catRes = await fetch(`${baseurl}/property-categories/`);
+        setCategories(await catRes.json());
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
     };
   
     fetchData();
@@ -258,51 +64,92 @@ const AssetDetail = () => {
     return item ? item.name : "N/A";
   };
   
-
-  
-
-  // Fetch property if not passed
   useEffect(() => {
-    if (!passedProperty && id) {
+    // If we have property from state, use it immediately
+    if (location.state?.property) {
+      setProperty(location.state.property);
+      setLoading(false);
+      return;
+    }
+    
+    // Only fetch if we don't have property from state
+    if (id && !property) {
       fetch(`${baseurl}/property/${id}/`)
         .then(res => res.json())
-        .then(data => setProperty(data))
-        .catch(err => console.error("Error fetching property:", err));
+        .then(data => {
+          setProperty(data);
+          setLoading(false);
+        })
+        .catch(err => {
+          console.error("Error fetching property:", err);
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
     }
-  }, [id, passedProperty]);
+  }, [id, location.state, property]);
 
+  useEffect(() => {
+    const fetchPropertyTypes = async () => {
+      try {
+        const res = await fetch(`${baseurl}/property-types/`);
+        const data = await res.json();
+        setPropertyTypes(data);
 
-useEffect(() => {
-  const fetchPropertyTypes = async () => {
-    try {
-      const res = await fetch(`${baseurl}/property-types/`);
-      const data = await res.json();
-      setPropertyTypes(data);
-
-      if (property) {
-        const matchedType = data.find(
-          (t) => t.property_type_id === property.property_type
-        );
-        if (matchedType) {
-          setPropertyTypeName(matchedType.name);
-          if (matchedType.name.toLowerCase() === "plot") {
-            setIsPlot(true);
+        if (property) {
+          const matchedType = data.find(
+            (t) => t.property_type_id === property.property_type
+          );
+          if (matchedType) {
+            setPropertyTypeName(matchedType.name);
+            if (matchedType.name.toLowerCase() === "plot") {
+              setIsPlot(true);
+            }
           }
         }
+      } catch (err) {
+        console.error("Error fetching property types:", err);
       }
-    } catch (err) {
-      console.error("Error fetching property types:", err);
-    }
-  };
+    };
 
-  fetchPropertyTypes();
-}, [property]);
+    if (property) {
+      fetchPropertyTypes();
+    }
+  }, [property]);
+
+  // Loading and error states
+  if (loading) {
+    return (
+      <>
+        <PartnerHeader />
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+          <Typography>Loading property details...</Typography>
+        </Box>
+      </>
+    );
+  }
 
   if (!property) {
-  return <Typography>Loading property details...</Typography>;
-}
-
-
+    return (
+      <>
+        <PartnerHeader />
+        <Container>
+          <Box sx={{ py: 4, textAlign: 'center' }}>
+            <Typography variant="h5" color="error" gutterBottom>
+              Property not found
+            </Typography>
+            <Button 
+              variant="contained" 
+              onClick={() => navigate(-1)}
+              startIcon={<ArrowBackIosNewIcon />}
+            >
+              Go Back
+            </Button>
+          </Box>
+        </Container>
+      </>
+    );
+  }
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-IN', {
@@ -321,6 +168,7 @@ useEffect(() => {
     }
   };
 
+  // Main return statement - ONLY ONE RETURN
   return (
     <>
       <PartnerHeader />
@@ -358,7 +206,7 @@ useEffect(() => {
                   {property.property_title}
                 </Typography>
                 <Chip
-                  label={property.status.toUpperCase()}
+                  label={property.status?.toUpperCase() || 'UNKNOWN'}
                   color={property.status === 'booked' ? 'secondary' : 'primary'}
                   sx={{
                     fontWeight: 600,
@@ -384,7 +232,7 @@ useEffect(() => {
                 overflow: "hidden",
               }}
             >
-              {property.images.length > 0 ? (
+              {property.images && property.images.length > 0 ? (
                 <img
                   src={`${baseurl}${property.images[0].image}`}
                   alt={property.property_title}
@@ -409,7 +257,7 @@ useEffect(() => {
             </Box>
 
             {/* Video Info */}
-            {property.videos.length > 0 && (
+            {property.videos && property.videos.length > 0 && (
               <Box sx={{ p: 2, textAlign: 'center', bgcolor: 'background.paper' }}>
                 <Typography variant="body2" color="text.secondary">
                   🎥 {property.videos.length} video(s) available
