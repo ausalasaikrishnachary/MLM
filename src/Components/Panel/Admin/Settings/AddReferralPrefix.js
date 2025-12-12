@@ -23,13 +23,13 @@ const AddReferralPrefix = () => {
       return;
     }
 
-    // Validate prefix format (uppercase letters only)
-    const prefixRegex = /^[A-Z]{2,5}$/;
+    // Validate prefix format (exactly 3 uppercase letters)
+    const prefixRegex = /^[A-Z]{3}$/;
     if (!prefixRegex.test(prefix)) {
       Swal.fire({
         icon: 'warning',
         title: 'Invalid Prefix',
-        text: 'Prefix should contain 2-5 uppercase letters only.'
+        text: 'Prefix must contain exactly 3 uppercase letters only.'
       });
       return;
     }
@@ -108,10 +108,11 @@ const AddReferralPrefix = () => {
               onChange={(e) => setPrefix(e.target.value.toUpperCase())}
               required
               sx={{ mb: 3 }}
-              placeholder="Enter 2-5 uppercase letters (e.g., SRT)"
-              helperText="Enter 2-5 uppercase letters only"
+              placeholder="Enter exactly 3 uppercase letters (e.g., SRT)"
+              helperText="Enter exactly 3 uppercase letters only"
               inputProps={{
-                maxLength: 5,
+                maxLength: 3,
+                minLength: 3,
                 style: { textTransform: 'uppercase' }
               }}
             />
