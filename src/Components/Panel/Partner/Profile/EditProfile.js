@@ -39,7 +39,7 @@ console.log("Fetched userId:", userId);
   const [errors, setErrors] = useState({}); // Track field errors
 
   const requiredFields = [
-    "username", "first_name", "last_name", "email", "phone_number", "date_of_birth",
+   "first_name", "last_name", "email", "phone_number", "date_of_birth",
     "gender", "marital_status", "address", "city", "state", "country", "pin_code",
     "account_holder_name", "bank_name", "branch_name", "account_number", "account_type", "ifsc_code",
     "pan_number", "aadhaar_number", "nominee_reference_to",
@@ -255,7 +255,7 @@ const handleCityChange = (e) => {
           </Typography>
           <Grid container spacing={2} sx={{ mb: 4 }}>
             {[
-              { label: "Username", name: "username" },
+              // { label: "Username", name: "username" },
               { label: "First Name", name: "first_name" },
               { label: "Last Name", name: "last_name" },
               { label: "Email", name: "email" },

@@ -127,7 +127,7 @@ const Team = () => {
             <Table sx={{ border: '1px solid black', width: '100%', mt: 3 }}>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={cellStyle}>User Name</TableCell>
+                  <TableCell sx={cellStyle}>Full Name</TableCell>
                   <TableCell sx={cellStyle}>Email</TableCell>
                   <TableCell sx={cellStyle}>Phone Number</TableCell>
                   <TableCell sx={cellStyle}>Referral ID</TableCell>
@@ -139,7 +139,7 @@ const Team = () => {
                 {paginatedAgents.length > 0 ? (
                   paginatedAgents.map((agent) => (
                     <TableRow key={agent.user_id}>
-                      <TableCell sx={cellBodyStyle}>{agent.username}</TableCell>
+                      <TableCell sx={cellBodyStyle}>{`${agent.first_name} ${agent.last_name}`}</TableCell>
                       <TableCell sx={cellBodyStyle}>{agent.email}</TableCell>
                       <TableCell sx={cellBodyStyle}>{agent.phone_number}</TableCell>
                       <TableCell sx={cellBodyStyle}>{agent.referral_id || '—'}</TableCell>

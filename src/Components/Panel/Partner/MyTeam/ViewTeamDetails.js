@@ -150,7 +150,7 @@ const ViewTeamDetails = () => {
           </Paper>
 
           {/* Bank Details Section */}
-          <Paper elevation={2} sx={{ p: 3 }}>
+          {/* <Paper elevation={2} sx={{ p: 3 }}>
             <Typography variant="h6" fontWeight="bold" mb={2}>
               Bank Details
             </Typography>
@@ -166,10 +166,10 @@ const ViewTeamDetails = () => {
                 <DetailItem label="IFSC Code" value={agent.ifsc_code} />
               </Grid>
             </Grid>
-          </Paper>
+          </Paper> */}
 
           {/* KYC Details Section */}
-          <Paper elevation={2} sx={{ p: 3 }}>
+          {/* <Paper elevation={2} sx={{ p: 3 }}>
             <Typography variant="h6" fontWeight="bold" mb={2}>
               KYC Details
             </Typography>
@@ -189,7 +189,7 @@ const ViewTeamDetails = () => {
                 <DetailItem label="Nominee Reference" value={agent.nominee_reference_to} />
               </Grid>
             </Grid>
-          </Paper>
+          </Paper> */}
         </Box>
       </Container>
     </>
