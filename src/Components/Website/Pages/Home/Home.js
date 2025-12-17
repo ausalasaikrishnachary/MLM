@@ -1,9 +1,9 @@
 import "./Home.css";
-import { Container, Row, Col, Form, Button } from 'react-bootstrap';
+import { Container, Navbar, Nav, Row, Col, Form, Button } from 'react-bootstrap';
 import { Tabs, InputGroup } from "react-bootstrap";
 import { FaSearch, FaCrosshairs, FaMicrophone } from 'react-icons/fa';
 import { Carousel, Tab, Card } from "react-bootstrap";
-import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import {
   Box,
@@ -13,9 +13,7 @@ import {
   CardMedia,
   IconButton,
   Dialog,
-  Pagination,
-  CircularProgress,
-  LinearProgress
+  Pagination
 } from '@mui/material';
 import {
   Chip,
@@ -52,50 +50,14 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
-// Loading Components
-const LoadingSpinner = () => (
-  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
-    <CircularProgress />
-  </Box>
-);
-
-const PropertyCardSkeleton = () => (
-  <div className="col-md-4 mb-4">
-    <div className="property-card card d-flex flex-column" style={{ height: "100%" }}>
-      <div className="property-image-container">
-        <div className="skeleton-image" style={{ height: "200px", backgroundColor: "#e0e0e0", borderRadius: "8px" }}></div>
-      </div>
-      <div className="card-body">
-        <div className="skeleton-line" style={{ height: "20px", backgroundColor: "#e0e0e0", marginBottom: "10px" }}></div>
-        <div className="skeleton-line" style={{ height: "16px", backgroundColor: "#e0e0e0", marginBottom: "8px", width: "70%" }}></div>
-        <div className="skeleton-line" style={{ height: "14px", backgroundColor: "#e0e0e0", marginBottom: "6px", width: "50%" }}></div>
-      </div>
-    </div>
-  </div>
-);
-
-const BusinessCardSkeleton = () => (
-  <div className="business-card-wrapper">
-    <div className="business-card">
-      <div className="card-content">
-        <div className="skeleton-image" style={{ height: "150px", backgroundColor: "#e0e0e0", borderRadius: "8px" }}></div>
-        <div className="skeleton-line" style={{ height: "20px", backgroundColor: "#e0e0e0", margin: "10px 0" }}></div>
-        <div className="skeleton-line" style={{ height: "16px", backgroundColor: "#e0e0e0", marginBottom: "8px" }}></div>
-        <div className="skeleton-line" style={{ height: "14px", backgroundColor: "#e0e0e0", marginBottom: "6px", width: "80%" }}></div>
-      </div>
-    </div>
-  </div>
-);
-
 const ShrirajLandingPage = () => {
   const [activeTab, setActiveTab] = useState('sell');
   const [searchResults, setSearchResults] = useState([]);
   const navigate = useNavigate();
   const [carouselItems, setCarouselItems] = useState([]);
-  const [carouselLoading, setCarouselLoading] = useState(true);
-  const [carouselError, setCarouselError] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [properties, setProperties] = useState([]);
-  const [propertiesLoading, setPropertiesLoading] = useState(true);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [openModal, setOpenModal] = useState(false);
@@ -104,65 +66,69 @@ const ShrirajLandingPage = () => {
   const totalPages = Math.ceil(properties.length / itemsPerPage);
   const paginatedProperties = properties.slice((page - 1) * itemsPerPage, page * itemsPerPage);
   const [businesses, setBusinesses] = useState([]);
-  const [businessesLoading, setBusinessesLoading] = useState(true);
   const [businessPage, setBusinessPage] = useState(1);
-  const [open, setOpen] = useState(false);
-  const [selectedBusiness, setSelectedBusiness] = useState(null);
+    const [open, setOpen] = useState(false);
+    const [selectedBusiness, setSelectedBusiness] = useState(null);
   const businessItemsPerPage = 3;
   const businessTotalPages = Math.ceil(businesses.length / businessItemsPerPage);
   const paginatedBusinesses = businesses.slice(
     (businessPage - 1) * businessItemsPerPage,
     businessPage * businessItemsPerPage
   );
+
+  const handleBusinessPageChange = (event, value) => {
+    setBusinessPage(value);
+  };
+
   const [selectedLogo, setSelectedLogo] = useState(null);
 
-  // Initialize AOS with debounce
+const handleLogoClick = (business) => {
+  setSelectedLogo(business);
+};
+
+const handleCloseLogoModal = () => {
+  setSelectedLogo(null);
+};
+
   useEffect(() => {
-    const initAOS = () => {
-      if (typeof window !== 'undefined') {
-        const AOS = require('aos');
-        AOS.init({
-          duration: 800,
-          easing: 'ease-in-out',
-          once: true
-        });
-      }
-    };
-
-    // Delay AOS initialization for better performance
-    const timer = setTimeout(() => {
-      initAOS();
-    }, 300);
-
-    return () => clearTimeout(timer);
+    if (typeof window !== 'undefined') {
+      const AOS = require('aos');
+      AOS.init({
+        duration: 800,
+        easing: 'ease-in-out',
+        once: true
+      });
+    }
   }, []);
 
-  // Fetch businesses with error handling
   useEffect(() => {
     const fetchBusinesses = async () => {
       try {
-        setBusinessesLoading(true);
-        const response = await axios.get(`${baseurl}/business/`, {
-          timeout: 10000 // 10 second timeout
-        });
+        const response = await axios.get(`${baseurl}/business/`);
         setBusinesses(response.data);
       } catch (error) {
         console.error("Error fetching businesses:", error);
-      } finally {
-        setBusinessesLoading(false);
       }
     };
     fetchBusinesses();
   }, []);
 
-  // Fetch properties with error handling
+
+    const handleOpen = (biz) => {
+    setSelectedBusiness(biz);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedBusiness(null);
+  };
+  
+
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        setPropertiesLoading(true);
-        const response = await axios.get(`${baseurl}/property/`, {
-          timeout: 10000 // 10 second timeout
-        });
+        const response = await axios.get(`${baseurl}/property/`);
         const allProperties = response.data;
         const shuffled = allProperties.sort(() => 0.5 - Math.random());
         const selected = shuffled.slice(0, 6);
@@ -170,11 +136,12 @@ const ShrirajLandingPage = () => {
       } catch (err) {
         console.error('Error fetching properties:', err);
       } finally {
-        setPropertiesLoading(false);
+        setLoading(false);
       }
     };
     fetchProperties();
   }, []);
+
 
   const getAllMedia = (property) => {
     if (!property.images || !Array.isArray(property.images)) {
@@ -186,21 +153,16 @@ const ShrirajLandingPage = () => {
       alt: img.alt || property.property_title
     }));
   };
-
-  // Fetch carousel data
   useEffect(() => {
     const fetchCarouselData = async () => {
       try {
-        setCarouselLoading(true);
-        const response = await axios.get(`${baseurl}/carousel/`, {
-          timeout: 10000
-        });
+        const response = await axios.get(`${baseurl}/carousel/`);
         setCarouselItems(response.data);
+        setLoading(false);
       } catch (err) {
-        setCarouselError(err.message);
+        setError(err.message);
+        setLoading(false);
         console.error('Error fetching carousel data:', err);
-      } finally {
-        setCarouselLoading(false);
       }
     };
     fetchCarouselData();
@@ -221,27 +183,7 @@ const ShrirajLandingPage = () => {
     setPage(value);
   };
 
-  const handleLogoClick = (business) => {
-    setSelectedLogo(business);
-  };
 
-  const handleCloseLogoModal = () => {
-    setSelectedLogo(null);
-  };
-
-  const handleOpen = (biz) => {
-    setSelectedBusiness(biz);
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-    setSelectedBusiness(null);
-  };
-
-  const handleBusinessPageChange = (event, value) => {
-    setBusinessPage(value);
-  };
 
   const SearchInput = ({ activeTab }) => {
     const [query, setQuery] = useState('');
@@ -251,8 +193,6 @@ const ShrirajLandingPage = () => {
     const [isListening, setIsListening] = useState(false);
     const recognitionRef = useRef(null);
 
-    // ... rest of SearchInput component remains the same ...
-    // Keep the existing SearchInput component code
     useEffect(() => {
       if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -286,6 +226,8 @@ const ShrirajLandingPage = () => {
         }
       };
     }, []);
+
+
 
     const handleSearchClick = () => {
       if (query.trim().length >= 2) {
@@ -334,7 +276,6 @@ const ShrirajLandingPage = () => {
                 q: query,
                 looking_to: activeTab.toUpperCase(),
               },
-              timeout: 5000
             }
           );
 
@@ -532,91 +473,100 @@ const ShrirajLandingPage = () => {
     }
   ];
 
+  if (loading) return <div className="text-center py-5">Loading carousel...</div>;
+  if (error) return <div className="text-center py-5 text-danger">Error: {error}</div>;
+  if (!carouselItems.length) return <div className="text-center py-5">No carousel items found</div>;
+
   return (
     <>
-      {/* Carousel Section with Loading */}
       <div className="container-fluid px-0" style={{ marginTop: "-4px" }}>
         <Card className="shadow rounded-0 border-0">
-          {carouselLoading ? (
-            <div style={{ height: "500px", display: "flex", justifyContent: "center", alignItems: "center" }}>
-              <CircularProgress size={60} />
-            </div>
-          ) : carouselError ? (
-            <div className="text-center py-5 text-danger">Error loading carousel</div>
-          ) : !carouselItems.length ? (
-            <div className="text-center py-5">No carousel items found</div>
-          ) : (
-            <Carousel
-              fade={false}
-              interval={2000}
-              indicators={false}
-              prevIcon={
-                <span
-                  className="custom-arrow left-arrow"
+          <Carousel
+            fade={false}
+            interval={2000}
+            indicators={false}
+            prevIcon={
+              <span
+                className="custom-arrow left-arrow"
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "10px",
+                  zIndex: 2,
+                  fontSize: "1.5rem",
+                  color: "#fff",
+                }}
+              >
+                <FaChevronLeft />
+              </span>
+            }
+            nextIcon={
+              <span
+                className="custom-arrow right-arrow"
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  right: "10px",
+                  zIndex: 2,
+                  fontSize: "1.5rem",
+                  color: "#fff",
+                }}
+              >
+                <FaChevronRight />
+              </span>
+            }
+          >
+            {carouselItems.map((item, index) => (
+              <Carousel.Item key={index} className="position-relative">
+                <img
+                  className="d-block w-100"
+                  src={`${baseurl}${item.image}`}
+                  alt={item.title || `Slide ${index + 1}`}
+                  style={{
+                    maxHeight: "500px",
+                    objectFit: "cover",
+                    width: "100%",
+                  }}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src =
+                      "https://via.placeholder.com/1200x500?text=Image+Not+Found";
+                  }}
+                />
+                <div
                   style={{
                     position: "absolute",
-                    top: "50%",
-                    left: "10px",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    // backgroundColor: "rgba(0, 0, 0, 0.5)",
                     zIndex: 2,
-                    fontSize: "1.5rem",
-                    color: "#fff",
                   }}
+                ></div>
+                {/* <div
+                  className="position-absolute top-50 start-50 translate-middle text-white text-center px-3"
+                  style={{ zIndex: 3 }}
                 >
-                  <FaChevronLeft />
-                </span>
-              }
-              nextIcon={
-                <span
-                  className="custom-arrow right-arrow"
-                  style={{
-                    position: "absolute",
-                    top: "50%",
-                    right: "10px",
-                    zIndex: 2,
-                    fontSize: "1.5rem",
-                    color: "#fff",
-                  }}
-                >
-                  <FaChevronRight />
-                </span>
-              }
-            >
-              {carouselItems.map((item, index) => (
-                <Carousel.Item key={index} className="position-relative">
-                  <img
-                    className="d-block w-100"
-                    src={`${baseurl}${item.image}`}
-                    alt={item.title || `Slide ${index + 1}`}
-                    style={{
-                      maxHeight: "500px",
-                      objectFit: "cover",
-                      width: "100%",
-                    }}
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src =
-                        "https://via.placeholder.com/1200x500?text=Image+Not+Found";
-                    }}
-                  />
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      width: "100%",
-                      height: "100%",
-                      backgroundColor: "rgba(0, 0, 0, 0.3)",
-                      zIndex: 2,
-                    }}
-                  ></div>
-                </Carousel.Item>
-              ))}
-            </Carousel>
-          )}
+                  <div className="hero-content">
+                    <h1 className="display-6 fw-bold mb-2">
+                      Premium Commercial Real Estate
+                    </h1>
+                    <p className="lead mb-3 fs-6">
+                      Find the perfect warehouse or commercial building for your
+                      business with Shriraj Real Estate
+                    </p>
+                    <a href="/properties" className="btn view-property-btn px-3 py-2">
+                      View all properties
+                    </a>
+                  </div>
+                </div> */}
+              </Carousel.Item>
+            ))}
+          </Carousel>
         </Card>
       </div>
 
-      {/* Search Bar */}
       <div className="container search-bar-wrapper">
         <div
           className="search-bar-box bg-white rounded shadow p-3"
@@ -652,9 +602,31 @@ const ShrirajLandingPage = () => {
             </Tab>
           </Tabs>
         </div>
+
+        {searchResults.length > 0 && (
+          <div className="mt-3 p-3 bg-white rounded shadow">
+            <h5>Search Results</h5>
+            <div className="list-group">
+              {searchResults.map((property) => (
+                <div
+                  key={property.property_id}
+                  className="list-group-item list-group-item-action"
+                >
+                  <div className="d-flex w-100 justify-content-between">
+                    <h6 className="mb-1">{property.property_title}</h6>
+                    <small>{property.property_type}</small>
+                  </div>
+                  <p className="mb-1">
+                    {property.address}, {property.city}, {property.state}
+                  </p>
+                  <small>₹{property.price}</small>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Featured Properties Section */}
       <section className="py-5">
         <div className="container">
           <h2 className="section-title text-left mb-5" data-aos="fade-up">
@@ -662,11 +634,8 @@ const ShrirajLandingPage = () => {
           </h2>
 
           <div className="row">
-            {propertiesLoading ? (
-              // Show skeleton loaders
-              Array.from({ length: 3 }).map((_, index) => (
-                <PropertyCardSkeleton key={index} />
-              ))
+            {loading ? (
+              <div className="text-center">Loading properties...</div>
             ) : paginatedProperties.length > 0 ? (
               paginatedProperties.map((property, index) => (
                 <div
@@ -708,6 +677,7 @@ const ShrirajLandingPage = () => {
                           </div>
                         </div>
                         <h5 className="card-title">{property.property_title}</h5>
+                        {/* <p className="card-text">{property.description}</p> */}
                         <Grid container spacing={2} sx={{ mt: 2 }}>
                           <Grid item xs={6}>
                             <Typography variant="caption" color="text.secondary">
@@ -786,18 +756,14 @@ const ShrirajLandingPage = () => {
               <div className="text-center">No properties found</div>
             )}
           </div>
-          
-          {!propertiesLoading && paginatedProperties.length > 0 && (
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
-              <Pagination
-                count={totalPages}
-                page={page}
-                onChange={handlePageChange}
-                color="primary"
-              />
-            </Box>
-          )}
-          
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+            <Pagination
+              count={totalPages}
+              page={page}
+              onChange={handlePageChange}
+              color="primary"
+            />
+          </Box>
           <div className="text-center mt-3">
             <a href="/properties" className="btn btn-primary px-4 py-2">
               Browse All Properties
@@ -806,155 +772,163 @@ const ShrirajLandingPage = () => {
         </div>
       </section>
 
-      {/* Featured Businesses Section */}
-      <section className="py-5 bg-light">
-        <div className="container">
-          <h2 className="section-title text-left mb-5" data-aos="fade-up">
-            Featured Businesses
-          </h2>
+{/* Featured Businesses Section */}
+<section className="py-5 bg-light">
+  <div className="container">
+    <h2 className="section-title text-left mb-5" data-aos="fade-up">
+      Featured Businesses
+    </h2>
 
-          <div className="businesses-container">
-            <div className="business-grid">
-              {businessesLoading ? (
-                Array.from({ length: 3 }).map((_, idx) => (
-                  <BusinessCardSkeleton key={idx} />
-                ))
-              ) : businesses.length > 0 ? (
-                paginatedBusinesses.map((biz, idx) => (
-                  <div className="business-card-wrapper" key={idx}>
-                    <div className="business-card">
-                      {biz.offer_title && (
-                        <div className="offer-ribbon">
-                          <div className="ribbon-content">
-                            {biz.offer_title}
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="card-content" style={{ position: "relative" }}>
-                        <Chip
-                          label={biz.is_active ? "Active" : "Inactive"}
-                          color={biz.is_active ? "success" : "default"}
-                          size="small"
-                          sx={{
-                            position: "absolute",
-                            top: 20,
-                            right: 10,
-                            zIndex: 2,
-                            fontWeight: "bold",
-                          }}
-                        />
-
-                        <div className="card-header">
-                          <div className="logo-section" style={{ position: "relative" }}>
-                            {biz.logo ? (
-                              <img
-                                src={`${baseurl}${biz.logo}`}
-                                alt={`${biz.business_name} Logo`}
-                                className="business-logo clickable-logo"
-                                onClick={() => handleLogoClick(biz)}
-                                style={{
-                                  width: "100%",
-                                  height: "Auto",
-                                  objectFit: "cover",
-                                  borderRadius: "8px",
-                                  cursor: "pointer",
-                                  transition: "transform 0.2s ease",
-                                }}
-                              />
-                            ) : (
-                              <div className="business-icon">
-                                <i className="fa fa-building"></i>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        <h3 className="business-name">{biz.business_name}</h3>
-                        <p className="business-type">{biz.business_type}</p>
-                        <p className="business-description">{biz.description}</p>
-
-                        {biz.offer_description && (
-                          <div className="offer-description">{biz.offer_description}</div>
-                        )}
-
-                        <div className="contact-info">
-                          <div className="contact-item">
-                            <i className="fa fa-envelope contact-icon email"></i>
-                            <span className="contact-text">{biz.email}</span>
-                          </div>
-                          <div className="contact-item">
-                            <i className="fa fa-phone contact-icon phone"></i>
-                            <span className="contact-text">{biz.phone}</span>
-                          </div>
-                          <div className="contact-item">
-                            <i className="fa fa-map-marker contact-icon location"></i>
-                            <span className="contact-text">{biz.address}</span>
-                          </div>
-                          <div className="contact-item">
-                            <i className="fa fa-globe contact-icon website"></i>
-                            <span className="contact-text website-text">{biz.website}</span>
-                          </div>
-                        </div>
-                      </div>
+    <div className="businesses-container">
+      {/* Business Cards */}
+      <div className="business-grid">
+        {businesses.length > 0 ? (
+          paginatedBusinesses.map((biz, idx) => (
+            <div className="business-card-wrapper" key={idx}>
+              <div className="business-card">
+                {/* Offer Ribbon - Top Left Corner */}
+                {biz.offer_title && (
+                  <div className="offer-ribbon">
+                    <div className="ribbon-content">
+                      {biz.offer_title}
                     </div>
                   </div>
-                ))
-              ) : (
-                <div className="no-businesses">
-                  No businesses found.
-                </div>
-              )}
-            </div>
+                )}
 
-            {!businessesLoading && businesses.length > businessItemsPerPage && (
-              <div className="pagination-container">
-                <div className="pagination-wrapper">
-                  <Pagination
-                    count={businessTotalPages}
-                    page={businessPage}
-                    onChange={handleBusinessPageChange}
-                    color="primary"
-                  />
-                </div>
-              </div>
-            )}
+                <div className="card-content" style={{ position: "relative" }}>
+  {/* Active Status Chip - Positioned on Image */}
+  <Chip
+    label={biz.is_active ? "Active" : "Inactive"}
+    color={biz.is_active ? "success" : "default"}
+    size="small"
+    sx={{
+      position: "absolute",
+      top: 20,
+      right: 10,
+      zIndex: 2,
+      fontWeight: "bold",
+    }}
+  />
 
-            <div className="text-center mt-4">
-              <a href="/business" className="btn btn-primary px-4 py-2">
-                Browse All Businesses
-              </a>
-            </div>
-          </div>
+  {/* Logo Section */}
+  <div className="card-header">
+    <div className="logo-section" style={{ position: "relative" }}>
+      {biz.logo ? (
+        <img
+          src={`${baseurl}${biz.logo}`}
+          alt={`${biz.business_name} Logo`}
+          className="business-logo clickable-logo"
+          onClick={() => handleLogoClick(biz)}
+          style={{
+            width: "100%",          // Full card width
+            height: "Auto",        // Adjust height to look consistent
+            objectFit: "cover",     // Maintain aspect ratio & fill space
+            borderRadius: "8px",
+            cursor: "pointer",
+            transition: "transform 0.2s ease",
+          }}
+        />
+      ) : (
+        <div className="business-icon">
+          <i className="fa fa-building"></i>
         </div>
+      )}
+    </div>
+  </div>
 
-        {selectedLogo && (
-          <div className="logo-modal-overlay" onClick={handleCloseLogoModal}>
-            <div className="logo-modal-content" onClick={(e) => e.stopPropagation()}>
-              <div className="logo-modal-header">
-                <h4>{selectedLogo.business_name} Logo</h4>
-                <button className="close-modal-btn" onClick={handleCloseLogoModal}>
-                  <i className="fa fa-times"></i>
-                </button>
-              </div>
-              <div className="logo-modal-body">
-                <img
-                  src={`${baseurl}${selectedLogo.logo}`}
-                  alt={`${selectedLogo.business_name} Logo`}
-                  className="full-size-logo"
-                />
+  {/* Business Info */}
+  <h3 className="business-name">{biz.business_name}</h3>
+  <p className="business-type">{biz.business_type}</p>
+  <p className="business-description">{biz.description}</p>
+
+  {/* Offer Description */}
+  {biz.offer_description && (
+    <div className="offer-description">{biz.offer_description}</div>
+  )}
+
+  {/* Contact Info */}
+  <div className="contact-info">
+    <div className="contact-item">
+      <i className="fa fa-envelope contact-icon email"></i>
+      <span className="contact-text">{biz.email}</span>
+    </div>
+    <div className="contact-item">
+      <i className="fa fa-phone contact-icon phone"></i>
+      <span className="contact-text">{biz.phone}</span>
+    </div>
+    <div className="contact-item">
+      <i className="fa fa-map-marker contact-icon location"></i>
+      <span className="contact-text">{biz.address}</span>
+    </div>
+    <div className="contact-item">
+      <i className="fa fa-globe contact-icon website"></i>
+      <span className="contact-text website-text">{biz.website}</span>
+    </div>
+  </div>
+</div>
+
               </div>
             </div>
+          ))
+        ) : (
+          <div className="no-businesses">
+            No businesses found.
           </div>
         )}
-      </section>
+      </div>
 
-      {/* Welcome Section */}
+      {/* Business Pagination */}
+      {businesses.length > businessItemsPerPage && (
+        <div className="pagination-container">
+          <div className="pagination-wrapper">
+            <Pagination
+              count={businessTotalPages}
+              page={businessPage}
+              onChange={handleBusinessPageChange}
+              color="primary"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* View All Businesses Button */}
+      <div className="text-center mt-4">
+        <a href="/business" className="btn btn-primary px-4 py-2">
+          Browse All Businesses
+        </a>
+      </div>
+    </div>
+  </div>
+
+  {/* Logo Popup Modal */}
+  {selectedLogo && (
+    <div className="logo-modal-overlay" onClick={handleCloseLogoModal}>
+      <div className="logo-modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="logo-modal-header">
+          <h4>{selectedLogo.business_name} Logo</h4>
+          <button className="close-modal-btn" onClick={handleCloseLogoModal}>
+            <i className="fa fa-times"></i>
+          </button>
+        </div>
+        <div className="logo-modal-body">
+          <img
+            src={`${baseurl}${selectedLogo.logo}`}
+            alt={`${selectedLogo.business_name} Logo`}
+            className="full-size-logo"
+          />
+        </div>
+      </div>
+    </div>
+  )}
+</section>
+
       <section className="py-5 bg-light">
         <div className="container">
           <div className="row align-items-left">
             <div className="col-lg-6" data-aos="fade-right">
               <h2 className="section-title">Welcome to Shriraj Commercial Real Estate</h2>
+              {/* <p>We specialize in connecting investors with premium commercial real estate opportunities across various sectors including warehouses, office buildings, retail spaces, and industrial complexes.</p> */}
+              {/* <p>Our team of experts thoroughly vets each property to ensure it meets our high standards for investment potential, location quality, and long-term value appreciation.</p> */}
               <p>ShriRaj Team Business Community is a group where entrepreneurs, business owners, and professionals connect with each other, share experiences, expand their network, and create growth opportunities together.</p>
               <div className="text-center text-lg-start mt-4">
                 <a href="/properties" className="btn view-property-btn mt-3">View Properties</a>
@@ -971,7 +945,6 @@ const ShrirajLandingPage = () => {
         </div>
       </section>
 
-      {/* Categories Section */}
       <Box sx={{ py: 6 }}>
         <Box textAlign="center" mb={4}>
           <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold' }}>
@@ -1032,7 +1005,6 @@ const ShrirajLandingPage = () => {
         </Box>
       </Box>
 
-      {/* Advantages Section */}
       <section className="py-5">
         <div className="container">
           <h2 className="section-title text-left mb-5" data-aos="fade-up">Shriraj Advantage</h2>
@@ -1064,17 +1036,14 @@ const ShrirajLandingPage = () => {
         </div>
       </section>
 
-      {/* Properties Gallery Section */}
       <section className="py-5 bg-light">
         <div className="container">
           <h2 className="section-title text-left mb-5" data-aos="fade-up">
             Properties
           </h2>
           <div className="row">
-            {propertiesLoading ? (
-              Array.from({ length: 3 }).map((_, index) => (
-                <PropertyCardSkeleton key={index} />
-              ))
+            {loading ? (
+              <div className="text-center">Loading properties...</div>
             ) : paginatedProperties.length > 0 ? (
               paginatedProperties.map((property, index) => (
                 <div
@@ -1116,6 +1085,7 @@ const ShrirajLandingPage = () => {
                           </div>
                         </div>
                         <h5 className="card-title">{property.property_title}</h5>
+                        {/* <p className="card-text">{property.description}</p> */}
                         <Grid container spacing={2} sx={{ mt: 2 }}>
                           <Grid item xs={6}>
                             <Typography variant="caption" color="text.secondary">
@@ -1194,18 +1164,14 @@ const ShrirajLandingPage = () => {
               <div className="text-center">No properties found</div>
             )}
           </div>
-          
-          {!propertiesLoading && paginatedProperties.length > 0 && (
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
-              <Pagination
-                count={totalPages}
-                page={page}
-                onChange={handlePageChange}
-                color="primary"
-              />
-            </Box>
-          )}
-          
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+            <Pagination
+              count={totalPages}
+              page={page}
+              onChange={handlePageChange}
+              color="primary"
+            />
+          </Box>
           <div className="text-center mt-3">
             <a href="/properties" className="btn btn-primary px-4 py-2">
               Browse All Properties
@@ -1214,7 +1180,30 @@ const ShrirajLandingPage = () => {
         </div>
       </section>
 
-      {/* Property Modal */}
+      {/* <section className="py-5" style={{ backgroundColor: '#e9e9e9' }}>
+        <div className="container">
+          <h2 className="section-title text-left mb-5" data-aos="fade-up">Our Backers</h2>
+          <div className="row align-items-center justify-content-center">
+            {backers.map((backer, index) => (
+              <div
+                className="col-md-2 col-4 text-center mb-4"
+                key={backer.id}
+                data-aos="fade-up"
+                data-aos-delay={(index + 1) * 100}
+              >
+                <img
+                  src={backer.logo}
+                  alt={backer.alt}
+                  className="backer-logo"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section> */}
+
+
+
       <Dialog
         open={openModal}
         onClose={handleCloseModal}
@@ -1251,6 +1240,7 @@ const ShrirajLandingPage = () => {
           )}
         </Box>
       </Dialog>
+
     </>
   );
 };
