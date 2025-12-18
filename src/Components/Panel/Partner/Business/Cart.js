@@ -501,7 +501,7 @@ function Cart() {
         
         // Optionally redirect to success page
         setTimeout(() => {
-          navigate(-1);
+          navigate("/add-to-cart-list");
         }, 2000);
         
       } catch (error) {
@@ -598,12 +598,10 @@ function Cart() {
     try {
       // Initiate payment API call for products
       const response = await axios.post(
-        // "https://test.shrirajteam.com:85/product/initiate-payment/",
-        `${baseurl}/product/initiate-payment/`,
-        
+        "https://test.shrirajteam.com:85/product/initiate-payment/",
         {
           user_id: parseInt(userId),
-          redirect_url: window.location.origin + "add-to-cart-list" // or your success page
+          redirect_url: window.location.origin + "/add-to-cart-list" // or your success page
         }
       );
 
@@ -651,9 +649,7 @@ function Cart() {
     try {
       // Confirm payment API call
       const response = await axios.post(
-        // "https://test.shrirajteam.com:85/product/confirm-payment/",
-        `${baseurl}/product/confirm-payment/`,
-        
+        "https://test.shrirajteam.com:85/product/confirm-payment/",
         {
           merchant_order_id: merchantOrderId
         }
@@ -670,7 +666,7 @@ function Cart() {
         
         // Redirect to success page or home
         setTimeout(() => {
-          navigate(-1);
+          navigate("/add-to-cart-list");
         }, 2000);
       }
     } catch (error) {
@@ -712,7 +708,7 @@ function Cart() {
 
   // Handle continue shopping
   const handleContinueShopping = () => {
-    navigate('./p-allbusinesses');
+    navigate(-1);
   };
 
   // Snackbar handler
