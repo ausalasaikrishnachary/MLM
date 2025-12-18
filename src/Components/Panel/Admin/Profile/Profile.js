@@ -8,10 +8,11 @@ import { useNavigate } from "react-router-dom";
 const AdminProfile = () => {
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate();
+  const user_id = localStorage.getItem("user_id");
 
   useEffect(() => {
     axios
-      .get(`${baseurl}/users/1/`)
+      .get(`${baseurl}/users/${user_id}/`)
       .then((response) => setUserData(response.data))
       .catch((error) => console.error("Error fetching user data:", error));
   }, []);

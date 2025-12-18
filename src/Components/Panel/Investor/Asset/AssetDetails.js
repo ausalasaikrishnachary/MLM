@@ -231,7 +231,7 @@
 //                   <Grid container spacing={2} mb={3}>
 //                     {[
 //                       ['Looking to', property.looking_to],
-//                       ['Property Value', formatCurrency(property.property_value)],
+//                       ['Property Value', formatCurrency(property.total_property_value)],
 //                       ['Category', property.category],
 //                       ['Property Type', property.property_type],
 //                     ].map(([label, value], index) => (
@@ -473,7 +473,7 @@ const AssetDetail = () => {
                 />
               </Box>
               <Typography variant="h5" color="text.secondary" sx={{ mt: 1 }}>
-                {formatCurrency(property.property_value)}
+                {formatCurrency(property.total_property_value)}
               </Typography>
             </CardContent>
           </Card>
@@ -547,7 +547,7 @@ const AssetDetail = () => {
                 <Grid container spacing={3}>
                   {[
                     ['Looking to', property.looking_to || 'N/A'],
-                    ['Property Value', formatCurrency(property.property_value)],
+                    ['Property Value', formatCurrency(property.total_property_value)],
                     ['Category', getCategoryName(property.category)],
                     ['Property Type', propertyTypeName || 'N/A'],
                   ].map(([label, value], i) => (
