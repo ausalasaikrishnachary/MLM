@@ -205,8 +205,7 @@ import HowToUse from "./Components/Website/Pages/HowToUse/HowToUse";
 
 import OfferTable from "./Components/Panel/Admin/Offers/OffersTable"
 import AddOffer from "./Components/Panel/Admin/Offers/AddOffersForm"
-
-
+import Cart from './Components/Panel/Partner/Business/Cart';
 function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -425,6 +424,8 @@ function Layout() {
           <Route path="/p-editbusiness/:id" element={<EditBusiness />} />
           <Route path="/p-allbusinesses" element={<AllBusinesses />} />
           <Route path="/p-businessproducts/:id" element={<BusinessProducts />} />
+          <Route path="/add-to-cart-list" element={<Cart />} />
+
           <Route path="/partnerlandingpage" element={<PartnerLandingPage />} />
           <Route path="/a-settings" element={<SettingsMain />} />
           <Route path="/p-offers" element={<OfferTable />} />
