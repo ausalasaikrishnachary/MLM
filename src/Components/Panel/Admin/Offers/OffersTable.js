@@ -611,9 +611,9 @@ function TableOffers() {
                 minHeight: '300px'
               }}
             >
-              <Typography variant="h6" color="textSecondary" gutterBottom>
+              {/* <Typography variant="h6" color="textSecondary" gutterBottom>
                 No Offers Available
-              </Typography>
+              </Typography> */}
               <Typography variant="body1" color="textSecondary" sx={{ mb: 3, maxWidth: '500px' }}>
                 You haven't created any offers yet. Click the "Add New Offer" button to create your first offer.
               </Typography>

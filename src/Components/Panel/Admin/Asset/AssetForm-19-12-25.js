@@ -573,8 +573,81 @@ const AddPropertyForm = () => {
   };
 
   const validateStep = (step) => {
-    // Always return true to allow navigation without validation
-    return true;
+    switch (step) {
+      case 0: // Basic Details
+        return (
+          formData.lookingTo &&
+          formData.propertyTitle?.trim() &&
+          formData.category &&
+          formData.propertyType &&
+          formData.description?.trim()
+
+        );
+
+      case 1: // Location Details
+        return (
+          formData.address?.trim() &&
+          formData.city?.trim() &&
+          formData.state?.trim() &&
+          formData.country?.trim() &&
+          // formData.pinCode?.trim() &&
+          formData.latitude !== undefined &&
+          formData.longitude !== undefined
+        );
+
+      case 2: // Property Details
+        const basicPropertyValid = (
+          formData.plotArea &&
+          formData.areaUnit &&
+          formData.length &&
+          formData.breadth &&
+          formData.builtupArea &&
+          formData.facing &&
+          formData.ownershipType
+        );
+
+        // Additional validation for residential properties if shown
+        const residentialValid = !showResidentialFields || (
+          formData.numberOfFloors &&
+          formData.numberOfBedrooms &&
+          formData.numberOfBathrooms &&
+          formData.furnishing_status
+        );
+
+        // Road width validation based on number of roads
+        const roadsValid = (
+          formData.numberOfRoads === 0 || (
+            (formData.numberOfRoads >= 1 && formData.roadWidth1) &&
+            (formData.numberOfRoads < 2 || formData.roadWidth2)
+          )
+        );
+
+        return basicPropertyValid && residentialValid && roadsValid;
+
+      case 3: // Media Upload
+        // At least one image is required
+        return formData.images.length > 0;
+
+      case 4: // Pricing & Contact
+        if (formData.lookingTo === 'sell') {
+          return (
+            formData.price !== undefined &&
+            formData.company_commission !== undefined &&
+            formData.ownerName?.trim() &&
+            formData.ownerContact?.trim()
+          );
+        } else { // rent
+          return (
+            formData.rent_amount !== undefined &&
+            formData.deposit_amount !== undefined &&
+            formData.ownerName?.trim() &&
+            formData.ownerContact?.trim()
+          );
+        }
+
+      default:
+        return false;
+    }
   };
 
 
@@ -1512,7 +1585,7 @@ const AddPropertyForm = () => {
               <Button
                 variant="contained"
                 onClick={() => setActiveStep(prev => prev + 1)}
-                // Removed the disabled prop - Next button is always enabled
+                disabled={!validateStep(activeStep)}
               >
                 Next
               </Button>

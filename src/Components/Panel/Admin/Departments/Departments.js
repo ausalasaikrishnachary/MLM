@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
+import Swal from "sweetalert2";
 import { baseurl } from "../../../BaseURL/BaseURL";
 import { useNavigate } from "react-router-dom";
 
@@ -48,19 +49,50 @@ const Departments = () => {
   const fetchDepartments = async () => {
     try {
       const res = await axios.get(`${baseurl}/departments/`);
-      setDepartments(res.data);
+      // Sort by ID in descending order (newest first)
+      const sortedDepartments = res.data.sort((a, b) => b.id - a.id);
+      setDepartments(sortedDepartments);
     } catch (err) {
       console.error("Error:", err);
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Do you want to delete this department?")) return;
-    try {
-      await axios.delete(`${baseurl}/departments/${id}/`);
-      fetchDepartments();
-    } catch (err) {
-      console.error("Delete Error", err);
+  const handleDelete = async (id, name) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: `You are about to delete "${name}" department. This action cannot be undone!`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+      reverseButtons: true,
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.delete(`${baseurl}/departments/${id}/`);
+        
+        Swal.fire({
+          title: "Deleted!",
+          text: "Department has been deleted successfully.",
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        
+        fetchDepartments();
+      } catch (err) {
+        console.error("Delete Error", err);
+        
+        Swal.fire({
+          title: "Error!",
+          text: "Failed to delete department. Please try again.",
+          icon: "error",
+          confirmButtonColor: "#3085d6",
+        });
+      }
     }
   };
 
@@ -71,7 +103,6 @@ const Departments = () => {
     <>
       <Header />
       <Container>
-
         <h2 style={{ textAlign: "center", marginTop: "5%", fontWeight: "bold" }}>
           Departments
         </h2>
@@ -98,7 +129,7 @@ const Departments = () => {
           <TableBody>
             {departments.length > 0 ? (
               paginate(departments, page).map((dept, index) => (
-                <TableRow key={dept.department_id}>
+                <TableRow key={dept.id}>
                   <TableCell sx={cellBodyStyle}>
                     {(page - 1) * itemsPerPage + index + 1}
                   </TableCell>
@@ -107,7 +138,7 @@ const Departments = () => {
                     <IconButton
                       color="error"
                       size="small"
-                      onClick={() => handleDelete(dept.department_id)}
+                      onClick={() => handleDelete(dept.id, dept.name)}
                     >
                       <DeleteIcon fontSize="small" />
                     </IconButton>

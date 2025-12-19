@@ -30,8 +30,6 @@ function TableCategory() {
 
   const navigate = useNavigate();
 
-
-
   // SAME UI STYLE AS COMMISSION LEVELS
   const cellStyle = {
     fontWeight: "bold",
@@ -59,7 +57,11 @@ function TableCategory() {
   const fetchCategories = async () => {
     try {
       const res = await axios.get(`${baseurl}/property-categories/`);
-      setCategories(res.data);
+      // Sort categories by most recent first (assuming property_category_id is auto-increment)
+      const sortedCategories = res.data.sort((a, b) => 
+        b.property_category_id - a.property_category_id
+      );
+      setCategories(sortedCategories);
     } catch (err) {
       console.error("Error fetching categories:", err);
     }
@@ -69,7 +71,11 @@ function TableCategory() {
     setLoading(true);
     try {
       const res = await axios.get(`${baseurl}/property-types/`);
-      setTypes(res.data);
+      // Sort types by most recent first (assuming property_type_id is auto-increment)
+      const sortedTypes = res.data.sort((a, b) => 
+        b.property_type_id - a.property_type_id
+      );
+      setTypes(sortedTypes);
     } catch (err) {
       console.error("Error fetching types:", err);
     }

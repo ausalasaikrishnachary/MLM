@@ -876,7 +876,7 @@ function BusinessProducts() {
                     }}
                   >
                     {/* Edit and Delete Buttons */}
-                    <Box sx={{ position: "absolute", top: 10, right: 10, zIndex: 1 }}>
+                    {/* <Box sx={{ position: "absolute", top: 10, right: 10, zIndex: 1 }}>
                       <Tooltip title="Edit Product">
                         <IconButton
                           size="small"
@@ -903,7 +903,7 @@ function BusinessProducts() {
                           <DeleteIcon fontSize="small" color="error" />
                         </IconButton>
                       </Tooltip>
-                    </Box>
+                    </Box> */}
 
                     {/* Product Image */}
                     {product.product_image ? (

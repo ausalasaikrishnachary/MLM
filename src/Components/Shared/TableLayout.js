@@ -25,7 +25,7 @@ const noDataStyle = {
   padding: 2,
 };
 
-const rowsPerPage = 8;
+const rowsPerPage = 5;
 
 function TableLayout({
   title = '',
