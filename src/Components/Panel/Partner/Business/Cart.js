@@ -485,7 +485,8 @@ function Cart() {
         hasPostedStatus.current = true;
         
         await axios.post(
-          "https://test.shrirajteam.com:85/product/confirm-payment/",
+          // "https://test.shrirajteam.com:85/product/confirm-payment/",
+          `${baseurl}/product/confirm-payment/`, // Changed this line
           {
             merchant_order_id: merchant_order_id
           }
@@ -598,7 +599,8 @@ function Cart() {
     try {
       // Initiate payment API call for products
       const response = await axios.post(
-        "https://test.shrirajteam.com:85/product/initiate-payment/",
+        // "https://test.shrirajteam.com:85/product/initiate-payment/",
+         `${baseurl}/product/initiate-payment/`, // Changed this line
         {
           user_id: parseInt(userId),
           redirect_url: window.location.origin + "/add-to-cart-list" // or your success page
@@ -649,7 +651,8 @@ function Cart() {
     try {
       // Confirm payment API call
       const response = await axios.post(
-        "https://test.shrirajteam.com:85/product/confirm-payment/",
+        // "https://test.shrirajteam.com:85/product/confirm-payment/",
+        `${baseurl}/product/confirm-payment/`, // Changed this line
         {
           merchant_order_id: merchantOrderId
         }

@@ -79,9 +79,9 @@ const ProductDetails = () => {
               {product.product_name}
             </Typography>
 
-            <Typography sx={{ mt: 1 }}>
+            {/* <Typography sx={{ mt: 1 }}>
               <strong>SKU:</strong> {product.sku}
-            </Typography>
+            </Typography> */}
 
             <Typography sx={{ mt: 1 }}>
               <strong>Description:</strong> {product.description}
@@ -99,7 +99,7 @@ const ProductDetails = () => {
               <strong>Available Qty:</strong> {product.available_qty}
             </Typography>
 
-            <Typography sx={{ mt: 1 }}>
+            {/* <Typography sx={{ mt: 1 }}>
               <strong>CGST:</strong> {product.cgst_percent}% — ₹{product.cgst_amount}
             </Typography>
 
@@ -113,7 +113,7 @@ const ProductDetails = () => {
 
             <Typography sx={{ mt: 1 }}>
               <strong>Distributor Commission:</strong> {product.distribution_commission}%
-            </Typography>
+            </Typography> */}
           </CardContent>
         </Card>
       </Box>

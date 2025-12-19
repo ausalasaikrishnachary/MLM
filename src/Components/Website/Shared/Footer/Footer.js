@@ -30,7 +30,7 @@ function Footer() {
                 marginLeft: "25px",
               }}
             />
-            <p className="mt-4">Premium commercial real estate investments for discerning investors. Discover exceptional opportunities in prime locations nationwide.</p>
+            <p className="mt-4">ShriRaj Team Business Community is a group where entrepreneurs, business owners, and professionals connect with each other, share experiences, expand their network, and create growth opportunities together.</p>
             <div className="social-links mt-3">
               <a href="https://www.facebook.com/shrirajteam/"><FontAwesomeIcon icon={faFacebookF} /></a>
               <a href="https://x.com/shrirajteam"><FontAwesomeIcon icon={faXTwitter} /></a>
