@@ -907,10 +907,11 @@ const mapRole = (role) => {
         {/* Cards Section */}
         {filteredProperties.length > 0 ? (
           <Grid container spacing={3}>
-            {paginatedProperties.map((property) => {
+            {paginatedProperties.map((property, index) => {
               const media = getAllMedia(property);
               const currentIndex = currentImageIndices[property.property_id] || 0;
               const totalMedia = media.length;
+      const serialNumber = startIndex + index + 1;
 
               return (
                 <Grid item xs={12} md={6} lg={4} key={property.id}>
@@ -926,6 +927,29 @@ const mapRole = (role) => {
                       }
                     }}
                   >
+
+                    {/* Add Serial Number Badge */}
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 12,
+                left: 12,
+                backgroundColor: 'primary.main',
+                color: 'white',
+                borderRadius: '50%',
+                width: 32,
+                height: 32,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 10,
+                fontWeight: 'bold',
+                fontSize: '0.875rem',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+              }}
+            >
+              {serialNumber}
+            </Box>
                     <Box sx={{ position: 'relative' }}>
                       {isCurrentMediaVideo(property) ? (
                         <Box sx={{ height: '220px', position: 'relative' }}>

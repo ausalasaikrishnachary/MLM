@@ -141,76 +141,77 @@ function Subscription() {
     page * itemsPerPage
   );
 
+  // Function to get serial number based on current page
+  const getSerialNumber = (index) => {
+    return (page - 1) * itemsPerPage + index + 1;
+  };
+
   return (
     <>
       <Header />
       <Container>
-      <Box
-  sx={{
-    textAlign: "center",
-    marginTop: {
-      xs: "8%",   
-      sm: "10%",   
-      md: "8%", 
-    },
-  }}
->
-  <Typography
-    variant="h4"
-    gutterBottom
-    sx={{
-      fontSize: {
-        xs: "1.6rem",
-        sm: "2.1rem",
-        md: "2.2rem",
-      },
-      fontWeight: "bold",
-      textAlign: "center",
-      whiteSpace: "nowrap",
-      overflow: "hidden",
-      textOverflow: "ellipsis",
-      marginBottom: "15px",
-    }}
-  >
-    Subscription Plan Variants
-  </Typography>
-</Box>
+        <Box
+          sx={{
+            textAlign: "center",
+            marginTop: {
+              xs: "8%",   
+              sm: "10%",   
+              md: "8%", 
+            },
+          }}
+        >
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{
+              fontSize: {
+                xs: "1.6rem",
+                sm: "2.1rem",
+                md: "2.2rem",
+              },
+              fontWeight: "bold",
+              textAlign: "center",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              marginBottom: "15px",
+            }}
+          >
+            Subscription Plan Variants
+          </Typography>
+        </Box>
 
-<Box
-  sx={{
-    display: "flex",
-    flexDirection: { xs: "column", sm: "row" }, 
-    justifyContent: "space-between",
-    alignItems: { xs: "stretch", sm: "center" }, // stretch children on mobile
-    gap: 2, 
-    mb: 3,
-  }}
->
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" }, 
+            justifyContent: "space-between",
+            alignItems: { xs: "stretch", sm: "center" },
+            gap: 2, 
+            mb: 3,
+          }}
+        >
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => navigate("/a-addsubscriptions")}
+            sx={{ width: { xs: "100%", sm: "auto" }, mt: { xs: 2, sm: 0 }, p: 1, mb: 2 }} 
+          >
+            + Add Subscription
+          </Button>
 
-<Button
-    variant="contained"
-    color="primary"
-    onClick={() => navigate("/a-addsubscriptions")}
-    sx={{ width: { xs: "100%", sm: "auto" }, mt: { xs: 2, sm: 0 } ,p:1, mb:2 }} 
-  >
-    + Add Subscription
-  </Button>
-
-
-  <FormControl sx={{ width: { xs: "100%", sm: 200 } }}>
-    <InputLabel>User Type</InputLabel>
-    <Select
-      value={userType}
-      label="User Type"
-      onChange={(e) => setUserType(e.target.value)}
-    >
-      <MenuItem value="client">User</MenuItem>
-      <MenuItem value="agent">Team</MenuItem>
-    </Select>
-  </FormControl>
-
-  
-</Box>
+          <FormControl sx={{ width: { xs: "100%", sm: 200 } }}>
+            <InputLabel>User Type</InputLabel>
+            <Select
+              value={userType}
+              label="User Type"
+              onChange={(e) => setUserType(e.target.value)}
+            >
+              <MenuItem value="client">User</MenuItem>
+              <MenuItem value="agent">Team</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
 
         {loading ? (
           <Box display="flex" justifyContent="center" mt={5}>
@@ -218,70 +219,69 @@ function Subscription() {
           </Box>
         ) : (
           <>
-
-
-          <Box
-  sx={{
-    width: "100%",
-    overflowX: "auto", 
-    display: "block",
-  }}
->
-            <Table sx={{ border: '1px solid black', width: '100%' }}>
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={cellStyle}>Plan Name</TableCell>
-                  <TableCell sx={cellStyle}>Description</TableCell>
-                  <TableCell sx={cellStyle}>Duration (Days)</TableCell>
-                  <TableCell sx={cellStyle}>Price</TableCell>
-                  <TableCell sx={cellStyle}>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {paginatedData.length > 0 ? (
-                  paginatedData.map((variant, index) => {
-                    const plan = planDataMap[variant.plan_id] || {};
-                    return (
-                      <TableRow key={index}>
-                        <TableCell sx={cellBodyStyle}>{plan.plan_name || '—'}</TableCell>
-                        <TableCell sx={cellBodyStyle}>{plan.description || '—'}</TableCell>
-                        <TableCell sx={cellBodyStyle}>{variant.duration_in_days}</TableCell>
-                        <TableCell sx={cellBodyStyle}>₹{variant.price}</TableCell>
-                        <TableCell sx={cellBodyStyle}>
-                          <Box display="flex" justifyContent="center" gap={1}>
-                            <Tooltip title="Edit">
-                              <IconButton
-                                size="small"
-                                color="primary"
-                                onClick={() => navigate(`/a-edit-subscription/${variant.variant_id}`, { state: { variant } })}
-                              >
-                                <EditIcon fontSize="small" />
-                              </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Delete">
-                              <IconButton
-                                size="small"
-                                color="error"
-                                onClick={() => handleDelete(variant.variant_id)}
-                              >
-                                <DeleteIcon fontSize="small" />
-                              </IconButton>
-                            </Tooltip>
-                          </Box>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
-                ) : (
+            <Box
+              sx={{
+                width: "100%",
+                overflowX: "auto", 
+                display: "block",
+              }}
+            >
+              <Table sx={{ border: '1px solid black', width: '100%' }}>
+                <TableHead>
                   <TableRow>
-                    <TableCell colSpan={5} sx={noDataStyle}>
-                      No subscription variants found
-                    </TableCell>
+                    <TableCell sx={cellStyle}>S.No</TableCell>
+                    <TableCell sx={cellStyle}>Plan Name</TableCell>
+                    <TableCell sx={cellStyle}>Description</TableCell>
+                    <TableCell sx={cellStyle}>Duration (Days)</TableCell>
+                    <TableCell sx={cellStyle}>Price</TableCell>
+                    <TableCell sx={cellStyle}>Actions</TableCell>
                   </TableRow>
-                )}
-              </TableBody>
-            </Table>
-      
+                </TableHead>
+                <TableBody>
+                  {paginatedData.length > 0 ? (
+                    paginatedData.map((variant, index) => {
+                      const plan = planDataMap[variant.plan_id] || {};
+                      return (
+                        <TableRow key={index}>
+                          <TableCell sx={cellBodyStyle}>{getSerialNumber(index)}</TableCell>
+                          <TableCell sx={cellBodyStyle}>{plan.plan_name || '—'}</TableCell>
+                          <TableCell sx={cellBodyStyle}>{plan.description || '—'}</TableCell>
+                          <TableCell sx={cellBodyStyle}>{variant.duration_in_days}</TableCell>
+                          <TableCell sx={cellBodyStyle}>₹{variant.price}</TableCell>
+                          <TableCell sx={cellBodyStyle}>
+                            <Box display="flex" justifyContent="center" gap={1}>
+                              <Tooltip title="Edit">
+                                <IconButton
+                                  size="small"
+                                  color="primary"
+                                  onClick={() => navigate(`/a-edit-subscription/${variant.variant_id}`, { state: { variant } })}
+                                >
+                                  <EditIcon fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
+                              <Tooltip title="Delete">
+                                <IconButton
+                                  size="small"
+                                  color="error"
+                                  onClick={() => handleDelete(variant.variant_id)}
+                                >
+                                  <DeleteIcon fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
+                            </Box>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={6} sx={noDataStyle}>
+                        No subscription variants found
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
             </Box>
 
             {/* Pagination Bottom Right */}
@@ -293,7 +293,7 @@ function Subscription() {
                 color="primary"
                 sx={{
                   '& .MuiPaginationItem-root': {
-                    borderRadius: '0px', // makes buttons square
+                    borderRadius: '0px',
                   },
                 }}
               />

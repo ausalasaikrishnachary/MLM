@@ -10,7 +10,6 @@ import Swal from 'sweetalert2';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import VideocamIcon from '@mui/icons-material/Videocam';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { baseurl } from '../../../BaseURL/BaseURL';
 
 const EditAsset = () => {
@@ -50,7 +49,7 @@ const EditAsset = () => {
   const [updatedImages, setUpdatedImages] = useState([]);
   const [agreementVideo, setAgreementVideo] = useState(null);
   const [agreementFile, setAgreementFile] = useState(null);
-  const [amenities, setAmenities] = useState([]);
+  const [amenities, setAmenities] = useState([]); // Add amenities state
 
   // Fetch amenities
   useEffect(() => {
@@ -58,6 +57,7 @@ const EditAsset = () => {
       try {
         const response = await fetch(`${baseurl}/amenities/`);
         const data = await response.json();
+        // Convert amenity IDs to numbers
         const formattedAmenities = data.map(amenity => ({
           ...amenity,
           amenity_id: parseInt(amenity.amenity_id)
@@ -72,7 +72,9 @@ const EditAsset = () => {
 
   useEffect(() => {
     if (property) {
+      // Format amenities from property data
       const propertyAmenities = property.amenities ? property.amenities.map(amenity => {
+        // Handle both object and ID formats
         if (typeof amenity === 'object' && amenity.amenity_id) {
           return parseInt(amenity.amenity_id);
         }
@@ -92,6 +94,7 @@ const EditAsset = () => {
         setExistingImages(updatedImages);
       }
 
+      // Set agreement files if they exist
       if (property.agreement_video) {
         setAgreementVideo(property.agreement_video);
       }
@@ -102,6 +105,7 @@ const EditAsset = () => {
       fetch(`${baseurl}/property/${id}/`)
         .then(res => res.json())
         .then(data => {
+          // Format amenities from property data
           const dataAmenities = data.amenities ? data.amenities.map(amenity => {
             if (typeof amenity === 'object' && amenity.amenity_id) {
               return parseInt(amenity.amenity_id);
@@ -118,6 +122,7 @@ const EditAsset = () => {
             setExistingImages(data.images);
           }
 
+          // Set agreement files if they exist
           if (data.agreement_video) {
             setAgreementVideo(data.agreement_video);
           }
@@ -149,6 +154,7 @@ const EditAsset = () => {
     });
   };
 
+  // Add amenities handler
   const handleAmenityChange = (amenityId) => {
     setFormData(prev => {
       const numericId = parseInt(amenityId);
@@ -223,8 +229,10 @@ const EditAsset = () => {
     try {
       const submitData = new FormData();
 
+      // Append normal fields (excluding amenities)
       for (const key in formData) {
         if (key !== 'images' && key !== 'amenities' && formData[key] !== null && formData[key] !== undefined) {
+          // For file fields, append the file object directly
           if (key === 'agreement_video' || key === 'agreement_file') {
             if (formData[key] instanceof File) {
               submitData.append(key, formData[key]);
@@ -235,27 +243,35 @@ const EditAsset = () => {
         }
       }
 
+      // Append amenities - Dynamic from formData.amenities
       if (formData.amenities && formData.amenities.length > 0) {
         formData.amenities.forEach((amenityId) => {
           submitData.append('amenities', amenityId.toString());
         });
+      } else {
+        // If no amenities selected, send empty array
+        // submitData.append('amenities', '[]');
       }
 
+      // Append new image uploads
       newImages.forEach(img => {
         submitData.append('images', img);
       });
 
+      // Append updated image files and IDs
       updatedImages.forEach(({ id, file }) => {
         submitData.append('image_ids', id);
         submitData.append('images', file);
       });
 
+      // Append retained existing image IDs
       existingImages.forEach(img => {
         if (!updatedImages.find(updated => updated.id === img.id)) {
           submitData.append('images', img.id);
         }
       });
 
+      // Debug: Log FormData contents
       console.log('Submitting amenities:', formData.amenities);
       for (let pair of submitData.entries()) {
         console.log(pair[0] + ': ', pair[1]);
@@ -281,10 +297,7 @@ const EditAsset = () => {
     }
   };
 
-  const handleBack = () => {
-    navigate(-1);
-  };
-
+  // Field configuration
   const fieldConfig = [
     { name: 'property_title', label: 'Property Title' },
     { name: 'city', label: 'City' },
@@ -304,7 +317,7 @@ const EditAsset = () => {
     { name: 'distribution_commission', label: 'Distribution Payout' },
     { name: 'total_property_value', label: 'Total Property Value'},
     { name: 'description', label: 'Description' },
-    { name: 'listing_days', label: 'Listing Days' },
+     { name: 'listing_days', label: 'Listing Days' },
   ];
 
   const getFileName = (path) => {
@@ -315,49 +328,11 @@ const EditAsset = () => {
     <>
       <Header />
       <Container maxWidth="xl" sx={{ padding: 3 }}>
-        {/* Fixed Header Section */}
-        <Box sx={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          position: 'relative',
-          mb: 4,
-          width: '100%'
-        }}>
-          {/* Back Button - Left Side */}
-          <Box sx={{ position: 'absolute', left: 0 }}>
-            <Button
-              startIcon={<ArrowBackIcon />}
-              onClick={handleBack}
-              variant="outlined"
-            >
-              Back
-            </Button>
-          </Box>
-          
-          {/* Centered Title */}
-          <Box sx={{ 
-            flex: 1, 
-            display: 'flex', 
-            justifyContent: 'center' 
-          }}>
-            <Typography 
-              variant="h4" 
-              gutterBottom
-              sx={{ 
-                textAlign: 'center',
-                fontWeight: 'bold'
-              }}
-            >
-              Edit Property
-            </Typography>
-          </Box>
-        </Box>
+        <Typography variant="h4" gutterBottom textAlign="center">
+          Edit Property
+        </Typography>
         
-        <Box 
-          component="form" 
-          onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} 
-          sx={{ width: "100%" }}
-        >
+        <Box component="form" onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} sx={{ width: "100%" }}>
           <Grid container spacing={2}>
             {/* Form Fields */}
             {fieldConfig.map((field) => (
@@ -425,6 +400,7 @@ const EditAsset = () => {
                 </Button>
               </Box>
 
+              {/* Video Preview */}
               {(agreementVideo || formData.agreement_video) && (
                 <Box sx={{ mb: 2, p: 2, border: '1px solid #ddd', borderRadius: 1 }}>
                   <Typography variant="subtitle2" gutterBottom>
@@ -432,6 +408,7 @@ const EditAsset = () => {
                   </Typography>
                   
                   {formData.agreement_video instanceof File ? (
+                    // New video preview
                     <Box>
                       <video 
                         controls 
@@ -445,6 +422,7 @@ const EditAsset = () => {
                       </Typography>
                     </Box>
                   ) : agreementVideo ? (
+                    // Existing video preview
                     <Box>
                       <video 
                         controls 
@@ -495,6 +473,7 @@ const EditAsset = () => {
                 </Button>
               </Box>
 
+              {/* File Preview */}
               {(agreementFile || formData.agreement_file) && (
                 <Box sx={{ mb: 2, p: 2, border: '1px solid #ddd', borderRadius: 1 }}>
                   <Typography variant="subtitle2" gutterBottom>
@@ -543,6 +522,7 @@ const EditAsset = () => {
                 Property Images
               </Typography>
 
+              {/* Existing Images */}
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
                 {existingImages.map((img) => (
                   <Box key={img.id} sx={{ position: 'relative', width: 120, height: 120 }}>
@@ -551,6 +531,19 @@ const EditAsset = () => {
                       alt="Property" 
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />
+                    {/* <IconButton
+                      size="small"
+                      sx={{ 
+                        position: 'absolute', 
+                        top: 0, 
+                        right: 0,
+                        backgroundColor: 'rgba(255,255,255,0.7)',
+                        '&:hover': { backgroundColor: 'rgba(255,255,255,0.9)' }
+                      }}
+                      onClick={() => handleRemoveExistingImage(img.id)}
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton> */}
                     <Button
                       size="small"
                       component="label"
@@ -574,6 +567,7 @@ const EditAsset = () => {
                 ))}
               </Box>
               
+              {/* New Images Preview */}
               {newImages.length > 0 && (
                 <Box sx={{ mb: 2 }}>
                   <Typography variant="subtitle2" gutterBottom sx={{ mb: 1 }}>
@@ -616,7 +610,7 @@ const EditAsset = () => {
                   sx={{ 
                     height: '56px',
                     fontSize: '1rem',
-                    width: '30%',
+                    width: '50%',
                   }}
                 >
                   Update Property
