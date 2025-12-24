@@ -179,6 +179,9 @@
 
 // export default TransactionSummary;
 
+//============================================================
+// Code after fixing the Pagination issue
+
 import React, { useEffect, useState } from 'react';
 import Header from "../../../Shared/Navbar/Navbar";
 import TableLayout from '../../../Shared/TableLayout';
@@ -202,8 +205,6 @@ function TransactionSummary() {
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('all');
     const [searchTerm, setSearchTerm] = useState('');
-    const [page, setPage] = useState(1);
-    const itemsPerPage = 10;
 
     const formatDateTime = (dateString) => {
         if (!dateString) return 'N/A';
@@ -232,7 +233,22 @@ function TransactionSummary() {
         { key: 'phone_pe_merchant_order_id', label: 'Phonepe Merchant Order ID' },
         { key: 'phone_pe_order_id', label: 'Phonepe Order ID' },
         { key: 'phone_pe_transaction_id', label: 'Phonepe Transaction ID' },
-        { key: 'document_file', label: 'Receipt/Invoice' }
+        { 
+            key: 'document_file', 
+            label: 'Receipt/Invoice',
+            render: (row) => (
+                row.document_file ? (
+                    <a
+                        href={`${baseurl}${row.document_file}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: "#1976d2", textDecoration: "underline" }}
+                    >
+                        View PDF
+                    </a>
+                ) : "-"
+            )
+        }
     ];
 
     useEffect(() => {
@@ -240,7 +256,7 @@ function TransactionSummary() {
             try {
                 const res = await axios.get(`${baseurl}/transactions/`);
                 // Sort by most recent first (assuming higher ID = more recent)
-                const sortedData = res.data.sort((a, b) => b.id - a.id);
+                const sortedData = res.data.sort((a, b) => b.transaction_id - a.transaction_id);
                 setTransactions(sortedData);
                 setFilteredTransactions(sortedData);
             } catch (error) {
@@ -272,40 +288,33 @@ function TransactionSummary() {
                     (item.transaction_id && item.transaction_id.toString().includes(searchLower)) ||
                     (item.property_name && item.property_name.toLowerCase().includes(searchLower)) ||
                     (item.plan_name && item.plan_name.toLowerCase().includes(searchLower)) ||
-                    (item.payment_type && item.payment_type.toLowerCase().includes(searchLower)) ||
+                    (item.payment_type && item.payment_type && item.payment_type.toLowerCase().includes(searchLower)) ||
                     (item.transaction_for && item.transaction_for.toLowerCase().includes(searchLower)) ||
                     (item.paid_amount && item.paid_amount.toString().includes(searchTerm)) ||
-                    (item.payment_mode && item.payment_mode.toLowerCase().includes(searchLower)) ||
-                    (item.role && item.role.toLowerCase().includes(searchLower)) ||
-                    (item.username && item.username.toLowerCase().includes(searchLower)) ||
+                    (item.payment_mode && item.payment_mode && item.payment_mode.toLowerCase().includes(searchLower)) ||
+                    (item.role && item.role && item.role.toLowerCase().includes(searchLower)) ||
+                    (item.username && item.username && item.username.toLowerCase().includes(searchLower)) ||
                     (item.user_id && item.user_id.toString().includes(searchTerm)) ||
                     (item.phone_pe_merchant_order_id && item.phone_pe_merchant_order_id.toString().includes(searchTerm)) ||
-                    (item.phone_pe_order_id && item.phone_pe_order_id.toString().includes(searchTerm)) ||
-                    (item.phone_pe_transaction_id && item.phone_pe_transaction_id.toString().includes(searchTerm))
+                    (item.phone_pe_order_id && item.phone_pe_order_id && item.phone_pe_order_id.toString().includes(searchTerm)) ||
+                    (item.phone_pe_transaction_id && item.phone_pe_transaction_id && item.phone_pe_transaction_id.toString().includes(searchTerm))
                 );
             });
         }
 
         setFilteredTransactions(result);
-        setPage(1); // Reset page to 1 when filter/search changes
     }, [filter, searchTerm, transactions]);
 
-    // Add serial numbers to paginated data
-    const paginatedTransactions = filteredTransactions
-        .slice((page - 1) * itemsPerPage, page * itemsPerPage)
+    // Add serial numbers to ALL data
+    const allTransactionsWithSerial = filteredTransactions
         .map((item, index) => ({
             ...item,
-            serial: (page - 1) * itemsPerPage + index + 1,
+            serial: index + 1,
             transaction_date_formatted: formatDateTime(item.transaction_date),
-            // Keep original transaction_date for sorting/filtering if needed
-            transaction_date: item.transaction_date
+            transaction_date: item.transaction_date,
+            // Format paid_amount to show properly
+            paid_amount: item.paid_amount ? `₹${parseFloat(item.paid_amount).toLocaleString('en-IN')}` : "-"
         }));
-
-    const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
-
-    const handlePageChange = (_, value) => {
-        setPage(value);
-    };
 
     return (
         <>
@@ -403,17 +412,26 @@ function TransactionSummary() {
                 </Typography>
             )}
 
-            {/* Pass pagination props to TableLayout if it supports them */}
+            {/* Show filter-only results count */}
+            {!searchTerm && filter !== 'all' && (
+                <Typography
+                    variant="body2"
+                    color="textSecondary"
+                    sx={{
+                        textAlign: 'center',
+                        mb: 2,
+                        px: { xs: 2, sm: 3, md: 0 }
+                    }}
+                >
+                    Showing {filteredTransactions.length} transaction{filteredTransactions.length !== 1 ? 's' : ''} (filtered by: {filter})
+                </Typography>
+            )}
+
+            {/* Pass ALL data to TableLayout - it will handle its own pagination */}
             <TableLayout
                 headers={headers}
-                data={paginatedTransactions}
+                data={allTransactionsWithSerial}
                 loading={loading}
-                pagination={{
-                    count: totalPages,
-                    page: page,
-                    onPageChange: handlePageChange,
-                    show: totalPages > 1
-                }}
             />
 
             {/* No results message */}
