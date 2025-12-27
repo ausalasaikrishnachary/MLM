@@ -3251,7 +3251,6 @@ const AssetForm = () => {
     if (!formData.city?.trim()) newErrors.city = true;
     if (!formData.state?.trim()) newErrors.state = true;
     if (!formData.country?.trim()) newErrors.country = true;
-    if (!formData.pinCode?.trim() || formData.pinCode.length < 6) newErrors.pinCode = true;
     
     setErrors(prev => ({ ...prev, ...newErrors }));
     return Object.keys(newErrors).length === 0;
@@ -3597,7 +3596,7 @@ const AssetForm = () => {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              label="Property Title *"
+              label="Property Title "
               name="propertyTitle"
               value={formData.propertyTitle}
               onChange={handleChange}
@@ -3627,7 +3626,7 @@ const AssetForm = () => {
             <TextField
               select
               fullWidth
-              label="Country *"
+              label="Country "
               value={formData.country}
               onChange={(e) => {
                 setFormData({
@@ -3653,7 +3652,7 @@ const AssetForm = () => {
             <TextField
               select
               fullWidth
-              label="State *"
+              label="State "
               value={formData.state}
               onChange={(e) => {
                 setFormData({
@@ -3679,7 +3678,7 @@ const AssetForm = () => {
             <TextField
               select
               fullWidth
-              label="City *"
+              label="City "
               value={formData.city}
               onChange={(e) => {
                 setFormData({
@@ -3703,13 +3702,11 @@ const AssetForm = () => {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              label="Pin Code *"
+              label="Pin Code "
               name="pinCode"
               value={formData.pinCode}
               onChange={handleChange}
-              error={errors.pinCode}
-              helperText={errors.pinCode ? "Valid Pin Code is required" : ""}
-              required
+           
             />
           </Grid>
 
@@ -3718,7 +3715,7 @@ const AssetForm = () => {
               fullWidth
               multiline
               rows={2}
-              label="Full Address *"
+              label="Full Address "
               name="address"
               value={formData.address}
               onChange={handleChange}
@@ -3828,7 +3825,7 @@ const AssetForm = () => {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              label="Area *"
+              label="Area "
               name="plotArea"
               type="number"
               value={formData.plotArea}
@@ -3842,7 +3839,7 @@ const AssetForm = () => {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              label="Price Per Unit *"
+              label="Price Per Unit "
               name="pricePerUnit"
               type="number"
               value={formData.pricePerUnit}
@@ -3856,7 +3853,7 @@ const AssetForm = () => {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              label="Length (ft) *"
+              label="Length (ft) "
               name="length"
               type="number"
               value={formData.length}
@@ -3870,7 +3867,7 @@ const AssetForm = () => {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              label="Breadth (ft) *"
+              label="Breadth (ft) "
               name="breadth"
               type="number"
               value={formData.breadth}
@@ -3942,7 +3939,7 @@ const AssetForm = () => {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              label="Number of Open Sides *"
+              label="Number of Open Sides "
               name="openSides"
               type="number"
               value={formData.openSides}
@@ -3956,7 +3953,7 @@ const AssetForm = () => {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              label="Number of Roads *"
+              label="Number of Roads "
               name="numberOfRoads"
               type="number"
               value={formData.numberOfRoads}
@@ -4150,7 +4147,7 @@ const AssetForm = () => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Property Value *"
+                  label="Property Value "
                   name="price"
                   type="number"
                   value={formData.price}
@@ -4175,7 +4172,7 @@ const AssetForm = () => {
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
-                  label="Total Property Value *"
+                  label="Total Property Value "
                   name="total_property_value"
                   type="number"
                   value={formData.total_property_value || ''}
@@ -4238,7 +4235,7 @@ const AssetForm = () => {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              label="Owner Name *"
+              label="Owner Name "
               name="ownerName"
               value={formData.ownerName}
               onChange={handleChange}
@@ -4251,7 +4248,7 @@ const AssetForm = () => {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              label="Owner Contact (Phone) *"
+              label="Owner Contact (Phone) "
               name="ownerContact"
               value={formData.ownerContact}
               onChange={handleChange}

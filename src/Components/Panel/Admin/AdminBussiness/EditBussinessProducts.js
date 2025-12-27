@@ -546,7 +546,6 @@ const EditBussinessProducts = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         product_name: "",
-        sku: "",
         description: "",
         selling_price: "",
         mrp: "",
@@ -554,6 +553,8 @@ const EditBussinessProducts = () => {
         company_commission: "",
         distribution_commission: "",
         discount_percent: "",
+         product_commission: "",
+
         product_image: null,
         offer: null,
         category: null // Make sure this is in formData
@@ -567,12 +568,12 @@ const EditBussinessProducts = () => {
 
     const visibleFields = [
         "product_name",
-        "sku",
         "description",
         "selling_price",
         "mrp",
         "available_qty",
         "company_commission",
+        "product_commission",
         "distribution_commission",
         // Note: "category" is handled separately
     ];

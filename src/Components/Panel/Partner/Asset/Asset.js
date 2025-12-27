@@ -244,66 +244,129 @@ const AssetsUI = () => {
     fetchProperties();
   }, []);
 
-  useEffect(() => {
-    let results = [...properties];
+  // useEffect(() => {
+  //   let results = [...properties];
 
-    // Apply search filter
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      results = results.filter(property => {
-        const searchFields = [
-          property.property_title,
-          property.first_name,
-          property.city,
-          property.state,
-          property.owner_name,
-          property.owner_contact,
-          property.address,
-          property.description,
-          property.property_value?.toString(),
-          property.area?.toString(),
-          property.builtup_area?.toString()
-        ].filter(Boolean);
+  //   // Apply search filter
+  //   if (searchQuery.trim()) {
+  //     const query = searchQuery.toLowerCase();
+  //     results = results.filter(property => {
+  //       const searchFields = [
+  //         property.property_title,
+  //         property.first_name,
+  //         property.city,
+  //         property.state,
+  //         property.owner_name,
+  //         property.owner_contact,
+  //         property.address,
+  //         property.description,
+  //         property.property_value?.toString(),
+  //         property.area?.toString(),
+  //         property.builtup_area?.toString()
+  //       ].filter(Boolean);
 
-        return searchFields.some(field => field.toLowerCase().includes(query));
-      });
-    }
+  //       return searchFields.some(field => field.toLowerCase().includes(query));
+  //     });
+  //   }
 
-    // Apply sort filter
-    switch (sortBy) {
-      case 'latest':
-        results.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        break;
-      case 'oldest':
-        results.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-        break;
-      case 'price-high':
-        results.sort((a, b) => b.property_value - a.property_value);
-        break;
-      case 'price-low':
-        results.sort((a, b) => a.property_value - b.property_value);
-        break;
-      case 'sold':
-        results = results.filter((property) => property.status?.toLowerCase() === 'sold');
-        break;
-      case 'available':
-        results = results.filter((property) => property.status?.toLowerCase() === 'available');
-        break;
-      case 'booked':
-        results = results.filter((property) => property.status?.toLowerCase() === 'booked');
-        break;
-      default:
-        // No sorting
-        break;
-    }
-    if (selectedTypeCategory) {
-      results = results.filter((property) => property.category === selectedTypeCategory);
-    }
+  //   // Apply sort filter
+  //   switch (sortBy) {
+  //     case 'latest':
+  //       results.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  //       break;
+  //     case 'oldest':
+  //       results.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+  //       break;
+  //     case 'price-high':
+  //       results.sort((a, b) => b.property_value - a.property_value);
+  //       break;
+  //     case 'price-low':
+  //       results.sort((a, b) => a.property_value - b.property_value);
+  //       break;
+  //     case 'sold':
+  //       results = results.filter((property) => property.status?.toLowerCase() === 'sold');
+  //       break;
+  //     case 'available':
+  //       results = results.filter((property) => property.status?.toLowerCase() === 'available');
+  //       break;
+  //     case 'booked':
+  //       results = results.filter((property) => property.status?.toLowerCase() === 'booked');
+  //       break;
+  //     default:
+  //       // No sorting
+  //       break;
+  //   }
+  //   if (selectedTypeCategory) {
+  //     results = results.filter((property) => property.category === selectedTypeCategory);
+  //   }
 
-    setFilteredProperties(results);
-  }, [searchQuery, sortBy, properties, selectedTypeCategory]);
+  //   setFilteredProperties(results);
+  // }, [searchQuery, sortBy, properties, selectedTypeCategory]);
 
 
+  // Replace your current useEffect filter logic (around line 265-310)
+useEffect(() => {
+  let results = [...properties];
+
+  // Apply search filter
+  if (searchQuery.trim()) {
+    const query = searchQuery.toLowerCase();
+    results = results.filter(property => {
+      const searchFields = [
+        property.property_title,
+        property.first_name,
+        property.city,
+        property.state,
+        property.owner_name,
+        property.owner_contact,
+        property.address,
+        property.description,
+        property.property_value?.toString(),
+        property.area?.toString(),
+        property.builtup_area?.toString()
+      ].filter(Boolean);
+
+      return searchFields.some(field => field.toLowerCase().includes(query));
+    });
+  }
+
+  // Apply type filter
+  if (selectedTypeCategory) {
+    results = results.filter((property) => 
+      property.property_type?.toString() === selectedTypeCategory
+    );
+  }
+
+  // Apply sort filter
+  switch (sortBy) {
+    case 'latest':
+      results.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      break;
+    case 'oldest':
+      results.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+      break;
+    case 'price-high':
+      results.sort((a, b) => b.property_value - a.property_value);
+      break;
+    case 'price-low':
+      results.sort((a, b) => a.property_value - b.property_value);
+      break;
+    case 'sold':
+      results = results.filter((property) => property.status?.toLowerCase() === 'sold');
+      break;
+    case 'available':
+      results = results.filter((property) => property.status?.toLowerCase() === 'available');
+      break;
+    case 'booked':
+      results = results.filter((property) => property.status?.toLowerCase() === 'booked');
+      break;
+    default:
+      // No sorting
+      break;
+  }
+
+  setFilteredProperties(results);
+}, [searchQuery, sortBy, properties, selectedTypeCategory]);
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
@@ -536,7 +599,7 @@ const AssetsUI = () => {
 
 
             </Grid>
-            <Grid item xs={12} md={3}>
+            {/* <Grid item xs={12} md={3}>
               <FormControl fullWidth >
                 <Select
                   value={selectedTypeCategory}
@@ -554,7 +617,35 @@ const AssetsUI = () => {
                   ))}
                 </Select>
               </FormControl>
-            </Grid>
+            </Grid> */}
+
+            <Grid item xs={12} md={3}>
+  <FormControl fullWidth>
+    <Select
+      value={selectedTypeCategory}
+      onChange={(e) => setSelectedTypeCategory(e.target.value)}
+      displayEmpty
+      sx={{ borderRadius: '8px', fontSize: '15px' }}
+    >
+      <MenuItem value="">
+        <em>All Types</em>
+      </MenuItem>
+      {/* Create unique property types by name */}
+      {Array.from(new Set(propertyTypes.map(type => type.name)))
+        .map(typeName => {
+          const firstType = propertyTypes.find(type => type.name === typeName);
+          return (
+            <MenuItem 
+              key={firstType.property_type_id} 
+              value={firstType.property_type_id}
+            >
+              {typeName}
+            </MenuItem>
+          );
+        })}
+    </Select>
+  </FormControl>
+</Grid>
           </Grid>
         </Box>
 
@@ -753,9 +844,13 @@ const AssetsUI = () => {
                       </Box>
 
 
-                      <Typography variant="body2" color="text.secondary" mb={1}>
+                      {/* <Typography variant="body2" color="text.secondary" mb={1}>
                         {property.city}, {property.state} | Category: {getPropertyTypeName(property.property_type)}
-                      </Typography>
+                      </Typography> */}
+
+                      <Typography variant="body2" color="text.secondary" mb={1}>
+  {property.city}, {property.state} | Type: {getPropertyTypeName(property.property_type)}
+</Typography>
 
                       <Grid
                         container

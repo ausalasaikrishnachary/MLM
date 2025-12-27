@@ -1937,7 +1937,6 @@ const AddPropertyForm = () => {
     if (!formData.city?.trim()) newErrors.city = true;
     if (!formData.state?.trim()) newErrors.state = true;
     if (!formData.country?.trim()) newErrors.country = true;
-    if (!formData.pinCode?.trim() || formData.pinCode.length < 6) newErrors.pinCode = true;
     
     setErrors(prev => ({ ...prev, ...newErrors }));
     return Object.keys(newErrors).length === 0;
@@ -2464,9 +2463,7 @@ const AddPropertyForm = () => {
               name="pinCode"
               value={formData.pinCode}
               onChange={handleChange}
-              error={errors.pinCode}
-              helperText={errors.pinCode ? "Valid Pin Code is required" : ""}
-              required
+           
             />
           </Grid>
 
